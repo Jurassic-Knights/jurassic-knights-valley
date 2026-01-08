@@ -4,6 +4,13 @@
  * Contains magic numbers, configuration settings, and balance values.
  */
 const GameConstants = {
+    // Grid System
+    Grid: {
+        CELL_SIZE: 128,         // Main gameplay unit (pixels)
+        SUB_TILE_SIZE: 32,      // Visual detail (4x4 per cell)
+        ISLAND_CELLS: 8         // Cells per island (1024/128)
+    },
+
     // World / Island Configuration
     World: {
         GRID_COLS: 3,

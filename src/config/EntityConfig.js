@@ -11,8 +11,9 @@ const EntityConfig = {
     // Player Character
     hero: {
         base: {
-            width: 186,
-            height: 186,
+            gridSize: 1.5,  // Size in grid units
+            width: 192,     // 1.5 * 128
+            height: 192,
             color: '#D4AF37', // Gold
             health: 100,
             maxHealth: 100,
@@ -34,8 +35,9 @@ const EntityConfig = {
     // Dinosaurs (AI Entities)
     dinosaur: {
         defaults: {
-            width: 200,
-            height: 200,
+            gridSize: 1.5,  // Default dino size
+            width: 192,     // 1.5 * 128
+            height: 192,
             health: 60,
             maxHealth: 60,
             speed: 30, // Wander speed
@@ -46,12 +48,14 @@ const EntityConfig = {
         variants: {
             // Velociraptor (Meat)
             'velociraptor': {
+                gridSize: 1.5,
                 health: 40,
                 speed: 45, // Faster
                 respawnTime: 15
             },
             // T-Rex (Iron)
             'tyrannosaurus': {
+                gridSize: 2.5,
                 width: 320,
                 height: 320,
                 health: 300,
@@ -61,13 +65,15 @@ const EntityConfig = {
             },
             // Triceratops (Fuel)
             'triceratops': {
-                width: 240,
-                height: 240,
+                gridSize: 2,
+                width: 256,
+                height: 256,
                 health: 150,
                 speed: 20
             },
             // Ankylosaurus (Scrap)
             'ankylosaurus': {
+                gridSize: 1.5,
                 health: 200,
                 speed: 15
             }
@@ -88,16 +94,16 @@ const EntityConfig = {
             'dino_parasaurolophus_base',
             'dino_stegosaurus_base',
             'dino_spinosaurus_base',
-
         ]
     },
 
     // Resources (Static Collectibles)
     resource: {
         defaults: {
-            width: 150,
-            height: 150,
-            interactRadius: 145,
+            gridSize: 1,    // Default 1 cell
+            width: 128,     // 1 * 128
+            height: 128,
+            interactRadius: 130,
             health: 30,
             respawnTime: 30,
             amount: 1 // Drops exactly 1 resource when destroyed
@@ -130,8 +136,8 @@ const EntityConfig = {
             'wood': {
                 name: 'Petrified Wood',
                 description: 'Hardened ancient timber.',
-                width: 120,
-                height: 120,
+                gridSize: 1,
+                snapToGrid: false, // Trees can be placed organically
                 maxHealth: 15,
                 respawnTime: 10,
                 rarity: 'common',
@@ -140,8 +146,9 @@ const EntityConfig = {
             'gold': {
                 name: 'Gold Cache',
                 description: 'Currency of the old empire.',
-                width: 100,
-                height: 100,
+                gridSize: 0.75,
+                width: 96,
+                height: 96,
                 maxHealth: 10,
                 respawnTime: 60,
                 rarity: 'legendary',
@@ -150,6 +157,7 @@ const EntityConfig = {
             'primal_meat': {
                 name: 'Primal Meat',
                 description: 'Raw flesh from a prehistoric beast.',
+                gridSize: 0.75,
                 maxHealth: 0,
                 respawnTime: 0,
                 rarity: 'uncommon',
@@ -161,17 +169,19 @@ const EntityConfig = {
     // Dropped Items
     droppedItem: {
         defaults: {
-            width: 108,
-            height: 108,
-            pickupRadius: 140
+            gridSize: 0.75,
+            width: 96,      // 0.75 * 128
+            height: 96,
+            pickupRadius: 120
         }
     },
 
     npc: {
         merchant: {
             defaults: {
-                width: 186,
-                height: 186,
+                gridSize: 1.5,
+                width: 192,
+                height: 192,
                 interactRadius: 140,
                 color: '#8E44AD'
             }

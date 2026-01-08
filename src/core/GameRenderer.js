@@ -627,9 +627,58 @@ const GameRenderer = {
                 this.ctx.font = '10px monospace';
                 this.ctx.fillText(zone.id, zone.x + 5, zone.y + 15);
             }
+
+            // --- DEBUG: Draw 128px Grid Overlay ---
+            this.drawDebugGrid();
         }
 
         this.ctx.restore();
+    },
+
+    /**
+     * Draw 128px gameplay grid overlay (debug only)
+     */
+    drawDebugGrid() {
+        const cellSize = window.GameConstants ? GameConstants.Grid.CELL_SIZE : 128;
+
+        // Get visible bounds with padding
+        const bounds = this.getVisibleBounds();
+        const startGx = Math.floor(bounds.left / cellSize);
+        const startGy = Math.floor(bounds.top / cellSize);
+        const endGx = Math.ceil(bounds.right / cellSize);
+        const endGy = Math.ceil(bounds.bottom / cellSize);
+
+        this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)'; // Yellow grid lines
+        this.ctx.lineWidth = 1;
+        this.ctx.font = '10px monospace';
+        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
+
+        // Draw vertical lines
+        for (let gx = startGx; gx <= endGx; gx++) {
+            const x = gx * cellSize;
+            this.ctx.beginPath();
+            this.ctx.moveTo(x, bounds.top);
+            this.ctx.lineTo(x, bounds.bottom);
+            this.ctx.stroke();
+        }
+
+        // Draw horizontal lines
+        for (let gy = startGy; gy <= endGy; gy++) {
+            const y = gy * cellSize;
+            this.ctx.beginPath();
+            this.ctx.moveTo(bounds.left, y);
+            this.ctx.lineTo(bounds.right, y);
+            this.ctx.stroke();
+        }
+
+        // Draw cell coordinates at intersections (sparse - every 4th cell)
+        for (let gx = startGx; gx <= endGx; gx += 4) {
+            for (let gy = startGy; gy <= endGy; gy += 4) {
+                const x = gx * cellSize + 4;
+                const y = gy * cellSize + 12;
+                this.ctx.fillText(`${gx},${gy}`, x, y);
+            }
+        }
     },
 
     /**

@@ -418,6 +418,63 @@ class IslandManagerService {
     update(dt) {
         // No-op
     }
+
+    // ==================== GRID UTILITIES ====================
+
+    /**
+     * Convert world coordinates to grid cell coordinates
+     * @param {number} x - World X position
+     * @param {number} y - World Y position
+     * @returns {{gx: number, gy: number}} Grid cell coordinates
+     */
+    worldToGrid(x, y) {
+        const cellSize = GameConstants.Grid.CELL_SIZE;
+        return {
+            gx: Math.floor(x / cellSize),
+            gy: Math.floor(y / cellSize)
+        };
+    }
+
+    /**
+     * Convert grid cell coordinates to world center position
+     * @param {number} gx - Grid X cell
+     * @param {number} gy - Grid Y cell
+     * @returns {{x: number, y: number}} World coordinates (cell center)
+     */
+    gridToWorld(gx, gy) {
+        const cellSize = GameConstants.Grid.CELL_SIZE;
+        return {
+            x: gx * cellSize + cellSize / 2,
+            y: gy * cellSize + cellSize / 2
+        };
+    }
+
+    /**
+     * Snap a world position to the nearest grid cell center
+     * @param {number} x - World X position
+     * @param {number} y - World Y position
+     * @returns {{x: number, y: number}} Snapped world coordinates
+     */
+    snapToGrid(x, y) {
+        const grid = this.worldToGrid(x, y);
+        return this.gridToWorld(grid.gx, grid.gy);
+    }
+
+    /**
+     * Get the bounds of a grid cell at given grid coordinates
+     * @param {number} gx - Grid X cell
+     * @param {number} gy - Grid Y cell
+     * @returns {{x: number, y: number, width: number, height: number}}
+     */
+    getGridCellBounds(gx, gy) {
+        const cellSize = GameConstants.Grid.CELL_SIZE;
+        return {
+            x: gx * cellSize,
+            y: gy * cellSize,
+            width: cellSize,
+            height: cellSize
+        };
+    }
 }
 
 // Export Singleton Instance
