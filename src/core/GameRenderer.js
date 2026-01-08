@@ -10,6 +10,8 @@ const GameRenderer = {
     canvas: null,
     ctx: null,
     hero: null, // Still track hero for camera centering
+    debugMode: false,
+    gridMode: false, // Separate toggle for grid overlay
 
     // Fixed world size (game units) - scaled up for 1024px islands
     worldWidth: 4500,
@@ -401,6 +403,14 @@ const GameRenderer = {
         if (this.debugMode) {
             this.drawWorldBoundary();
         }
+
+        // --- GRID OVERLAY (separate toggle) ---
+        if (this.gridMode) {
+            this.ctx.save();
+            this.ctx.translate(-this.viewport.x, -this.viewport.y);
+            this.drawDebugGrid();
+            this.ctx.restore();
+        }
     },
 
     /**
@@ -593,6 +603,15 @@ const GameRenderer = {
         this.debugMode = !this.debugMode;
         console.log(`[GameRenderer] Debug mode: ${this.debugMode}`);
         return this.debugMode;
+    },
+
+    /**
+     * Toggle grid overlay (separate from debug)
+     */
+    toggleGrid() {
+        this.gridMode = !this.gridMode;
+        console.log(`[GameRenderer] Grid mode: ${this.gridMode}`);
+        return this.gridMode;
     },
 
     /**

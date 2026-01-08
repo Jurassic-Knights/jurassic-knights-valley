@@ -145,6 +145,17 @@ const DebugUI = {
         }
 
         this.addControl('Debug', btn);
+
+        // Grid Toggle (separate)
+        const gridBtn = document.createElement('button');
+        gridBtn.textContent = 'Toggle Grid';
+        gridBtn.onclick = () => {
+            if (window.GameRenderer) {
+                const isActive = GameRenderer.toggleGrid();
+                gridBtn.classList.toggle('active', isActive);
+            }
+        };
+        this.addControl('Grid', gridBtn);
     },
 
     /**
