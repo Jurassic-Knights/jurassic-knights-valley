@@ -396,6 +396,11 @@ const GameRenderer = {
         if (envRenderer) {
             envRenderer.render(this.ctx, this.viewport);
         }
+
+        // --- DEBUG OVERLAY ---
+        if (this.debugMode) {
+            this.drawWorldBoundary();
+        }
     },
 
     /**
