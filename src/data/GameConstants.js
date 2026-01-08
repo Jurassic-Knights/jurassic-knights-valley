@@ -103,7 +103,7 @@ const GameConstants = {
 
         RESOURCE_GRID: {
             COLS: 4,
-            SPACING: 170,
+            SPACING: 128, // Aligned to Grid.CELL_SIZE
             AMOUNT_MIN: 1,
             AMOUNT_RND: 0
         },

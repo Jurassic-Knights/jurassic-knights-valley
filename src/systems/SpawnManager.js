@@ -172,9 +172,9 @@ class SpawnManagerService {
 
         const type = island.resourceType || 'scrap_metal';
 
-        // Fixed Grid Layout
+        // Fixed Grid Layout (aligned to 128px grid)
         const cols = GameConstants.Spawning.RESOURCE_GRID.COLS;
-        const spacing = GameConstants.Spawning.RESOURCE_GRID.SPACING;
+        const spacing = GameConstants.Grid.CELL_SIZE; // Use grid cell size
 
         const gridWidth = (cols - 1) * spacing;
         const maxRows = Math.ceil(15 / cols);
@@ -186,13 +186,22 @@ class SpawnManagerService {
         const bounds = islandManager ? islandManager.getPlayableBounds(island) : null;
         if (!bounds) return;
 
-        const startX = bounds.x + (bounds.width - gridWidth) / 2;
-        const startY = bounds.y + (bounds.height - gridHeight) / 2;
+        // Calculate starting position and snap to grid
+        let startX = bounds.x + (bounds.width - gridWidth) / 2;
+        let startY = bounds.y + (bounds.height - gridHeight) / 2;
+
+        // Snap the starting position to nearest grid cell
+        if (islandManager && islandManager.snapToGrid) {
+            const snapped = islandManager.snapToGrid(startX, startY);
+            startX = snapped.x;
+            startY = snapped.y;
+        }
 
         for (let i = startIndex; i < count; i++) {
             const col = i % cols;
             const row = Math.floor(i / cols);
 
+            // Calculate position aligned to grid
             const x = startX + col * spacing;
             const y = startY + row * spacing;
 
@@ -206,10 +215,9 @@ class SpawnManagerService {
             });
 
             if (window.EntityManager) EntityManager.add(resource);
-
         }
 
-        console.log(`[SpawnManager] Spawned ${count - startIndex} ${type} in ${island.name}`);
+        console.log(`[SpawnManager] Spawned ${count - startIndex} ${type} in ${island.name} (grid-aligned)`);
     }
 
     /**
