@@ -1,0 +1,196 @@
+{
+    "schema_version": "1.0",
+    "description": "Image asset registry - maps logical IDs to file paths",
+    "categories": {
+        "ui": "User interface elements",
+        "characters": "Character artwork and sprites",
+        "backgrounds": "Background art and environments",
+        "items": "Item icons and artwork",
+        "effects": "Visual effect sprites and sheets"
+    },
+    "assets": {
+        "ui_res_gold": {
+            "path": "images/ui/res_gold_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Gold resource icon"
+        },
+        "ui_icon_gold": {
+            "path": "images/ui/res_gold_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Gold resource icon (HUD alias)"
+        },
+        "ui_icon_speech_bubble": {
+            "path": "images/ui/ui_icon_speech_bubble_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Merchant interaction speech bubble"
+        },
+        "ui_res_gem": {
+            "path": "images/ui/res_gem_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Gem resource icon"
+        },
+        "ui_icon_gem": {
+            "path": "images/ui/res_gem_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Gem resource icon (HUD alias)"
+        },
+        "drop_wood": {
+            "path": "images/items/drop_wood_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Dropped Wood resource"
+        },
+        "drop_gold": {
+            "path": "images/items/drop_gold_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Dropped Gold resource"
+        },
+        "drop_scrap_metal": {
+            "path": "images/items/drop_scrap_metal_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Dropped Scrap Metal resource"
+        },
+        "drop_iron_ore": {
+            "path": "images/items/drop_iron_ore_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Dropped Iron Ore resource"
+        },
+        "drop_fossil_fuel": {
+            "path": "images/items/drop_fossil_fuel_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Dropped Fossil Fuel resource"
+        },
+        "drop_primal_meat": {
+            "path": "images/items/drop_primal_meat_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Dropped Primal Meat resource"
+        },
+        "tool_gun": {
+            "path": "images/items/tool_gun_clean.png",
+            "category": "items",
+            "aspect_ratio": "3:1",
+            "description": "Hero Gun"
+        },
+        "tool_shovel": {
+            "path": "images/items/tool_shovel_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:3",
+            "description": "Hero Shovel"
+        },
+        "ui_res_token": {
+            "path": "images/ui/res_token_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Token resource icon"
+        },
+        "ui_icon_token": {
+            "path": "images/ui/res_token_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Token resource icon (HUD alias)"
+        },
+        "ui_icon_settings": {
+            "path": "images/ui/icon_settings_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Settings action icon"
+        },
+        "ui_icon_orders": {
+            "path": "images/ui/icon_orders_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Quest orders icon"
+        },
+        "ui_icon_inventory": {
+            "path": "images/ui/icon_inventory_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Inventory action icon"
+        },
+        "ui_icon_forge": {
+            "path": "images/ui/icon_forge_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Forge action icon"
+        },
+        "ui_icon_map": {
+            "path": "images/ui/icon_map_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Map action icon"
+        },
+        "ui_icon_magnet": {
+            "path": "images/ui/icon_magnet_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Magnet action icon"
+        },
+        "item_scrap_metal": {
+            "path": "images/items/drop_scrap_metal_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Scrap metal inventory icon"
+        },
+        "item_iron_ore": {
+            "path": "images/items/drop_iron_ore_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Iron ore inventory icon"
+        },
+        "item_fossil_fuel": {
+            "path": "images/items/drop_fossil_fuel_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Fossil fuel inventory icon"
+        },
+        "item_wood": {
+            "path": "images/items/drop_wood_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Wood inventory icon"
+        },
+        "item_gold": {
+            "path": "images/items/drop_gold_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Gold inventory icon"
+        },
+        "item_primal_meat": {
+            "path": "images/items/drop_primal_meat_clean.png",
+            "category": "items",
+            "aspect_ratio": "1:1",
+            "description": "Primal Meat inventory icon"
+        },
+        "ui_avatar_knight": {
+            "path": "images/characters/avatar_knight.png",
+            "category": "characters",
+            "aspect_ratio": "2:3",
+            "description": "Player character avatar"
+        },
+        "npc_merchant_home": { "path": "images/characters/npc_merchant_home.png", "category": "characters", "aspect_ratio": "1:1", "description": "Home Quartermaster" },
+        "npc_merchant_quarry": { "path": "images/characters/npc_merchant_quarry.png", "category": "characters", "aspect_ratio": "1:1", "description": "Quarry Miner Merchant" },
+        "npc_merchant_iron": { "path": "images/characters/npc_merchant_iron.png", "category": "characters", "aspect_ratio": "1:1", "description": "Iron Smith Merchant" },
+        "npc_merchant_dead": { "path": "images/characters/npc_merchant_dead.png", "category": "characters", "aspect_ratio": "1:1", "description": "Dead Woods Scavenger" },
+        "npc_merchant_cross": { "path": "images/characters/npc_merchant_cross.png", "category": "characters", "aspect_ratio": "1:1", "description": "Traveling Merchant" },
+        "npc_merchant_scrap": { "path": "images/characters/npc_merchant_scrap.png", "category": "characters", "aspect_ratio": "1:1", "description": "Scrap Junker Merchant" },
+        "npc_merchant_mud": { "path": "images/characters/npc_merchant_mud.png", "category": "characters", "aspect_ratio": "1:1", "description": "Mud Flats Fisher" },
+        "npc_merchant_bone": { "path": "images/characters/npc_merchant_bone.png", "category": "characters", "aspect_ratio": "1:1", "description": "Bone Valley Paleontologist" },
+        "npc_merchant_ruins": { "path": "images/characters/npc_merchant_ruins.png", "category": "characters", "aspect_ratio": "1:1", "description": "Ruins Explorer" },
+        "ui_icon_rest": {
+            "path": "images/ui/icon_rest_clean.png",
+            "category": "ui",
+            "aspect_ratio": "1:1",
+            "description": "Rest action icon"
+        }
+    }
+}

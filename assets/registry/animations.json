@@ -1,0 +1,5 @@
+{
+    "schema_version": "1.0",
+    "description": "Animation registry - defines sprite animations and their properties",
+    "animations": {}
+}

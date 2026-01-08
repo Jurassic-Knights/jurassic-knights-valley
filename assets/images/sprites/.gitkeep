@@ -1,0 +1,6 @@
+# Placeholder
+
+This directory contains sprite sheet images.
+
+Naming convention: `[category]_[name]_sheet.png`
+Examples: `char_knight_sheet.png`, `fx_explosion_sheet.png`

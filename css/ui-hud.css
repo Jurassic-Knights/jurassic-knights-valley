@@ -1,0 +1,1465 @@
+/* Game HUD UI Styles - "Mud, Steel, and Scales" Theme */
+
+/* ========================================
+   UI OVERLAY CONTAINER
+   ======================================== */
+/* ========================================
+   UI OVERLAY CONTAINER - Refactored for Zones
+   ======================================== */
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    padding: var(--hud-padding) var(--hud-padding) 0 var(--hud-padding);
+    gap: var(--space-sm);
+    /* Spacing between zones */
+    overflow: hidden;
+    /* Prevent scrolling if UI exceeds screen */
+}
+
+#ui-overlay>* {
+    pointer-events: none;
+    /* Default for zones */
+}
+
+/* ========================================
+   ZONES
+   ======================================== */
+#ui-header-zone {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    pointer-events: auto;
+    flex-shrink: 0;
+    /* Header size is determined by content */
+}
+
+#ui-body-zone {
+    flex: 1;
+    /* Fills remaining space */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    /* Align HUDs to top of body zone */
+    pointer-events: none;
+    min-height: 0;
+    /* Important for flex overflow handling */
+}
+
+#ui-footer-zone {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: auto;
+    min-height: 80px;
+    /* Increased for taller buttons */
+    margin-bottom: 0;
+    padding-bottom: 0;
+    margin-top: auto;
+    /* Force to bottom of flex container */
+}
+
+/* ========================================
+   ICON PLACEHOLDERS (for Image Artist)
+   ======================================== */
+[data-icon-id] {
+    /* Background is set by UIManager.loadIcons() via JS */
+    background-color: var(--color-primary-mid);
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--color-accent-iron);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: auto;
+    /* Ensure icons are clickable if needed */
+}
+
+/* Debug: show icon ID */
+[data-icon-id]::after {
+    content: attr(data-icon-id);
+    font-size: 6px;
+    color: var(--color-text-secondary);
+    position: absolute;
+    text-align: center;
+    word-break: break-all;
+    padding: 1px;
+    opacity: 0.5;
+    display: none;
+    /* Hide in production, show with .debug-icons class on body */
+}
+
+body.debug-icons [data-icon-id]::after {
+    display: block;
+}
+
+/* ========================================
+   TOP RESOURCE BAR - "Radio Panel"
+   ======================================== */
+#ui-top-bar {
+    width: 100%;
+}
+
+.top-bar-frame {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(26, 26, 46, 0.85);
+    /* Glass effect base */
+    backdrop-filter: blur(8px);
+    border: var(--border-iron);
+    border-radius: var(--border-radius-md);
+    box-shadow:
+        var(--shadow-md),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+    /* Vignette */
+    position: relative;
+}
+
+/* ========================================
+   RESOURCE COUNTERS - High Fidelity Metal Plates
+   ======================================== */
+#resource-counters {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    pointer-events: auto;
+}
+
+.resource-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-metal-mid);
+    background-image:
+        var(--bg-noise),
+        var(--gradient-metal);
+    padding: 6px 14px 6px 10px;
+    border: 1px solid var(--color-metal-dark);
+    border-radius: 4px;
+    position: relative;
+    box-shadow:
+        /* Bevel Highlight */
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        /* Drop Shadow */
+        0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Rivets on the plate */
+.resource-counter::before,
+.resource-counter::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #333;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.resource-counter::before {
+    top: 4px;
+    left: 4px;
+}
+
+.resource-counter::after {
+    bottom: 4px;
+    right: 4px;
+}
+
+.counter-icon {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid #000;
+    border-bottom: 1px solid #333;
+    /* Inset look */
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+    border-radius: 2px;
+}
+
+.counter-value {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-gold);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+    min-width: 28px;
+    letter-spacing: 0.5px;
+    background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8));
+}
+
+/* Legacy styles hidden */
+#ui-top-bar {
+    display: none;
+}
+
+.top-bar-frame {
+    display: none;
+}
+
+.resource-group {
+    display: none;
+}
+
+.resource-item {
+    display: none;
+}
+
+.resource-icon {
+    display: none;
+}
+
+.resource-value {
+    display: none;
+}
+
+.settings-btn {
+    display: none;
+}
+
+/* Hide Left HUD (Portrait & Gauges - now rendered on canvas) */
+#ui-hud-left {
+    display: none !important;
+}
+
+/* ========================================
+   QUEST + RESOLVE CONTAINER
+   ======================================== */
+#quest-resolve-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 0 auto;
+    pointer-events: auto;
+}
+
+/* ========================================
+   QUEST PANEL - Fixed Size
+   ======================================== */
+#ui-quest-panel {
+    width: 280px;
+    pointer-events: auto;
+}
+
+#ui-quest-panel .quest-frame {
+    pointer-events: auto;
+}
+
+/* ========================================
+   RESOLVE BAR - Liquid Glass Gauge (High Fidelity)
+   ======================================== */
+/* ========================================
+   RESOLVE BAR - Amber Liquid Gauge (Earthy)
+   ======================================== */
+#ui-resolve-bar {
+    width: 290px;
+    height: 28px;
+    background: #0F0C0A;
+    border: 1px solid #3E362E;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.9),
+        inset 0 2px 8px rgba(0, 0, 0, 1),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Dirty Glass Reflection */
+#ui-resolve-bar::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 12px 12px 50% 50%;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.resolve-fill {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    bottom: 3px;
+    width: calc(100% - 6px);
+    background: #FFB347;
+    /* Amber base */
+    background-image:
+        var(--bg-noise),
+        linear-gradient(90deg, #8B4513 0%, #CD853F 50%, #8B4513 100%);
+    border-radius: 10px;
+    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow:
+        0 0 15px rgba(205, 133, 63, 0.4),
+        /* Amber Glow */
+        inset 0 -4px 5px rgba(0, 0, 0, 0.5),
+        /* Volume */
+        inset 0 2px 2px rgba(255, 255, 255, 0.3);
+    /* Top Meniscus */
+}
+
+/* Bubbles in the Amber */
+.resolve-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 60%, rgba(255, 255, 255, 0.2) 0%, transparent 10%),
+        radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 8%),
+        radial-gradient(circle at 90% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 12%);
+    background-size: 80px 100%;
+    opacity: 0.8;
+    mix-blend-mode: overlay;
+    border-radius: 10px;
+}
+
+.resolve-text {
+    position: absolute;
+    /* Changed to absolute to float on top */
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 800;
+    color: #FFE4B5;
+    /* Moccasin */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+    z-index: 30;
+    letter-spacing: 2px;
+    opacity: 1;
+    mix-blend-mode: normal;
+    pointer-events: none;
+}
+
+.quest-frame {
+    /* Thick Dirty Paper Style */
+    background: var(--color-parchment);
+    background-image:
+        var(--bg-noise),
+        radial-gradient(circle at 50% 50%, transparent 40%, rgba(62, 54, 46, 0.3) 100%),
+        /* Vignette */
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 11px);
+    /* Texture lines */
+
+    border: 1px solid #5A4D42;
+    border-top: 1px solid #8C7B65;
+    /* Highlight edge */
+    border-radius: 4px;
+    /* Slightly worn corners */
+
+    position: relative;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.8),
+        /* Deep shadow */
+        0 0 0 1px rgba(0, 0, 0, 0.5),
+        /* Outline */
+        inset 0 0 60px rgba(44, 38, 32, 0.2);
+    /* Inner grime */
+
+    color: var(--color-ink);
+    transform: rotate(-0.5deg);
+    /* Hand-placed imperfection */
+}
+
+/* Tape/Clip simulation at top? Optional, kept simple for now */
+.quest-frame::before {
+    display: none;
+}
+
+.quest-frame::after {
+    display: none;
+}
+
+/* Header - Worn Ink Stamp */
+.quest-header {
+    background: none;
+    border-bottom: 2px dashed rgba(43, 34, 27, 0.3);
+    padding: 14px 18px;
+}
+
+.header-label {
+    color: #3E362E;
+    font-family: var(--font-display);
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+    opacity: 0.9;
+}
+
+.header-id {
+    color: #5A4D42;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.quest-content {
+    padding: 18px;
+}
+
+.quest-icon {
+    border: 2px solid #3E362E;
+    box-shadow: 2px 2px 0 rgba(43, 34, 27, 0.1);
+    background: rgba(0, 0, 0, 0.05);
+    mix-blend-mode: multiply;
+    border-radius: 2px;
+}
+
+.quest-objective {
+    font-family: var(--font-body);
+    /* Serif font */
+    font-weight: 600;
+    color: var(--color-ink);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.quest-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-primary-dark);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: var(--shadow-inset);
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--gradient-brass);
+    transition: width var(--transition-normal);
+    border-radius: 3px;
+}
+
+.progress-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    min-width: 40px;
+    text-align: right;
+}
+
+/* ========================================
+   CHARACTER HUD (LEFT SIDE) - "Field Gauges"
+   ======================================== */
+#ui-hud-left {
+    /* Removed absolute positioning */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+    z-index: 51;
+}
+
+.character-frame {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.character-avatar {
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-panel);
+    border: var(--border-brass);
+    border-radius: var(--border-radius-md);
+    box-shadow:
+        var(--shadow-md),
+        var(--shadow-inset),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.character-rank {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-body);
+    font-size: 7px;
+    font-weight: bold;
+    color: var(--color-primary-dark);
+    background: var(--gradient-brass);
+    padding: 1px 4px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    box-shadow: var(--shadow-sm);
+}
+
+.status-gauges {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gauge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-primary-mid);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-sm);
+    padding: 2px 4px;
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+}
+
+.gauge-label {
+    font-family: var(--font-body);
+    font-size: 7px;
+    font-weight: bold;
+    color: var(--color-text-secondary);
+    width: 18px;
+    letter-spacing: 1px;
+}
+
+.gauge-track {
+    flex: 1;
+    height: 8px;
+    background: var(--color-primary-dark);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: var(--shadow-inset-deep);
+    min-width: 40px;
+    /* Reduced min width */
+}
+
+.gauge-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width var(--transition-normal);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.health-gauge .gauge-fill {
+    background: linear-gradient(180deg, var(--color-health) 0%, var(--color-health-dark) 100%);
+}
+
+.stamina-gauge .gauge-fill {
+    background: linear-gradient(180deg, var(--color-stamina) 0%, var(--color-stamina-dark) 100%);
+}
+
+.gauge-value {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--color-text-primary);
+    min-width: 20px;
+    text-align: right;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================
+   ACTION BUTTONS (RIGHT SIDE) - "Equipment Console"
+   ======================================== */
+#ui-hud-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+    z-index: 950;
+    max-height: 100%;
+    /* Limit height to viewport */
+    overflow-y: auto;
+    /* Enable scrolling if content overflows */
+    padding-right: 4px;
+    /* Space for scrollbar */
+}
+
+/* Scrollbar styling for HUD */
+#ui-hud-right::-webkit-scrollbar {
+    width: 4px;
+}
+
+#ui-hud-right::-webkit-scrollbar-thumb {
+    background: var(--color-accent-iron);
+    border-radius: 2px;
+}
+
+/* ========================================
+   HAND-DRAWN EARTHY DASHBOARD
+   ======================================== */
+#ui-footer-zone {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 0;
+    pointer-events: none;
+    z-index: 90;
+}
+
+/* The Main Console Plate - Organic & Worn */
+.footer-bar {
+    position: absolute;
+    bottom: 0;
+    width: 640px;
+    max-width: 96%;
+    height: 85px;
+    background-color: var(--color-metal-mid);
+    background-image:
+        var(--bg-noise),
+        radial-gradient(circle at 50% -20%, var(--color-metal-light) 0%, transparent 60%),
+        /* Top wear */
+        var(--gradient-plate);
+    background-blend-mode: overlay, screen, normal;
+
+    border-radius: 8px 8px 0 0;
+    /* Softer, hand-worn corners */
+
+    /* Hand-Drawn Style Bevel */
+    box-shadow:
+        /* Imperfect Top Highlight */
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        /* Deep Mud Shadow */
+        inset 0 -10px 30px rgba(0, 0, 0, 0.8),
+        /* Cast Shadow */
+        0 -4px 20px rgba(0, 0, 0, 0.8);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    z-index: 1;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Rusted Bolts (Hand-Drawn Look) */
+.footer-bar::before,
+.footer-bar::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, #6A5A48 0%, #1F1B16 80%);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    border: 1px solid #14100C;
+}
+
+.footer-bar::before {
+    left: 24px;
+}
+
+.footer-bar::after {
+    right: 24px;
+}
+
+/* Rusted Bolts Position Correction */
+.footer-bar::before {
+    left: 20px;
+    transform: rotate(15deg);
+}
+
+.footer-bar::after {
+    right: 20px;
+    transform: rotate(-25deg);
+}
+
+/* Hide old decorative wings/pedestal elements */
+.footer-wing,
+.footer-center,
+.center-pedestal {
+    display: none;
+}
+
+/* Button Container */
+.footer-buttons {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    position: relative;
+    z-index: 10;
+    margin-bottom: 0;
+    padding-bottom: 25px;
+    pointer-events: auto;
+}
+
+.button-group {
+    display: flex;
+    gap: 14px;
+}
+
+/* ========================================
+   DOPAMINE BUTTONS (Hand-Drawn Earthy)
+   ======================================== */
+
+/* Center Context - "Ignition Switch" */
+.center-slot {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle, #2C2620 0%, #14100C 100%);
+    border-radius: 50%;
+    box-shadow:
+        inset 0 10px 20px rgba(0, 0, 0, 1),
+        0 2px 0 rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 100;
+}
+
+.action-btn.context-btn {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 30% 30%, #444 0%, #111 80%);
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.8),
+        inset 0 2px 5px rgba(255, 255, 255, 0.2);
+    z-index: 101;
+    transition: all 0.2s cubic-bezier(0.3, 1.5, 0.5, 1);
+    /* Bouncy pop */
+}
+
+/* Inactive State - Cold Dead Metal */
+.action-btn.context-btn:not(.active) {
+    opacity: 0.6;
+    filter: grayscale(100%) contrast(1.2);
+    transform: scale(0.95);
+    box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.9);
+    cursor: not-allowed;
+}
+
+/* Active State - Glowing Core */
+.action-btn.context-btn.active {
+    background:
+        radial-gradient(circle at 50% 50%, #FFD700 0%, #FF4500 60%, #8B0000 100%);
+    box-shadow:
+        0 0 30px rgba(255, 165, 0, 0.6),
+        /* Outer Glow */
+        inset 0 0 10px #FFF;
+    /* Hot Core */
+    border: 2px solid #FFD700;
+    transform: scale(1.05);
+    cursor: pointer;
+    animation: contextPulse 2s infinite ease-in-out;
+}
+
+@keyframes contextPulse {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 165, 0, 0.5), inset 0 0 10px #FFF;
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(255, 165, 0, 0.8), inset 0 0 20px #FFF;
+    }
+
+    100% {
+        box-shadow: 0 0 20px rgba(255, 165, 0, 0.5), inset 0 0 10px #FFF;
+    }
+}
+
+.action-btn.context-btn .btn-label {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    font-size: 11px;
+    color: #FFF;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    font-weight: 900;
+    letter-spacing: 1px;
+    mix-blend-mode: overlay;
+}
+
+/* Standard Action Keys - "Chunky Tactile" */
+.action-btn {
+    width: 64px;
+    height: 52px;
+    background-color: var(--color-metal-light);
+    background-image:
+        var(--bg-noise),
+        linear-gradient(180deg, #6A5A48 0%, #3E362E 100%);
+    /* Warm Earthy Gradient */
+    border: 1px solid #14100C;
+    border-radius: 6px;
+
+    /* The CHUNK */
+    box-shadow:
+        0 6px 0 #1F1B16,
+        /* Physical Side */
+        0 10px 10px rgba(0, 0, 0, 0.5),
+        /* Drop Shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* Top Edge Highlight */
+
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, filter 0.1s;
+    position: relative;
+    overflow: hidden;
+    margin-top: -6px;
+}
+
+/* Hover - Lift & Brighten (Dopamine Anticipation) */
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 0 #1F1B16,
+        0 14px 15px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    filter: brightness(1.2) sepia(0.2);
+}
+
+/* Active - SMASH (Tactile Release) */
+.action-btn:active {
+    transform: translateY(6px);
+    /* Deep press */
+    box-shadow:
+        0 0 0 #1F1B16,
+        0 0 0 rgba(0, 0, 0, 0),
+        inset 0 3px 10px rgba(0, 0, 0, 0.8);
+    background-image: linear-gradient(180deg, #2C2620 0%, #1F1B16 100%);
+    border-top: 1px solid #000;
+}
+
+.action-btn .btn-icon {
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.5)) sepia(0.4);
+    /* Blend with button */
+    opacity: 0.9;
+    transition: transform 0.1s;
+}
+
+.action-btn:hover .btn-icon {
+    transform: translate(-50%, -50%) scale(1.1);
+    filter: drop-shadow(0 4px 5px rgba(255, 200, 100, 0.4)) sepia(0);
+}
+
+.btn-label {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 9px;
+    font-weight: 800;
+    color: #C2B299;
+    /* Bone */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Notification badge */
+.action-btn.has-notification::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    background: var(--color-danger);
+    border-radius: 50%;
+    border: 2px solid var(--color-primary-dark);
+    box-shadow: 0 0 6px rgba(139, 32, 32, 0.6);
+    animation: pulse-notification 2s infinite;
+}
+
+@keyframes pulse-notification {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* ========================================
+   LOADING SCREEN - Military Theme
+   ======================================== */
+#loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: var(--color-primary-dark);
+    z-index: 1000;
+}
+
+#loading p {
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Loading bar */
+#loading::after {
+    content: '';
+    width: 200px;
+    height: 4px;
+    background: var(--color-primary-mid);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+}
+
+#loading::before {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 4px;
+    background: var(--gradient-brass);
+    border-radius: 2px;
+    animation: loading-bar 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-bar {
+    0% {
+        transform: translateX(-100px);
+    }
+
+    100% {
+        transform: translateX(200px);
+    }
+}
+
+/* ========================================
+   REST BUTTON - Home Outpost Action
+   ======================================== */
+.rest-btn {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 24px;
+    background: linear-gradient(180deg, #2E7D32 0%, #1B5E20 100%);
+    border: 3px solid #4CAF50;
+    border-radius: var(--border-radius-lg);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(76, 175, 80, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 60;
+    animation: rest-pulse 2s ease-in-out infinite;
+}
+
+.rest-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(76, 175, 80, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.rest-btn:active {
+    transform: translateX(-50%) scale(0.98);
+}
+
+.rest-icon {
+    font-size: 24px;
+}
+
+.rest-text {
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes rest-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(76, 175, 80, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    50% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(76, 175, 80, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ========================================
+   MODAL SYSTEM
+   ======================================== */
+#modal-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 900;
+    /* High priority, above HUD */
+}
+
+.modal-panel {
+    background: var(--color-primary-dark);
+    border: 2px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-lg);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.docked-panel {
+    width: 100%;
+    max-width: none;
+    background: rgba(13, 13, 18, 0.95);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 10px;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    position: static;
+    /* Prevent overflow issues */
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+}
+
+.docked-panel .modal-header {
+    padding: 8px 12px;
+    background: var(--gradient-iron);
+}
+
+.docked-panel .modal-title {
+    font-size: var(--font-size-sm);
+}
+
+.docked-panel .modal-close {
+    display: flex !important;
+    /* Force show toggle/close button */
+    transform: scale(0.8);
+}
+
+.modal-header {
+    background: var(--gradient-brass);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: var(--font-size-md);
+    color: var(--color-primary-dark);
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.modal-close {
+    background: none;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    color: var(--color-primary-dark);
+    font-weight: bold;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.modal-body {
+    padding: 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+    min-height: 200px;
+}
+
+/* Inventory Grid */
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    /* Increased from 64px */
+    gap: 12px;
+}
+
+.inventory-slot {
+    background: var(--color-primary-mid);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-sm);
+    /* removed fixed aspect ratio to fit text naturally */
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.1s, border-color 0.1s;
+}
+
+.inventory-slot:hover {
+    border-color: var(--color-accent-gold);
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.inv-icon {
+    width: 64px;
+    /* Increased from 32px */
+    height: 64px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: #aaa;
+    flex-shrink: 0;
+}
+
+.inv-name {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-text-primary);
+    text-align: center;
+    margin-bottom: 4px;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.inv-count {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--color-text-gold);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--color-accent-iron);
+}
+
+/* ========================================
+   ISLAND UNLOCK PROMPT
+   ======================================== */
+.unlock-prompt {
+    position: absolute;
+    bottom: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.unlock-prompt.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+}
+
+.unlock-prompt-content {
+    background: linear-gradient(180deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.98) 100%);
+    border: 2px solid var(--color-accent-gold);
+    border-radius: var(--border-radius-lg);
+    padding: 16px 24px;
+    text-align: center;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(255, 215, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-width: 200px;
+}
+
+.unlock-island-name {
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.unlock-cost {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-gold);
+    margin-bottom: 12px;
+}
+
+.unlock-cost .cost-amount {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.unlock-btn {
+    background: linear-gradient(180deg, #FFD700 0%, #B8860B 100%);
+    border: 2px solid #FFD700;
+    border-radius: var(--border-radius-md);
+    padding: 10px 32px;
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    color: #1A1A2E;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.unlock-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(255, 215, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.unlock-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.unlock-btn:disabled {
+    background: linear-gradient(180deg, #666 0%, #444 100%);
+    border-color: #666;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   PURCHASE BUTTON
+   ======================================== */
+.purchase-btn {
+    position: absolute;
+    bottom: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    background: linear-gradient(180deg, #8E44AD 0%, #6C3483 100%);
+    border: 3px solid #9B59B6;
+    border-radius: var(--border-radius-lg);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(155, 89, 182, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 2000;
+    /* Force above everything */
+    animation: purchase-pulse 2s ease-in-out infinite;
+}
+
+.purchase-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(155, 89, 182, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.purchase-btn:active {
+    transform: translateX(-50%) scale(0.98);
+}
+
+.purchase-text {
+    font-family: var(--font-display);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes purchase-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(155, 89, 182, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    50% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(155, 89, 182, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ========================================
+   MERCHANT UPGRADE LIST
+   ======================================== */
+.upgrade-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.upgrade-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.upgrade-label {
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.upgrade-level {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+}
+
+.upgrade-btn {
+    background: linear-gradient(180deg, #8E44AD 0%, #6C3483 100%);
+    border: 2px solid #9B59B6;
+    border-radius: var(--border-radius-sm);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upgrade-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+}
+
+.upgrade-btn:disabled {
+    background: linear-gradient(180deg, #555 0%, #333 100%);
+    border-color: #555;
+    cursor: not-allowed;
+}
+
+.upgrade-cost {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: white;
+    font-weight: bold;
+}

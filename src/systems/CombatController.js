@@ -1,0 +1,132 @@
+/**
+ * CombatController - Manages combat targeting, attacks, and loot drops
+ * 
+ * Extracted from Game.js to separate combat logic from the core game loop.
+ * Handles auto-targeting, attack execution, and item spawning.
+ * 
+ * Owner: Gameplay Engineer
+ */
+
+class CombatController {
+    constructor() {
+        this.game = null;
+        this._logTimer = 0;
+        console.log('[CombatController] Constructed');
+    }
+
+    /**
+     * Initialize with game reference
+     * @param {Game} game
+     */
+    init(game) {
+        this.game = game;
+        console.log('[CombatController] Initialized');
+        if (window.Registry) Registry.register('CombatController', this);
+    }
+
+    /**
+     * Update combat logic
+     * @param {number} dt - Delta time
+     */
+    update(dt) {
+        if (!this.game || !this.game.hero) return;
+
+        // Debug Throttle (every ~60 frames)
+        this._logTimer++;
+        const doLog = this._logTimer % 60 === 0;
+
+        const hero = this.game.hero;
+        // Use EntityManager for efficient lookups
+        const resources = window.EntityManager ? EntityManager.getByType('Resource') : [];
+        const dinosaurs = window.EntityManager ? EntityManager.getByType('Dinosaur') : [];
+
+        // Debug once per second
+        if (doLog) {
+            // console.log(`[CombatController] Entities - Resources: ${resources.length}, Dinos: ${dinosaurs.length}`);
+        }
+
+        const combat = hero.components && hero.components.combat;
+
+        // Reset dinosaur attack flags
+        for (const dino of dinosaurs) {
+            if (dino.active) {
+                dino.isBeingAttacked = false;
+            }
+        }
+
+        // Find closest target (Resource or Dinosaur)
+        let closestTarget = null;
+        let closestDist = Infinity;
+        let targetType = null;
+
+        // Check resources (Mining Range)
+        const miningDist = hero.miningRange || (combat ? combat.range : 75);
+        let i = 0;
+        for (const resource of resources) {
+            // Must be active AND ready (not depleted)
+            if (resource.active && resource.state === 'ready') {
+                const dist = resource.distanceTo(hero);
+
+                if (dist <= miningDist && dist < closestDist) {
+                    closestDist = dist;
+                    closestTarget = resource;
+                    targetType = 'resource';
+                }
+            }
+            i++;
+        }
+
+        // Check dinosaurs (Gun Range)
+        const gunDist = (hero.gunRange && hero.gunRange > (combat ? combat.range : 0))
+            ? hero.gunRange
+            : (combat ? combat.range : 500);
+
+
+        for (const dino of dinosaurs) {
+            if (dino.active) {
+                const dist = dino.distanceTo(hero);
+                // Dinos are valid targets if within gun range (and not dead)
+                if (dino.state !== 'dead' && dist <= gunDist && dist < closestDist) {
+                    closestDist = dist;
+                    closestTarget = dino;
+                    targetType = 'dinosaur';
+                }
+            }
+        }
+
+        // Auto-attack closest target
+        if (closestTarget) {
+            // console.log(`[Combat] Target found: ${targetType}`);
+            // Freeze dinosaurs while being attacked
+            if (targetType === 'dinosaur') {
+                closestTarget.isBeingAttacked = true;
+            }
+
+            // Execute attack (Delegated to HeroSystem)
+            let destroyed = false;
+            if (window.HeroSystem) {
+                destroyed = window.HeroSystem.tryAttack(hero, closestTarget);
+            }
+
+            if (destroyed) {
+                this.handleTargetDestruction(closestTarget, targetType);
+            }
+        } else {
+            hero.targetResource = null;
+        }
+    }
+
+    /**
+     * Handle logic when a target is destroyed (state updates, VFX)
+     * NOTE: Drops are already created by Resource.takeDamage / DinosaurSystem
+     * @param {Entity} target
+     * @param {string} type - 'resource' or 'dinosaur'
+     */
+    handleTargetDestruction(target, type) {
+        // Drops are handled by the entity's own takeDamage method
+        // This method is now only used for any additional destruction effects
+        // (Currently none - preserved for future extension like VFX, audio, etc.)
+    }
+}
+
+window.CombatController = new CombatController();

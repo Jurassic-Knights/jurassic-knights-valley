@@ -1,0 +1,67 @@
+/* ========================================
+   UI CAPTURE DEBUG MODE
+   ======================================== */
+/* Keep body black (letterboxing) by NOT overriding background */
+body.ui-capture-mode {
+    /* No change to body background */
+}
+
+/* Make ONLY the game viewport white */
+body.ui-capture-mode #game-container {
+    background-color: #ffffff !important;
+}
+
+/* Hide the Canvases so the white viewport background shows through */
+body.ui-capture-mode canvas {
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* Hide Icons & Text - Strictly Remove from Flow to prevent Taint */
+body.ui-capture-mode .btn-icon,
+body.ui-capture-mode .btn-label,
+body.ui-capture-mode .resource-icon,
+body.ui-capture-mode .quest-icon,
+body.ui-capture-mode .header-id,
+body.ui-capture-mode .header-label,
+body.ui-capture-mode .resolve-text,
+body.ui-capture-mode .counter-icon,
+body.ui-capture-mode .stat-icon,
+body.ui-capture-mode .character-avatar,
+body.ui-capture-mode img,
+body.ui-capture-mode video {
+    display: none !important;
+}
+
+/* Hide Interactive Buttons but KEEP structure? 
+   User said "disable interactve UI so they aren't in the way of the backplates".
+   This likely means hiding the buttons entirely so the backplate underneath is visible.
+*/
+body.ui-capture-mode .action-btn,
+body.ui-capture-mode .close-btn,
+body.ui-capture-mode .upgrade-btn {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: none !important;
+}
+
+/* Ensure Backplates are fully visible and opaque */
+body.ui-capture-mode .footer-bar,
+body.ui-capture-mode .quest-frame,
+body.ui-capture-mode #ui-resolve-bar,
+body.ui-capture-mode .resource-counter {
+    opacity: 1 !important;
+    /* Ensure no hover effects trigger */
+    pointer-events: none !important;
+    /* Remove any blend modes that rely on background */
+    background-blend-mode: normal !important;
+}
+
+/* Hide scrollbars during capture */
+body.ui-capture-mode *::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* Cheat Bar remains visible as requested */

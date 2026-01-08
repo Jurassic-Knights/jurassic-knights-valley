@@ -1,0 +1,10 @@
+{
+    "schema_version": "1.0",
+    "description": "Audio asset registry - maps logical IDs to file paths and settings",
+    "categories": {
+        "bgm": "Background music tracks",
+        "sfx": "Sound effects",
+        "ambient": "Ambient atmosphere sounds"
+    },
+    "assets": {}
+}

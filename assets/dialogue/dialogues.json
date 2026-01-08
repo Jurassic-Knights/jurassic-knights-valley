@@ -1,0 +1,5 @@
+{
+    "schema_version": "1.0",
+    "description": "Dialogue registry - maps dialogue IDs to conversation data",
+    "dialogues": {}
+}

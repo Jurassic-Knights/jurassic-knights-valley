@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Jurassic Knights: Valley - A 2D video game">
+    <title>Jurassic Knights: Valley</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/vfx.css">
+    <link rel="stylesheet" href="css/ui-hud.css">
+    <link rel="stylesheet" href="css/ui-capture.css"> <!-- Debug: UI Capture Mode -->
+    <link rel="stylesheet" href="css/debug.css">
+
+    <!-- Utilities -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+
+<body class="has-cheat-bar">
+    <!-- Debug Cheat Bar (outside game container) -->
+    <div id="cheat-bar">
+        <div class="cheat-control">
+            <label>Platform:</label>
+            <button id="cheat-mobile">Mobile</button>
+            <button id="cheat-pc">PC</button>
+            <button onclick="window.debugUICapture()">UI Capture</button>
+            <button onclick="window.TextureAligner.toggle()">Align Textures</button>
+        </div>
+        <div class="cheat-separator"></div>
+        <div class="cheat-control">
+            <label>Time:</label>
+            <select id="cheat-time">
+                <option value="auto">Auto</option>
+                <option value="dawn">Dawn</option>
+                <option value="day">Day</option>
+                <option value="dusk">Dusk</option>
+                <option value="night">Night</option>
+            </select>
+        </div>
+        <div class="cheat-control">
+            <label>Season:</label>
+            <select id="cheat-season">
+                <option value="auto">Auto</option>
+                <option value="SPRING">Spring</option>
+                <option value="SUMMER">Summer</option>
+                <option value="AUTUMN">Autumn</option>
+                <option value="WINTER">Winter</option>
+            </select>
+        </div>
+        <div class="cheat-control">
+            <label>Weather:</label>
+            <select id="cheat-weather">
+                <option value="auto">Auto</option>
+                <option value="CLEAR">Clear</option>
+                <option value="RAIN">Rain</option>
+                <option value="STORM">Storm</option>
+
+                <option value="SNOW">Snow</option>
+            </select>
+        </div>
+        <div class="cheat-separator"></div>
+    </div>
+
+    <div id="app">
+        <!-- Game Canvas Container -->
+        <div id="game-container">
+            <canvas id="game-canvas"></canvas>
+            <!-- VFX Canvases (layered inside container) -->
+            <canvas id="vfx-canvas"></canvas>
+            <canvas id="vfx-canvas-fg"></canvas>
+        </div>
+
+        <!-- Virtual Joystick (mobile only) -->
+        <div id="joystick-area">
+            <div id="joystick-base"></div>
+            <div id="joystick-knob"></div>
+        </div>
+
+        <!-- UI OVERLAY -->
+        <div id="ui-overlay">
+
+            <!-- ZONE 1: HEADER (Top Bar + Quest) -->
+            <div id="ui-header-zone">
+                <!-- Simplified Resource Counters -->
+                <div id="resource-counters">
+                    <div class="resource-counter">
+                        <div class="counter-icon" data-icon-id="ui_icon_gold"></div>
+                        <span class="counter-value" id="res-gold">0</span>
+                    </div>
+                    <div class="resource-counter">
+                        <div class="counter-icon" data-icon-id="ui_icon_gem"></div>
+                        <span class="counter-value" id="res-gem">0</span>
+                    </div>
+                    <div class="resource-counter">
+                        <div class="counter-icon" data-icon-id="ui_icon_token"></div>
+                        <span class="counter-value" id="res-token">0</span>
+                    </div>
+                </div>
+
+
+                <!-- ZONE 2: BODY (Side HUDs & Quest) -->
+                <div id="ui-body-zone">
+                    <!-- Left Side HUD (Character Status) - "Field Gauges" -->
+                    <div id="ui-hud-left">
+                        <div class="character-frame">
+                            <div class="character-avatar" data-icon-id="ui_avatar_knight"></div>
+                            <div class="character-rank">SQR</div>
+                        </div>
+                        <div class="status-gauges">
+                            <div class="gauge health-gauge">
+                                <div class="gauge-label">VIT</div>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill" id="health-bar" style="width: 100%"></div>
+                                </div>
+                                <span class="gauge-value" id="health-text">100</span>
+                            </div>
+                            <div class="gauge stamina-gauge">
+                                <div class="gauge-label">RES</div>
+                                <div class="gauge-track">
+                                    <div class="gauge-fill" id="stamina-bar" style="width: 100%"></div>
+                                </div>
+                                <span class="gauge-value" id="stamina-text">100</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quest Panel + Resolve Bar Container -->
+                    <div id="quest-resolve-container">
+                        <!-- Quest Panel -->
+                        <div id="ui-quest-panel">
+                            <div class="quest-frame">
+                                <div class="quest-header">
+                                    <span class="header-label">TRANSMISSION</span>
+                                    <span class="header-id">ORD-001</span>
+                                </div>
+                                <div class="quest-content">
+                                    <div class="quest-icon" data-icon-id="ui_icon_orders"></div>
+                                    <div class="quest-text">
+                                        <span class="quest-objective" id="quest-description">Gather 5 Scrap Metal</span>
+                                        <div class="quest-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" id="quest-progress-bar" style="width: 0%">
+                                                </div>
+                                            </div>
+                                            <span class="progress-text" id="quest-progress">(0/5)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Resolve Bar -->
+                        <div id="ui-resolve-bar">
+                            <div class="resolve-fill" id="resolve-fill"></div>
+                            <span class="resolve-text" id="resolve-text">100 / 100</span>
+                        </div>
+                    </div>
+
+                    <!-- Right Side HUD (Actions) - "Equipment Console" -->
+                    <div id="ui-hud-right">
+                        <!-- Docked Panels will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ZONE 3: FOOTER - Fancy Action Bar -->
+            <div id="ui-footer-zone">
+                <!-- Decorative Footer Bar -->
+                <div class="footer-bar">
+                    <div class="footer-wing left"></div>
+                    <div class="footer-center"></div>
+                    <div class="footer-wing right"></div>
+                </div>
+
+                <!-- Button Row -->
+                <div class="footer-buttons">
+                    <!-- Left Group -->
+                    <div class="button-group left">
+                        <button class="action-btn" id="btn-inventory" title="Field Kit">
+                            <div class="btn-icon" data-icon-id="ui_icon_inventory"></div>
+                            <span class="btn-label">KIT</span>
+                        </button>
+                        <button class="action-btn" id="btn-forge" title="Field Forge">
+                            <div class="btn-icon" data-icon-id="ui_icon_forge"></div>
+                            <span class="btn-label">FORGE</span>
+                        </button>
+                    </div>
+
+                    <!-- Center Slot (Context Action) - Always Reserved -->
+                    <div class="center-slot">
+                        <div class="center-pedestal"></div>
+                        <button class="action-btn context-btn" id="btn-context-action">
+                            <div class="btn-icon" id="context-icon"></div>
+                            <span class="btn-label" id="context-label">---</span>
+                        </button>
+                    </div>
+
+                    <!-- Right Group -->
+                    <div class="button-group right">
+                        <button class="action-btn" id="btn-map" title="Sector Map">
+                            <div class="btn-icon" data-icon-id="ui_icon_map"></div>
+                            <span class="btn-label">MAP</span>
+                        </button>
+                        <button class="action-btn" id="btn-magnet" title="Magnet Protocol">
+                            <div class="btn-icon" data-icon-id="ui_icon_magnet"></div>
+                            <span class="btn-label">MAG</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODALS -->
+            <div id="modal-layer">
+                <!-- Inventory Modal -->
+                <div id="modal-inventory" class="modal-panel" style="display: none;">
+                    <div class="modal-header">
+                        <span class="modal-title">FIELD KIT</span>
+                        <button class="modal-close" id="btn-close-inventory">X</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="inventory-grid" class="inventory-grid">
+                            <!-- Items injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Merchant Modal -->
+                <div id="modal-merchant" class="modal-panel" style="display: none;">
+                    <div class="modal-header">
+                        <span class="modal-title" id="merchant-title">MERCHANT</span>
+                        <button class="modal-close" id="btn-close-merchant">X</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="upgrade-list">
+                            <div class="upgrade-row">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-label">Resource Slots</span>
+                                    <span class="upgrade-level" id="upgrade-resourceSlots-level">3/15 nodes</span>
+                                </div>
+                                <button class="upgrade-btn" id="btn-upgrade-resourceSlots">
+                                    <span class="upgrade-cost" id="upgrade-resourceSlots-cost">100 Gold</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-row">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-label">Auto Collect</span>
+                                    <span class="upgrade-level" id="upgrade-autoChance-level">0/80 %</span>
+                                </div>
+                                <button class="upgrade-btn" id="btn-upgrade-autoChance">
+                                    <span class="upgrade-cost" id="upgrade-autoChance-cost">150 Gold</span>
+                                </button>
+                            </div>
+                            <div class="upgrade-row">
+                                <div class="upgrade-info">
+                                    <span class="upgrade-label">Production Speed</span>
+                                    <span class="upgrade-level" id="upgrade-respawnTime-level">1/100 lvl</span>
+                                </div>
+                                <button class="upgrade-btn" id="btn-upgrade-respawnTime">
+                                    <span class="upgrade-cost" id="upgrade-respawnTime-cost">75 Gold</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Forge Modal -->
+                <div id="modal-forge" class="modal-panel" style="display: none;">
+                    <div class="modal-header">
+                        <span class="modal-title" style="color: #F39C12;">BATTLE FORGE</span>
+                        <button class="modal-close" id="btn-close-forge">X</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="forge-grid">
+                            <div style="text-align: center; padding: 20px;">
+                                Forge Systems Offline<br>
+                                <span style="font-size: 0.8em;">(Crafting Coming Soon)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Cinematic Overlay -->
+        <div id="fade-overlay"></div>
+
+        <!-- Loading Screen -->
+        <div id="loading">
+            <p>DEPLOYING TO SECTOR...</p>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts (order matters) -->
+    <script src="src/data/GameConstants.js"></script>
+    <script src="src/config/Events.js"></script>
+
+    <script src="src/data/entities.js"></script>
+    <script src="src/data/items.js"></script>
+    <script src="src/data/progression.js"></script>
+    <script src="src/data/VFXConfig.js"></script>
+    <script src="src/data/WorldData.js"></script>
+
+    <!-- Core Architecture -->
+    <script src="src/core/Registry.js"></script>
+    <script src="src/config/RenderConfig.js"></script>
+    <script src="src/config/EntityConfig.js"></script>
+    <script src="src/core/EntityManager.js"></script>
+    <script src="src/config/SystemConfig.js"></script>
+    <script src="src/core/Component.js"></script>
+    <script src="src/components/HealthComponent.js"></script>
+    <script src="src/components/InventoryComponent.js"></script>
+    <script src="src/components/StatsComponent.js"></script>
+    <script src="src/components/AIComponent.js"></script>
+    <script src="src/components/CombatComponent.js"></script>
+    <script src="src/core/EventBus.js"></script>
+    <script src="src/core/AssetLoader.js"></script>
+    <script src="src/core/ResponsiveManager.js"></script>
+    <script src="src/core/PlatformManager.js"></script>
+    <script src="src/core/State.js"></script>
+    <script src="src/core/GameState.js"></script>
+
+    <!-- Input System -->
+    <script src="src/input/InputSystem.js"></script>
+    <script src="src/input/adapters/KeyboardAdapter.js"></script>
+    <script src="src/input/adapters/GamepadAdapter.js"></script>
+    <script src="src/input/adapters/TouchAdapter.js"></script>
+    <!-- <script src="src/core/InputManager.js"></script> Deprecated by InputSystem -->
+
+    <script src="src/core/Entity.js"></script>
+    <script src="src/core/SpriteLoader.js"></script>
+
+    <!-- World System -->
+    <script src="src/world/IslandManager.js"></script>
+    <script src="src/world/HomeBase.js"></script>
+    <script src="src/world/AmbientSystem.js"></script>
+    <script src="src/world/Prop.js"></script>
+
+    <script src="src/core/GameRenderer.js"></script>
+    <script src="src/systems/WorldRenderer.js"></script>
+    <script src="src/systems/VFXTriggerService.js"></script>
+    <script src="src/vfx/weather/RainVFX.js"></script>
+    <script src="src/vfx/weather/SnowVFX.js"></script>
+
+    <script src="src/systems/EnvironmentRenderer.js"></script>
+    <script src="src/systems/HeroRenderer.js"></script>
+    <script src="src/systems/DinosaurRenderer.js"></script>
+    <script src="src/systems/ResourceRenderer.js"></script>
+    <script src="src/core/Game.js"></script>
+
+    <!-- Core Systems (Time/Weather) -->
+    <script src="src/systems/TimeSystem.js"></script>
+    <script src="src/systems/WeatherSystem.js"></script>
+
+    <!-- UI System -->
+    <script src="src/ui/Components.js"></script>
+    <script src="src/ui/core/UIPanel.js"></script>
+    <script src="src/ui/responsive/LayoutStrategies.js"></script>
+    <script src="src/ui/UIManager.js"></script>
+    <script src="src/ui/controllers/HUDController.js"></script>
+    <script src="src/ui/controllers/ForgeController.js"></script>
+    <script src="src/ui/DebugUI.js"></script>
+    <script src="src/ui/InventoryUI.js"></script>
+    <script src="src/ui/MerchantUI.js"></script>
+
+
+    <!-- Gameplay Systems -->
+    <script src="src/gameplay/Hero.js"></script>
+    <script src="src/gameplay/DroppedItem.js?v=4"></script>
+    <script src="src/gameplay/Resource.js"></script>
+    <script src="src/gameplay/BalanceManager.js"></script>
+    <script src="src/gameplay/ProgressionSystem.js"></script>
+    <script src="src/gameplay/QuestManager.js"></script>
+    <script src="src/gameplay/CraftingManager.js"></script>
+    <script src="src/gameplay/Merchant.js"></script>
+    <script src="src/gameplay/IslandUpgrades.js"></script>
+    <script src="src/gameplay/Dinosaur.js"></script>
+
+    <script src="src/systems/SpawnManager.js"></script>
+    <script src="src/systems/CombatController.js"></script>
+    <script src="src/systems/DinosaurSystem.js"></script>
+    <script src="src/systems/ResourceSystem.js"></script>
+    <script src="src/systems/HeroSystem.js"></script>
+    <script src="src/systems/EconomySystem.js"></script>
+    <script src="src/systems/InteractionSystem.js"></script>
+    <script src="src/systems/RestSystem.js"></script>
+
+    <!-- Audio System -->
+    <script src="src/audio/SoundRegistry.js"></script>
+    <script src="src/audio/ProceduralSFX.js"></script>
+    <script src="src/audio/AudioManager.js"></script>
+
+    <!-- Animation System -->
+    <script src="src/animation/Tween.js"></script>
+
+    <!-- VFX System -->
+    <script src="src/vfx/ParticleSystem.js"></script>
+    <script src="src/vfx/ProgressBarRenderer.js"></script>
+    <script src="src/vfx/HealthBarRenderer.js"></script>
+    <script src="src/vfx/Animations.js"></script>
+    <script src="src/vfx/FloatingText.js"></script>
+    <script src="src/vfx/MaterialLibrary.js"></script>
+    <script src="src/vfx/VFXController.js"></script>
+    <script src="src/vfx/FogOfWarSystem.js"></script>
+
+
+    <script src="assets/ui/ui_manifest.js"></script> <!-- Asset Manifest -->
+    <script src="assets/ui/ui_theme.js"></script> <!-- Theme Config -->
+    <script src="src/ui/ThemeManager.js"></script> <!-- Runtime Applier -->
+    <script src="src/ui/TextureAligner.js"></script> <!-- Debug Tool -->
+    <!-- Entry Point -->
+    <script src="src/main.js"></script>
+</body>
+
+</html>

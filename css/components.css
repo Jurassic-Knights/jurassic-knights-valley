@@ -1,0 +1,584 @@
+/* UI Components - "Mud, Steel, and Scales" Theme */
+
+/* ========================================
+   BUTTONS - Military Equipment Style
+   ======================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--border-radius-md);
+    font-family: var(--font-display);
+    font-weight: 700;
+    /* Bold punchy text per lore */
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Primary Button - Brass/Gold */
+.btn-primary {
+    background: var(--gradient-brass);
+    color: var(--color-primary-dark);
+    border: var(--border-width) solid var(--color-accent-gold);
+    box-shadow:
+        var(--shadow-md),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 2px 0 var(--color-accent-bronze);
+    text-shadow: none;
+    /* Dark text doesn't need shadow */
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        var(--shadow-lg),
+        0 0 12px rgba(212, 175, 55, 0.6),
+        /* Gold glow */
+        0 4px 0 var(--color-accent-bronze);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-inset);
+}
+
+/* Secondary Button - Iron/Steel */
+.btn-secondary {
+    background: linear-gradient(180deg, #3A3A42 0%, #2A2A30 100%);
+    color: var(--color-text-primary);
+    border: var(--border-width) solid var(--color-accent-iron);
+    box-shadow:
+        var(--shadow-sm),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 2px 0 var(--color-primary-dark);
+}
+
+.btn-secondary:hover {
+    background: #4A4A52;
+    border-color: var(--color-text-secondary);
+    box-shadow:
+        var(--shadow-md),
+        0 2px 0 var(--color-primary-dark);
+}
+
+.btn-secondary:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-inset);
+}
+
+/* Danger Button */
+.btn-danger {
+    background: linear-gradient(180deg, var(--color-danger) 0%, #5a1515 100%);
+    color: var(--color-text-primary);
+    border: var(--border-width) solid #FF0000;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-danger:hover {
+    box-shadow: var(--shadow-md), 0 0 10px rgba(139, 32, 32, 0.8);
+}
+
+/* ========================================
+   CARDS - Military Document Style
+   ======================================== */
+.card {
+    background: rgba(22, 33, 62, 0.9);
+    /* Slight transparency */
+    border: var(--border-width) solid var(--color-accent-iron);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+    position: relative;
+    backdrop-filter: blur(4px);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 4px;
+    height: 4px;
+    background: var(--color-accent-gold);
+    /* Gold rivets */
+    border-radius: 50%;
+    box-shadow:
+        calc(100% - 8px) 0 0 0 var(--color-accent-gold),
+        0 calc(100% - 8px) 0 0 var(--color-accent-gold),
+        calc(100% - 8px) calc(100% - 8px) 0 0 var(--color-accent-gold);
+    opacity: 0.5;
+}
+
+.card:hover {
+    border-color: var(--color-accent-gold);
+    box-shadow: var(--shadow-md), 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.card-header {
+    font-family: var(--font-display);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-accent-gold);
+    padding-bottom: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-accent-iron);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   PANELS - Field Equipment Style
+   ======================================== */
+.panel {
+    background: rgba(13, 13, 18, 0.85);
+    /* Glass effect */
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-lg), inset 0 0 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+/* Corner brackets aesthetic */
+.panel::before,
+.panel::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: var(--color-accent-gold);
+    border-style: solid;
+}
+
+.panel::before {
+    top: 6px;
+    left: 6px;
+    border-width: 2px 0 0 2px;
+}
+
+.panel::after {
+    bottom: 6px;
+    right: 6px;
+    border-width: 0 2px 2px 0;
+}
+
+/* ========================================
+   ICONS - Placeholder & Image Containers
+   ======================================== */
+.icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: var(--border-radius-sm);
+}
+
+.icon-sm {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-lg {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-xl {
+    width: 48px;
+    height: 48px;
+}
+
+/* Icon frame (for bordered icons) */
+.icon-framed {
+    padding: 2px;
+    background: var(--gradient-iron);
+    border: 1px solid var(--color-accent-iron);
+    box-shadow: var(--shadow-emboss);
+}
+
+/* ========================================
+   DIVIDERS & SEPARATORS
+   ======================================== */
+.divider {
+    height: 2px;
+    background: var(--gradient-iron);
+    margin: var(--space-md) 0;
+    border-radius: 1px;
+    box-shadow: var(--shadow-inset);
+}
+
+.divider-brass {
+    background: var(--gradient-brass);
+    height: 3px;
+}
+
+/* ========================================
+   TEXT UTILITIES
+   ======================================== */
+.text-gold {
+    color: var(--color-text-gold);
+}
+
+.text-muted {
+    color: var(--color-text-secondary);
+}
+
+.text-danger {
+    color: var(--color-text-danger);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-xs {
+    font-size: var(--font-size-xs);
+}
+
+.text-sm {
+    font-size: var(--font-size-sm);
+}
+
+.text-lg {
+    font-size: var(--font-size-lg);
+}
+
+.text-xl {
+    font-size: var(--font-size-xl);
+}
+
+.text-display {
+    font-family: var(--font-display);
+}
+
+.text-mono {
+    font-family: var(--font-body);
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   SPACING UTILITIES
+   ======================================== */
+.p-xs {
+    padding: var(--space-xs);
+}
+
+.p-sm {
+    padding: var(--space-sm);
+}
+
+.p-md {
+    padding: var(--space-md);
+}
+
+.p-lg {
+    padding: var(--space-lg);
+}
+
+.m-xs {
+    margin: var(--space-xs);
+}
+
+.m-sm {
+    margin: var(--space-sm);
+}
+
+.m-md {
+    margin: var(--space-md);
+}
+
+.m-lg {
+    margin: var(--space-lg);
+}
+
+.mb-sm {
+    margin-bottom: var(--space-sm);
+}
+
+.mb-md {
+    margin-bottom: var(--space-md);
+}
+
+.mt-sm {
+    margin-top: var(--space-sm);
+}
+
+.mt-md {
+    margin-top: var(--space-md);
+}
+
+/* ========================================
+   BADGE - Rank/Status Indicators
+   ======================================== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: var(--border-radius-sm);
+    background: var(--gradient-iron);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-accent-iron);
+}
+
+.badge-gold {
+    background: var(--gradient-brass);
+    color: var(--color-primary-dark);
+    border-color: var(--color-accent-gold);
+}
+
+
+.badge-danger {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+}
+
+/* ========================================
+   VFX - Floating Text
+   ======================================== */
+
+/* ========================================
+   VFX - Floating Text
+   (REMOVED: Now handled by Canvas in FloatingText.js)
+   ======================================== */
+
+
+
+/* ========================================
+   FORGE UI
+   ======================================== */
+.forge-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.forge-item {
+    display: flex;
+    align-items: center;
+    background: rgba(20, 20, 25, 0.8);
+    border: 1px solid var(--color-accent-iron);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-sm);
+    gap: var(--space-md);
+}
+
+.forge-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #111;
+    border: 1px solid #444;
+    border-radius: var(--border-radius-sm);
+    background-size: cover;
+    background-position: center;
+}
+
+.forge-details {
+    flex: 1;
+}
+
+.forge-name {
+    font-family: var(--font-display);
+    font-weight: bold;
+    color: var(--color-accent-gold);
+    text-transform: uppercase;
+    font-size: var(--font-size-base);
+    margin-bottom: 4px;
+}
+
+.forge-desc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+}
+
+.forge-cost {
+    font-size: var(--font-size-sm);
+    color: #aaa;
+    display: flex;
+    gap: 8px;
+}
+
+.cost-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cost-item.affordable {
+    color: #4CAF50;
+}
+
+.cost-item.expensive {
+    color: #E74C3C;
+}
+
+.forge-btn {
+    padding: 6px 16px;
+    background: var(--gradient-brass);
+    color: #222;
+    font-weight: bold;
+    border: 1px solid var(--color-accent-gold);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+}
+
+.forge-btn:hover {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.forge-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #444;
+    border-color: #666;
+    color: #888;
+    box-shadow: none;
+}
+
+.forge-dashboard-compact {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 8px;
+}
+
+.forge-slot {
+    /* Fixed height for row consistency */
+    height: 110px;
+    width: 100%;
+    /* remove aspect-ratio to allow rectangular compaction */
+    aspect-ratio: auto;
+    background: #222;
+    border: 2px solid #444;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    font-size: 10px;
+    padding: 2px;
+}
+
+.forge-slot:hover {
+    border-color: var(--color-accent-iron);
+}
+
+.forge-slot.locked {
+    background: repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 10px, #222 10px, #222 20px);
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.forge-slot.active {
+    border-color: var(--color-accent-gold);
+    background: #332200;
+}
+
+.slot-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.slot-status {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #888;
+}
+
+/* Batch Control */
+.batch-control {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    align-items: center;
+}
+
+.batch-slider-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.batch-slider {
+    flex: 1;
+    height: 10px;
+    background: #444;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.batch-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--color-accent-gold);
+    cursor: pointer;
+}
+
+.batch-amount {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--color-accent-gold);
+}
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 10px;
+}
+
+.back-btn {
+    background: none;
+    border: 1px solid #666;
+    color: #aaa;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.locked-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    color: #666;
+    font-size: 0.8em;
+}
