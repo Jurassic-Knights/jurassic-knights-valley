@@ -137,9 +137,8 @@ const AmbientSystem = {
     },
 
     setNextSpawnTime() {
-        // DEBUG: 3 second spawn rate for testing
-        this.spawnRate = 3000;
-        // Original: 10000 + Math.random() * 50000;
+        // 10 to 60 seconds (10000 to 60000 ms)
+        this.spawnRate = 10000 + Math.random() * 50000;
     },
 
     update(dt) {
