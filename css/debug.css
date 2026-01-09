@@ -5,13 +5,15 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 40px;
+    min-height: 80px;
     background: linear-gradient(180deg, #2a2a3a 0%, #1a1a2a 100%);
     border-bottom: 2px solid var(--color-accent-gold);
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 16px;
-    padding: 0 16px;
+    align-content: center;
+    gap: 12px 16px;
+    padding: 8px 16px;
     z-index: 9999;
     font-family: var(--font-body);
     font-size: 12px;
@@ -64,12 +66,12 @@
 
 /* Adjust body to account for cheat bar height */
 body {
-    padding-top: 40px;
+    padding-top: 80px;
 }
 
 /* Override app positioning when cheat bar is present */
 body.has-cheat-bar #app {
-    height: calc(100vh - 40px);
+    height: calc(100vh - 80px);
 }
 
 /* Dropdown Selects (Cheat Bar) */
