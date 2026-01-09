@@ -695,21 +695,23 @@ const GameRenderer = {
             this.ctx.stroke();
         }
 
-        // Draw X labels along top edge
-        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
-        this.ctx.font = 'bold 11px monospace';
+        // Draw X,Y label in center of each cell
+        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
+        this.ctx.font = 'bold 14px monospace';
+        this.ctx.textAlign = 'center';
+        this.ctx.textBaseline = 'middle';
+
         for (let gx = startGx; gx <= endGx; gx++) {
-            const x = gx * cellSize + cellSize / 2 - 8;
-            const y = bounds.top + 14;
-            this.ctx.fillText(`X${gx}`, x, y);
+            for (let gy = startGy; gy <= endGy; gy++) {
+                const centerX = gx * cellSize + cellSize / 2;
+                const centerY = gy * cellSize + cellSize / 2;
+                this.ctx.fillText(`X${gx} Y${gy}`, centerX, centerY);
+            }
         }
 
-        // Draw Y labels along left edge
-        for (let gy = startGy; gy <= endGy; gy++) {
-            const x = bounds.left + 4;
-            const y = gy * cellSize + cellSize / 2 + 4;
-            this.ctx.fillText(`Y${gy}`, x, y);
-        }
+        // Reset text alignment
+        this.ctx.textAlign = 'left';
+        this.ctx.textBaseline = 'alphabetic';
     },
 
     /**
