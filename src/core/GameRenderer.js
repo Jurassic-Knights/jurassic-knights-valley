@@ -695,9 +695,9 @@ const GameRenderer = {
             this.ctx.stroke();
         }
 
-        // Draw X,Y label in center of each cell
+        // Draw X,Y label in center of each cell (large, stacked)
         this.ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
-        this.ctx.font = 'bold 14px monospace';
+        this.ctx.font = 'bold 32px monospace';
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
 
@@ -705,7 +705,10 @@ const GameRenderer = {
             for (let gy = startGy; gy <= endGy; gy++) {
                 const centerX = gx * cellSize + cellSize / 2;
                 const centerY = gy * cellSize + cellSize / 2;
-                this.ctx.fillText(`X${gx} Y${gy}`, centerX, centerY);
+                // X on top
+                this.ctx.fillText(`X${gx}`, centerX, centerY - 20);
+                // Y on bottom
+                this.ctx.fillText(`Y${gy}`, centerX, centerY + 20);
             }
         }
 
