@@ -695,13 +695,20 @@ const GameRenderer = {
             this.ctx.stroke();
         }
 
-        // Draw cell coordinates at intersections (sparse - every 4th cell)
-        for (let gx = startGx; gx <= endGx; gx += 4) {
-            for (let gy = startGy; gy <= endGy; gy += 4) {
-                const x = gx * cellSize + 4;
-                const y = gy * cellSize + 12;
-                this.ctx.fillText(`${gx},${gy}`, x, y);
-            }
+        // Draw X labels along top edge
+        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.8)';
+        this.ctx.font = 'bold 11px monospace';
+        for (let gx = startGx; gx <= endGx; gx++) {
+            const x = gx * cellSize + cellSize / 2 - 8;
+            const y = bounds.top + 14;
+            this.ctx.fillText(`X${gx}`, x, y);
+        }
+
+        // Draw Y labels along left edge
+        for (let gy = startGy; gy <= endGy; gy++) {
+            const x = bounds.left + 4;
+            const y = gy * cellSize + cellSize / 2 + 4;
+            this.ctx.fillText(`Y${gy}`, x, y);
         }
     },
 
