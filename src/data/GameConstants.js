@@ -15,10 +15,10 @@ const GameConstants = {
     World: {
         GRID_COLS: 3,
         GRID_ROWS: 3,
-        ISLAND_SIZE: 1024,
-        WATER_GAP: 170,
-        BRIDGE_WIDTH: 140,
-        MAP_PADDING: 512,
+        ISLAND_SIZE: 1024,       // 8 grid cells (8 * 128)
+        WATER_GAP: 256,          // 2 grid cells between islands
+        BRIDGE_WIDTH: 128,       // 1 grid cell wide
+        MAP_PADDING: 512,        // 4 grid cells
 
         // Wall boundaries for playable area
         WALL_WIDTH: 85,      // Horizontal wall thickness
