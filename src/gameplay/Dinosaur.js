@@ -17,6 +17,7 @@ class Dinosaur extends Entity {
         const finalConfig = { ...defaults, ...variantConfig, ...config };
 
         super({
+            entityType: EntityTypes.DINOSAUR,
             width: finalConfig.width || 100,
             height: finalConfig.height || 100,
             color: '#2ECC71',
@@ -88,8 +89,6 @@ class Dinosaur extends Entity {
         this.frameInterval = finalConfig.frameInterval || 200;
         this.walkFrames = []; // Disabled walk animation, using static base sprite
 
-        // Species Setup
-        this.species = this.getSpeciesFromResource(this.resourceType);
         // Species Setup
         this.species = this.getSpeciesFromResource(this.resourceType);
         this.spriteId = `dino_${this.species}_base`;
@@ -168,7 +167,9 @@ class Dinosaur extends Entity {
     isInRange(hero) {
         if (!this.active || !hero) return false;
         if (this.state === 'dead') return false;
-        return this.distanceTo(hero) < 120; // Doubled from 60
+        // Use config value for interaction range
+        const range = (window.EntityConfig && EntityConfig.dinosaur.defaults.interactionRange) || 120;
+        return this.distanceTo(hero) < range;
     }
 
     render(ctx) {

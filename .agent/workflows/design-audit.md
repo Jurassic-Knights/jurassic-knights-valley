@@ -10,7 +10,7 @@ A game designer's perspective review of the entire game, focusing on gameplay qu
 
 1. **Load Design Documents**:
    - `documents/gdd/MASTER_GDD.md` - Core game design
-   - `documents/lore/MASTER_LORE.md` - World and narrative
+   - `documents/world_lore.md` - World and narrative
    - `documents/style_guide.md` - Visual direction
 
 2. **Analyze Implementation**:

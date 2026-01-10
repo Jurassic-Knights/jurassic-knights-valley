@@ -12,10 +12,9 @@ description: Process all approved assets through Photoshop to create clean versi
    ```powershell
    python scripts/photoshop_remove_bg.py assets/images/buildings
    python scripts/photoshop_remove_bg.py assets/images/dinosaurs
-   python scripts/photoshop_remove_bg.py assets/images/drops
+   python scripts/photoshop_remove_bg.py assets/images/resources
    python scripts/photoshop_remove_bg.py assets/images/items
    python scripts/photoshop_remove_bg.py assets/images/characters
-   python scripts/photoshop_remove_bg.py assets/images/resources
    python scripts/photoshop_remove_bg.py assets/images/tools
    python scripts/photoshop_remove_bg.py assets/images/ui
    ```

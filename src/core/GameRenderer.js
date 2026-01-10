@@ -25,6 +25,9 @@ const GameRenderer = {
         height: 800
     },
 
+    // GC Optimization: Pre-allocated array for Y-sorting
+    _sortableEntities: [],
+
 
     /**
      * Initialize the renderer
@@ -62,6 +65,17 @@ const GameRenderer = {
                 this.resize();
             }
         });
+
+        // GC Optimization: Cache system references for render loop
+        this._worldRenderer = this.game.getSystem('WorldRenderer');
+        this._vfxController = this.game.getSystem('VFXController');
+        this._homeBase = this.game.getSystem('HomeBase');
+        this._heroRenderer = this.game.getSystem('HeroRenderer');
+        this._dinosaurRenderer = this.game.getSystem('DinosaurRenderer');
+        this._resourceRenderer = this.game.getSystem('ResourceRenderer');
+        this._ambientSystem = this.game.getSystem('AmbientSystem');
+        this._fogSystem = this.game.getSystem('FogOfWarSystem');
+        this._envRenderer = this.game.getSystem('EnvironmentRenderer');
 
         console.log('[GameRenderer] Initialized');
         return true;
@@ -195,50 +209,81 @@ const GameRenderer = {
 
     /**
      * Render the composite shadow pass
+     * Set simpleShadows = true for performance (simple ellipses instead of sprite shadows)
      */
+    simpleShadows: false, // Use complex sprite shadows
+
     renderShadowPass(entities) {
-        if (!this.shadowCtx || !window.EnvironmentRenderer) return;
+        if (!this.ctx || !window.EnvironmentRenderer) return;
 
-        // Clear Shadow Buffer
-        this.shadowCtx.clearRect(0, 0, this.shadowCanvas.width, this.shadowCanvas.height);
+        // PERFORMANCE MODE: Simple ellipse shadows (much faster)
+        if (this.simpleShadows) {
+            this.renderSimpleShadows(entities);
+            return;
+        }
 
-        this.shadowCtx.save();
-        this.shadowCtx.translate(-this.viewport.x, -this.viewport.y);
+        const timing = this._renderTiming;
+        let tSub;
 
-        // Render Opaque Shadows
-        // We iterate ALL entities and force them to draw their shadow opaque
-        const heroRenderer = this.game ? this.game.getSystem('HeroRenderer') : null;
-        const dinosaurRenderer = this.game ? this.game.getSystem('DinosaurRenderer') : null;
-        const resourceRenderer = this.game ? this.game.getSystem('ResourceRenderer') : null;
+        // PERF: Render shadows directly to main canvas instead of intermediate
+        // This avoids the expensive 18ms+ drawImage composite step
+        this.ctx.save();
+        this.ctx.translate(-this.viewport.x, -this.viewport.y);
+        this.ctx.globalAlpha = window.EnvironmentRenderer.shadowAlpha || 0.3;
+
+        // Render Opaque Shadows - Use cached refs
+        const heroRenderer = this._heroRenderer;
+        const dinosaurRenderer = this._dinosaurRenderer;
+        const resourceRenderer = this._resourceRenderer;
 
         for (const entity of entities) {
+            if (timing) tSub = performance.now();
+
             if (entity === this.hero) {
-                if (heroRenderer) heroRenderer.drawShadow(this.shadowCtx, entity, true);
-            } else if (entity.constructor.name === 'Dinosaur') {
-                if (dinosaurRenderer) dinosaurRenderer.renderShadow(this.shadowCtx, entity, true);
-            } else if (entity.constructor.name === 'Resource') {
-                if (resourceRenderer) resourceRenderer.renderShadow(this.shadowCtx, entity, true);
-            } else if (entity.constructor.name === 'Merchant') {
-                // Merchant specific shadow (usually handles its own, but we need to intercept)
-                // If Merchant uses generic Entity.drawShadow, we can call it.
-                // But Merchant has custom render. We need to call its shadow logic.
-                // Let's assume Merchant will be updated to have a drawShadow method or we use Entity's if compatible.
-                // Merchant extends Entity.
-                if (typeof entity.drawShadow === 'function') entity.drawShadow(this.shadowCtx, true);
+                if (heroRenderer) heroRenderer.drawShadow(this.ctx, entity, false);
+                if (timing) { timing.shadowHero = (timing.shadowHero || 0) + performance.now() - tSub; }
+            } else if (entity.entityType === EntityTypes.DINOSAUR) {
+                if (dinosaurRenderer) dinosaurRenderer.renderShadow(this.ctx, entity, false);
+                if (timing) { timing.shadowDino = (timing.shadowDino || 0) + performance.now() - tSub; }
+            } else if (entity.entityType === EntityTypes.RESOURCE) {
+                if (resourceRenderer) resourceRenderer.renderShadow(this.ctx, entity, false);
+                if (timing) { timing.shadowRes = (timing.shadowRes || 0) + performance.now() - tSub; }
+            } else if (entity.entityType === EntityTypes.MERCHANT) {
+                if (typeof entity.drawShadow === 'function') entity.drawShadow(this.ctx, false);
+                if (timing) { timing.shadowMerch = (timing.shadowMerch || 0) + performance.now() - tSub; }
             } else {
-                if (typeof entity.drawShadow === 'function') entity.drawShadow(this.shadowCtx, true);
+                if (typeof entity.drawShadow === 'function') entity.drawShadow(this.ctx, false);
+                if (timing) { timing.shadowOther = (timing.shadowOther || 0) + performance.now() - tSub; }
             }
         }
 
-        this.shadowCtx.restore();
+        this.ctx.restore();
+        // No composite step needed - shadows rendered directly!
+    },
 
-        // Composite onto Main Canvas
-        // Apply Global Shadow transparency
+    /**
+     * Fast simple ellipse shadows (performance mode)
+     */
+    renderSimpleShadows(entities) {
+        const alpha = window.EnvironmentRenderer?.shadowAlpha || 0.3;
+
         this.ctx.save();
-        this.ctx.globalAlpha = window.EnvironmentRenderer.shadowAlpha || 0.3;
-        // The shadow buffer is opaque black shapes. We draw them with global alpha 0.3.
-        // This results in uniform 0.3 opacity regardless of overlap in the buffer.
-        this.ctx.drawImage(this.shadowCanvas, 0, 0);
+        this.ctx.translate(-this.viewport.x, -this.viewport.y);
+        this.ctx.fillStyle = 'rgba(0, 0, 0, ' + alpha + ')';
+
+        for (const entity of entities) {
+            const w = entity.width || 64;
+            const h = entity.height || 64;
+            const shadowW = w * 0.4;
+            const shadowH = h * 0.15;
+            const x = entity.x;
+            const y = entity.y + h * 0.4; // At feet
+
+            this.ctx.beginPath();
+            this.ctx.ellipse(x, y, shadowW, shadowH, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+
         this.ctx.restore();
     },
 
@@ -248,11 +293,17 @@ const GameRenderer = {
     render() {
         if (!this.ctx) return;
 
+        // Detailed profiling when enabled
+        const timing = this._renderTiming;
+        if (timing) timing.frames++;
+        let t0, t1;
+
         // Update camera to follow hero
         this.updateCamera();
 
-        // --- WORLD LAYER ---
-        const worldRenderer = this.game ? this.game.getSystem('WorldRenderer') : null;
+        // --- WORLD LAYER --- (Use cached ref)
+        if (timing) t0 = performance.now();
+        const worldRenderer = this._worldRenderer;
         if (worldRenderer) {
             worldRenderer.render(this.ctx, this.viewport);
         } else {
@@ -260,10 +311,11 @@ const GameRenderer = {
             this.ctx.fillStyle = '#000';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
+        if (timing) { timing.world += performance.now() - t0; }
 
-        // --- VFX LAYER (Background) ---
-        // Render Background VFX (e.g. Dust Trails) BEHIND entities but ON TOP of ground
-        const vfxController = this.game ? this.game.getSystem('VFXController') : null;
+        // --- VFX LAYER (Background) --- (Use cached ref)
+        if (timing) t0 = performance.now();
+        const vfxController = this._vfxController;
 
         if (vfxController && vfxController.bgParticles) {
             this.ctx.save();
@@ -271,9 +323,14 @@ const GameRenderer = {
             vfxController.bgParticles.render(this.ctx);
             this.ctx.restore();
         }
+        if (timing) { timing.vfxBg += performance.now() - t0; }
 
         // Y-SORT: Collect all active world entities from EntityManager
-        let sortableEntities = [];
+        if (timing) t0 = performance.now();
+        // GC Optimization: Reuse pre-allocated array
+        const sortableEntities = this._sortableEntities;
+        sortableEntities.length = 0; // Clear without deallocation
+
         if (window.EntityManager) {
             // Optimization: Query only visible entities (Quadtree)
             const bounds = this.getVisibleBounds();
@@ -297,28 +354,46 @@ const GameRenderer = {
             const by = b.y + (b.height ? b.height / 2 : 0);
             return ay - by;
         });
+        if (timing) { timing.entitySort += performance.now() - t0; }
 
         // --- SHADOW PASS ---
+        if (timing) t0 = performance.now();
         // Render all shadows to offscreen buffer and composite ONCE
         this.renderShadowPass(sortableEntities);
+        if (timing) { timing.shadows += performance.now() - t0; }
 
         // Render all entities (with viewport offset)
+        if (timing) t0 = performance.now();
         this.ctx.save();
         this.ctx.translate(-this.viewport.x, -this.viewport.y);
 
-        // Render HomeBase (Trees + Outpost Building) ON TOP of rest area overlay
-        const homeBase = this.game ? this.game.getSystem('HomeBase') : null;
+        // Render HomeBase (Trees + Outpost Building) ON TOP of rest area overlay (Use cached ref)
+        let tSub;
+        if (timing) tSub = performance.now();
+        const homeBase = this._homeBase;
         if (homeBase) {
             homeBase.render(this.ctx);
         }
+        if (timing) { timing.entHomeBase = (timing.entHomeBase || 0) + performance.now() - tSub; }
 
-        const heroRenderer = this.game ? this.game.getSystem('HeroRenderer') : null;
-        const dinosaurRenderer = this.game ? this.game.getSystem('DinosaurRenderer') : null;
-        const resourceRenderer = this.game ? this.game.getSystem('ResourceRenderer') : null;
+        // Use cached renderer refs
+        const heroRenderer = this._heroRenderer;
+        const dinosaurRenderer = this._dinosaurRenderer;
+        const resourceRenderer = this._resourceRenderer;
+
+        // Track entity counts and sub-times
+        if (timing) {
+            timing.entHeroTime = timing.entHeroTime || 0;
+            timing.entDinoTime = timing.entDinoTime || 0;
+            timing.entResTime = timing.entResTime || 0;
+            timing.entOtherTime = timing.entOtherTime || 0;
+            timing.entCount = timing.entCount || 0;
+        }
 
         for (const entity of sortableEntities) {
-            // Type-based Rendering Dispatch
-            const type = entity.constructor.name;
+            if (timing) tSub = performance.now();
+            // Type-based Rendering Dispatch using entityType (faster than constructor.name)
+            const type = entity.entityType;
 
             // Pass 'false' for includeShadow to prevent double rendering
             if (entity === this.hero) {
@@ -327,54 +402,83 @@ const GameRenderer = {
                 } else {
                     if (typeof entity.render === 'function') entity.render(this.ctx);
                 }
+                if (timing) { timing.entHeroTime += performance.now() - tSub; }
             }
-            else if (type === 'Dinosaur' && dinosaurRenderer) {
+            else if (type === EntityTypes.DINOSAUR && dinosaurRenderer) {
                 dinosaurRenderer.render(this.ctx, entity, false);
+                if (timing) { timing.entDinoTime += performance.now() - tSub; }
             }
-            else if (type === 'Resource' && resourceRenderer) {
+            else if (type === EntityTypes.RESOURCE && resourceRenderer) {
                 resourceRenderer.render(this.ctx, entity, false);
+                if (timing) { timing.entResTime += performance.now() - tSub; }
             }
-            else if (type === 'Merchant') {
+            else if (type === EntityTypes.MERCHANT) {
                 // Merchant handles its own rendering
                 if (typeof entity.render === 'function') entity.render(this.ctx);
-            }
-            else {
-                // Flashback / General Entities (e.g. DroppedItem, Prop)
-                if (typeof entity.render === 'function') {
-                    // Try to pass noShadow flag if supported, otherwise it might double render shadow
-                    // For now, accept generic entities might double render until updated
-                    entity.render(this.ctx);
+                if (timing) {
+                    timing.entMerchantTime = (timing.entMerchantTime || 0) + performance.now() - tSub;
+                    timing.entMerchantCount = (timing.entMerchantCount || 0) + 1;
                 }
             }
+            else if (type === EntityTypes.DROPPED_ITEM) {
+                // Dropped item rendering
+                if (typeof entity.render === 'function') entity.render(this.ctx);
+                if (timing) {
+                    timing.entDroppedTime = (timing.entDroppedTime || 0) + performance.now() - tSub;
+                    timing.entDroppedCount = (timing.entDroppedCount || 0) + 1;
+                }
+            }
+            else {
+                // Unknown entity type - track it
+                if (typeof entity.render === 'function') {
+                    entity.render(this.ctx);
+                }
+                if (timing) {
+                    timing.entOtherTime += performance.now() - tSub;
+                    // Track unknown types
+                    const typeName = type || entity.constructor?.name || 'unknown';
+                    timing.entOtherTypes = timing.entOtherTypes || {};
+                    timing.entOtherTypes[typeName] = (timing.entOtherTypes[typeName] || 0) + 1;
+                }
+            }
+            if (timing) timing.entCount++;
         }
 
         // Render UI Overlays (Health Bars) on top of EVERYTHING
+        if (timing) tSub = performance.now();
         for (const entity of sortableEntities) {
             if (typeof entity.renderUI === 'function') {
                 entity.renderUI(this.ctx);
             }
         }
+        if (timing) { timing.entUITime = (timing.entUITime || 0) + performance.now() - tSub; }
 
         this.ctx.restore();
+        if (timing) { timing.entities += performance.now() - t0; }
 
 
 
-        // Render Ambient Layer (Sky/Cloud level - over world, under UI VFX)
-        const ambientSystem = this.game ? this.game.getSystem('AmbientSystem') : null;
+        // Render Ambient Layer (Sky/Cloud level) - Use cached ref
+        if (timing) t0 = performance.now();
+        const ambientSystem = this._ambientSystem;
         if (ambientSystem) {
             this.ctx.save();
             this.ctx.translate(-this.viewport.x, -this.viewport.y);
             ambientSystem.render(this.ctx);
             this.ctx.restore();
         }
+        if (timing) { timing.ambient += performance.now() - t0; }
 
-        // Render Fog of War (Rolling Clouds over locked islands)
-        const fogSystem = this.game ? this.game.getSystem('FogOfWarSystem') : null;
+        // Render Fog of War - Use cached ref
+        if (timing) t0 = performance.now();
+        const fogSystem = this._fogSystem;
         if (fogSystem) {
             fogSystem.render(this.ctx, this.viewport);
         }
+        if (timing) { timing.fog += performance.now() - t0; }
 
         // Render Foreground VFX (e.g. Explosions) ON TOP of everything
+        if (timing) t0 = performance.now();
         if (vfxController) {
             this.ctx.save();
             this.ctx.translate(-this.viewport.x, -this.viewport.y);
@@ -392,12 +496,15 @@ const GameRenderer = {
 
             this.ctx.restore();
         }
+        if (timing) { timing.vfxFg += performance.now() - t0; }
 
-        // --- AMBIENT OVERLAY (Day/Night Cycle) ---
-        const envRenderer = this.game ? this.game.getSystem('EnvironmentRenderer') : null;
+        // --- AMBIENT OVERLAY (Day/Night Cycle) --- Use cached ref
+        if (timing) t0 = performance.now();
+        const envRenderer = this._envRenderer;
         if (envRenderer) {
             envRenderer.render(this.ctx, this.viewport);
         }
+        if (timing) { timing.envOverlay += performance.now() - t0; }
 
         // --- DEBUG OVERLAY ---
         if (this.debugMode) {
@@ -411,6 +518,92 @@ const GameRenderer = {
             this.drawDebugGrid();
             this.ctx.restore();
         }
+    },
+
+    /**
+     * Start detailed render profiling
+     */
+    startRenderProfile() {
+        this._renderTiming = {
+            world: 0, vfxBg: 0, entitySort: 0, shadows: 0,
+            entities: 0, ambient: 0, fog: 0, vfxFg: 0, envOverlay: 0,
+            frames: 0
+        };
+        console.log('[GameRenderer] Render profiling started...');
+    },
+
+    /**
+     * Stop render profiling and print results
+     */
+    stopRenderProfile() {
+        const t = this._renderTiming;
+        if (!t) return;
+
+        console.log('=== RENDER PHASE BREAKDOWN ===');
+        console.log(`Frames: ${t.frames}`);
+        const phases = [
+            ['World', t.world], ['VFX BG', t.vfxBg], ['Entity Sort', t.entitySort],
+            ['Shadows', t.shadows], ['Entities', t.entities], ['Ambient', t.ambient],
+            ['Fog', t.fog], ['VFX FG', t.vfxFg], ['Env Overlay', t.envOverlay]
+        ];
+        for (const [name, time] of phases.sort((a, b) => b[1] - a[1])) {
+            console.log(`  ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`);
+        }
+
+        // World sub-phase breakdown
+        console.log('--- World Sub-Phases ---');
+        const worldPhases = [
+            ['Water/BG', t.worldWater || 0],
+            ['Islands', t.worldIslands || 0],
+            ['Debug', t.worldDebug || 0]
+        ];
+        for (const [name, time] of worldPhases.sort((a, b) => b[1] - a[1])) {
+            console.log(`    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`);
+        }
+
+        // Shadow sub-phase breakdown
+        console.log('--- Shadow Sub-Phases ---');
+        const shadowPhases = [
+            ['Clear', t.shadowClear || 0],
+            ['Composite', t.shadowComposite || 0],
+            ['Hero', t.shadowHero || 0],
+            ['Dinosaurs', t.shadowDino || 0],
+            ['Resources', t.shadowRes || 0],
+            ['Merchants', t.shadowMerch || 0],
+            ['Other', t.shadowOther || 0]
+        ];
+        for (const [name, time] of shadowPhases.sort((a, b) => b[1] - a[1])) {
+            console.log(`    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`);
+        }
+
+        // Entity sub-phase breakdown
+        console.log('--- Entity Sub-Phases ---');
+        console.log(`  Total Entities Rendered: ${t.entCount || 0} (${((t.entCount || 0) / t.frames).toFixed(1)}/frame)`);
+        const entPhases = [
+            ['HomeBase', t.entHomeBase || 0],
+            ['Hero', t.entHeroTime || 0],
+            ['Dinosaurs', t.entDinoTime || 0],
+            ['Resources', t.entResTime || 0],
+            ['DroppedItems', t.entDroppedTime || 0, t.entDroppedCount || 0],
+            ['Merchants', t.entMerchantTime || 0, t.entMerchantCount || 0],
+            ['Other', t.entOtherTime || 0],
+            ['UI Overlays', t.entUITime || 0]
+        ];
+        for (const [name, time, count] of entPhases.sort((a, b) => b[1] - a[1])) {
+            const countStr = count ? ` [${count} total]` : '';
+            console.log(`    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)${countStr}`);
+        }
+
+        // Log unknown entity types
+        if (t.entOtherTypes && Object.keys(t.entOtherTypes).length > 0) {
+            console.log('  Unknown Entity Types:');
+            for (const [typeName, count] of Object.entries(t.entOtherTypes)) {
+                console.log(`    - ${typeName}: ${count}`);
+            }
+        }
+
+        console.log('==============================');
+        this._renderTiming = null;
     },
 
     /**
@@ -626,30 +819,18 @@ const GameRenderer = {
         this.ctx.lineWidth = 4;
         this.ctx.strokeRect(0, 0, this.worldWidth, this.worldHeight);
 
-        // --- DEBUG: Show Verified Walkable Zones (Green Box) ---
+        // --- DEBUG: Show Collision Blocks (Red) ---
         const islandManager = this.game ? this.game.getSystem('IslandManager') : null;
-        if (this.debugMode && islandManager && islandManager.walkableZones) {
-            this.ctx.lineWidth = 2;
+        if (this.debugMode && islandManager && islandManager.collisionBlocks) {
+            this.ctx.strokeStyle = '#FF0000';
+            this.ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            this.ctx.lineWidth = 1;
 
-            for (const zone of islandManager.walkableZones) {
-                // Different color based on type for clarity
-                if (zone.type === 'bridge') {
-                    this.ctx.strokeStyle = '#00FF00'; // Lime Green (Bridge)
-                    this.ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
-                } else {
-                    this.ctx.strokeStyle = '#32CD32'; // Forest Green (Island)
-                    this.ctx.fillStyle = 'rgba(50, 205, 50, 0.1)';
-                }
-
+            for (const block of islandManager.collisionBlocks) {
                 this.ctx.beginPath();
-                this.ctx.rect(zone.x, zone.y, zone.width, zone.height);
+                this.ctx.rect(block.x, block.y, block.width, block.height);
                 this.ctx.fill();
                 this.ctx.stroke();
-
-                // Label
-                this.ctx.fillStyle = '#FFF';
-                this.ctx.font = '10px monospace';
-                this.ctx.fillText(zone.id, zone.x + 5, zone.y + 15);
             }
 
             // --- DEBUG: Draw 128px Grid Overlay ---

@@ -29,6 +29,7 @@ class IslandManagerService {
         this.cellSize = 0;
         this.islands = [];
         this.walkableZones = [];
+        this.collisionBlocks = [];  // New: blocks that prevent movement
 
         console.log('[IslandManager] Constructed');
     }
@@ -78,6 +79,9 @@ class IslandManagerService {
 
         // Initialize walkable zones
         this.rebuildWalkableZones();
+
+        // Initialize collision blocks
+        this.rebuildCollisionBlocks();
 
         console.log(`[IslandManager] Initialized ${this.islands.length} zones`);
     }
@@ -135,6 +139,9 @@ class IslandManagerService {
 
         // Rebuild walkable zones to include the new island
         this.rebuildWalkableZones();
+
+        // Rebuild collision blocks (changes from full-zone to edge-only)
+        this.rebuildCollisionBlocks();
 
         // Emit Unlock Event for SpawnManager / UI
         if (window.EventBus) {
@@ -345,6 +352,118 @@ class IslandManagerService {
         for (const zone of this.walkableZones) {
             if (x >= zone.x && x <= zone.x + zone.width &&
                 y >= zone.y && y <= zone.y + zone.height) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Rebuild collision blocks
+     * - Locked zones: entire zone is blocked
+     * - Unlocked zones: only edges with bridge openings
+     */
+    rebuildCollisionBlocks() {
+        this.collisionBlocks = [];
+        const gridCellSize = GameConstants.Grid.CELL_SIZE; // 128px
+        const zoneCells = GameConstants.Grid.ISLAND_CELLS; // 8 cells per zone
+
+        // Bridge opening: cells 3-4 (0-indexed), so block 0-2 and 5-7
+        const bridgeOpenStart = 3;
+        const bridgeOpenEnd = 4;
+
+        for (const island of this.islands) {
+            const zoneX = island.worldX;
+            const zoneY = island.worldY;
+
+            // LOCKED ZONES: Block the entire zone
+            if (!island.unlocked) {
+                this.collisionBlocks.push({
+                    x: zoneX,
+                    y: zoneY,
+                    width: this.islandSize,
+                    height: this.islandSize,
+                    type: 'locked_zone',
+                    zoneId: `${island.gridX},${island.gridY}`
+                });
+                continue; // Don't add edge blocks for locked zones
+            }
+
+            // Check neighbors to determine if bridges exist (neighbor EXISTS, not necessarily unlocked)
+            const hasNorthBridge = island.gridY > 0;
+            const hasSouthBridge = island.gridY < this.gridRows - 1;
+            const hasWestBridge = island.gridX > 0;
+            const hasEastBridge = island.gridX < this.gridCols - 1;
+
+            // Top edge (Y = 0)
+            for (let cell = 0; cell < zoneCells; cell++) {
+                // Skip bridge opening if connected
+                if (hasNorthBridge && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
+
+                this.collisionBlocks.push({
+                    x: zoneX + cell * gridCellSize,
+                    y: zoneY,
+                    width: gridCellSize,
+                    height: gridCellSize,
+                    edge: 'top',
+                    zoneId: `${island.gridX},${island.gridY}`
+                });
+            }
+
+            // Bottom edge (Y = zoneCells - 1)
+            for (let cell = 0; cell < zoneCells; cell++) {
+                if (hasSouthBridge && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
+
+                this.collisionBlocks.push({
+                    x: zoneX + cell * gridCellSize,
+                    y: zoneY + (zoneCells - 1) * gridCellSize,
+                    width: gridCellSize,
+                    height: gridCellSize,
+                    edge: 'bottom',
+                    zoneId: `${island.gridX},${island.gridY}`
+                });
+            }
+
+            // Left edge (X = 0), excluding corners already added
+            for (let cell = 1; cell < zoneCells - 1; cell++) {
+                if (hasWestBridge && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
+
+                this.collisionBlocks.push({
+                    x: zoneX,
+                    y: zoneY + cell * gridCellSize,
+                    width: gridCellSize,
+                    height: gridCellSize,
+                    edge: 'left',
+                    zoneId: `${island.gridX},${island.gridY}`
+                });
+            }
+
+            // Right edge (X = zoneCells - 1), excluding corners
+            for (let cell = 1; cell < zoneCells - 1; cell++) {
+                if (hasEastBridge && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
+
+                this.collisionBlocks.push({
+                    x: zoneX + (zoneCells - 1) * gridCellSize,
+                    y: zoneY + cell * gridCellSize,
+                    width: gridCellSize,
+                    height: gridCellSize,
+                    edge: 'right',
+                    zoneId: `${island.gridX},${island.gridY}`
+                });
+            }
+        }
+
+        console.log(`[IslandManager] Rebuilt collision blocks: ${this.collisionBlocks.length} blocks`);
+    }
+
+    /**
+     * Check if world position hits a collision block
+     * @returns {boolean} true if blocked, false if can move
+     */
+    isBlocked(x, y) {
+        for (const block of this.collisionBlocks) {
+            if (x >= block.x && x < block.x + block.width &&
+                y >= block.y && y < block.y + block.height) {
                 return true;
             }
         }

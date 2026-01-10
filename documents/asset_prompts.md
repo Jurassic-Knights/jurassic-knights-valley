@@ -81,6 +81,7 @@ full body sprite of [CHARACTER DESCRIPTION], game character asset, stoneshard st
 ```
 
 **Zone-Themed Merchants:**
+- Home Outpost: quartermaster uniform, supply crates, command insignia
 - Quarry: dusty grey uniform, miner's helmet
 - Iron Ridge: rust-stained overalls, welding mask
 - Dead Woods: tattered cloak, plague doctor mask
@@ -166,28 +167,26 @@ icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconog
 
 ## Asset Naming Convention
 
-**Format**: `{name}_{status}_original.png`
+**Format**: `{name}_{status}.png`
 
 | Status | Pattern | Example |
 |--------|---------|---------|
 | Pending | `{name}_original.png` | `wood_original.png` |
 | Approved | `{name}_approved_original.png` | `wood_approved_original.png` |
-| Final | `{name}_final_original.png` | `wood_final_original.png` |
 | Declined | `{name}_declined_original.png` | `wood_declined_original.png` |
-| Clean | `{name}_clean.png` | `wood_clean.png` |
+| Production | `{name}_clean.png` | `wood_clean.png` |
 
 **Lifecycle:**
 1. Generated → `_original.png` (pending review)
 2. Approved in dashboard → `_approved_original.png`
-3. Cleaned via Photoshop → `_clean.png` created + renamed to `_final_original.png`
+3. Cleaned via Photoshop → `_clean.png` (production-ready, 10px padding, transparent bg)
 4. If declined → `_declined_original.png` (for regeneration)
 
 **Key:**
-- `_original.png` = raw, unprocessed
+- `_original.png` = raw, unprocessed (white background)
 - `_approved` = approved, awaiting cleaning
-- `_final` = cleaned, source archived
 - `_declined` = needs regeneration
-- `_clean.png` = production-ready (transparent background)
+- `_clean.png` = production-ready (transparent background, scaled to 10px padding)
 
 ---
 

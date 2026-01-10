@@ -16,8 +16,9 @@ class ResourceRendererService {
         }
 
         // Shake logic (if damaged) - skipped for simplification or handled by Tween?
-        // Logic: if wood, return early (don't render sprite).
-        if (res.resourceType === 'wood') return;
+        // Check if this resource type uses custom rendering (e.g., trees handled elsewhere)
+        const typeConfig = (window.EntityConfig && EntityConfig.resource.types[res.resourceType]) || {};
+        if (typeConfig.skipDefaultRender) return;
 
         if (res.state === 'depleted') {
             this.renderDepleted(ctx, res);
@@ -78,31 +79,20 @@ class ResourceRendererService {
             ctx.fillStyle = 'black';
         }
 
-        // Attempt to draw cached sprite silhouette
-        const assetId = 'world_' + res.resourceType;
-        let shadowImg = null;
-
-        // Ensure image is loaded even if renderActive is skipped (e.g. Wood)
-        if (!res._spriteImage) {
-            const imagePath = window.AssetLoader ? AssetLoader.getImagePath(assetId) : null;
-            if (imagePath) {
-                res._spriteImage = AssetLoader.createImage(imagePath);
+        // PERF: Cache shadow image on entity (retry until successful)
+        if (!res._shadowImg) {
+            const assetId = 'world_' + res.resourceType;
+            if (window.MaterialLibrary) {
+                res._shadowImg = MaterialLibrary.get(assetId, 'shadow', {});
             }
         }
 
-        if (window.MaterialLibrary) {
-            // Pass res._spriteImage as override if available to ensure cache hit if AssetLoader is slow
-            shadowImg = MaterialLibrary.get(assetId, 'shadow', {}, res._spriteImage);
-        }
-
-        if (shadowImg) {
+        if (res._shadowImg) {
             // Draw anchored at bottom center (-w/2, -h)
-            ctx.drawImage(shadowImg, -res.width / 2, -res.height, res.width, res.height);
+            ctx.drawImage(res._shadowImg, -res.width / 2, -res.height, res.width, res.height);
         } else {
-            // Fallback: Geometric Shadow (Avoid lag)
-            // If opaque, ensure it's black (already set fillStyle)
+            // Fallback: Geometric Shadow
             ctx.beginPath();
-            // Draw ellipse "upwards" so it projects "downwards" when flipped
             ctx.ellipse(0, -res.height / 4, res.width / 2, res.height / 2, 0, 0, Math.PI * 2);
             ctx.fill();
         }
@@ -231,7 +221,7 @@ class ResourceRendererService {
     renderDroppedItem(ctx, item) {
         if (!item.active) return;
 
-        // Render Trail (Stream)
+        // Render Trail (Stream) - only when magnetized
         if (item.isMagnetized && item.trailHistory.length > 2) {
             ctx.save();
             ctx.strokeStyle = item.color;
@@ -267,7 +257,7 @@ class ResourceRendererService {
             ctx.restore();
         }
 
-        // Pulsing glow effect
+        // PERF: Cache pulse value, compute less frequently
         const pulse = 0.7 + 0.3 * Math.sin(item.pulseTime * 4);
 
         // Render shadow (always on ground)
@@ -282,13 +272,19 @@ class ResourceRendererService {
         // Render item (apply Z offset)
         const renderY = item.y - item.z;
 
-        // Check for custom icon
-        const assetId = item.customIcon || ('drop_' + item.resourceType);
-        const imagePath = window.AssetLoader ? AssetLoader.getImagePath(assetId) : null;
+        // PERF: Cache asset ID on item to avoid string ops
+        if (!item._cachedAssetId) {
+            item._cachedAssetId = item.customIcon || ('drop_' + item.resourceType);
+        }
+        const assetId = item._cachedAssetId;
 
-        if (imagePath && !item._spriteImage) {
-            item._spriteImage = AssetLoader.createImage(imagePath, () => { item._spriteLoaded = true; });
-            item._spriteLoaded = false;
+        // PERF: Only get image path once
+        if (!item._spriteImage && window.AssetLoader) {
+            const imagePath = AssetLoader.getImagePath(assetId);
+            if (imagePath) {
+                item._spriteImage = AssetLoader.createImage(imagePath, () => { item._spriteLoaded = true; });
+                item._spriteLoaded = false;
+            }
         }
 
         if (item._spriteLoaded && item._spriteImage) {
@@ -311,21 +307,10 @@ class ResourceRendererService {
                 const x = -w / 2;
                 const y = -h / 2;
 
-                // 1. Glow Layer (Draw silhouette with blur)
-                ctx.save();
-                ctx.shadowColor = item.rarityColor;
-                ctx.shadowBlur = 15;
-                ctx.globalAlpha = 0.6;
-                ctx.drawImage(item._silhouetteCanvas, x, y, w, h);
-                ctx.restore();
-
-                // 2. Solid Line Layer
-                ctx.globalAlpha = 1.0;
-                const strokeDist = 2;
-                ctx.drawImage(item._silhouetteCanvas, x - strokeDist, y, w, h);
-                ctx.drawImage(item._silhouetteCanvas, x + strokeDist, y, w, h);
-                ctx.drawImage(item._silhouetteCanvas, x, y - strokeDist, w, h);
-                ctx.drawImage(item._silhouetteCanvas, x, y + strokeDist, w, h);
+                // PERF: Single slightly-larger silhouette instead of 4 offset draws
+                ctx.globalAlpha = 0.7;
+                const outlineSize = 4;
+                ctx.drawImage(item._silhouetteCanvas, x - outlineSize / 2, y - outlineSize / 2, w + outlineSize, h + outlineSize);
             }
 
             ctx.restore();

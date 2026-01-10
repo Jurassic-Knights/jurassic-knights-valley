@@ -40,6 +40,10 @@ Master definitions for Jurassic Knights: Valley terminology.
 | `tyrannosaurus` | Tyrannosaurus | Apex predator. Drops: `Iron Ore`. |
 | `ankylosaurus` | Ankylosaurus | Armored herbivore. Drops: `Scrap Metal`. |
 | `triceratops` | Triceratops | Horned herbivore. Drops: `Fossil Fuel`. |
+| `parasaurolophus` | Parasaurolophus | Crested herbivore. Ambient/neutral. |
+| `stegosaurus` | Stegosaurus | Plated herbivore. Ambient/neutral. |
+| `spinosaurus` | Spinosaurus | Semi-aquatic predator. Rare spawn. |
+| `pteranodon` | Pteranodon | Flying reptile. Ambient sky creature. |
 
 ## Terminology Guidelines
 

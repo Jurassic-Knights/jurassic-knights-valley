@@ -216,6 +216,12 @@ const FogOfWarSystem = {
     },
 
     renderPixelOverlay(ctx, data, time) {
+        // PERFORMANCE: Skip pixel overlay entirely - it's very expensive
+        // The cloud textures provide enough visual interest
+        return;
+
+        // Original code below kept for reference:
+        /*
         // Subtle animated pixel noise on top
         const ps = 10; // Pixel size
         const density = 0.15; // Only 15% of cells get pixels
@@ -253,6 +259,7 @@ const FogOfWarSystem = {
                 );
             }
         }
+        */
     }
 };
 

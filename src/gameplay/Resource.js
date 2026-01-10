@@ -21,6 +21,7 @@ class Resource extends Entity {
         const finalConfig = { ...defaults, ...typeConfig, ...config };
 
         super({
+            entityType: EntityTypes.RESOURCE,
             width: finalConfig.width || 150,
             height: finalConfig.height || 150,
             ...config
@@ -126,10 +127,10 @@ class Resource extends Entity {
 
         this.health -= damage;
         if (this.health <= 0) {
-            // SFX: Break
+            // SFX: Break - use config-driven sfxSuffix
             if (window.AudioManager) {
-                const suffix = this.resourceType === 'wood' ? 'wood' :
-                    this.resourceType === 'fossil_fuel' ? 'stone' : 'metal';
+                const typeConfig = (window.EntityConfig && EntityConfig.resource.types[this.resourceType]) || {};
+                const suffix = typeConfig.sfxSuffix || 'metal';
                 AudioManager.playSFX(`sfx_resource_break_${suffix}`);
             }
 

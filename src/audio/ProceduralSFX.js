@@ -336,9 +336,14 @@ const ProceduralSFX = {
     collect() {
         // Material Pickup: Low thump + subtle ring (style guide compliant)
         // Uses triangle wave for warmth
-        this.playTone(120, 0.08, 'triangle', 0.15, 0.01, 0.06);  // Low thump
+        // Add slight random pitch variation for overlapping sounds
+        const pitchVariation = 0.9 + Math.random() * 0.2; // 0.9 to 1.1
+        const baseFreq1 = 120 * pitchVariation;
+        const baseFreq2 = 220 * pitchVariation;
+
+        this.playTone(baseFreq1, 0.08, 'triangle', 0.15, 0.01, 0.06);  // Low thump
         setTimeout(() => {
-            this.playTone(220, 0.1, 'triangle', 0.08, 0.02, 0.08); // Subtle mid ring
+            this.playTone(baseFreq2, 0.1, 'triangle', 0.08, 0.02, 0.08); // Subtle mid ring
         }, 40);
     },
 

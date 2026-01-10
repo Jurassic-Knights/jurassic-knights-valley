@@ -27,7 +27,6 @@ const AssetLoader = {
                 "ui_icon_inventory": { "path": "images/ui/icon_inventory_clean.png" },
                 "ui_icon_forge": { "path": "images/ui/icon_forge_clean.png" },
                 "ui_icon_map": { "path": "images/ui/icon_map_clean.png" },
-                "ui_icon_map": { "path": "images/ui/icon_map_clean.png" },
                 "ui_icon_magnet": { "path": "images/ui/icon_magnet_clean.png" },
                 "ui_icon_speech_bubble": { "path": "images/ui/ui_icon_speech_bubble_clean.png" },
                 "ui_icon_shop": { "path": "images/ui/ui_icon_shop_clean.png" },

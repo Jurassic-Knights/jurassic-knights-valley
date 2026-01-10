@@ -11,6 +11,7 @@ class Merchant extends Entity {
         const finalConfig = { ...defaults, ...config };
 
         super({
+            entityType: EntityTypes.MERCHANT,
             width: finalConfig.width || 186,
             height: finalConfig.height || 186,
             color: finalConfig.color || '#8E44AD', // Purple - merchant color
@@ -116,16 +117,20 @@ class Merchant extends Entity {
             ctx.globalAlpha = alpha;
         }
 
-        // Optimize: Use Cached Shadow
-        let shadowImg = null;
-        if (window.MaterialLibrary && this._imgAssetId) {
-            shadowImg = MaterialLibrary.get(this._imgAssetId, 'shadow', {}, this._img);
+        // PERF: Cache shadow image on entity (retry until successful)
+        if (!this._shadowImg) {
+            if (!this._imgAssetId) {
+                this._imgAssetId = this.getSpriteId();
+            }
+            if (window.MaterialLibrary && this._imgAssetId) {
+                this._shadowImg = MaterialLibrary.get(this._imgAssetId, 'shadow', {});
+            }
         }
 
-        if (shadowImg) {
-            ctx.drawImage(shadowImg, -size / 2, -size, size, size);
+        if (this._shadowImg) {
+            ctx.drawImage(this._shadowImg, -size / 2, -size, size, size);
         } else {
-            // Fallback Oval - skipped if contact shadow exists
+            // Fallback Oval
             ctx.fillStyle = 'rgba(0,0,0,0.5)';
             if (forceOpaque) ctx.fillStyle = 'black';
             ctx.beginPath();
@@ -147,55 +152,46 @@ class Merchant extends Entity {
 
         // Try to draw sprite
         if (window.AssetLoader) {
-            const id = this.getSpriteId();
-            const path = AssetLoader.getImagePath(id);
+            // PERF: Cache sprite ID on first call (avoid string ops per frame)
+            if (!this._cachedSpriteId) {
+                this._cachedSpriteId = this.getSpriteId();
+            }
+            const id = this._cachedSpriteId;
 
-            if (path) {
-                if (!this._img || this._imgAssetId !== id) {
+            // PERF: Only load image once
+            if (!this._img) {
+                const path = AssetLoader.getImagePath(id);
+                if (path) {
                     this._img = AssetLoader.createImage(path);
                     this._imgAssetId = id;
                 }
+            }
 
-                if (this._img.complete && this._img.naturalWidth) {
-                    const size = 186; // Match Hero size
+            if (this._img && this._img.complete && this._img.naturalWidth) {
+                const size = 186; // Match Hero size
 
-                    ctx.save();
+                ctx.save();
 
-                    // Shadow is now handled by GameRenderer's Shadow Pass calling drawShadow()
-                    // We DO NOT draw shadow here to avoid double shadow / stacking issues.
+                // Sprite (centered)
+                ctx.drawImage(this._img, this.x - size / 2, this.y - size / 2 + bob, size, size);
 
-                    /* Custom shadow removed in favor of standard
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-                    ctx.beginPath();
-                    ctx.ellipse(this.x, this.y + size / 2 - 10, 50, 12, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    */
+                ctx.restore();
 
-                    // Sprite (centered)
-                    ctx.drawImage(this._img, this.x - size / 2, this.y - size / 2 + bob, size, size);
-
-                    ctx.restore();
-
-                    // Speech Bubble Icon (Above head)
+                // PERF: Cache speech bubble icon (only load once)
+                if (!this._iconImg) {
                     const iconPath = AssetLoader.getImagePath('ui_icon_speech_bubble');
                     if (iconPath) {
-                        if (!this._iconImg) {
-                            this._iconImg = AssetLoader.createImage(iconPath);
-                        }
-
-                        if (this._iconImg.complete && this._iconImg.naturalWidth) {
-                            const iconSize = 64; // Size of the bubble
-                            const hoverOffset = Math.sin(this.bobTime * 3) * 5; // Float animation
-                            const iconY = this.y - size / 2 - iconSize + 20 + hoverOffset; // Position above head
-
-                            ctx.drawImage(this._iconImg, this.x - iconSize / 2, iconY, iconSize, iconSize);
-                        } else {
-                            // Fallback if icon not loaded yet
-                            // ctx.fillText('...', this.x, this.y - size / 2 - 20);
-                        }
+                        this._iconImg = AssetLoader.createImage(iconPath);
                     }
-                    return;
                 }
+
+                if (this._iconImg && this._iconImg.complete && this._iconImg.naturalWidth) {
+                    const iconSize = 64;
+                    const hoverOffset = Math.sin(this.bobTime * 3) * 5;
+                    const iconY = this.y - size / 2 - iconSize + 20 + hoverOffset;
+                    ctx.drawImage(this._iconImg, this.x - iconSize / 2, iconY, iconSize, iconSize);
+                }
+                return;
             }
         }
 

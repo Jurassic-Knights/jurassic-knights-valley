@@ -156,6 +156,30 @@ const DebugUI = {
             }
         };
         this.addControl('Grid', gridBtn);
+
+        // Profile Toggle (Performance Analysis)
+        const profBtn = document.createElement('button');
+        profBtn.textContent = 'Profile';
+        profBtn.title = 'Run 5 second profile to measure frame times';
+        profBtn.onclick = () => {
+            if (window.GameInstance) {
+                profBtn.classList.add('active');
+                profBtn.textContent = 'Profiling...';
+                GameInstance.startProfile();
+                // Also start render phase profiling
+                if (window.GameRenderer) GameRenderer.startRenderProfile();
+
+                // Auto-stop after 5 seconds
+                setTimeout(() => {
+                    GameInstance.stopProfile();
+                    if (window.GameRenderer) GameRenderer.stopRenderProfile();
+                    profBtn.classList.remove('active');
+                    profBtn.textContent = 'Profile';
+                    alert('Profile complete! Check browser console (F12) for results.');
+                }, 5000);
+            }
+        };
+        this.addControl('Perf', profBtn);
     },
 
     /**

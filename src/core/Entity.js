@@ -11,6 +11,7 @@ class Entity {
      */
     constructor(config = {}) {
         this.id = config.id || `entity_${Date.now()}`;
+        this.entityType = config.entityType || 'entity'; // For type checking instead of constructor.name
         this.x = config.x || 0;
         this.y = config.y || 0;
         this.width = config.width || 32;

@@ -35,6 +35,12 @@ class HeroSystem {
         this.game = game;
         // Assume single hero for now, but design allows for multiple
         this.hero = game.hero;
+
+        // GC Optimization: Cache system references
+        this._islandManager = game.getSystem('IslandManager');
+        this._homeBase = game.getSystem('HomeBase');
+        this._gameRenderer = game.getSystem('GameRenderer');
+        this._vfxController = game.getSystem('VFXController');
     }
 
     initListeners() {
@@ -79,9 +85,13 @@ class HeroSystem {
             if (window.EventBus) EventBus.emit(GameConstants.Events.HERO_HOME_STATE_CHANGE, { isHome: hero.isAtHomeOutpost });
         }
 
-        // Stats Emission (Throttle? For now every frame is fine for smooth HUD)
+        // Stats Emission - Throttle to every 100ms (6 events/sec instead of 60)
         if (window.EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, { current: hero.stamina, max: hero.maxStamina });
+            const now = performance.now();
+            if (!this._lastStaminaEmit || now - this._lastStaminaEmit > 100) {
+                this._lastStaminaEmit = now;
+                EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, { current: hero.stamina, max: hero.maxStamina });
+            }
         }
 
     }
@@ -100,25 +110,28 @@ class HeroSystem {
         const newX = hero.x + move.x * hero.speed * dtSec;
         const newY = hero.y + move.y * hero.speed * dtSec;
 
-        // Check island/water collision
+        // Check collision blocks
         let canMoveX = true;
         let canMoveY = true;
 
-        const islandManager = this.game.getSystem('IslandManager');
-        const homeBase = this.game.getSystem('HomeBase');
-        const gameRenderer = this.game.getSystem('GameRenderer');
+        // Use cached system refs
+        const islandManager = this._islandManager;
+        const homeBase = this._homeBase;
+        const gameRenderer = this._gameRenderer;
 
         if (islandManager) {
             // Offset check to feet (approx 40% down from center)
             const feetOffset = hero.height * 0.4;
-            if (!islandManager.isWalkable(newX, hero.y + feetOffset)) {
+
+            // Check collision blocks (new system)
+            if (islandManager.isBlocked(newX, hero.y + feetOffset)) {
                 canMoveX = false;
             }
-            if (!islandManager.isWalkable(hero.x, newY + feetOffset)) {
+            if (islandManager.isBlocked(hero.x, newY + feetOffset)) {
                 canMoveY = false;
             }
             // Check diagonal
-            if (canMoveX && canMoveY && !islandManager.isWalkable(newX, newY + feetOffset)) {
+            if (canMoveX && canMoveY && islandManager.isBlocked(newX, newY + feetOffset)) {
                 canMoveY = false;
             }
         }
@@ -165,7 +178,7 @@ class HeroSystem {
         // --- Auto-Targeting Logic ---
         // Find nearest valid target within range
         let target = null;
-        let minDist = Infinity;
+        let minDistSq = Infinity; // Use squared distance to avoid Math.sqrt
 
         // Check Dinosaurs (Priority)
         if (window.EntityManager) {
@@ -179,9 +192,12 @@ class HeroSystem {
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.state === 'dead') continue;
 
-                const d = Math.sqrt((candidate.x - hero.x) ** 2 + (candidate.y - hero.y) ** 2);
-                if (d < minDist) {
-                    minDist = d;
+                // Use squared distance (avoid Math.sqrt)
+                const dx = candidate.x - hero.x;
+                const dy = candidate.y - hero.y;
+                const distSq = dx * dx + dy * dy;
+                if (distSq < minDistSq) {
+                    minDistSq = distSq;
                     target = candidate;
                 }
             }
@@ -195,9 +211,12 @@ class HeroSystem {
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.state === 'depleted') continue;
 
-                const d = Math.sqrt((candidate.x - hero.x) ** 2 + (candidate.y - hero.y) ** 2);
-                if (d < minDist) {
-                    minDist = d;
+                // Use squared distance (avoid Math.sqrt)
+                const dx = candidate.x - hero.x;
+                const dy = candidate.y - hero.y;
+                const distSq = dx * dx + dy * dy;
+                if (distSq < minDistSq) {
+                    minDistSq = distSq;
                     target = candidate;
                 }
             }
@@ -223,7 +242,8 @@ class HeroSystem {
         const dtSec = dt / 1000;
         const isMoving = (hero.x !== hero.prevX || hero.y !== hero.prevY);
 
-        const vfxController = this.game.getSystem('VFXController');
+        // Use cached VFXController ref
+        const vfxController = this._vfxController;
 
         if (isMoving && vfxController) {
             hero.footstepTimer -= dtSec;
@@ -260,15 +280,18 @@ class HeroSystem {
         if (!resource || !resource.active) return false;
         if (resource.state === 'depleted') return false;
 
-        const dist = Math.sqrt((hero.x - resource.x) ** 2 + (hero.y - resource.y) ** 2);
+        // Use squared distance comparison (avoid Math.sqrt)
+        const dx = hero.x - resource.x;
+        const dy = hero.y - resource.y;
+        const distSq = dx * dx + dy * dy;
 
-        const isDino = (window.Dinosaur && resource instanceof window.Dinosaur) ||
-            resource.constructor.name === 'Dinosaur';
+        const isDino = resource.entityType === EntityTypes.DINOSAUR;
 
         const combat = hero.components.combat;
         const effectiveRange = isDino ? (hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE) : (hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE);
+        const rangeSq = effectiveRange * effectiveRange;
 
-        if (dist > effectiveRange) return false;
+        if (distSq > rangeSq) return false;
 
         // Update Hero State for Renderer
         hero.targetResource = resource;

@@ -114,18 +114,17 @@ class DinosaurRendererService {
                 ctx.scale(-1, 1);
             }
 
-            // Optimize: Get cached shadow
-            let shadowImg = null;
-            if (window.MaterialLibrary) {
-                // Use spriteName if it's an asset ID, otherwise pass sprite as source override
-                // Dino sprite keys might not be global asset IDs, so passing 'sprite' is safer/necessary
-                // We use spriteName as cache key, hoping it is unique enough.
-                shadowImg = MaterialLibrary.get('dino_shadow_' + spriteName, 'shadow', {}, sprite);
+            // PERF: Cache shadow on entity (retry until successful)
+            if (!dino._shadowImg) {
+                if (window.MaterialLibrary) {
+                    const baseShadowId = 'dino_' + (dino.dinoType || 'base') + '_base';
+                    dino._shadowImg = MaterialLibrary.get(baseShadowId, 'shadow', {});
+                }
             }
 
-            if (shadowImg) {
+            if (dino._shadowImg) {
                 // Draw anchored at bottom
-                ctx.drawImage(shadowImg, -dino.width / 2, -dino.height, dino.width, dino.height);
+                ctx.drawImage(dino._shadowImg, -dino.width / 2, -dino.height, dino.width, dino.height);
             }
         }
 

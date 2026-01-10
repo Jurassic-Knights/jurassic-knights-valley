@@ -2,6 +2,7 @@
  * Balance Manager
  * Handles game balance calculations
  * 
+ * TODO: Placeholder - implement full balance system when needed
  * Owner: Gameplay Designer
  */
 

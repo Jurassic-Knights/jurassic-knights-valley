@@ -1,8 +1,12 @@
 # Master Architecture Principles
 
-**Version:** 1.0
-**Date:** 2026-01-04
+**Version:** 1.1  
+**Date:** 2026-01-08  
 **Goal:** Ensure scalable, maintainable, and verifiable game development.
+
+### Changelog
+- **v1.1 (2026-01-08)**: Added `EntityTypes` constants for type checking. Replaced `constructor.name` with `entityType`. Added config-driven behavior (`sfxSuffix`, `vfxType`, `skipDefaultRender`, `interactionRange`, `boundsPadding`).
+- **v1.0 (2026-01-04)**: Initial architecture principles.
 
 ## 1. Core Architecture (ECS & Composition)
 *   **Composition over Inheritance:** Use Components to define *what an entity has* rather than Inheritance to define *what it is*.

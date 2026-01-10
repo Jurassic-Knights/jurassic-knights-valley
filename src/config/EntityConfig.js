@@ -43,7 +43,9 @@ const EntityConfig = {
             speed: 30, // Wander speed
             respawnTime: 20, // Base seconds
             frameInterval: 200,
-            amount: 1 // Drops exactly 1 resource when killed
+            amount: 1, // Drops exactly 1 resource when killed
+            interactionRange: 120, // Range for hero interaction check
+            boundsPadding: 30 // Padding from island bounds during wander
         },
         variants: {
             // Velociraptor (Meat)
@@ -115,7 +117,9 @@ const EntityConfig = {
                 maxHealth: 20,
                 respawnTime: 15,
                 rarity: 'common',
-                color: '#7A7A7A'
+                color: '#7A7A7A',
+                sfxSuffix: 'metal',
+                vfxType: 'sparks'
             },
             'iron_ore': {
                 name: 'Iron Deposit',
@@ -123,7 +127,9 @@ const EntityConfig = {
                 maxHealth: 60,
                 respawnTime: 45,
                 rarity: 'uncommon',
-                color: '#8B4513'
+                color: '#8B4513',
+                sfxSuffix: 'metal',
+                vfxType: 'sparks'
             },
             'fossil_fuel': {
                 name: 'Black Tar',
@@ -131,17 +137,22 @@ const EntityConfig = {
                 maxHealth: 100,
                 respawnTime: 90,
                 rarity: 'rare',
-                color: '#2F2F2F'
+                color: '#2F2F2F',
+                sfxSuffix: 'stone',
+                vfxType: 'dust'
             },
             'wood': {
                 name: 'Petrified Wood',
                 description: 'Hardened ancient timber.',
                 gridSize: 1,
                 snapToGrid: false, // Trees can be placed organically
+                skipDefaultRender: true, // Trees handled by HomeBase/WorldRenderer
                 maxHealth: 15,
                 respawnTime: 10,
                 rarity: 'common',
-                color: '#5D4037'
+                color: '#5D4037',
+                sfxSuffix: 'wood',
+                vfxType: 'wood_chips'
             },
             'gold': {
                 name: 'Gold Cache',
@@ -152,7 +163,9 @@ const EntityConfig = {
                 maxHealth: 10,
                 respawnTime: 60,
                 rarity: 'legendary',
-                color: '#FFD700'
+                color: '#FFD700',
+                sfxSuffix: 'metal',
+                vfxType: 'sparks'
             },
             'primal_meat': {
                 name: 'Primal Meat',
@@ -161,7 +174,9 @@ const EntityConfig = {
                 maxHealth: 0,
                 respawnTime: 0,
                 rarity: 'uncommon',
-                color: '#8B0000'
+                color: '#8B0000',
+                sfxSuffix: 'meat',
+                vfxType: 'blood'
             }
         }
     },

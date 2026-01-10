@@ -14,7 +14,54 @@ class WorldRenderer {
 
     init(game) {
         this.game = game;
+        // Cache system references for performance
+        this._assetLoader = game.getSystem('AssetLoader');
+        this._islandManager = game.getSystem('IslandManager');
+        this._gameRenderer = game.getSystem('GameRenderer');
+
+        // PERF: Pre-load all zone images at init time
+        this._preloadZoneImages();
+
         console.log('[WorldRenderer] Initialized');
+    }
+
+    /**
+     * Pre-load all zone images to avoid per-frame loading
+     */
+    _preloadZoneImages() {
+        if (!this._assetLoader || !this._islandManager) return;
+
+        const assetLoader = this._assetLoader;
+        const islands = this._islandManager.islands || [];
+
+        for (const island of islands) {
+            // Cache asset ID on island
+            if (!island._cachedAssetId) {
+                island._cachedAssetId = island.type === 'home'
+                    ? 'world_island_home'
+                    : 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
+
+                // Pre-cache scaled dimensions
+                const scale = 1.2;
+                island._scaledW = island.width * scale;
+                island._scaledH = island.height * scale;
+                island._drawX = island.worldX - (island._scaledW - island.width) / 2;
+                island._drawY = island.worldY - (island._scaledH - island.height) / 2;
+            }
+
+            const assetId = island._cachedAssetId;
+
+            // Pre-load image
+            if (!this._zoneImages[assetId]) {
+                const bgPath = assetLoader.getImagePath(assetId);
+                if (bgPath) {
+                    this._zoneImages[assetId] = new Image();
+                    this._zoneImages[assetId].src = bgPath;
+                }
+            }
+        }
+
+        console.log(`[WorldRenderer] Pre-loaded ${Object.keys(this._zoneImages).length} zone images`);
     }
 
     /**
@@ -25,14 +72,24 @@ class WorldRenderer {
     render(ctx, viewport) {
         if (!this.game) return;
 
+        // Hook into GameRenderer timing if available
+        const timing = window.GameRenderer?._renderTiming;
+        let t0;
+
         // 1. Water / Background
+        if (timing) t0 = performance.now();
         this.drawWater(ctx, viewport);
+        if (timing) { timing.worldWater = (timing.worldWater || 0) + performance.now() - t0; }
 
         // 2. Islands & Bridges
+        if (timing) t0 = performance.now();
         this.drawWorld(ctx, viewport);
+        if (timing) { timing.worldIslands = (timing.worldIslands || 0) + performance.now() - t0; }
 
         // 3. Debug Overlays
+        if (timing) t0 = performance.now();
         this.drawDebug(ctx, viewport);
+        if (timing) { timing.worldDebug = (timing.worldDebug || 0) + performance.now() - t0; }
     }
 
     /**
@@ -41,7 +98,8 @@ class WorldRenderer {
     drawWater(ctx, viewport) {
         ctx.save();
 
-        const assetLoader = this.game.getSystem('AssetLoader');
+        // Use cached ref with fallback
+        const assetLoader = this._assetLoader || (this.game && this.game.getSystem('AssetLoader'));
         const bgId = 'world_base_layer';
 
         // Lazy load pattern
@@ -85,49 +143,74 @@ class WorldRenderer {
      * Draw Islands, Bridges, and Home Outpost
      */
     drawWorld(ctx, viewport) {
-        const islandManager = this.game.getSystem('IslandManager');
-        const assetLoader = this.game.getSystem('AssetLoader');
+        // Use cached refs with fallback
+        const islandManager = this._islandManager || (this.game && this.game.getSystem('IslandManager'));
+        const assetLoader = this._assetLoader || (this.game && this.game.getSystem('AssetLoader'));
 
         if (!islandManager) {
             this.drawFallbackGrid(ctx, viewport);
             return;
         }
 
+        if (!this._preloadDone && islandManager.islands && islandManager.islands.length > 0) {
+            this._preloadZoneImages();
+            this._preloadDone = true;
+        }
+
         ctx.save();
+        ctx.imageSmoothingEnabled = false; // Pixel Art: Crisper edges + faster rendering
         ctx.translate(-viewport.x, -viewport.y);
+
+        // Viewport bounds for culling (with padding for large islands)
+        const vpLeft = viewport.x - 200;
+        const vpRight = viewport.x + viewport.width + 200;
+        const vpTop = viewport.y - 200;
+        const vpBottom = viewport.y + viewport.height + 200;
 
         // A. Draw Islands
         const islandColor = '#4A5D23';  // Muddy green
         const islandBorder = '#3A4D13'; // Darker border
 
         for (const island of islandManager.islands) {
+            // Viewport culling - skip islands not visible
+            if (island.worldX + island.width < vpLeft || island.worldX > vpRight ||
+                island.worldY + island.height < vpTop || island.worldY > vpBottom) {
+                continue;
+            }
+
             // Island fill
             let drawn = false;
 
             // Try to draw background image
             if (assetLoader) {
-                let assetId = 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
-                if (island.type === 'home') assetId = 'world_island_home';
+                // PERF: Cache asset ID on island to avoid string ops per frame
+                if (!island._cachedAssetId) {
+                    island._cachedAssetId = island.type === 'home'
+                        ? 'world_island_home'
+                        : 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
+                    // Pre-cache scaled dimensions
+                    const scale = 1.2;
+                    island._scaledW = island.width * scale;
+                    island._scaledH = island.height * scale;
+                    island._drawX = island.worldX - (island._scaledW - island.width) / 2;
+                    island._drawY = island.worldY - (island._scaledH - island.height) / 2;
+                }
 
-                const bgPath = assetLoader.getImagePath(assetId);
-                if (bgPath) {
-                    if (!this._zoneImages[assetId]) {
+                const assetId = island._cachedAssetId;
+
+                // PERF: Only create image once
+                if (!this._zoneImages[assetId]) {
+                    const bgPath = assetLoader.getImagePath(assetId);
+                    if (bgPath) {
                         this._zoneImages[assetId] = new Image();
                         this._zoneImages[assetId].src = bgPath;
                     }
+                }
 
-                    const img = this._zoneImages[assetId];
-                    if (img.complete && img.naturalWidth) {
-                        // Scale up by 20%
-                        const scale = 1.2;
-                        const w = island.width * scale;
-                        const h = island.height * scale;
-                        const x = island.worldX - (w - island.width) / 2;
-                        const y = island.worldY - (h - island.height) / 2;
-
-                        ctx.drawImage(img, x, y, w, h);
-                        drawn = true;
-                    }
+                const img = this._zoneImages[assetId];
+                if (img && img.complete && img.naturalWidth) {
+                    ctx.drawImage(img, island._drawX, island._drawY, island._scaledW, island._scaledH);
+                    drawn = true;
                 }
             }
 
@@ -145,13 +228,8 @@ class WorldRenderer {
             // Locked State (Fog)
             if (!island.unlocked) {
                 this.drawLockedOverlay(ctx, island);
-            } else {
-                // Island name label (only for unlocked)
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.font = '28px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(island.name, island.worldX + island.width / 2, island.worldY + 50);
             }
+            // REMOVED: Zone text labels (not needed)
         }
 
         // B. Draw Bridges
@@ -160,8 +238,8 @@ class WorldRenderer {
         // C. Draw Home Outpost Marker
         this.drawHomeOutpost(ctx, islandManager);
 
-        // D. World Boundary
-        const gameRenderer = this.game.getSystem('GameRenderer');
+        // D. World Boundary - Use cached ref
+        const gameRenderer = this._gameRenderer;
         if (gameRenderer) {
             ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
             ctx.lineWidth = 4;
@@ -289,36 +367,7 @@ class WorldRenderer {
     }
 
     drawDebug(ctx, viewport) {
-        const renderer = this.game.getSystem('GameRenderer');
-        const islandManager = this.game.getSystem('IslandManager');
-
-        if (renderer && renderer.debugMode && islandManager && islandManager.walkableZones) {
-            ctx.save();
-            ctx.translate(-viewport.x, -viewport.y);
-
-            ctx.lineWidth = 2;
-
-            for (const zone of islandManager.walkableZones) {
-                if (zone.type === 'bridge') {
-                    ctx.strokeStyle = '#00FF00';
-                    ctx.fillStyle = 'rgba(0, 255, 0, 0.2)';
-                } else {
-                    ctx.strokeStyle = '#32CD32';
-                    ctx.fillStyle = 'rgba(50, 205, 50, 0.1)';
-                }
-
-                ctx.beginPath();
-                ctx.rect(zone.x, zone.y, zone.width, zone.height);
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = '#FFF';
-                ctx.font = '10px monospace';
-                ctx.fillText(zone.id, zone.x + 5, zone.y + 15);
-            }
-
-            ctx.restore();
-        }
+        // Debug visualization removed - collision blocks are now shown in GameRenderer
     }
 }
 

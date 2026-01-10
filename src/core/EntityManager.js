@@ -14,6 +14,12 @@ class EntityManagerService {
         // We'll init it properly in init() when game is available, or here with defaults
         this.tree = null;
 
+        // GC Optimization: Pre-allocated buffer for queryRect results
+        this._queryBuffer = [];
+
+        // GC Optimization: Pool for Quadtree insert wrappers (keyed by entity)
+        this._insertPool = new WeakMap();
+
         console.log('[EntityManager] Constructed');
     }
     // ...
@@ -53,14 +59,19 @@ class EntityManagerService {
 
             // Insert into Quadtree
             if (this.tree) {
-                // Approximate bounds or use entity w/h
-                this.tree.insert({
-                    x: entity.x,
-                    y: entity.y,
-                    width: entity.width || 1,
-                    height: entity.height || 1,
-                    entity: entity // Reference back to actual object
-                });
+                // GC Optimization: Reuse wrapper object from pool
+                let wrapper = this._insertPool.get(entity);
+                if (!wrapper) {
+                    wrapper = { x: 0, y: 0, width: 1, height: 1, entity: entity };
+                    this._insertPool.set(entity, wrapper);
+                }
+                // Update wrapper with current position
+                wrapper.x = entity.x;
+                wrapper.y = entity.y;
+                wrapper.width = entity.width || 1;
+                wrapper.height = entity.height || 1;
+
+                this.tree.insert(wrapper);
             }
 
             if (typeof entity.update === 'function') {
@@ -78,7 +89,7 @@ class EntityManagerService {
 
         this.entities.push(entity);
 
-        // Add to type cache
+        // Add to type cache (must use constructor.name to match getByType calls)
         const type = entity.constructor.name;
         if (!this.entitiesByType[type]) {
             this.entitiesByType[type] = [];
@@ -100,7 +111,7 @@ class EntityManagerService {
         if (idx !== -1) {
             this.entities.splice(idx, 1);
 
-            // Remove from type cache
+            // Remove from type cache (must match add() key)
             const type = entity.constructor.name;
             if (this.entitiesByType[type]) {
                 const typeIdx = this.entitiesByType[type].indexOf(entity);
@@ -140,11 +151,14 @@ class EntityManagerService {
         if (!this.tree) return this.entities; // Fallback to all if no tree
 
         const results = this.tree.queryRect(rect);
-        // Quadtree returns the inserted objects (which wraps the entity in .entity property usually, 
-        // OR we modified Quadtree to store direct refs if we passed rect-like objects.
-        // My Quadtree implementation stores the object passed to insert().
-        // In insert(), I passed {x,y,w,h, entity}. So I need to map back to .entity.
-        return results.map(item => item.entity);
+
+        // GC Optimization: Reuse buffer instead of map()
+        const buffer = this._queryBuffer;
+        buffer.length = 0;
+        for (let i = 0; i < results.length; i++) {
+            buffer.push(results[i].entity);
+        }
+        return buffer;
     }
 
     /**

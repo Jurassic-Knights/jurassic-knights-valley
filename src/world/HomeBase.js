@@ -11,20 +11,31 @@ const HomeBase = {
     treeBorderWidth: 100,  // Width of tree zone on each edge
 
     /**
-     * Get tree resources from EntityManager (unified with resource system)
+     * Get tree resources from EntityManager (cached per frame)
      * @returns {Array} Array of wood Resource entities on home island
      */
     get treeResources() {
-        if (!window.EntityManager || !window.IslandManager) return [];
-        const home = IslandManager.getHomeIsland();
-        if (!home) return [];
+        // Return cached if same frame
+        const frame = window.GameRenderer?._renderTiming?.frames || 0;
+        if (this._treeCacheFrame === frame && this._cachedTrees) {
+            return this._cachedTrees;
+        }
 
-        // Query EntityManager for wood resources on home island
-        return EntityManager.getByType('Resource').filter(r =>
+        if (!window.EntityManager || !this._cachedHome) return [];
+
+        // Query and cache
+        const home = this._cachedHome;
+        this._cachedTrees = EntityManager.getByType('Resource').filter(r =>
             r.resourceType === 'wood' &&
             r.islandGridX === home.gridX &&
             r.islandGridY === home.gridY
         );
+        this._treeCacheFrame = frame;
+
+        // Pre-sort trees (they don't move)
+        this._sortedTrees = [...this._cachedTrees].sort((a, b) => a.y - b.y);
+
+        return this._cachedTrees;
     },
 
     /**
@@ -40,6 +51,18 @@ const HomeBase = {
         if (!home) {
             console.error('[HomeBase] Home island not found');
             return;
+        }
+
+        // PERF: Cache home island and bounds (don't change during gameplay)
+        this._cachedHome = home;
+        this._cachedBounds = IslandManager.getPlayableBounds(home);
+
+        // PERF: Cache image paths at init
+        if (window.AssetLoader) {
+            this._outpostPath = AssetLoader.getImagePath('building_outpost');
+            this._forgePath = AssetLoader.getImagePath('building_forge');
+            this._treePath = AssetLoader.getImagePath('world_wood');
+            this._treeConsumedPath = AssetLoader.getImagePath('world_wood_consumed');
         }
 
         // Trees are now spawned by SpawnManager.spawnHomeIslandTrees()
@@ -58,39 +81,32 @@ const HomeBase = {
         if (!window.GameRenderer || !GameRenderer.hero) return;
 
         const hero = GameRenderer.hero;
+        const bounds = this._cachedBounds;
 
         // === Home Base / Rest Area Detection ===
-        if (window.IslandManager) {
-            const home = IslandManager.getHomeIsland();
-            if (home) {
-                const bounds = IslandManager.getPlayableBounds(home);
-                if (bounds) {
-                    const centerX = bounds.x + bounds.width / 2;
-                    const centerY = bounds.y + bounds.height / 2;
-                    const restRadius = 200; // Hero must be within this radius to rest
+        if (bounds) {
+            const centerX = bounds.x + bounds.width / 2;
+            const centerY = bounds.y + bounds.height / 2;
+            const restRadius = 200;
 
-                    const dx = hero.x - centerX;
-                    const dy = hero.y - centerY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+            const dx = hero.x - centerX;
+            const dy = hero.y - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    const wasAtHome = this._heroAtHome || false;
-                    const isAtHome = dist < restRadius;
+            const wasAtHome = this._heroAtHome || false;
+            const isAtHome = dist < restRadius;
 
-                    if (isAtHome && !wasAtHome) {
-                        // Just entered home base
-                        hero.isAtHomeOutpost = true;
-                        if (window.EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
-                        console.log('[HomeBase] Hero entered rest area');
-                    } else if (!isAtHome && wasAtHome) {
-                        // Just exited home base
-                        hero.isAtHomeOutpost = false;
-                        if (window.EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
-                        console.log('[HomeBase] Hero exited rest area');
-                    }
-
-                    this._heroAtHome = isAtHome;
-                }
+            if (isAtHome && !wasAtHome) {
+                hero.isAtHomeOutpost = true;
+                if (window.EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
+                console.log('[HomeBase] Hero entered rest area');
+            } else if (!isAtHome && wasAtHome) {
+                hero.isAtHomeOutpost = false;
+                if (window.EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
+                console.log('[HomeBase] Hero exited rest area');
             }
+
+            this._heroAtHome = isAtHome;
         }
 
         // === Forge Proximity Detection ===
@@ -103,11 +119,9 @@ const HomeBase = {
             const isAtForge = dist < 200;
 
             if (isAtForge && !wasAtForge) {
-                // Just entered forge area
                 if (window.EventBus) EventBus.emit(GameConstants.Events.FORGE_ENTERED);
                 console.log('[HomeBase] Hero entered forge area');
             } else if (!isAtForge && wasAtForge) {
-                // Just exited forge area
                 if (window.EventBus) EventBus.emit(GameConstants.Events.FORGE_EXITED);
                 console.log('[HomeBase] Hero exited forge area');
             }
@@ -125,6 +139,23 @@ const HomeBase = {
      * @param {CanvasRenderingContext2D} ctx
      */
     render(ctx) {
+        // PERF: Lazy init if init() was called before IslandManager was ready
+        if (!this._cachedBounds && window.IslandManager) {
+            const home = IslandManager.getHomeIsland();
+            if (home) {
+                this._cachedHome = home;
+                this._cachedBounds = IslandManager.getPlayableBounds(home);
+                if (window.AssetLoader) {
+                    this._outpostPath = AssetLoader.getImagePath('building_outpost');
+                    this._forgePath = AssetLoader.getImagePath('building_forge');
+                    this._treePath = AssetLoader.getImagePath('world_wood');
+                    this._treeConsumedPath = AssetLoader.getImagePath('world_wood_consumed');
+                }
+            }
+        }
+
+        const bounds = this._cachedBounds;
+
         // === DEBUG: Draw spawn zone visualization (only when debug mode active) ===
         if (this._debugSpawnZone && window.GameRenderer && GameRenderer.debugMode) {
             const z = this._debugSpawnZone;
@@ -147,77 +178,54 @@ const HomeBase = {
             ctx.font = 'bold 24px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('TREE SPAWN ZONE', z.centerX, z.minY - 20);
-            ctx.fillText(`Trees: ${this.treeResources.length}`, z.centerX, z.minY - 50);
+            ctx.fillText(`Trees: ${this._cachedTrees?.length || 0}`, z.centerX, z.minY - 50);
             ctx.restore();
         }
 
         // Render Outpost Building (Center of Rest Area)
-        if (window.AssetLoader && window.IslandManager) {
-            const home = IslandManager.getHomeIsland();
-            if (home) {
-                const bounds = IslandManager.getPlayableBounds(home);
-                if (bounds) {
-                    const centerX = bounds.x + bounds.width / 2;
-                    const centerY = bounds.y + bounds.height / 2;
+        if (bounds && this._outpostPath) {
+            const centerX = bounds.x + bounds.width / 2;
+            const centerY = bounds.y + bounds.height / 2;
 
-                    const outpostPath = AssetLoader.getImagePath('building_outpost');
-                    if (outpostPath) {
-                        if (!this._outpostImg) {
-                            this._outpostImg = AssetLoader.createImage(outpostPath);
-                        }
-                        if (this._outpostImg.complete && this._outpostImg.naturalWidth) {
-                            const size = 300;
-                            ctx.drawImage(this._outpostImg, centerX - size / 2, centerY - size / 2, size, size);
-                        }
-                    }
-                }
+            if (!this._outpostImg) {
+                this._outpostImg = AssetLoader.createImage(this._outpostPath);
+            }
+            if (this._outpostImg.complete && this._outpostImg.naturalWidth) {
+                const size = 300;
+                ctx.drawImage(this._outpostImg, centerX - size / 2, centerY - size / 2, size, size);
             }
         }
 
         // Render Forge Building (Bottom Left of Safe Area)
-        if (window.AssetLoader && window.IslandManager) {
-            const home = IslandManager.getHomeIsland();
-            if (home) {
-                const bounds = IslandManager.getPlayableBounds(home);
-                if (bounds) {
-                    const forgeSize = 250;
-                    const forgeX = bounds.x + forgeSize / 2 + 30;
-                    const forgeY = bounds.y + bounds.height - forgeSize / 2 - 30;
-                    this._forgePos = { x: forgeX, y: forgeY, size: forgeSize };
+        if (bounds && this._forgePath) {
+            const forgeSize = 250;
+            const forgeX = bounds.x + forgeSize / 2 + 30;
+            const forgeY = bounds.y + bounds.height - forgeSize / 2 - 30;
+            this._forgePos = { x: forgeX, y: forgeY, size: forgeSize };
 
-                    const forgePath = AssetLoader.getImagePath('building_forge');
-                    if (forgePath) {
-                        if (!this._forgeImg) {
-                            this._forgeImg = AssetLoader.createImage(forgePath);
-                        }
-                        if (this._forgeImg.complete && this._forgeImg.naturalWidth) {
-                            ctx.drawImage(this._forgeImg, forgeX - forgeSize / 2, forgeY - forgeSize / 2, forgeSize, forgeSize);
-                        }
-                    }
-                }
+            if (!this._forgeImg) {
+                this._forgeImg = AssetLoader.createImage(this._forgePath);
+            }
+            if (this._forgeImg.complete && this._forgeImg.naturalWidth) {
+                ctx.drawImage(this._forgeImg, forgeX - forgeSize / 2, forgeY - forgeSize / 2, forgeSize, forgeSize);
             }
         }
 
-        // Load sprite on first render
-        if (!this._treeImage && window.AssetLoader) {
-            const imagePath = AssetLoader.getImagePath('world_wood');
-            if (imagePath) {
-                this._treeImage = AssetLoader.createImage(imagePath, () => { this._treeLoaded = true; });
-                this._treeLoaded = false;
-            }
+        // Load tree sprites once
+        if (!this._treeImage && this._treePath) {
+            this._treeImage = AssetLoader.createImage(this._treePath, () => { this._treeLoaded = true; });
+            this._treeLoaded = false;
+        }
+        if (!this._treeConsumedImage && this._treeConsumedPath) {
+            this._treeConsumedImage = AssetLoader.createImage(this._treeConsumedPath, () => { this._treeConsumedLoaded = true; });
+            this._treeConsumedLoaded = false;
         }
 
-        // Load consumed tree sprite on first render
-        if (!this._treeConsumedImage && window.AssetLoader) {
-            const consumedPath = AssetLoader.getImagePath('world_wood_consumed');
-            if (consumedPath) {
-                this._treeConsumedImage = AssetLoader.createImage(consumedPath, () => { this._treeConsumedLoaded = true; });
-                this._treeConsumedLoaded = false;
-            }
-        }
+        // Trigger cache refresh (once per frame via getter)
+        this.treeResources;
 
-        // Sort trees by Y for correct draw order
-        const sortedTrees = [...this.treeResources].sort((a, b) => a.y - b.y);
+        // Use pre-sorted trees (sorted when cache updates)
+        const sortedTrees = this._sortedTrees || [];
 
         for (const tree of sortedTrees) {
             if (tree.state === 'depleted') {

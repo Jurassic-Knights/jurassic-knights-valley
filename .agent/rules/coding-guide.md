@@ -2,11 +2,19 @@
 trigger: always_on
 ---
 
+---
+trigger: always_on
+---
+
 # Master Architecture Principles
 
-**Version:** 1.0
-**Date:** 2026-01-04
+**Version:** 1.1  
+**Date:** 2026-01-08  
 **Goal:** Ensure scalable, maintainable, and verifiable game development.
+
+### Changelog
+- **v1.1 (2026-01-08)**: Added `EntityTypes` constants. All registries now embedded in AssetLoader.js.
+- **v1.0 (2026-01-04)**: Initial principles.
 
 ## 1. Core Architecture (ECS & Composition)
 *   **Composition over Inheritance:** Use Components to define *what an entity has* rather than Inheritance to define *what it is*.
@@ -57,32 +65,31 @@ Each system will be graded on:
 *   **HIGH**: Significant debt, limits features (e.g., Hardcoded types).
 *   **MEDIUM**: Modularity violation (e.g., Coupled Systems).
 *   **LOW**: Polish / nitpick (e.g., Naming convention).
+
+---
+
 # Asset Creation Workflow
 
 All assets use ID-based linking for non-destructive workflows.
+All registries are **embedded** in [src/core/AssetLoader.js](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/core/AssetLoader.js:0:0-0:0).
 
 ## Before Creating an Asset
 
-1. Check `documents/style_guide.md` for art direction
-2. Check `documents/technical_guidelines.md` for ID naming
-3. Check existing registry to avoid duplicate IDs
+1. Check [documents/style_guide.md](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/documents/style_guide.md:0:0-0:0) for art direction
+2. Check [documents/technical_guidelines.md](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/documents/technical_guidelines.md:0:0-0:0) for ID naming
+3. Check existing registry in [AssetLoader.js](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/core/AssetLoader.js:0:0-0:0) to avoid duplicate IDs
 
 ## Creating an Image Asset
 
 // turbo
-1. Generate/create the image file
-2. Save to appropriate folder in `assets/images/`
-3. Add entry to `assets/registry/images.json`:
+1. Generate/create the image file with white background
+2. Save to appropriate folder in `assets/images/` with `_original` suffix
+3. Review in Asset Dashboard → Approve → becomes `_approved_original.png`
+4. Run Photoshop script → Creates `_clean.png` (transparent, 10px padding)
+5. Add entry to `src/core/AssetLoader.js` in `registries.images.assets`:
 
-```json
-{
-  "asset_id_here": {
-    "path": "images/category/filename.png",
-    "category": "ui|characters|backgrounds|items|effects",
-    "aspect_ratio": "16:9|9:16|1:1|3:2|2:3",
-    "description": "What this asset is for"
-  }
-}
+```javascript
+"asset_id_here": { "path": "images/category/filename_clean.png" }
 ```
 
 ## Creating an Audio Asset
@@ -90,23 +97,15 @@ All assets use ID-based linking for non-destructive workflows.
 // turbo
 1. Create/acquire the audio file
 2. Save to appropriate folder in `assets/audio/`
-3. Add entry to `assets/registry/audio.json`:
+3. Add entry to `src/core/AssetLoader.js` in `registries.audio.assets`:
 
-```json
-{
-  "sound_id_here": {
-    "path": "audio/category/filename.wav",
-    "category": "bgm|sfx|ambient",
-    "volume": 0.7,
-    "loop": false,
-    "description": "When this sound plays"
-  }
-}
+```javascript
+"sfx_sound_id": { "path": "audio/category/filename.wav", "volume": 0.7 }
 ```
 
 ## ID Naming Rules
 
 - Use `snake_case`
-- Prefix with category: `ui_`, `char_`, `bg_`, `item_`, `sfx_`, `bgm_`
-- Be descriptive: `ui_btn_primary`, `char_knight_idle`, `sfx_sword_clash`
+- Prefix with category: `ui_`, `npc_`, `dino_`, `drop_`, `item_`, `world_`, `sfx_`, `bgm_`
+- Be descriptive: `ui_btn_primary`, `npc_merchant_home`, `dino_velociraptor_base`
 - IDs are permanent - file paths can change

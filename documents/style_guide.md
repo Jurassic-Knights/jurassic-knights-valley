@@ -33,7 +33,11 @@ Ground visuals in physical reality.
 ### Environments (Backgrounds)
 -   **Style**: High-Fidelity Pixel Art, Top-down RPG.
 -   **Keywords**: "High-fidelity pixel art", "Stoneshard style", "detailed texture", "sharp pixels".
--   **Pipeline**: Generate → Save as `_original.png` → Run `photoshop_remove_bg.py` → Scale if needed.
+-   **Pipeline**: 
+    1. Generate → Save as `_original.png`
+    2. Review in Asset Dashboard → Approve → becomes `_approved_original.png`
+    3. Run `photoshop_remove_bg.py` → Removes background, scales to 10px padding, creates `_clean.png`
+    4. Register `_clean.png` in `AssetLoader.js`
 
 ### Characters & Entities
 -   **Style**: High-Fidelity Pixel Art, Realistic proportions.

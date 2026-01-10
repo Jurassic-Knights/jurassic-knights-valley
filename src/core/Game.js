@@ -24,6 +24,9 @@ class Game {
 
         // Systems list for update loop
         this.systems = [];
+
+        // GC Optimization: Bind gameLoop once to avoid closure allocation
+        this._boundGameLoop = this.gameLoop.bind(this);
     }
 
     /**
@@ -213,7 +216,11 @@ class Game {
         this.update(dt);
         this.render();
 
-        requestAnimationFrame((ts) => this.gameLoop(ts));
+        // Increment profile frame count
+        if (this._profile) this._profile.frameCount++;
+
+        // Use pre-bound method to avoid closure allocation every frame
+        requestAnimationFrame(this._boundGameLoop);
     }
 
     /**
@@ -221,44 +228,100 @@ class Game {
      * @param {number} dt - Delta time in ms
      */
     update(dt) {
+        const profile = this._profile;
+
         // 1. Update Registered Systems
-        for (const system of this.systems) {
-            system.update(dt);
+        if (profile) {
+            for (const system of this.systems) {
+                const name = system.constructor?.name || 'Unknown';
+                const start = performance.now();
+                system.update(dt);
+                profile.systems[name] = (profile.systems[name] || 0) + (performance.now() - start);
+            }
+        } else {
+            for (const system of this.systems) {
+                system.update(dt);
+            }
         }
 
         // 2. Update Entities (via EntityManager)
         if (window.EntityManager) {
-            EntityManager.update(dt);
+            if (profile) {
+                const start = performance.now();
+                EntityManager.update(dt);
+                profile.entityManager = (profile.entityManager || 0) + (performance.now() - start);
+            } else {
+                EntityManager.update(dt);
+            }
         }
-
-        // 3. Update Hero Specifics (Events/Triggers)
-        // Handled by HeroSystem now
-        // if (this.hero) {
-        //    this.handleHeroEvents();
-        // }
-
-        // 4. Update Dropped Items (Handled by InteractionSystem)
-        // this.updateItemInteractions(dt);
-
-        // 5. UI Specific Checks (Handled by InteractionSystem)
-        // this.updateUITriggers();
     }
 
     /**
      * Render updates (variable timestep)
      */
     render() {
+        const profile = this._profile;
+
         // 3. Render Game World (includes BG VFX)
         if (window.GameRenderer) {
-            GameRenderer.render();
+            if (profile) {
+                const start = performance.now();
+                GameRenderer.render();
+                profile.gameRenderer = (profile.gameRenderer || 0) + (performance.now() - start);
+            } else {
+                GameRenderer.render();
+            }
         }
 
         // 4. Render Foreground VFX (Overlay Layer)
         if (window.VFXController) {
-            VFXController.renderForeground();
+            if (profile) {
+                const start = performance.now();
+                VFXController.renderForeground();
+                profile.vfxForeground = (profile.vfxForeground || 0) + (performance.now() - start);
+            } else {
+                VFXController.renderForeground();
+            }
         }
+    }
 
-        // VFX are now rendered INSIDE GameRenderer for true z-layering
+    /**
+     * Start profiling frame times
+     */
+    startProfile() {
+        this._profile = {
+            systems: {},
+            entityManager: 0,
+            gameRenderer: 0,
+            vfxForeground: 0,
+            frameCount: 0,
+            startTime: performance.now()
+        };
+        console.log('[Game] Profiling started...');
+    }
+
+    /**
+     * Stop profiling and print results
+     */
+    stopProfile() {
+        if (!this._profile) return;
+
+        const p = this._profile;
+        const elapsed = (performance.now() - p.startTime) / 1000;
+        const avgFps = p.frameCount / elapsed;
+
+        console.log('=== FRAME PROFILE ===');
+        console.log(`Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`);
+        console.log('--- Systems (ms total) ---');
+        for (const [name, time] of Object.entries(p.systems).sort((a, b) => b[1] - a[1])) {
+            console.log(`  ${name}: ${time.toFixed(1)}ms (${(time / p.frameCount).toFixed(2)}ms/frame)`);
+        }
+        console.log(`--- EntityManager: ${p.entityManager.toFixed(1)}ms (${(p.entityManager / p.frameCount).toFixed(2)}ms/frame)`);
+        console.log(`--- GameRenderer: ${p.gameRenderer.toFixed(1)}ms (${(p.gameRenderer / p.frameCount).toFixed(2)}ms/frame)`);
+        console.log(`--- VFX Foreground: ${p.vfxForeground.toFixed(1)}ms (${(p.vfxForeground / p.frameCount).toFixed(2)}ms/frame)`);
+        console.log('=====================');
+
+        this._profile = null;
     }
 }
 

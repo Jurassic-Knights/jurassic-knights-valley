@@ -2,6 +2,7 @@
  * Progression System
  * Handles leveling and unlocks
  * 
+ * TODO: Placeholder - implement full progression system when needed
  * Owner: Gameplay Designer
  */
 

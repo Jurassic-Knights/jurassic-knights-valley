@@ -61,10 +61,19 @@ const MaterialLibrary = {
 
     /**
      * Generate unique cache string
+     * Optimized to avoid JSON.stringify for common cases
      */
     _generateKey(id, mat, params) {
-        // Simple serialization of params. Sort keys for consistency?
-        // JSON.stringify is fast enough for low-frequency checks or small param sets.
+        // Fast path: empty params object (common for shadows)
+        const keys = Object.keys(params);
+        if (keys.length === 0) {
+            return `${id}:${mat}`;
+        }
+        // Fast path: single color param (common for silhouette/tint)
+        if (keys.length === 1 && keys[0] === 'color') {
+            return `${id}:${mat}:${params.color}`;
+        }
+        // Slow path: full serialization
         return `${id}:${mat}:${JSON.stringify(params)}`;
     },
 

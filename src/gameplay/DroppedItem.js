@@ -13,6 +13,7 @@ class DroppedItem extends Entity {
         const finalConfig = { ...defaults, ...config };
 
         super({
+            entityType: EntityTypes.DROPPED_ITEM,
             width: finalConfig.width || 108,
             height: finalConfig.height || 108,
             ...config
@@ -191,7 +192,12 @@ class DroppedItem extends Entity {
                 // v = v0 + a*t
                 this.magnetSpeed += this.magnetAcceleration * dtSec;
                 // d = v*t
-                const moveDist = this.magnetSpeed * dtSec;
+                let moveDist = this.magnetSpeed * dtSec;
+
+                // FIX: Cap movement to remaining distance to prevent overshooting
+                if (moveDist > dist) {
+                    moveDist = dist;
+                }
 
                 this.x += Math.cos(angle) * moveDist;
                 this.y += Math.sin(angle) * moveDist;

@@ -21,7 +21,7 @@ class DinosaurSystem {
 
     onEntityDamaged(data) {
         const { entity, amount } = data;
-        if (!entity || entity.constructor.name !== 'Dinosaur') return;
+        if (!entity || entity.entityType !== EntityTypes.DINOSAUR) return;
 
         // SFX: Hurt
         if (window.AudioManager) AudioManager.playSFX('sfx_dino_hurt');
@@ -38,7 +38,7 @@ class DinosaurSystem {
 
     onEntityDied(data) {
         const { entity } = data;
-        if (!entity || entity.constructor.name !== 'Dinosaur') return;
+        if (!entity || entity.entityType !== EntityTypes.DINOSAUR) return;
 
         // SFX: Death
         if (window.AudioManager) AudioManager.playSFX('sfx_dino_death');
@@ -121,9 +121,9 @@ class DinosaurSystem {
         let nextX = dino.x + dino.wanderDirection.x * speedPerSecond * (dt / 1000);
         let nextY = dino.y + dino.wanderDirection.y * speedPerSecond * (dt / 1000);
 
-        // Bounds Check
+        // Bounds Check - use config value for padding
         if (dino.islandBounds) {
-            const padding = 30;
+            const padding = (window.EntityConfig && EntityConfig.dinosaur.defaults.boundsPadding) || 30;
             if (nextX < dino.islandBounds.x + padding || nextX > dino.islandBounds.x + dino.islandBounds.width - padding) {
                 dino.wanderDirection.x *= -1;
                 nextX = dino.x + dino.wanderDirection.x * 5;
@@ -153,10 +153,12 @@ class DinosaurSystem {
         } else {
             // Fallback for legacy (or if component missing)
             const angle = Math.random() * Math.PI * 2;
-            dino.wanderDirection = {
-                x: Math.cos(angle),
-                y: Math.sin(angle)
-            };
+            // GC Optimization: Reuse existing object instead of allocating new one
+            if (!dino.wanderDirection) {
+                dino.wanderDirection = { x: 0, y: 0 };
+            }
+            dino.wanderDirection.x = Math.cos(angle);
+            dino.wanderDirection.y = Math.sin(angle);
             dino.wanderTimer = 2000 + Math.random() * 3000;
         }
     }

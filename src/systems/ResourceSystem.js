@@ -35,10 +35,10 @@ class ResourceSystem {
         res.health = res.maxHealth;
         res.respawnTimer = 0;
 
-        // Play material-specific respawn SFX
+        // Play material-specific respawn SFX - config-driven
         if (window.AudioManager) {
-            const suffix = res.resourceType === 'wood' ? 'wood' :
-                res.resourceType === 'fossil_fuel' ? 'stone' : 'metal';
+            const typeConfig = (window.EntityConfig && EntityConfig.resource.types[res.resourceType]) || {};
+            const suffix = typeConfig.sfxSuffix || 'metal';
             AudioManager.playSFX(`sfx_respawn_${suffix}`);
         }
 

@@ -137,18 +137,18 @@ class HeroRendererSystem {
             ctx.globalAlpha = alpha;
         }
 
-        // Optimize: Use cached silhouette
-        const heroAssetId = 'world_hero';
-        let shadowImg = null;
-        if (window.MaterialLibrary) {
-            // Pass locally loaded _heroImg to ensure MaterialLibrary has a source
-            shadowImg = MaterialLibrary.get(heroAssetId, 'shadow', {}, this._heroImg);
+        // PERF: Cache shadow image on renderer (retry until successful)
+        if (!this._shadowImg) {
+            const heroAssetId = 'world_hero';
+            if (window.MaterialLibrary) {
+                this._shadowImg = MaterialLibrary.get(heroAssetId, 'shadow', {});
+            }
         }
 
-        if (shadowImg) {
+        if (this._shadowImg) {
             // Draw anchored at bottom (0,0) -> (-W/2, -H)
             ctx.drawImage(
-                shadowImg,
+                this._shadowImg,
                 -hero.width / 2, -hero.height,
                 hero.width, hero.height
             );
@@ -167,22 +167,36 @@ class HeroRendererSystem {
      * Draw the main hero sprite
      */
     drawBody(ctx, hero) {
-        const heroPath = window.AssetLoader ? AssetLoader.getImagePath('world_hero') : null;
+        // PERF: Cache heroPath on renderer
+        if (!this._heroPath && window.AssetLoader) {
+            this._heroPath = AssetLoader.getImagePath('world_hero');
+        }
 
-        if (heroPath) {
-            // Lazy load image on the renderer instance, not the entity
+        if (this._heroPath) {
+            // Lazy load image on the renderer instance
             if (!this._heroImg) {
                 this._heroImg = new Image();
-                this._heroImg.src = heroPath;
+                this._heroImg.src = this._heroPath;
             }
 
             if (this._heroImg.complete && this._heroImg.naturalWidth) {
+                // PERF: Cache scaled sprite to avoid expensive resizing every frame
+                // Invalidate cache if dimensions change
+                if (!this._heroCanvas || this._heroW !== hero.width || this._heroH !== hero.height) {
+                    this._heroW = hero.width;
+                    this._heroH = hero.height;
+                    this._heroCanvas = document.createElement('canvas');
+                    this._heroCanvas.width = hero.width;
+                    this._heroCanvas.height = hero.height;
+                    const c = this._heroCanvas.getContext('2d');
+                    c.imageSmoothingEnabled = false;
+                    c.drawImage(this._heroImg, 0, 0, hero.width, hero.height);
+                }
+
                 ctx.drawImage(
-                    this._heroImg,
+                    this._heroCanvas,
                     hero.x - hero.width / 2,
-                    hero.y - hero.height / 2,
-                    hero.width,
-                    hero.height
+                    hero.y - hero.height / 2
                 );
             }
         } else {
@@ -231,10 +245,8 @@ class HeroRendererSystem {
         const baseAngle = Math.atan2(aimY, aimX);
 
         // Determine Weapon Type (Gun vs Shovel)
-        const isGun = hero.targetResource && (
-            (window.Dinosaur && hero.targetResource instanceof window.Dinosaur) ||
-            hero.targetResource.constructor.name === 'Dinosaur'
-        );
+        const isGun = hero.targetResource &&
+            hero.targetResource.entityType === EntityTypes.DINOSAUR;
 
         if (isGun) {
             this.drawRifle(ctx, hero, baseAngle);

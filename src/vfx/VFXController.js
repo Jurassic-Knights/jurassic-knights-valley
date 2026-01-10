@@ -119,9 +119,20 @@ class VFXSystem {
 
         const rawSequence = VFXConfig.SEQUENCES[sequenceName];
 
-        // Clone cues so we can mutate them (consume them) during playback
+        // GC Optimization: Build cues array more efficiently
+        const cues = [];
+        for (let i = 0; i < rawSequence.length; i++) {
+            const src = rawSequence[i];
+            cues.push({
+                time: src.time,
+                template: src.template,
+                type: src.type,
+                layer: src.layer,
+                params: src.params
+            });
+        }
         // Sort by time just in case config is out of order
-        const cues = rawSequence.map(cue => ({ ...cue })).sort((a, b) => a.time - b.time);
+        cues.sort((a, b) => a.time - b.time);
 
         this.activeSequences.push({
             name: sequenceName,

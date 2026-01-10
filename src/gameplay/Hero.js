@@ -13,6 +13,7 @@ class Hero extends Entity {
 
         super({
             id: 'hero',
+            entityType: EntityTypes.HERO,
             width: finalConfig.width || RenderConfig.Hero.WIDTH,
             height: finalConfig.height || RenderConfig.Hero.HEIGHT,
             color: finalConfig.color || RenderConfig.Hero.COLOR,
