@@ -1,0 +1,158 @@
+[
+    {
+        "id": "signature_t4_01",
+        "name": "Mk. IV Tyrannosaur Cleaver",
+        "slot": "weapon",
+        "tier": 4,
+        "weaponType": "melee",
+        "hands": 2,
+        "stats": "+45 Damage, +15% Crit, Causes Bleed",
+        "bossSource": "Tyrannosaur Matriarch",
+        "dropChance": 0.15,
+        "alternativeDrop": {
+            "item": "tyrannosaur_hide",
+            "name": "Tyrannosaur Hide",
+            "description": "Thick prehistoric hide - reinforces armor for +20% damage resistance"
+        },
+        "description": "A reinforced trench blade forged from tyrannosaur bone and steel. Standard issue for veteran beast-hunters.",
+        "status": "pending",
+        "vfx": {
+            "equip": "vfx_equip_signature_t4_01",
+            "attack": "vfx_attack_signature_t4_01"
+        },
+        "sfx": {
+            "equip": "sfx_equip_signature_t4_01",
+            "attack": "sfx_attack_signature_t4_01"
+        }
+    },
+    {
+        "id": "signature_t4_02",
+        "name": "Model 1918 Raptor Knives",
+        "slot": "weapon",
+        "tier": 4,
+        "weaponType": "melee",
+        "hands": 1,
+        "stats": "+25 Damage, +30% Attack Speed, Double Strike chance",
+        "bossSource": "Pack Alpha",
+        "dropChance": 0.15,
+        "alternativeDrop": {
+            "item": "raptor_claw",
+            "name": "Raptor Claw",
+            "description": "Serrated claw - fitted to weapon grip for +15% attack speed"
+        },
+        "description": "A matched pair of fighting knives with raptor-claw handles. Issued to reconnaissance units.",
+        "status": "pending",
+        "vfx": {
+            "equip": "vfx_equip_signature_t4_02",
+            "attack": "vfx_attack_signature_t4_02"
+        },
+        "sfx": {
+            "equip": "sfx_equip_signature_t4_02",
+            "attack": "sfx_attack_signature_t4_02"
+        }
+    },
+    {
+        "id": "signature_t4_03",
+        "name": "Ceratopsian Riot Shield",
+        "slot": "weapon",
+        "tier": 4,
+        "weaponType": "melee",
+        "hands": 1,
+        "stats": "+10 Damage, +40 Block, Thorns damage",
+        "bossSource": "Bull Triceratops",
+        "dropChance": 0.15,
+        "alternativeDrop": {
+            "item": "ceratopsian_horn",
+            "name": "Horn Fragment",
+            "description": "Dense horn material - reinforces shield for +25% block chance"
+        },
+        "description": "A reinforced steel shield with ceratopsian frill plating. Used by frontline breach squads.",
+        "status": "pending",
+        "vfx": {
+            "equip": "vfx_equip_signature_t4_03",
+            "attack": "vfx_attack_signature_t4_03"
+        },
+        "sfx": {
+            "equip": "sfx_equip_signature_t4_03",
+            "attack": "sfx_attack_signature_t4_03"
+        }
+    },
+    {
+        "id": "signature_t4_04",
+        "name": "Pteranodon Marksman Rifle",
+        "slot": "weapon",
+        "tier": 4,
+        "weaponType": "ranged",
+        "hands": 2,
+        "stats": "+50 Damage, +100% Range, Piercing rounds",
+        "bossSource": "Roost Patriarch",
+        "dropChance": 0.15,
+        "alternativeDrop": {
+            "item": "pteranodon_membrane",
+            "name": "Wing Membrane",
+            "description": "Lightweight membrane - reduces armor weight for +20% movement speed"
+        },
+        "description": "A precision rifle with bone-composite stock and extended barrel. Preferred by aerial scouts.",
+        "status": "pending",
+        "vfx": {
+            "equip": "vfx_equip_signature_t4_04",
+            "attack": "vfx_attack_signature_t4_04"
+        },
+        "sfx": {
+            "equip": "sfx_equip_signature_t4_04",
+            "attack": "sfx_attack_signature_t4_04"
+        }
+    },
+    {
+        "id": "signature_t3_01",
+        "name": "Feldwebel's Trench Maul",
+        "slot": "weapon",
+        "tier": 3,
+        "weaponType": "melee",
+        "hands": 2,
+        "stats": "+35 Damage, Stun chance, Armor penetration",
+        "bossSource": "Enemy Feldwebel",
+        "dropChance": 0.2,
+        "alternativeDrop": {
+            "item": "feldwebel_insignia",
+            "name": "Feldwebel Insignia",
+            "description": "Military insignia - increases XP gain by +10%"
+        },
+        "description": "A brutal spiked club carried by enemy sergeants. Effective against armored targets.",
+        "status": "pending",
+        "vfx": {
+            "equip": "vfx_equip_signature_t3_01",
+            "attack": "vfx_attack_signature_t3_01"
+        },
+        "sfx": {
+            "equip": "sfx_equip_signature_t3_01",
+            "attack": "sfx_attack_signature_t3_01"
+        }
+    },
+    {
+        "id": "signature_t3_02",
+        "name": "Offizier's Luger P08",
+        "slot": "weapon",
+        "tier": 3,
+        "weaponType": "ranged",
+        "hands": 1,
+        "stats": "+20 Damage, +50% Reload Speed, Execute bonus vs low HP",
+        "bossSource": "Enemy Leutnant",
+        "dropChance": 0.2,
+        "alternativeDrop": {
+            "item": "officer_sash",
+            "name": "Officer's Sash",
+            "description": "Decorated sash - increases gold drops by +15%"
+        },
+        "description": "An ornate service pistol carried by enemy officers. Reliable and deadly at close range.",
+        "status": "pending",
+        "vfx": {
+            "equip": "vfx_equip_signature_t3_02",
+            "attack": "vfx_attack_signature_t3_02"
+        },
+        "sfx": {
+            "equip": "sfx_equip_signature_t3_02",
+            "attack": "sfx_attack_signature_t3_02"
+        }
+    }
+]

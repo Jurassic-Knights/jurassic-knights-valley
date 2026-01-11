@@ -1,0 +1,122 @@
+[
+    {
+        "id": "food_t1_01",
+        "name": "Wild Berries",
+        "tier": 1,
+        "source": "Berry Bush",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t1_02",
+        "name": "Raw Meat",
+        "tier": 1,
+        "source": "Small Herbivores",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t1_03",
+        "name": "Wheat Grain",
+        "tier": 1,
+        "source": "Wild Wheat",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t2_04",
+        "name": "Fatty Meat",
+        "tier": 2,
+        "source": "Large Herbivores",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t2_05",
+        "name": "Frozen Fish",
+        "tier": 2,
+        "source": "Ice Hole",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t2_06",
+        "name": "Root Vegetables",
+        "tier": 2,
+        "source": "Frozen Ground",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "uncommon",
+        "status": "pending"
+    },
+    {
+        "id": "food_t2_07",
+        "name": "Cactus Fruit",
+        "tier": 2,
+        "source": "Desert Cactus",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t2_08",
+        "name": "Sand Grub",
+        "tier": 2,
+        "source": "Burrow Nest",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending"
+    },
+    {
+        "id": "food_t3_09",
+        "name": "Dried Jerky",
+        "tier": 3,
+        "source": "Desert Herbivores",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "uncommon",
+        "status": "pending"
+    },
+    {
+        "id": "food_t3_10",
+        "name": "Charred Meat",
+        "tier": 3,
+        "source": "Badlands Creatures",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "pending"
+    },
+    {
+        "id": "food_t3_11",
+        "name": "Smoked Rations",
+        "tier": 3,
+        "source": "Badlands Nest",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "pending"
+    },
+    {
+        "id": "food_t4_12",
+        "name": "Iron Rations",
+        "tier": 4,
+        "source": "Field Kitchen",
+        "location": "biome",
+        "biome": "all",
+        "rarity": "rare",
+        "status": "pending"
+    }
+]

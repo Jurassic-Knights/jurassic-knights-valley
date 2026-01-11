@@ -1,0 +1,159 @@
+[
+    {
+        "enemy": "saurian_t1_01",
+        "type": "enemy",
+        "enemyType": "saurian",
+        "biome": "grasslands",
+        "drops": [
+            {
+                "id": "leather_scraps",
+                "chance": 70,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "scrap_metal",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "billhook",
+                "chance": 12,
+                "min": 1,
+                "max": 1,
+                "quality": 55
+            }
+        ],
+        "status": "pending",
+        "name": "Saurian Rider",
+        "vfx": {
+            "spawn": "vfx_spawn_saurian_t1_01",
+            "death": "vfx_death_saurian_t1_01",
+            "hit": "vfx_blood_hit",
+            "aggro": "vfx_aggro_saurian_t1_01"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_saurian_t1_01",
+            "death": "sfx_death_saurian_t1_01",
+            "hit": "sfx_flesh_hit",
+            "aggro": "sfx_aggro_saurian_t1_01"
+        }
+    },
+    {
+        "enemy": "saurian_t1_02",
+        "type": "enemy",
+        "enemyType": "saurian",
+        "biome": "tundra",
+        "drops": [
+            {
+                "id": "thick_hide",
+                "chance": 80,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "bone",
+                "chance": 50,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "trench_mace",
+                "chance": 8,
+                "min": 1,
+                "max": 1,
+                "quality": 65
+            }
+        ],
+        "status": "pending",
+        "name": "Saurian Lancer",
+        "vfx": {
+            "spawn": "vfx_spawn_saurian_t1_02",
+            "death": "vfx_death_saurian_t1_02",
+            "hit": "vfx_blood_hit",
+            "aggro": "vfx_aggro_saurian_t1_02"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_saurian_t1_02",
+            "death": "sfx_death_saurian_t1_02",
+            "hit": "sfx_flesh_hit",
+            "aggro": "sfx_aggro_saurian_t1_02"
+        }
+    },
+    {
+        "enemy": "saurian_t1_03",
+        "type": "enemy",
+        "enemyType": "saurian",
+        "biome": "desert",
+        "drops": [
+            {
+                "id": "brass_casing",
+                "chance": 80,
+                "min": 2,
+                "max": 4
+            },
+            {
+                "id": "mechanical_parts",
+                "chance": 30,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "gewehr_98",
+                "chance": 10,
+                "min": 1,
+                "max": 1,
+                "quality": 70
+            }
+        ],
+        "status": "pending",
+        "name": "Mounted Gunner",
+        "vfx": {
+            "spawn": "vfx_spawn_saurian_t1_03",
+            "death": "vfx_death_saurian_t1_03",
+            "hit": "vfx_blood_hit",
+            "aggro": "vfx_aggro_saurian_t1_03"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_saurian_t1_03",
+            "death": "sfx_death_saurian_t1_03",
+            "hit": "sfx_flesh_hit",
+            "aggro": "sfx_aggro_saurian_t1_03"
+        }
+    },
+    {
+        "enemy": "saurian_t1_04",
+        "type": "enemy",
+        "enemyType": "saurian",
+        "biome": "badlands",
+        "drops": [
+            {
+                "id": "scorch_scale",
+                "chance": 60,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "munitions",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Saurian Warlord",
+        "vfx": {
+            "spawn": "vfx_spawn_saurian_t1_04",
+            "death": "vfx_death_saurian_t1_04",
+            "hit": "vfx_blood_hit",
+            "aggro": "vfx_aggro_saurian_t1_04"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_saurian_t1_04",
+            "death": "sfx_death_saurian_t1_04",
+            "hit": "sfx_flesh_hit",
+            "aggro": "sfx_aggro_saurian_t1_04"
+        }
+    }
+]

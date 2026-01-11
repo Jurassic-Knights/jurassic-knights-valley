@@ -58,7 +58,7 @@ const AssetLoader = {
                 "building_forge": { "path": "images/buildings/building_forge_clean.png" },
                 "world_base_layer": { "path": "images/backgrounds/base_layer.jpg" },
                 "world_island_home": { "path": "images/backgrounds/zone_home_clean.png" },
-                "world_hero": { "path": "images/characters/world_hero_clean.png" },
+                "world_hero": { "path": "images/characters/world_hero_2_clean.png" },
                 "world_wood_consumed": { "path": "images/resources/res_wood_consumed_clean.png" },
                 "world_iron_ore_consumed": { "path": "images/resources/res_iron_ore_consumed_clean.png" },
                 "world_scrap_metal_consumed": { "path": "images/resources/res_scrap_metal_consumed_clean.png" },

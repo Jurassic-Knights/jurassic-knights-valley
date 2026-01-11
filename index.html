@@ -282,6 +282,24 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Map Modal -->
+                <div id="modal-map" class="modal-panel" style="display: none;">
+                    <div class="modal-header">
+                        <span class="modal-title" style="color: #3498DB;">SECTOR MAP</span>
+                        <button class="modal-close" id="btn-close-map">X</button>
+                    </div>
+                    <div class="modal-body" style="padding: 10px;">
+                        <canvas id="minimap-canvas" width="400" height="400"
+                            style="display: block; margin: 0 auto; background: #1a1a2e; border: 2px solid #333;"></canvas>
+                        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: #888;">
+                            <span style="color: #4CAF50;">●</span> Home &nbsp;
+                            <span style="color: #2196F3;">●</span> Unlocked &nbsp;
+                            <span style="color: #555;">●</span> Locked &nbsp;
+                            <span style="color: #FF5722;">▲</span> You
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -308,6 +326,7 @@
     <script src="src/data/progression.js"></script>
     <script src="src/data/VFXConfig.js"></script>
     <script src="src/data/WorldData.js"></script>
+    <script src="src/data/BiomeConfig.js"></script>
 
     <!-- Core Architecture -->
     <script src="src/core/Registry.js"></script>
@@ -371,6 +390,7 @@
     <script src="src/ui/DebugUI.js"></script>
     <script src="src/ui/InventoryUI.js"></script>
     <script src="src/ui/MerchantUI.js"></script>
+    <script src="src/ui/MinimapSystem.js"></script>
 
 
     <!-- Gameplay Systems -->
@@ -384,15 +404,21 @@
     <script src="src/gameplay/Merchant.js"></script>
     <script src="src/gameplay/IslandUpgrades.js"></script>
     <script src="src/gameplay/Dinosaur.js"></script>
+    <script src="src/gameplay/Enemy.js"></script>
+    <script src="src/gameplay/Boss.js"></script>
 
     <script src="src/systems/SpawnManager.js"></script>
     <script src="src/systems/CombatController.js"></script>
     <script src="src/systems/DinosaurSystem.js"></script>
+    <script src="src/systems/EnemySystem.js"></script>
     <script src="src/systems/ResourceSystem.js"></script>
     <script src="src/systems/HeroSystem.js"></script>
     <script src="src/systems/EconomySystem.js"></script>
     <script src="src/systems/InteractionSystem.js"></script>
     <script src="src/systems/RestSystem.js"></script>
+    <script src="src/systems/DamageSystem.js"></script>
+    <script src="src/systems/PathfindingSystem.js"></script>
+    <script src="src/systems/BossSystem.js"></script>
 
     <!-- Audio System -->
     <script src="src/audio/SoundRegistry.js"></script>

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 1
 depends_on: none
 estimated_complexity: medium
@@ -124,13 +124,13 @@ get defense() { return this.components.stats?.getDefense() || 0; }
 ```
 
 ## Acceptance Criteria
-- [ ] Hero has level and xp properties
-- [ ] StatsComponent has attack, defense, critChance, critMultiplier
-- [ ] XP curve calculation is config-driven (xpToNextLevel, xpScaling)
-- [ ] Level scaling for attack/defense (not hardcoded)
-- [ ] Damage reduction formula uses defense stat
-- [ ] Hero.js has accessors for new stats
-- [ ] Events emitted on level change (HERO_LEVEL_UP)
+- [x] Hero has level and xp properties
+- [x] StatsComponent has attack, defense, critChance, critMultiplier
+- [x] XP curve calculation is config-driven (xpToNextLevel, xpScaling)
+- [x] Level scaling for attack/defense (not hardcoded)
+- [x] Damage reduction formula uses defense stat
+- [x] Hero.js has accessors for new stats
+- [x] Events emitted on level change (HERO_LEVEL_UP)
 
 ## Notes
 - Actual XP gain handled by 08-leveling-system.md

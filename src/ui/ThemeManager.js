@@ -85,6 +85,9 @@ class ThemeManagerService {
     }
 
     applyAll() {
+        // DISABLED: Comment out this line to re-enable texture overlays
+        return; // <-- TEMPORARILY DISABLED
+
         for (const [id, def] of Object.entries(this.config)) {
             if (!def) continue;
             this.applyToTarget(id, def);

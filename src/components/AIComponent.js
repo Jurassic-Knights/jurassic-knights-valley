@@ -27,6 +27,16 @@ class AIComponent extends Component {
         this.target = null;
         this.combatCooldown = 0;
 
+        // Aggro System (Enemy AI)
+        this.aggroRange = config.aggroRange || 200;
+        this.leashDistance = config.leashDistance || 500;
+        this.attackRange = config.attackRange || 100;
+
+        // Combat State
+        this.attackCooldown = 0;
+        this.attackWindup = 0;
+        this.isAttacking = false;
+
         console.log(`[AIComponent] Attached to ${parent.constructor.name}`);
     }
 
@@ -47,6 +57,39 @@ class AIComponent extends Component {
             y: Math.sin(angle)
         };
         this.wanderTimer = this.wanderIntervalMin + Math.random() * (this.wanderIntervalMax - this.wanderIntervalMin);
+    }
+
+    /**
+     * Check if target is within aggro range
+     */
+    canAggro(target) {
+        if (!target) return false;
+        const dx = target.x - this.parent.x;
+        const dy = target.y - this.parent.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        return dist <= this.aggroRange;
+    }
+
+    /**
+     * Check if too far from spawn (should leash)
+     */
+    shouldLeash() {
+        if (!this.parent.spawnX) return false;
+        const dx = this.parent.x - this.parent.spawnX;
+        const dy = this.parent.y - this.parent.spawnY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        return dist > this.leashDistance;
+    }
+
+    /**
+     * Check if in attack range
+     */
+    inAttackRange(target) {
+        if (!target) return false;
+        const dx = target.x - this.parent.x;
+        const dy = target.y - this.parent.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        return dist <= this.attackRange;
     }
 }
 

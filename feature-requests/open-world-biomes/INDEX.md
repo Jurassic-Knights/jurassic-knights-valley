@@ -51,15 +51,15 @@ graph TD
 
 | File | Status | Priority | Depends On | Complexity | Claimed By |
 |------|--------|----------|------------|------------|------------|
-| 01-biome-config.md | pending | 1 | none | medium | - |
-| 02-enemy-config.md | pending | 1 | none | medium | - |
-| 03-hero-stats.md | pending | 1 | none | medium | - |
-| 04-enemy-spawning.md | pending | 2 | 01, 02 | high | - |
-| 05-enemy-ai.md | pending | 2 | 02 | high | - |
-| 06-damage-system.md | pending | 2 | 02, 03 | medium | - |
-| 07-loot-system.md | pending | 3 | 04, 05 | medium | - |
-| 08-leveling-system.md | pending | 3 | 03, 06 | medium | - |
-| 09-boss-system.md | pending | 4 | 07, 08 | high | - |
+| 01-biome-config.md | complete | 1 | none | medium | agent-7a41e918 |
+| 02-enemy-config.md | complete | 1 | none | medium | agent-e42c9859 |
+| 03-hero-stats.md | complete | 1 | none | medium | agent-b73a7f97 |
+| 04-enemy-spawning.md | complete | 2 | 01, 02 | high | agent-7a41e918 |
+| 05-enemy-ai.md | complete | 2 | 02 | high | agent-e42c9859 |
+| 06-damage-system.md | complete | 2 | 02, 03 | medium | agent-b73a7f97 |
+| 07-loot-system.md | complete | 3 | 04, 05 | medium | agent-7a41e918 |
+| 08-leveling-system.md | complete | 3 | 03, 06 | medium | agent-e42c9859 |
+| 09-boss-system.md | complete | 4 | 07, 08 | high | agent-b73a7f97 |
 
 ## Integration Order
 

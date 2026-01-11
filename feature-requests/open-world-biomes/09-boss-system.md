@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 4
 depends_on: [07-loot-system.md, 08-leveling-system.md]
 estimated_complexity: high
@@ -288,17 +288,17 @@ BIOME_ENTERED: 'BIOME_ENTERED',   // { biomeId, hero }
 ```
 
 ## Acceptance Criteria
-- [ ] Boss.js class created extending Enemy
-- [ ] EntityConfig.boss section with 4 bosses defined
-- [ ] BossSystem.js manages spawn/respawn
-- [ ] One boss per biome
-- [ ] Boss respawns on timer after death
-- [ ] Boss has enhanced stats (config-driven)
-- [ ] BOSS_SPAWNED event emitted
-- [ ] BOSS_KILLED event emitted with respawn time
-- [ ] Boss uses special loot table
-- [ ] Visual indicator (glow, scale) for boss
-- [ ] SystemConfig updated
+- [x] Boss.js class created extending Enemy
+- [x] EntityConfig.boss section with 4 bosses defined
+- [x] BossSystem.js manages spawn/respawn
+- [x] One boss per biome
+- [x] Boss respawns on timer after death
+- [x] Boss has enhanced stats (config-driven)
+- [x] BOSS_SPAWNED event emitted
+- [x] BOSS_KILLED event emitted with respawn time
+- [x] Boss uses special loot table
+- [x] Visual indicator (glow, scale) for boss
+- [x] SystemConfig updated
 
 ## Notes
 - Abilities are placeholder for future system

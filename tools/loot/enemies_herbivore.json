@@ -1,0 +1,246 @@
+[
+    {
+        "enemy": "herbivore_t1_01",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "grasslands",
+        "drops": [
+            {
+                "id": "raw_meat",
+                "chance": 100,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "leather_scraps",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Gallimimus",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_01",
+            "death": "vfx_death_herbivore_t1_01",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_01"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_01",
+            "death": "sfx_death_herbivore_t1_01",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_01"
+        }
+    },
+    {
+        "enemy": "herbivore_t1_02",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "grasslands",
+        "drops": [
+            {
+                "id": "raw_meat",
+                "chance": 100,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "sinew",
+                "chance": 20,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Parasaurolophus",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_02",
+            "death": "vfx_death_herbivore_t1_02",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_02"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_02",
+            "death": "sfx_death_herbivore_t1_02",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_02"
+        }
+    },
+    {
+        "enemy": "herbivore_t1_03",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "tundra",
+        "drops": [
+            {
+                "id": "fatty_meat",
+                "chance": 100,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "thick_hide",
+                "chance": 50,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "bone",
+                "chance": 30,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Pachyrhinosaurus",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_03",
+            "death": "vfx_death_herbivore_t1_03",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_03"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_03",
+            "death": "sfx_death_herbivore_t1_03",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_03"
+        }
+    },
+    {
+        "enemy": "herbivore_t1_04",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "tundra",
+        "drops": [
+            {
+                "id": "fatty_meat",
+                "chance": 100,
+                "min": 2,
+                "max": 3
+            },
+            {
+                "id": "thick_hide",
+                "chance": 70,
+                "min": 1,
+                "max": 2
+            }
+        ],
+        "status": "pending",
+        "name": "Therizinosaurus",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_04",
+            "death": "vfx_death_herbivore_t1_04",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_04"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_04",
+            "death": "sfx_death_herbivore_t1_04",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_04"
+        }
+    },
+    {
+        "enemy": "herbivore_t1_05",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "desert",
+        "drops": [
+            {
+                "id": "dried_jerky",
+                "chance": 100,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "sun_bleached_bone",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Ankylosaurus",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_05",
+            "death": "vfx_death_herbivore_t1_05",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_05"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_05",
+            "death": "sfx_death_herbivore_t1_05",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_05"
+        }
+    },
+    {
+        "enemy": "herbivore_t1_06",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "desert",
+        "drops": [
+            {
+                "id": "sand_grub",
+                "chance": 60,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "bone_plate",
+                "chance": 30,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Bull Triceratops",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_06",
+            "death": "vfx_death_herbivore_t1_06",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_06"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_06",
+            "death": "sfx_death_herbivore_t1_06",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_06"
+        }
+    },
+    {
+        "enemy": "herbivore_t1_07",
+        "type": "zone_dino",
+        "enemyType": "herbivore",
+        "biome": "badlands",
+        "drops": [
+            {
+                "id": "charred_meat",
+                "chance": 100,
+                "min": 2,
+                "max": 3
+            },
+            {
+                "id": "scorch_scale",
+                "chance": 30,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "status": "pending",
+        "name": "Roost Patriarch",
+        "vfx": {
+            "spawn": "vfx_spawn_herbivore_t1_07",
+            "death": "vfx_death_herbivore_t1_07",
+            "hit": "vfx_blood_hit",
+            "flee": "vfx_flee_herbivore_t1_07"
+        },
+        "sfx": {
+            "spawn": "sfx_spawn_herbivore_t1_07",
+            "death": "sfx_death_herbivore_t1_07",
+            "hit": "sfx_flesh_hit",
+            "flee": "sfx_flee_herbivore_t1_07"
+        }
+    }
+]

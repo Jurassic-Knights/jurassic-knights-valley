@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 3
 depends_on: [04-enemy-spawning.md, 05-enemy-ai.md]
 estimated_complexity: medium
@@ -225,15 +225,15 @@ LOOT_DROPPED: 'LOOT_DROPPED',     // { x, y, drops }
 ```
 
 ## Acceptance Criteria
-- [ ] EntityConfig.lootTables section created
-- [ ] Loot tables have guaranteedDrops and randomDrops
-- [ ] LootSystem.js listens for ENEMY_KILLED
-- [ ] generateLoot() uses weighted random selection
-- [ ] Drops scale with enemy level
-- [ ] Drops spawn in circular pattern around death location
-- [ ] LOOT_DROPPED event emitted
-- [ ] At least 4 loot tables defined (common, raptor, rex, soldier)
-- [ ] SystemConfig updated
+- [x] EntityConfig.lootTables section created
+- [x] Loot tables have guaranteedDrops and randomDrops
+- [x] LootSystem.js listens for ENEMY_DIED
+- [x] generateLoot() uses weighted random selection
+- [x] Drops scale with enemy level
+- [x] Drops spawn in circular pattern around death location
+- [x] LOOT_DROPPED event emitted
+- [x] At least 4 loot tables defined (common, raptor, rex, soldier)
+- [x] SystemConfig updated
 
 ## Notes
 - Equipment drops (equipment_crate) are placeholder for future system

@@ -122,8 +122,17 @@ When the user describes a new feature, follow this structured process to audit t
     ## Implementation Details
     [Specific implementation instructions]
     
+    ## Integration Checklist
+    **CRITICAL: These steps MUST be completed for the feature to work!**
+    
+    - [ ] **index.html**: Add `<script>` tags for any new .js files created
+    - [ ] **SystemConfig.js**: Register any new systems with `{ global: 'SystemName', priority: N, init: true }`
+    - [ ] **Trigger/Entry Point**: Ensure something CALLS the new code (e.g., event listener, game loop, spawn call)
+    - [ ] **Verify in Browser**: Open the game and confirm the feature works (no console errors)
+    
     ## Acceptance Criteria
     - [ ] [Testable criteria]
+    - [ ] All Integration Checklist items completed
     
     ## Notes
     [Any special considerations]

@@ -56,12 +56,22 @@ class Hero extends Entity {
             });
         }
 
-        // Stats (New Phase 17)
+        // Stats (New Phase 17, expanded 03-hero-stats)
         if (window.StatsComponent) {
             this.components.stats = new StatsComponent(this, {
                 speed: finalConfig.speed || 700,
                 maxStamina: finalConfig.maxStamina || 100,
-                stamina: finalConfig.stamina // Defaults to max
+                stamina: finalConfig.stamina, // Defaults to max
+                // Combat Stats (03-hero-stats)
+                attack: finalConfig.attack?.damage || 10,
+                defense: finalConfig.defense || 0,
+                critChance: finalConfig.critChance || 0.05,
+                critMultiplier: finalConfig.critMultiplier || 1.5,
+                // Leveling (03-hero-stats)
+                level: finalConfig.level || 1,
+                xp: finalConfig.xp || 0,
+                xpToNextLevel: finalConfig.xpToNextLevel || 100,
+                xpScaling: finalConfig.xpScaling || 1.5
             });
         }
 
@@ -115,6 +125,17 @@ class Hero extends Entity {
 
     get maxStamina() { return this.components.stats ? this.components.stats.maxStamina : 100; }
     set maxStamina(val) { if (this.components.stats) this.components.stats.maxStamina = val; }
+
+    // Level/XP (03-hero-stats)
+    get level() { return this.components.stats?.level || 1; }
+    set level(val) { if (this.components.stats) this.components.stats.level = val; }
+
+    get xp() { return this.components.stats?.xp || 0; }
+    set xp(val) { if (this.components.stats) this.components.stats.xp = val; }
+
+    // Combat (03-hero-stats) - getters delegate to effective stat methods
+    get attack() { return this.components.stats?.getAttack() || 10; }
+    get defense() { return this.components.stats?.getDefense() || 0; }
 
     /**
      * Helper to restore stamina (used by RestSystem legacy calls)

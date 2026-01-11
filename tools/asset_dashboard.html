@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Management Dashboard</title>
+    <title>Asset Dashboard (Server Mode)</title>
     <style>
         :root {
             --bg-dark: #1a1a2e;
@@ -82,15 +82,10 @@
             background: var(--accent);
         }
 
-        button.process {
-            background: var(--accent-yellow);
-            color: #000;
-        }
-
         .stats {
             display: flex;
             gap: 2rem;
-            padding: 1rem 2rem;
+            padding: 0.75rem 2rem;
             background: var(--bg-panel);
             flex-wrap: wrap;
         }
@@ -127,9 +122,35 @@
             color: #64b5f6;
         }
 
-        .filters {
-            padding: 1rem 2rem;
+        .sticky-bar {
+            position: sticky;
+            top: 52px;
+            z-index: 99;
             background: var(--bg-dark);
+            border-bottom: 1px solid var(--bg-card);
+        }
+
+        .filters {
+            padding: 0.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            min-width: 60px;
+        }
+
+        .category-filters {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
@@ -246,6 +267,17 @@
             color: #000;
         }
 
+        .prompt-preview {
+            font-size: 0.65rem;
+            color: var(--accent-yellow);
+            margin-top: 0.3rem;
+            font-style: italic;
+            cursor: help;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .asset-actions {
             display: flex;
             gap: 0.5rem;
@@ -297,6 +329,65 @@
             cursor: pointer;
         }
 
+        .modal-header {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .modal-toggle {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 1px solid var(--text-dim);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        .modal-toggle:hover {
+            background: var(--accent);
+        }
+
+        .comparison-view {
+            display: flex;
+            gap: 2rem;
+            max-width: 95%;
+            max-height: 75%;
+            align-items: center;
+        }
+
+        .comparison-panel {
+            flex: 1;
+            text-align: center;
+        }
+
+        .comparison-panel img {
+            max-width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            background: repeating-conic-gradient(#333 0% 25%, #444 25% 50%) 50% / 20px 20px;
+            border-radius: 4px;
+        }
+
+        .comparison-label {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .comparison-panel.original .comparison-label {
+            color: var(--accent-yellow);
+        }
+
+        .comparison-panel.clean .comparison-label {
+            color: var(--accent-green);
+        }
+
         .loading {
             text-align: center;
             padding: 3rem;
@@ -310,61 +401,61 @@
             margin: 1rem 2rem;
         }
 
-        .instructions {
-            background: var(--bg-panel);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 0 2rem 1rem;
-        }
-
-        .instructions code {
-            background: var(--bg-dark);
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
+        .server-badge {
+            background: var(--accent-green);
+            color: #000;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>🦖 Asset Management Dashboard</h1>
+        <h1>🦖 Asset Dashboard <span class="server-badge">Server Mode</span></h1>
         <div class="controls">
-            <button id="btnRefresh" class="secondary">🔄 Refresh Manifest</button>
-            <button id="btnEnableEdit" class="secondary">✏️ Enable Editing</button>
+            <button id="btnTemplates" class="secondary" onclick="showTemplatesView()">📝 Templates</button>
+            <button id="btnSync" class="secondary" onclick="showSyncView()">🔗 Sync</button>
+            <button id="btnLoot" class="secondary" onclick="showLootView()" style="background:#9c27b0;">🎒 Loot</button>
+            <button id="btnSound" class="secondary" onclick="showSoundView()" style="background:#2196f3;">🔊
+                Sound</button>
+            <button id="btnRefresh" class="secondary">🔄 Refresh</button>
         </div>
     </header>
 
     <div class="stats">
-        <div class="stat pending">
-            <span class="stat-value" id="statPending">-</span>
-            <span class="stat-label">Pending</span>
+        <div class="stat pending"><span class="stat-value" id="statPending">-</span><span
+                class="stat-label">Pending</span></div>
+        <div class="stat approved"><span class="stat-value" id="statApproved">-</span><span
+                class="stat-label">Approved</span></div>
+        <div class="stat declined"><span class="stat-value" id="statDeclined">-</span><span
+                class="stat-label">Declined</span></div>
+        <div class="stat clean"><span class="stat-value" id="statClean">-</span><span class="stat-label">Clean</span>
         </div>
-        <div class="stat approved">
-            <span class="stat-value" id="statApproved">-</span>
-            <span class="stat-label">Approved</span>
-        </div>
-        <div class="stat declined">
-            <span class="stat-value" id="statDeclined">-</span>
-            <span class="stat-label">Declined</span>
-        </div>
-        <div class="stat clean">
-            <span class="stat-value" id="statClean">-</span>
-            <span class="stat-label">Clean</span>
-        </div>
+        <div class="stat" style="color: var(--accent);"><span class="stat-value" id="statMissing">-</span><span
+                class="stat-label">Missing</span></div>
+        <div class="stat" style="color: #64b5f6;"><span class="stat-value" id="statUnsynced">-</span><span
+                class="stat-label">Unsynced</span></div>
     </div>
 
-    <div class="filters">
-        <button class="filter-btn secondary active" data-filter="all">All</button>
-        <button class="filter-btn secondary" data-filter="pending">Pending</button>
-        <button class="filter-btn secondary" data-filter="approved">Approved</button>
-        <button class="filter-btn secondary" data-filter="declined">Declined</button>
-        <button class="filter-btn secondary" data-filter="clean">Clean</button>
-    </div>
-
-    <div class="instructions" id="editInstructions" style="display: none;">
-        <strong>Edit Mode:</strong> Click "Enable Editing" and select the <code>assets/images</code> folder to enable
-        approve/decline buttons.
-        After making changes, run: <code>python scripts/generate_asset_manifest.py</code> to refresh.
+    <div class="sticky-bar">
+        <div class="filters">
+            <div class="filter-row">
+                <span class="filter-label">Status:</span>
+                <button class="filter-btn secondary active" data-filter="all">All</button>
+                <button class="filter-btn secondary" data-filter="pending">Pending</button>
+                <button class="filter-btn secondary" data-filter="approved">Approved</button>
+                <button class="filter-btn secondary" data-filter="declined">Declined</button>
+                <button class="filter-btn secondary" data-filter="clean">Clean</button>
+                <button class="filter-btn secondary" data-filter="missing" style="border-color: var(--accent);">⚠️
+                    Missing</button>
+            </div>
+            <div class="filter-row">
+                <span class="filter-label">Folder:</span>
+                <div class="category-filters" id="categoryFilters"></div>
+            </div>
+        </div>
     </div>
 
     <main id="mainContent">
@@ -373,347 +464,571 @@
 
     <div class="modal" id="imageModal">
         <span class="modal-close" onclick="closeModal()">×</span>
-        <img id="modalImage" src="" alt="Preview">
+        <div class="modal-header">
+            <button class="modal-toggle" id="toggleComparison" onclick="toggleComparisonView()">📊 Compare</button>
+        </div>
+        <img id="modalImage" src="" alt="Preview" style="display:block;">
+        <div class="comparison-view" id="comparisonView" style="display:none;">
+            <div class="comparison-panel original">
+                <img id="compareOriginal" src="" alt="Original">
+                <div class="comparison-label">Original</div>
+            </div>
+            <div class="comparison-panel clean">
+                <img id="compareClean" src="" alt="Clean">
+                <div class="comparison-label">Clean</div>
+            </div>
+        </div>
         <div class="modal-info" id="modalInfo"></div>
     </div>
 
-    <div class="modal" id="declineModal">
-        <div style="background: var(--bg-panel); padding: 2rem; border-radius: 8px; max-width: 500px; width: 90%;">
-            <h3 style="color: var(--accent); margin-bottom: 1rem;">Decline Asset</h3>
-            <p style="color: var(--text-dim); margin-bottom: 1rem;">Asset: <strong id="declineAssetName"></strong></p>
-            <label style="color: var(--text); display: block; margin-bottom: 0.5rem;">Regeneration Instructions
-                (optional):</label>
-            <textarea id="declineNotes" rows="4"
-                style="width: 100%; background: var(--bg-dark); color: var(--text); border: 1px solid var(--text-dim); border-radius: 4px; padding: 0.5rem; font-family: inherit;"
-                placeholder="e.g., Make it more rusty, change angle to horizontal, add more detail..."></textarea>
-            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                <button class="decline" onclick="confirmDecline()">✗ Confirm Decline</button>
-                <button class="secondary" onclick="closeDeclineModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
+    <!-- Import actual game ProceduralSFX for authentic sound playback -->
+    <script src="/src/audio/ProceduralSFX.js"></script>
 
-    <script src="asset_manifest.js"></script>
     <script>
-        let manifest = window.ASSET_MANIFEST || null;
+        let manifest = null;
+        let declineNotes = {};
+        let assetPrompts = {};
+        let missingAssets = [];
+        let unsyncedAssets = [];
         let currentFilter = 'all';
-        let editMode = false;
-        let rootHandle = null;
-        let manifestFileHandle = null;
+        let currentCategory = 'all';
+        const BASE_PATH = '/images/';
 
-        const BASE_PATH = '../assets/images/';
-
-        function loadManifest() {
-            if (!manifest) {
-                document.getElementById('mainContent').innerHTML = `
-                    <div class="error">
-                        <strong>Could not load asset manifest.</strong><br>
-                        Run: <code>python scripts/generate_asset_manifest.py</code>
-                    </div>
-                `;
-                return;
+        async function loadManifest() {
+            try {
+                const resp = await fetch('/api/manifest');
+                manifest = await resp.json();
+                const notesResp = await fetch('/api/get_notes', { method: 'POST', body: '{}' });
+                declineNotes = await notesResp.json();
+                const promptsResp = await fetch('/api/get_prompts', { method: 'POST', body: '{}' });
+                assetPrompts = await promptsResp.json();
+                const missingResp = await fetch('/api/missing_assets', { method: 'POST', body: '{}' });
+                const missingData = await missingResp.json();
+                missingAssets = missingData.missing || [];
+                const unsyncedResp = await fetch('/api/unsynced_assets', { method: 'POST', body: '{}' });
+                const unsyncedData = await unsyncedResp.json();
+                unsyncedAssets = unsyncedData.unsynced || [];
+                buildCategoryFilters();
+                renderAssets();
+                updateStats();
+            } catch (err) {
+                document.getElementById('mainContent').innerHTML = `<div class="error"><strong>Server not running.</strong><br>Run: <code>python tools/serve_dashboard.py</code></div>`;
             }
-            renderAssets();
-            updateStats();
+        }
+
+        function buildCategoryFilters() {
+            if (!manifest || !manifest.assets) return;
+
+            // Calculate stats per category
+            const categoryStats = {};
+            manifest.assets.forEach(a => {
+                if (!categoryStats[a.category]) {
+                    categoryStats[a.category] = { total: 0, clean: 0, pending: 0, approved: 0 };
+                }
+                categoryStats[a.category].total++;
+                if (a.status === 'clean') categoryStats[a.category].clean++;
+                if (a.status === 'pending') categoryStats[a.category].pending++;
+                if (a.status === 'approved') categoryStats[a.category].approved++;
+            });
+
+            const sorted = Object.keys(categoryStats).sort();
+            const totalAssets = manifest.assets.length;
+            const totalClean = manifest.assets.filter(a => a.status === 'clean').length;
+
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = `<button class="filter-btn secondary ${currentCategory === 'all' ? 'active' : ''}" data-category="all">All (${totalClean}/${totalAssets})</button>`;
+            sorted.forEach(cat => {
+                const stats = categoryStats[cat];
+                const btn = document.createElement('button');
+                btn.className = `filter-btn secondary ${currentCategory === cat ? 'active' : ''}`;
+                btn.dataset.category = cat;
+                btn.textContent = `${cat} (${stats.clean}/${stats.total})`;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCategory = cat;
+                    renderAssets();
+                });
+                container.appendChild(btn);
+            });
+
+            // Rebind "All Folders" button
+            container.querySelector('[data-category="all"]').addEventListener('click', () => {
+                document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+                container.querySelector('[data-category="all"]').classList.add('active');
+                currentCategory = 'all';
+                renderAssets();
+            });
         }
 
         function renderAssets() {
             const container = document.getElementById('mainContent');
             container.innerHTML = '';
 
+            // Special handling for "missing" filter
+            if (currentFilter === 'missing') {
+                if (missingAssets.length === 0) {
+                    container.innerHTML = '<div class="loading" style="color: var(--accent-green);">✓ No missing assets! All AssetLoader IDs have valid files.</div>';
+                    return;
+                }
+                const categoryEl = document.createElement('div');
+                categoryEl.className = 'category';
+                categoryEl.innerHTML = `<div class="category-header"><h2 class="category-title">⚠️ Missing Assets in AssetLoader.js</h2><span style="color: var(--accent)">${missingAssets.length} assets pointing to PH.png</span></div><div class="asset-grid"></div>`;
+                container.appendChild(categoryEl);
+                const grid = categoryEl.querySelector('.asset-grid');
+                missingAssets.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'asset-card declined';
+                    card.innerHTML = `<div style="padding:1rem; background:var(--bg-dark); height:100px; display:flex; align-items:center; justify-content:center;"><span style="font-size:2rem;">❓</span></div><div class="asset-info"><div class="asset-name" style="color:var(--accent-yellow);">${item.id}</div><div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.25rem;">Expected: ${item.expectedFile}</div></div>`;
+                    grid.appendChild(card);
+                });
+                return;
+            }
+
             if (!manifest || !manifest.assets) return;
 
-            // Group by category
             const categories = {};
             manifest.assets.forEach(asset => {
-                // Apply filter
                 if (currentFilter !== 'all' && asset.status !== currentFilter) return;
-
-                if (!categories[asset.category]) {
-                    categories[asset.category] = [];
-                }
+                if (currentCategory !== 'all' && asset.category !== currentCategory) return;
+                if (!categories[asset.category]) categories[asset.category] = [];
                 categories[asset.category].push(asset);
             });
 
-            // Sort categories
             const sortedCategories = Object.keys(categories).sort();
-
             for (const category of sortedCategories) {
                 const assets = categories[category];
-
                 const categoryEl = document.createElement('div');
                 categoryEl.className = 'category';
-                categoryEl.innerHTML = `
-                    <div class="category-header">
-                        <h2 class="category-title">${category}</h2>
-                        <span style="color: var(--text-dim)">${assets.length} assets</span>
-                    </div>
-                    <div class="asset-grid"></div>
-                `;
+                categoryEl.innerHTML = `<div class="category-header"><h2 class="category-title">${category}</h2><span style="color: var(--text-dim)">${assets.length} assets</span></div><div class="asset-grid"></div>`;
                 container.appendChild(categoryEl);
-
                 const grid = categoryEl.querySelector('.asset-grid');
-                assets.forEach(asset => {
-                    grid.appendChild(createAssetCard(asset));
-                });
+                assets.forEach(asset => grid.appendChild(createAssetCard(asset)));
             }
-
-            if (sortedCategories.length === 0) {
-                container.innerHTML = '<div class="loading">No assets match the current filter.</div>';
-            }
+            if (sortedCategories.length === 0) container.innerHTML = '<div class="loading">No assets match the current filter.</div>';
         }
 
         function createAssetCard(asset) {
             const card = document.createElement('div');
             card.className = `asset-card ${asset.status}`;
             const safeId = asset.name.replace(/[^a-zA-Z0-9]/g, '_');
-
             const imgPath = BASE_PATH + asset.path;
+            const existingNotes = declineNotes[asset.name] || '';
 
-            // Get existing notes
-            const existingNotes = getDeclineNotes(asset.name) || '';
-
-            // Always show buttons for pending/approved/declined
             let actionsHtml = '';
             let notesInputHtml = '';
 
             if (asset.status === 'pending') {
-                notesInputHtml = `
-                    <input type="text" id="notes_${safeId}" class="notes-input" 
-                           placeholder="Decline reason (optional)..." 
-                           value="${existingNotes}"
-                           style="width:100%; margin-top:0.5rem; padding:0.3rem; font-size:0.7rem; background:var(--bg-dark); color:var(--text); border:1px solid var(--text-dim); border-radius:3px;">
-                `;
-                actionsHtml = `
-                    <div class="asset-actions">
-                        <button class="approve" onclick="approveAsset('${asset.path}')">✓ Approve</button>
-                        <button class="decline" onclick="declineAsset('${asset.path}', '${asset.name}', '${safeId}')">✗ Decline</button>
-                    </div>
-                `;
+                notesInputHtml = `<input type="text" id="notes_${safeId}" class="notes-input" placeholder="Decline reason..." value="${existingNotes}" style="width:100%; margin-top:0.5rem; padding:0.3rem; font-size:0.7rem; background:var(--bg-dark); color:var(--text); border:1px solid var(--text-dim); border-radius:3px;">`;
+                actionsHtml = `<div class="asset-actions"><button class="approve" onclick="approveAsset('${asset.path}')">✓ Approve</button><button class="decline" onclick="declineAsset('${asset.path}', '${asset.name}', '${safeId}')">✗ Decline</button></div>`;
             } else if (asset.status === 'approved') {
-                actionsHtml = `
-                    <div class="asset-actions">
-                        <button class="decline" onclick="declineAssetDirect('${asset.path}', '${asset.name}')">✗ Decline</button>
-                    </div>
-                `;
+                actionsHtml = `<div class="asset-actions"><button class="decline" onclick="declineAssetPrompt('${asset.path}', '${asset.name}')">✗ Decline</button></div>`;
             } else if (asset.status === 'declined') {
                 const notesDisplay = existingNotes ? `<div style="font-size:0.7rem; color:var(--accent-yellow); margin-top:0.3rem; font-style:italic;">📝 ${existingNotes}</div>` : '';
-                actionsHtml = `
-                    ${notesDisplay}
-                    <div class="asset-actions">
-                        <button class="approve" onclick="approveAsset('${asset.path}')">✓ Re-approve</button>
-                    </div>
-                `;
+                actionsHtml = `${notesDisplay}<div class="asset-actions"><button class="approve" onclick="approveAsset('${asset.path}')">✓ Re-approve</button></div>`;
+            } else if (asset.status === 'clean') {
+                notesInputHtml = `<input type="text" id="notes_${safeId}" class="notes-input" placeholder="Remake instructions..." value="${existingNotes}" style="width:100%; margin-top:0.5rem; padding:0.3rem; font-size:0.7rem; background:var(--bg-dark); color:var(--text); border:1px solid var(--text-dim); border-radius:3px;">`;
+                actionsHtml = `<div class="asset-actions"><button class="secondary" onclick="remakeAsset('${asset.path}', '${asset.name}', '${safeId}')" style="background:#ff9800;">🔄 Remake</button></div>`;
             }
 
-            card.innerHTML = `
-                <img class="asset-image" src="${imgPath}" alt="${asset.name}" 
-                     onclick="openModal('${imgPath}', '${asset.name}', '${asset.status}')"
-                     onerror="this.style.display='none'">
-                <div class="asset-info">
-                    <div class="asset-name">${asset.name}</div>
-                    <span class="asset-status status-${asset.status}">${asset.status}</span>
-                    ${notesInputHtml}
-                    ${actionsHtml}
-                </div>
-            `;
+            // Build base name for prompt lookup: strip status tokens and convert _clean to _original
+            let baseNameForPrompt = asset.name.replace('_approved', '').replace('_declined', '');
+            // For clean assets, convert _clean to _original since prompts are keyed by original name
+            if (baseNameForPrompt.includes('_clean')) {
+                baseNameForPrompt = baseNameForPrompt.replace('_clean', '_original');
+            }
+            const prompt = assetPrompts[baseNameForPrompt] || assetPrompts[asset.name] || '';
+            const promptPreview = prompt ? `<div class="prompt-preview" title="${prompt.replace(/"/g, '&quot;')}">📝 ${prompt.substring(0, 40)}${prompt.length > 40 ? '...' : ''}</div>` : '';
+
+            card.innerHTML = `<img class="asset-image" src="${imgPath}" alt="${asset.name}" onclick="openModal('${imgPath}', '${asset.name}', '${asset.status}')" onerror="this.style.display='none'"><div class="asset-info"><div class="asset-name">${asset.name}</div><span class="asset-status status-${asset.status}">${asset.status}</span>${promptPreview}${notesInputHtml}${actionsHtml}</div>`;
             return card;
         }
 
         async function approveAsset(path) {
-            if (!editMode || !rootHandle) {
-                alert('Click "Enable Editing" first and select the assets/images folder');
-                return;
-            }
             await changeStatus(path, 'approved');
         }
 
         async function declineAsset(path, name, safeId) {
-            if (!editMode || !rootHandle) {
-                alert('Click "Enable Editing" first and select the assets/images folder');
-                return;
-            }
             const notesInput = document.getElementById('notes_' + safeId);
             const notes = notesInput ? notesInput.value.trim() : '';
-            if (notes) {
-                saveDeclineNotes(name, notes);
-            }
+            if (notes) await saveNotes(name, notes);
             await changeStatus(path, 'declined');
         }
 
-        async function declineAssetDirect(path, name) {
-            if (!editMode || !rootHandle) {
-                alert('Click "Enable Editing" first and select the assets/images folder');
-                return;
-            }
+        async function declineAssetPrompt(path, name) {
             const notes = prompt('Decline reason (optional):');
-            if (notes) {
-                saveDeclineNotes(name, notes);
-            }
+            if (notes) await saveNotes(name, notes);
             await changeStatus(path, 'declined');
+        }
+
+        async function remakeAsset(path, name, safeId) {
+            // Get remake instructions from input
+            const notesInput = document.getElementById('notes_' + safeId);
+            const notes = notesInput ? notesInput.value.trim() : '';
+
+            // Save notes if provided
+            if (notes) {
+                // Save to decline_notes.json for _original version
+                const originalName = name.replace('_clean.png', '_original.png');
+                await saveNotes(originalName, notes);
+            }
+
+            // Mark the original version as declined
+            const originalPath = path.replace('_clean.png', '_original.png');
+            const resp = await fetch('/api/remake', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cleanPath: path, notes: notes })
+            });
+            const result = await resp.json();
+            if (result.success) {
+                await loadManifest();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        }
+
+        async function changeStatus(path, newStatus) {
+            const resp = await fetch('/api/change_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path, newStatus })
+            });
+            const result = await resp.json();
+            if (result.success) {
+                await loadManifest();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        }
+
+        async function saveNotes(assetName, notes) {
+            await fetch('/api/save_notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assetName, notes })
+            });
+            declineNotes[assetName] = notes;
         }
 
         function updateStats() {
             if (!manifest || !manifest.counts) return;
-
             document.getElementById('statPending').textContent = manifest.counts.pending || 0;
             document.getElementById('statApproved').textContent = manifest.counts.approved || 0;
             document.getElementById('statDeclined').textContent = manifest.counts.declined || 0;
             document.getElementById('statClean').textContent = manifest.counts.clean || 0;
+            document.getElementById('statMissing').textContent = missingAssets.length || 0;
+            document.getElementById('statUnsynced').textContent = unsyncedAssets.length || 0;
         }
 
+        // Sync View Functions
+        function showSyncView() {
+            const container = document.getElementById('mainContent');
+            container.innerHTML = '';
+
+            if (unsyncedAssets.length === 0) {
+                container.innerHTML = '<div class="loading" style="color: var(--accent-green);">✓ All clean assets are synced to AssetLoader.js!</div>';
+                return;
+            }
+
+            const categoryEl = document.createElement('div');
+            categoryEl.className = 'category';
+            categoryEl.innerHTML = `<div class="category-header"><h2 class="category-title">🔗 Unsynced Assets</h2><span style="color: #64b5f6">${unsyncedAssets.length} clean files not in AssetLoader.js</span></div><div class="asset-grid"></div>`;
+            container.appendChild(categoryEl);
+            const grid = categoryEl.querySelector('.asset-grid');
+
+            unsyncedAssets.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'asset-card';
+                card.style.borderColor = '#64b5f6';
+                const safeId = item.file.replace(/[^a-zA-Z0-9]/g, '_');
+                card.innerHTML = `
+                    <img class="asset-image" src="${BASE_PATH}${item.path}" alt="${item.file}" style="max-height:100px;">
+                    <div class="asset-info">
+                        <div class="asset-name" style="color:#64b5f6;">${item.file}</div>
+                        <div style="font-size:0.7rem; color:var(--text-dim);">Folder: ${item.folder}</div>
+                        <input type="text" id="syncId_${safeId}" value="${item.suggestedId}" style="width:100%; margin-top:0.5rem; padding:0.3rem; font-size:0.75rem; background:var(--bg-dark); color:var(--text); border:1px solid var(--text-dim); border-radius:3px;">
+                        <div class="asset-actions"><button onclick="syncAsset('${safeId}', '${item.path}')" style="background:#64b5f6;">➕ Add to AssetLoader</button></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function syncAsset(safeId, path) {
+            const assetId = document.getElementById('syncId_' + safeId).value;
+            const resp = await fetch('/api/sync_asset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assetId, path, category: '' })
+            });
+            const result = await resp.json();
+            if (result.success) {
+                await loadManifest();
+                showSyncView();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        }
+
+        let currentModalAsset = null;
+        let isComparisonMode = false;
+
         function openModal(url, name, status) {
+            currentModalAsset = { url, name, status };
+            isComparisonMode = false;
+
+            // Show single image view
+            document.getElementById('modalImage').style.display = 'block';
+            document.getElementById('comparisonView').style.display = 'none';
             document.getElementById('modalImage').src = url;
-            document.getElementById('modalInfo').innerHTML = `<strong>${name}</strong> <span class="asset-status status-${status}">${status}</span>`;
+            document.getElementById('toggleComparison').textContent = '📊 Compare';
+
+            // Build prompt HTML
+            let baseNameForPrompt = name.replace('_approved', '').replace('_declined', '');
+            if (baseNameForPrompt.includes('_clean')) {
+                baseNameForPrompt = baseNameForPrompt.replace('_clean', '_original');
+            }
+            const prompt = assetPrompts[baseNameForPrompt] || assetPrompts[name] || '';
+            const promptHtml = prompt ? `<div style="margin-top:1rem; max-width:600px; font-size:0.9rem; color:var(--text-dim); background:var(--bg-panel); padding:0.75rem; border-radius:4px; text-align:left;"><strong style="color:var(--accent-yellow);">Prompt:</strong><br>${prompt}</div>` : '';
+            document.getElementById('modalInfo').innerHTML = `<strong>${name}</strong> <span class="asset-status status-${status}">${status}</span>${promptHtml}`;
             document.getElementById('imageModal').classList.add('active');
+        }
+
+        function toggleComparisonView() {
+            if (!currentModalAsset) return;
+            isComparisonMode = !isComparisonMode;
+
+            if (isComparisonMode) {
+                // Compute original and clean paths
+                const { url, name } = currentModalAsset;
+                let originalPath, cleanPath;
+
+                if (name.includes('_clean')) {
+                    cleanPath = url;
+                    originalPath = url.replace('_clean.png', '_approved_original.png');
+                } else if (name.includes('_original')) {
+                    originalPath = url;
+                    cleanPath = url.replace(/_approved_original|_declined_original|_original/g, '_clean');
+                } else {
+                    originalPath = url;
+                    cleanPath = url;
+                }
+
+                document.getElementById('modalImage').style.display = 'none';
+                document.getElementById('comparisonView').style.display = 'flex';
+                document.getElementById('compareOriginal').src = originalPath;
+                document.getElementById('compareClean').src = cleanPath;
+                document.getElementById('toggleComparison').textContent = '🖼️ Single';
+            } else {
+                document.getElementById('modalImage').style.display = 'block';
+                document.getElementById('comparisonView').style.display = 'none';
+                document.getElementById('toggleComparison').textContent = '📊 Compare';
+            }
         }
 
         function closeModal() {
             document.getElementById('imageModal').classList.remove('active');
+            isComparisonMode = false;
         }
 
-        async function enableEditMode() {
-            try {
-                rootHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+        // Templates View Functions
+        let templatesContent = '';
+        let templateSaveTimer = null;
+        let templateSections = [];
+        let assetPromptsJson = {};
 
-                // Also get handle to manifest file for saving
-                try {
-                    manifestFileHandle = await window.showSaveFilePicker({
-                        suggestedName: 'asset_manifest.js',
-                        types: [{ description: 'JavaScript', accept: { 'application/javascript': ['.js'] } }]
-                    });
-                } catch (e) {
-                    console.log('No manifest file selected, changes will not persist');
-                }
+        async function showTemplatesView() {
+            const container = document.getElementById('mainContent');
+            container.innerHTML = '<div class="loading">Loading templates...</div>';
 
-                editMode = true;
-                document.getElementById('btnEnableEdit').textContent = '✅ Edit Mode On';
-                document.getElementById('btnEnableEdit').classList.add('approve');
-                document.getElementById('editInstructions').style.display = 'block';
-                renderAssets();
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    alert('Error: ' + err.message);
-                }
-            }
-        }
-
-        // Decline modal state
-        let pendingDeclinePath = null;
-        let pendingDeclineName = null;
-
-        function openDeclineModal(path, name) {
-            pendingDeclinePath = path;
-            pendingDeclineName = name;
-            document.getElementById('declineAssetName').textContent = name;
-            document.getElementById('declineNotes').value = getDeclineNotes(name) || '';
-            document.getElementById('declineModal').classList.add('active');
-        }
-
-        function closeDeclineModal() {
-            document.getElementById('declineModal').classList.remove('active');
-            pendingDeclinePath = null;
-            pendingDeclineName = null;
-        }
-
-        async function confirmDecline() {
-            const notes = document.getElementById('declineNotes').value.trim();
-            if (notes) {
-                saveDeclineNotes(pendingDeclineName, notes);
-            }
-            closeDeclineModal();
-            await changeStatus(pendingDeclinePath, 'declined');
-        }
-
-        function getDeclineNotes(assetName) {
-            const stored = localStorage.getItem('assetDeclineNotes');
-            if (!stored) return null;
-            const notes = JSON.parse(stored);
-            return notes[assetName] || null;
-        }
-
-        function saveDeclineNotes(assetName, noteText) {
-            const stored = localStorage.getItem('assetDeclineNotes');
-            const notes = stored ? JSON.parse(stored) : {};
-            notes[assetName] = noteText;
-            localStorage.setItem('assetDeclineNotes', JSON.stringify(notes));
-        }
-
-        async function changeStatus(path, newStatus) {
-            if (!editMode || !rootHandle) {
-                alert('Enable edit mode first');
+            // Load markdown templates
+            const resp = await fetch('/api/get_prompt_templates', { method: 'POST', body: '{}' });
+            const data = await resp.json();
+            if (!data.success) {
+                container.innerHTML = `<div class="error">Error loading templates: ${data.error}</div>`;
                 return;
             }
+            templatesContent = data.content;
+            templateSections = parseAllTemplateSections(templatesContent);
 
-            const parts = path.split('/');
-            const fileName = parts.pop();
-
-            // Navigate to the correct directory
-            let dirHandle = rootHandle;
-            for (const part of parts) {
-                dirHandle = await dirHandle.getDirectoryHandle(part);
+            // Load individual asset prompts from JSON
+            try {
+                const jsonResp = await fetch('/api/get_prompts', { method: 'POST', body: '{}' });
+                assetPromptsJson = await jsonResp.json();
+            } catch (e) {
+                assetPromptsJson = {};
             }
 
-            // Calculate new filename
-            let baseName = fileName
-                .replace('_original', '')
-                .replace('_approved', '')
-                .replace('_declined', '')
-                .replace('_clean', '');
+            container.innerHTML = '';
 
-            const ext = baseName.match(/\.(png|jpg|jpeg)$/i)?.[0] || '.png';
-            baseName = baseName.replace(/\.(png|jpg|jpeg)$/i, '');
-            const newName = `${baseName}_${newStatus}${ext}`;
+            // Centered wrapper
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'max-width:1400px; margin:0 auto;';
 
-            try {
-                const fileHandle = await dirHandle.getFileHandle(fileName);
-                const file = await fileHandle.getFile();
-                const content = await file.arrayBuffer();
+            // Header
+            const header = document.createElement('div');
+            header.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding:1rem; background:var(--bg-panel); border-radius:8px;';
+            header.innerHTML = `
+                <div><h2 style="color:var(--accent); margin:0;">📝 Prompts & Rules</h2><div style="font-size:0.85rem; color:var(--text-dim);">All edits auto-save</div></div>
+                <div style="display:flex; gap:1rem; align-items:center;">
+                    <span id="templateSaveStatus" style="font-size:0.85rem; color:var(--accent-green);"></span>
+                    <button class="secondary" onclick="renderAssets()">← Back to Assets</button>
+                </div>
+            `;
+            wrapper.appendChild(header);
 
-                const newHandle = await dirHandle.getFileHandle(newName, { create: true });
-                const writable = await newHandle.createWritable();
-                await writable.write(content);
-                await writable.close();
+            // Section: Base Templates (2-column grid)
+            const baseSection = document.createElement('div');
+            baseSection.innerHTML = '<h3 style="color:var(--text); margin:1rem 0 0.75rem;">📋 Base Templates (from asset_prompts.md)</h3>';
+            wrapper.appendChild(baseSection);
 
-                await dirHandle.removeEntry(fileName);
+            const baseGrid = document.createElement('div');
+            baseGrid.style.cssText = 'display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; margin-bottom:2rem;';
 
-                // Update manifest in memory
-                const asset = manifest.assets.find(a => a.path === path);
-                if (asset) {
-                    // Update counts
-                    if (manifest.counts[asset.status]) manifest.counts[asset.status]--;
-                    asset.status = newStatus;
-                    asset.name = newName;
-                    asset.path = path.replace(fileName, newName);
-                    if (!manifest.counts[newStatus]) manifest.counts[newStatus] = 0;
-                    manifest.counts[newStatus]++;
+            templateSections.forEach((sec, idx) => {
+                const card = document.createElement('div');
+                card.style.cssText = 'background:var(--bg-panel); padding:1rem; border-radius:8px; border-left:3px solid var(--accent-yellow);';
+                const safeId = sec.name.replace(/[^a-zA-Z0-9]/g, '_');
 
-                    // Save manifest to file for persistence
-                    await saveManifestToFile();
+                card.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;">
+                        <span style="font-size:1rem;">${sec.icon}</span>
+                        <span style="font-weight:bold; color:var(--text); font-size:0.9rem;">${sec.name}</span>
+                    </div>
+                    <textarea id="section_${safeId}" data-idx="${idx}" oninput="onSectionEdit(${idx})" 
+                        style="width:100%; min-height:80px; background:var(--bg-dark); color:var(--accent-yellow); border:1px solid var(--bg-card); border-radius:4px; padding:0.5rem; font-family:monospace; font-size:0.75rem; resize:vertical; box-sizing:border-box;">${escapeHtml(sec.content)}</textarea>
+                `;
+                baseGrid.appendChild(card);
+            });
+            wrapper.appendChild(baseGrid);
 
-                    // Re-render UI
-                    updateStats();
-                    renderAssets();
+            container.appendChild(wrapper);
+        }
+
+        function onSectionEdit(idx) {
+            const safeId = templateSections[idx].name.replace(/[^a-zA-Z0-9]/g, '_');
+            const newValue = document.getElementById('section_' + safeId).value;
+            templateSections[idx].content = newValue;
+
+            document.getElementById('templateSaveStatus').textContent = '⏳ Saving...';
+            document.getElementById('templateSaveStatus').style.color = 'var(--accent-yellow)';
+
+            clearTimeout(templateSaveTimer);
+            templateSaveTimer = setTimeout(() => saveAllSections(), 500);
+        }
+
+        function onPromptEdit(key) {
+            const safeKey = key.replace(/[^a-zA-Z0-9]/g, '_');
+            const newValue = document.getElementById('prompt_' + safeKey).value;
+            assetPromptsJson[key] = newValue;
+
+            document.getElementById('templateSaveStatus').textContent = '⏳ Saving...';
+            document.getElementById('templateSaveStatus').style.color = 'var(--accent-yellow)';
+
+            clearTimeout(templateSaveTimer);
+            templateSaveTimer = setTimeout(() => saveAllPrompts(), 500);
+        }
+
+        async function saveAllSections() {
+            let newContent = templatesContent;
+
+            for (const sec of templateSections) {
+                const escapedName = sec.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                if (sec.type === 'template') {
+                    const regex = new RegExp(`(### ${escapedName}[\\s\\S]*?\`\`\`\\n)[\\s\\S]*?(\`\`\`)`, 'g');
+                    newContent = newContent.replace(regex, `$1${sec.content}\n$2`);
                 }
-            } catch (err) {
-                alert('Error: ' + err.message);
+            }
+
+            const resp = await fetch('/api/save_prompt_templates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: newContent })
+            });
+            const result = await resp.json();
+
+            const statusEl = document.getElementById('templateSaveStatus');
+            if (result.success) {
+                templatesContent = newContent;
+                statusEl.textContent = '✓ Saved';
+                statusEl.style.color = 'var(--accent-green)';
+            } else {
+                statusEl.textContent = '✗ Error';
+                statusEl.style.color = 'var(--accent)';
             }
         }
 
-        async function saveManifestToFile() {
-            if (!manifestFileHandle) return;
+        async function saveAllPrompts() {
+            const resp = await fetch('/api/save_prompts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(assetPromptsJson)
+            });
+            const result = await resp.json();
 
-            try {
-                const writable = await manifestFileHandle.createWritable();
-                const content = '// Auto-generated asset manifest\nwindow.ASSET_MANIFEST = ' + JSON.stringify(manifest, null, 2) + ';\n';
-                await writable.write(content);
-                await writable.close();
-            } catch (err) {
-                console.log('Could not save manifest:', err.message);
+            const statusEl = document.getElementById('templateSaveStatus');
+            if (result.success) {
+                statusEl.textContent = '✓ Saved';
+                statusEl.style.color = 'var(--accent-green)';
+            } else {
+                statusEl.textContent = '✗ Error';
+                statusEl.style.color = 'var(--accent)';
             }
         }
 
-        // Filter buttons
+        function parseAllTemplateSections(content) {
+            const sections = [];
+            const icons = {
+                'Reference Images': '🖼️', 'Base Prompt Structure': '📋',
+                'Drops': '📦', 'Items': '🔧', 'Weapons & Tools': '⚔️',
+                'Characters': '👤', 'Dinosaurs': '🦖', 'World Resources': '🌲',
+                'Consumed Resources': '💀', 'UI Icons': '🎨',
+                'Forbidden Elements': '🚫', 'Asset Naming Convention': '📛',
+                'Post-Generation Pipeline': '⚙️'
+            };
+
+            // Split on both ## and ### headers
+            const parts = content.split(/(?=^#{2,3}\s)/m);
+
+            for (const part of parts) {
+                const headerMatch = part.match(/^(#{2,3})\s+(.+)/m);
+                if (!headerMatch) continue;
+
+                const name = headerMatch[2].trim().replace(/\s*\(.*\)/, '');
+
+                // Skip main title and category wrapper
+                if (name === 'Asset Generation Prompt Templates' || name === 'Category Templates') continue;
+
+                const icon = icons[name] || '📄';
+
+                // Extract template from code block
+                const templateMatch = part.match(/```\n([\s\S]*?)```/);
+                const template = templateMatch ? templateMatch[1].trim() : '';
+
+                // For sections without code blocks, extract content
+                let sectionContent = template;
+                if (!template) {
+                    const bullets = part.match(/^[-*]\s+.+$/gm);
+                    if (bullets) {
+                        sectionContent = bullets.join('\n');
+                    } else if (name === 'Reference Images') {
+                        sectionContent = 'Dinosaurs → dino_velociraptor_base_original.png\nOthers → world_hero.png';
+                    }
+                }
+
+                if (sectionContent) {
+                    sections.push({ name, icon, type: 'template', content: sectionContent, examples: [], editable: true });
+                }
+            }
+
+            return sections;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -724,10 +1039,458 @@
         });
 
         document.getElementById('btnRefresh').addEventListener('click', loadManifest);
-        document.getElementById('btnEnableEdit').addEventListener('click', enableEditMode);
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeTemplatesModal();
+            }
+        });
 
-        // Load on startup
+        // === LOOT VIEW ===
+        let lootData = null;
+        let lootFilter = { category: 'all', biome: 'all', tier: 'all' };
+
+        async function showLootView() {
+            const container = document.getElementById('mainContent');
+            container.innerHTML = '<div class="loading">Loading loot data...</div>';
+
+            try {
+                const resp = await fetch('/api/get_loot', { method: 'POST', body: '{}' });
+                lootData = await resp.json();
+                lootDataHash = JSON.stringify(lootData);  // Store hash for comparison
+                renderLootView();
+            } catch (err) {
+                container.innerHTML = '<div class="error">Failed to load loot data: ' + err.message + '</div>';
+            }
+        }
+
+        // Auto-refresh system - polls every 2 seconds for changes
+        let lootDataHash = '';
+        let autoRefreshInterval = null;
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) return;
+            autoRefreshInterval = setInterval(async () => {
+                try {
+                    const resp = await fetch('/api/get_loot', { method: 'POST', body: '{}' });
+                    const newData = await resp.json();
+                    const newHash = JSON.stringify(newData);
+                    if (newHash !== lootDataHash) {
+                        console.log('🔄 Loot data changed, refreshing...');
+                        lootData = newData;
+                        lootDataHash = newHash;
+                        renderLootView();
+                    }
+                } catch (err) {
+                    // Silently fail on poll errors
+                }
+            }, 2000);
+            console.log('✅ Auto-refresh enabled (2s polling)');
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+                console.log('⏹️ Auto-refresh disabled');
+            }
+        }
+
+        // Start auto-refresh when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            startAutoRefresh();
+        });
+
+        function setLootFilter(category) {
+            lootFilter.category = category;
+            renderLootView();
+        }
+
+        function setBiomeFilter(biome) {
+            lootFilter.biome = (lootFilter.biome === biome) ? 'all' : biome;  // Toggle
+            renderLootView();
+        }
+
+        function setTierFilter(tier) {
+            lootFilter.tier = (lootFilter.tier === tier) ? 'all' : tier;  // Toggle
+            renderLootView();
+        }
+
+        function renderLootView() {
+            const container = document.getElementById('mainContent');
+            container.innerHTML = '';
+
+            if (!lootData) return;
+
+            // Stats
+            const stats = { pending: 0, approved: 0, declined: 0 };
+            [...(lootData.resources || []), ...(lootData.items || []), ...(lootData.equipment || []), ...(lootData.lootTables || [])].forEach(item => {
+                stats[item.status || 'pending']++;
+            });
+
+            // Get unique filter values
+            const resourceCategories = [...new Set(lootData.resources?.map(r => r.category) || [])];
+            const equipmentSlots = [...new Set(lootData.equipment?.map(e => e.slot) || [])];
+            const weaponTypes = [...new Set(lootData.equipment?.filter(e => e.weaponType).map(e => e.weaponType) || [])];
+            const lootEnemyTypes = [...new Set(lootData.lootTables?.map(l => l.enemyType) || [])];
+            const biomes = [...new Set([...(lootData.resources?.map(r => r.biome) || []), ...(lootData.equipment?.map(e => e.biome) || []), ...(lootData.lootTables?.map(l => l.biome) || [])])].filter(b => b && b !== 'all');
+
+            container.innerHTML = `
+                <div style="padding:1rem; background:var(--bg-panel); margin-bottom:1rem; border-radius:8px;">
+                    <h2 style="color:#9c27b0; margin-bottom:0.5rem;">🎒 Loot & Resource Audit v2.0</h2>
+                    <div style="display:flex; gap:2rem; flex-wrap:wrap; margin-bottom:1rem;">
+                        <span style="color:var(--accent-yellow);">⏳ Pending: ${stats.pending}</span>
+                        <span style="color:var(--accent-green);">✓ Approved: ${stats.approved}</span>
+                        <span style="color:var(--accent);">✗ Declined: ${stats.declined}</span>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Categories:</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+                        <button class="filter-btn ${lootFilter.category === 'all' ? 'active' : ''}" onclick="setLootFilter('all')" style="background:#9c27b0;">All</button>
+                        <span style="color:var(--text-dim);">|</span>
+                        ${resourceCategories.map(c => `<button class="filter-btn ${lootFilter.category === 'res_' + c ? 'active' : ''}" onclick="setLootFilter('res_${c}')">${c}</button>`).join('')}
+                        <span style="color:var(--text-dim);">|</span>
+                        <button class="filter-btn ${lootFilter.category === 'items' ? 'active' : ''}" onclick="setLootFilter('items')" style="background:#ff5722;">Crafted Items</button>
+                        <button class="filter-btn ${lootFilter.category === 'item_metal' ? 'active' : ''}" onclick="setLootFilter('item_metal')">metal</button>
+                        <button class="filter-btn ${lootFilter.category === 'item_wood' ? 'active' : ''}" onclick="setLootFilter('item_wood')">wood</button>
+                        <button class="filter-btn ${lootFilter.category === 'item_leather' ? 'active' : ''}" onclick="setLootFilter('item_leather')">leather</button>
+                        <button class="filter-btn ${lootFilter.category === 'item_bone' ? 'active' : ''}" onclick="setLootFilter('item_bone')">bone</button>
+                        <button class="filter-btn ${lootFilter.category === 'item_mechanical' ? 'active' : ''}" onclick="setLootFilter('item_mechanical')">mechanical</button>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Equipment:</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+                        ${equipmentSlots.filter(s => s !== 'weapon').map(s => `<button class="filter-btn ${lootFilter.category === 'eq_' + s ? 'active' : ''}" onclick="setLootFilter('eq_${s}')">${s}</button>`).join('')}
+                        <span style="color:var(--text-dim);">|</span>
+                        ${weaponTypes.map(t => `<button class="filter-btn ${lootFilter.category === 'wep_' + t ? 'active' : ''}" onclick="setLootFilter('wep_${t}')">${t}</button>`).join('')}
+                        <button class="filter-btn ${lootFilter.category === 'wep_1h' ? 'active' : ''}" onclick="setLootFilter('wep_1h')">1-Hand</button>
+                        <button class="filter-btn ${lootFilter.category === 'wep_2h' ? 'active' : ''}" onclick="setLootFilter('wep_2h')">2-Hand</button>
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Enemies:</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+                        ${lootEnemyTypes.map(t => `<button class="filter-btn ${lootFilter.category === 'loot_' + t ? 'active' : ''}" onclick="setLootFilter('loot_${t}')" style="background:${t === 'human' ? '#64b5f6' : t === 'saurian' ? '#ff9800' : t === 'dinosaur' ? '#e91e63' : '#4ecca3'};">${t}</button>`).join('')}
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Biomes (additive filter):</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.5rem;">
+                        <button class="filter-btn ${lootFilter.biome === 'all' ? 'active' : ''}" onclick="setBiomeFilter('all')" style="background:#666;">Clear</button>
+                        ${biomes.map(b => `<button class="filter-btn ${lootFilter.biome === b ? 'active' : ''}" onclick="setBiomeFilter('${b}')" style="background:${b === 'grasslands' ? '#4caf50' : b === 'tundra' ? '#00bcd4' : b === 'desert' ? '#ff9800' : '#f44336'};">${b}</button>`).join('')}
+                    </div>
+                    <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Tiers (additive filter):</div>
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center;">
+                        <button class="filter-btn ${lootFilter.tier === 'all' ? 'active' : ''}" onclick="setTierFilter('all')" style="background:#666;">Clear</button>
+                        <button class="filter-btn ${lootFilter.tier === 1 ? 'active' : ''}" onclick="setTierFilter(1)" style="background:#9e9e9e;">T1</button>
+                        <button class="filter-btn ${lootFilter.tier === 2 ? 'active' : ''}" onclick="setTierFilter(2)" style="background:#4caf50;">T2</button>
+                        <button class="filter-btn ${lootFilter.tier === 3 ? 'active' : ''}" onclick="setTierFilter(3)" style="background:#2196f3;">T3</button>
+                        <button class="filter-btn ${lootFilter.tier === 4 ? 'active' : ''}" onclick="setTierFilter(4)" style="background:#9c27b0;">T4</button>
+                    </div>
+                </div>
+            `;
+
+            // Resources section
+            if (lootData.resources?.length) {
+                let filtered = lootData.resources;
+                if (lootFilter.category.startsWith('res_')) filtered = filtered.filter(r => 'res_' + r.category === lootFilter.category);
+                else if (lootFilter.category !== 'all') filtered = [];
+                // Apply biome and tier filters additively
+                if (lootFilter.biome !== 'all') filtered = filtered.filter(r => r.biome === lootFilter.biome || r.biome === 'all');
+                if (lootFilter.tier !== 'all') filtered = filtered.filter(r => r.tier === lootFilter.tier);
+                if (filtered.length) container.appendChild(createLootSection('Resources', 'resources', filtered, ['name', 'tier', 'source', 'location', 'biome', 'category', 'rarity']));
+            }
+
+            // Items section
+            if (lootData.items?.length) {
+                let filtered = lootData.items;
+                if (lootFilter.category === 'items') filtered = lootData.items;
+                else if (lootFilter.category.startsWith('item_')) filtered = filtered.filter(i => 'item_' + i.category === lootFilter.category);
+                else if (lootFilter.category !== 'all') filtered = [];
+                // Apply biome and tier filters additively
+                if (lootFilter.biome !== 'all') filtered = filtered.filter(i => i.biome === lootFilter.biome || i.biome === 'all');
+                if (lootFilter.tier !== 'all') filtered = filtered.filter(i => i.tier === lootFilter.tier);
+                if (filtered.length) container.appendChild(createLootSection('Items (Crafted)', 'items', filtered, ['name', 'tier', 'category', 'recipe', 'fuelCost', 'time', 'biome']));
+            }
+
+            // Equipment section
+            if (lootData.equipment?.length) {
+                let filtered = lootData.equipment;
+                if (lootFilter.category.startsWith('eq_')) filtered = filtered.filter(e => 'eq_' + e.slot === lootFilter.category);
+                else if (lootFilter.category.startsWith('wep_')) {
+                    if (lootFilter.category === 'wep_melee') filtered = filtered.filter(e => e.weaponType === 'melee');
+                    else if (lootFilter.category === 'wep_ranged') filtered = filtered.filter(e => e.weaponType === 'ranged');
+                    else if (lootFilter.category === 'wep_1h') filtered = filtered.filter(e => e.hands === 1);
+                    else if (lootFilter.category === 'wep_2h') filtered = filtered.filter(e => e.hands === 2);
+                }
+                else if (lootFilter.category !== 'all') filtered = [];
+                // Apply biome and tier filters additively
+                if (lootFilter.biome !== 'all') filtered = filtered.filter(e => e.biome === lootFilter.biome || e.biome === 'all');
+                if (lootFilter.tier !== 'all') filtered = filtered.filter(e => e.tier === lootFilter.tier);
+                if (filtered.length) container.appendChild(createLootSection('Equipment', 'equipment', filtered, ['name', 'slot', 'tier', 'stats', 'recipe', 'fuelCost', 'biome']));
+            }
+
+            // Loot Tables section
+            if (lootData.lootTables?.length) {
+                let filtered = lootData.lootTables;
+                if (lootFilter.category.startsWith('loot_')) filtered = filtered.filter(l => 'loot_' + l.enemyType === lootFilter.category);
+                else if (lootFilter.category !== 'all') filtered = [];
+                // Apply biome and tier filters additively
+                if (lootFilter.biome !== 'all') filtered = filtered.filter(l => l.biome === lootFilter.biome || l.biome === 'all');
+                if (lootFilter.tier !== 'all') filtered = filtered.filter(l => l.tier === lootFilter.tier);
+                if (filtered.length) container.appendChild(createLootTableSection(filtered));
+            }
+        }
+
+        function createLootSection(title, type, items, fields) {
+            const section = document.createElement('div');
+            section.className = 'category';
+            section.innerHTML = `<div class="category-header"><h2 class="category-title">${title}</h2><span style="color:var(--text-dim)">${items.length} items</span></div>`;
+
+            const grid = document.createElement('div');
+            grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1rem;';
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `asset-card ${item.status || 'pending'}`;
+                card.style.padding = '1rem';
+
+                const fieldsHtml = fields.filter(f => f !== 'id').map(f => {
+                    const val = item[f];
+                    if (val === null || val === undefined) return '';
+                    return `<div style="font-size:0.75rem;"><span style="color:var(--text-dim);">${f}:</span> ${val}</div>`;
+                }).join('');
+
+                const safeId = item.id.replace(/[^a-zA-Z0-9]/g, '_');
+                const declineNote = lootData.declineNotes?.[item.id] || '';
+                const noteDisplay = declineNote && item.status === 'declined' ? `<div style="font-size:0.7rem; color:var(--accent-yellow); margin-top:0.3rem; font-style:italic;">📝 ${declineNote}</div>` : '';
+
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:#9c27b0; margin-bottom:0.5rem;">${item.name || item.id}</div>
+                    <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.5rem;">ID: ${item.id}</div>
+                    ${fieldsHtml}
+                    ${noteDisplay}
+                    <span class="asset-status status-${item.status || 'pending'}" style="margin-top:0.5rem;">${item.status || 'pending'}</span>
+                    <input type="text" id="note_${safeId}" placeholder="Decline reason..." value="${declineNote}" style="width:100%; margin-top:0.5rem; padding:0.3rem; font-size:0.7rem; background:var(--bg-dark); color:var(--text); border:1px solid var(--text-dim); border-radius:3px;">
+                    <div class="asset-actions">
+                        <button class="approve" onclick="updateLootStatus('${type}', '${item.id}', 'approved')">✓ Approve</button>
+                        <button class="decline" onclick="declineLootWithNote('${type}', '${item.id}', '${safeId}')">✗ Decline</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            section.appendChild(grid);
+            return section;
+        }
+
+        function createLootTableSection(tables) {
+            const section = document.createElement('div');
+            section.className = 'category';
+            section.innerHTML = `<div class="category-header"><h2 class="category-title">Loot Tables (Enemy Drops)</h2><span style="color:var(--text-dim)">${tables.length} enemies</span></div>`;
+
+            const grid = document.createElement('div');
+            grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1rem;';
+
+            tables.forEach(table => {
+                const card = document.createElement('div');
+                card.className = `asset-card ${table.status || 'pending'}`;
+                card.style.padding = '1rem';
+
+                const dropsHtml = (table.drops || []).map(d => {
+                    const qual = d.quality ? ` (${d.quality}% quality)` : '';
+                    return `<div style="font-size:0.7rem;">• ${d.id}: ${d.chance}% (${d.min}-${d.max})${qual}</div>`;
+                }).join('');
+
+                const typeColor = table.type === 'boss' ? 'var(--accent)' : table.type === 'enemy' ? 'var(--accent-yellow)' : 'var(--accent-green)';
+                const enemyTypeColor = table.enemyType === 'humanoid' ? '#64b5f6' : table.enemyType === 'dinosaur' ? '#ff9800' : '#4ecca3';
+                const safeId = table.enemy.replace(/[^a-zA-Z0-9]/g, '_');
+                const declineNote = lootData.declineNotes?.[table.enemy] || '';
+                const noteDisplay = declineNote && table.status === 'declined' ? `<div style="font-size:0.7rem; color:var(--accent-yellow); margin-top:0.3rem; font-style:italic;">📝 ${declineNote}</div>` : '';
+
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:${typeColor}; margin-bottom:0.3rem;">${table.name || table.enemy}</div>
+                    <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:0.5rem;">ID: ${table.enemy}</div>
+                    <div style="font-size:0.75rem; color:var(--text-dim);">${table.type} | ${table.biome || table.zone || 'all'} | <span style="color:${enemyTypeColor}">${table.enemyType}</span></div>
+                    <div style="margin-top:0.5rem; background:var(--bg-dark); padding:0.5rem; border-radius:4px;">
+                        ${dropsHtml}
+                    </div>
+                    ${noteDisplay}
+                    <span class="asset-status status-${table.status || 'pending'}" style="margin-top:0.5rem;">${table.status || 'pending'}</span>
+                    <input type="text" id="note_${safeId}" placeholder="Decline reason..." value="${declineNote}" style="width:100%; margin-top:0.5rem; padding:0.3rem; font-size:0.7rem; background:var(--bg-dark); color:var(--text); border:1px solid var(--text-dim); border-radius:3px;">
+                    <div class="asset-actions">
+                        <button class="approve" onclick="updateLootStatus('lootTables', '${table.enemy}', 'approved')">✓ Approve</button>
+                        <button class="decline" onclick="declineLootWithNote('lootTables', '${table.enemy}', '${safeId}')">✗ Decline</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            section.appendChild(grid);
+            return section;
+        }
+
+        async function declineLootWithNote(type, id, safeId) {
+            const noteInput = document.getElementById('note_' + safeId);
+            const note = noteInput ? noteInput.value.trim() : '';
+
+            try {
+                const resp = await fetch('/api/update_loot_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, id, status: 'declined', note })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    await showLootView();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function updateLootStatus(type, id, status) {
+            try {
+                const resp = await fetch('/api/update_loot_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, id, status })
+                });
+                const result = await resp.json();
+                if (result.success) {
+                    await showLootView(); // Refresh
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        // ===================== SOUND MANAGEMENT =====================
+
+        const SOUND_REGISTRY = {
+            'sfx_ui_click': { category: 'UI', description: 'Mechanical switch click for buttons' },
+            'sfx_ui_unlock': { category: 'UI', description: 'Hydraulic release for unlocking' },
+            'sfx_ui_buy': { category: 'UI', description: 'Coin drop with metallic ring' },
+            'sfx_ui_error': { category: 'UI', description: 'Dull clunk for errors' },
+            'sfx_ui_magnet': { category: 'UI', description: 'Magnetic hum for magnet ability' },
+            'sfx_hero_swing': { category: 'Combat', description: 'Heavy woosh for melee swings' },
+            'sfx_hero_shoot': { category: 'Combat', description: 'Deep caliber thump with muzzle blast' },
+            'sfx_hero_impact_metal': { category: 'Combat', description: 'Metallic clang for metal hits' },
+            'sfx_hero_impact_wood': { category: 'Combat', description: 'Wood thud for wood hits' },
+            'sfx_hero_impact_stone': { category: 'Combat', description: 'Stone crack for stone hits' },
+            'sfx_mine_scrap_metal': { category: 'Mining', description: 'Scrappy clanking for scrap' },
+            'sfx_mine_iron_ore': { category: 'Mining', description: 'Heavy pickaxe on ore' },
+            'sfx_mine_fossil_fuel': { category: 'Mining', description: 'Squelchy tar extraction' },
+            'sfx_mine_wood': { category: 'Mining', description: 'Axe chopping wood' },
+            'sfx_mine_gold': { category: 'Mining', description: 'Bright coin ring' },
+            'sfx_resource_collect': { category: 'Resources', description: 'Material pickup thump' },
+            'sfx_resource_break_wood': { category: 'Resources', description: 'Heavy wood snap' },
+            'sfx_resource_break_metal': { category: 'Resources', description: 'Scrap crumple' },
+            'sfx_resource_break_stone': { category: 'Resources', description: 'Rock fall rumble' },
+            'sfx_rest_melody': { category: 'Gameplay', description: 'Medieval campfire melody' },
+            'sfx_dino_hurt': { category: 'Dinosaur', description: 'Guttural snarl' },
+            'sfx_dino_death': { category: 'Dinosaur', description: 'Descending roar' },
+            'sfx_dino_respawn': { category: 'Dinosaur', description: 'Distant roar' },
+            'sfx_enemy_aggro': { category: 'Enemy Combat', description: 'Threatening growl' },
+            'sfx_enemy_attack': { category: 'Enemy Combat', description: 'Bite/slash with claw impact' },
+            'sfx_enemy_hurt': { category: 'Enemy Combat', description: 'Enemy pain sound' },
+            'sfx_enemy_death': { category: 'Enemy Combat', description: 'Enemy death sound' },
+            'sfx_loot_drop': { category: 'Enemy Combat', description: 'Treasure drop with coins' },
+            'sfx_pack_aggro': { category: 'Enemy Combat', description: 'Layered growls' }
+        };
+
+        let soundStatus = JSON.parse(localStorage.getItem('soundStatus') || '{}');
+        let soundFeedback = JSON.parse(localStorage.getItem('soundFeedback') || '{}');
+        let audioCtx = null;
+        let masterGain = null;
+
+        function initAudio() {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            masterGain = audioCtx.createGain();
+            masterGain.gain.value = 0.7;
+            masterGain.connect(audioCtx.destination);
+            // Initialize ProceduralSFX with our audio context
+            if (window.ProceduralSFX) {
+                ProceduralSFX.init(audioCtx, masterGain);
+            }
+        }
+
+        function playSound(id) {
+            initAudio();
+            // Use the actual game ProceduralSFX
+            if (window.ProceduralSFX) {
+                ProceduralSFX.play(id);
+            } else {
+                console.warn('ProceduralSFX not loaded');
+            }
+        }
+
+        function getSoundStatus(id) { return soundStatus[id] || 'pending'; }
+        function setSoundStatus(id, status) { soundStatus[id] = status; localStorage.setItem('soundStatus', JSON.stringify(soundStatus)); showSoundView(); }
+        function getSoundFeedback(id) { return soundFeedback[id] || ''; }
+        function setSoundFeedback(id, fb) { soundFeedback[id] = fb; localStorage.setItem('soundFeedback', JSON.stringify(soundFeedback)); }
+
+        function showSoundView() {
+            const container = document.getElementById('mainContent');
+            const categories = {};
+            Object.entries(SOUND_REGISTRY).forEach(([id, info]) => {
+                if (!categories[info.category]) categories[info.category] = [];
+                categories[info.category].push({ id, ...info, status: getSoundStatus(id) });
+            });
+
+            const counts = { pending: 0, approved: 0, declined: 0 };
+            Object.values(SOUND_REGISTRY).forEach((_, i) => { const id = Object.keys(SOUND_REGISTRY)[i]; counts[getSoundStatus(id)]++; });
+
+            let html = `<div style="display:flex;gap:2rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <div style="color:var(--accent-yellow)">🟡 Pending: ${counts.pending}</div>
+                <div style="color:var(--accent-green)">✅ Approved: ${counts.approved}</div>
+                <div style="color:var(--accent)">❌ Declined: ${counts.declined}</div>
+                <button onclick="exportSoundFeedback()" class="secondary" style="margin-left:auto">📋 Export Feedback</button>
+            </div>`;
+
+            Object.keys(categories).sort().forEach(cat => {
+                html += `<div class="category"><div class="category-header"><h2 class="category-title">${cat}</h2><span style="color:var(--text-dim)">${categories[cat].length} sounds</span></div>`;
+                html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;margin-bottom:1.5rem;">`;
+                categories[cat].forEach(s => {
+                    const fb = getSoundFeedback(s.id);
+                    const statusClass = s.status === 'approved' ? 'box-shadow:0 0 0 3px var(--accent-green);' : s.status === 'declined' ? 'box-shadow:0 0 0 3px var(--accent);opacity:0.7;' : 'box-shadow:0 0 0 2px var(--accent-yellow);';
+                    html += `<div style="background:var(--bg-card);border-radius:8px;padding:1rem;${statusClass}">
+                        <div style="font-size:0.7rem;color:var(--text-dim);text-transform:uppercase;margin-bottom:0.3rem">${s.category}</div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                            <span style="font-family:monospace;color:#64b5f6">${s.id}</span>
+                            <span style="padding:0.2rem 0.5rem;border-radius:3px;font-size:0.7rem;font-weight:600;text-transform:uppercase;background:${s.status === 'approved' ? 'var(--accent-green)' : s.status === 'declined' ? 'var(--accent)' : 'var(--accent-yellow)'};color:${s.status === 'declined' ? '#fff' : '#000'}">${s.status}</span>
+                        </div>
+                        <div style="color:var(--text-dim);font-size:0.85rem;margin-bottom:0.5rem">${s.description}</div>
+                        ${s.status === 'pending' ? `<textarea id="fb-${s.id}" placeholder="Feedback notes..." style="width:100%;padding:0.4rem;font-size:0.75rem;background:var(--bg-dark);color:var(--text);border:1px solid var(--text-dim);border-radius:4px;resize:vertical;min-height:40px;margin-bottom:0.5rem" onchange="setSoundFeedback('${s.id}',this.value)">${fb}</textarea>` : ''}
+                        ${s.status === 'declined' && fb ? `<div style="padding:0.4rem;background:rgba(233,69,96,0.15);border-radius:4px;font-size:0.75rem;color:var(--accent-yellow);font-style:italic;margin-bottom:0.5rem">📝 ${fb}</div>` : ''}
+                        <div style="display:flex;gap:0.5rem">
+                            <button onclick="playSound('${s.id}')" style="flex:1;padding:0.4rem;font-size:0.75rem;background:#2196f3">▶️ Play</button>
+                            ${s.status !== 'approved' ? `<button onclick="setSoundStatus('${s.id}','approved')" class="approve" style="flex:1;padding:0.4rem;font-size:0.75rem">✓</button>` : ''}
+                            ${s.status !== 'declined' ? `<button onclick="saveFeedbackAndDecline('${s.id}')" class="decline" style="flex:1;padding:0.4rem;font-size:0.75rem">✗</button>` : ''}
+                        </div>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function saveFeedbackAndDecline(id) {
+            const el = document.getElementById('fb-' + id);
+            if (el && el.value.trim()) setSoundFeedback(id, el.value.trim());
+            setSoundStatus(id, 'declined');
+        }
+
+        function exportSoundFeedback() {
+            const declined = {};
+            Object.keys(SOUND_REGISTRY).forEach(id => {
+                if (getSoundStatus(id) === 'declined' && getSoundFeedback(id)) {
+                    declined[id] = { description: SOUND_REGISTRY[id].description, feedback: getSoundFeedback(id) };
+                }
+            });
+            const blob = new Blob([JSON.stringify(declined, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'sound_feedback.json'; a.click();
+        }
+
         loadManifest();
     </script>
 </body>

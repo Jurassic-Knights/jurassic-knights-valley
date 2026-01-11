@@ -1,0 +1,46 @@
+[
+    {
+        "id": "metal_t1_01",
+        "name": "Copper Ingot",
+        "tier": 1,
+        "category": "metal",
+        "recipe": "2x Copper Ore",
+        "fuelCost": 1,
+        "time": "15s",
+        "biome": "grasslands",
+        "status": "pending"
+    },
+    {
+        "id": "metal_t2_02",
+        "name": "Iron Ingot",
+        "tier": 2,
+        "category": "metal",
+        "recipe": "2x Iron Ore + 1x Coal",
+        "fuelCost": 2,
+        "time": "20s",
+        "biome": "tundra",
+        "status": "pending"
+    },
+    {
+        "id": "metal_t3_03",
+        "name": "Steel Ingot",
+        "tier": 3,
+        "category": "metal",
+        "recipe": "2x Iron Ingot + 2x Coal",
+        "fuelCost": 4,
+        "time": "40s",
+        "biome": "desert",
+        "status": "pending"
+    },
+    {
+        "id": "metal_t4_04",
+        "name": "Hardened Steel",
+        "tier": 4,
+        "category": "metal",
+        "recipe": "2x Steel Ingot + 1x Tungsten Ore",
+        "fuelCost": 8,
+        "time": "60s",
+        "biome": "badlands",
+        "status": "pending"
+    }
+]

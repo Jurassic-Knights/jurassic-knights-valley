@@ -18,7 +18,7 @@ const GameConstants = {
         ISLAND_SIZE: 1024,       // 8 grid cells (8 * 128)
         WATER_GAP: 256,          // 2 grid cells between islands
         BRIDGE_WIDTH: 128,       // 1 grid cell wide
-        MAP_PADDING: 512,        // 4 grid cells
+        MAP_PADDING: 2048,       // 16 grid cells - expanded for open world biomes
 
         // Wall boundaries for playable area
         WALL_WIDTH: 85,      // Horizontal wall thickness
@@ -57,11 +57,12 @@ const GameConstants = {
     Time: {
         REAL_SECONDS_PER_GAME_DAY: 300, // 5 minutes per day cycle
         // Phases as normalized day percentages (0.0 - 1.0)
+        // Night is now shortest (~10%), Day is longest (~60%)
         PHASES: {
-            DAWN: 0.2,  // 4:48 AM
-            DAY: 0.25,  // 6:00 AM
-            DUSK: 0.75, // 6:00 PM
-            NIGHT: 0.8  // 7:12 PM
+            DAWN: 0.05,  // 1:12 AM - Dawn starts (5% night before this)
+            DAY: 0.15,   // 3:36 AM - Full day begins (10% dawn)
+            DUSK: 0.75,  // 6:00 PM - Dusk begins (60% day)
+            NIGHT: 0.90  // 9:36 PM - Night begins (15% dusk, 10% night until midnight→dawn)
         },
         SEASONS: ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'],
         DAYS_PER_SEASON: 2 // 30 seconds per season (TESTING)
@@ -93,6 +94,18 @@ const GameConstants = {
     UI: {
         BRIDGE_VISUAL_PADDING: 100,
         PROP_SPAWN_PADDING: 70
+    },
+
+    // Biome System (Open World)
+    Biome: {
+        PATROL_AREA_RADIUS: 300,      // Default wander radius from spawn
+        LEASH_DISTANCE: 500,          // Max chase distance before reset
+        AGGRO_RANGE: 200,             // Player detection range
+        BOSS_RESPAWN_DEFAULT: 300,    // 5 minutes
+        GROUP_SPACING: 50,            // Min distance between spawned group members
+        PACK_AGGRO_RADIUS: 150,       // Range for pack members to join aggro
+        ELITE_SPAWN_CHANCE: 0.05,     // 5% chance for elite variant
+        TRANSITION_BLEND_WIDTH: 200   // Gradient border width between biomes
     },
 
     // Spawning & Population
@@ -142,6 +155,18 @@ const GameConstants = {
         HERO_HEALTH_CHANGE: 'HERO_HEALTH_CHANGE', // {current, max}
         HERO_STAMINA_CHANGE: 'HERO_STAMINA_CHANGE', // {current, max}
         HERO_HOME_STATE_CHANGE: 'HERO_HOME_STATE_CHANGE', // {isHome}
+        HERO_LEVEL_UP: 'HERO_LEVEL_UP', // {level, prevLevel} (03-hero-stats)
+
+        // Damage (06-damage-system)
+        DAMAGE_DEALT: 'DAMAGE_DEALT',     // { attacker, target, baseDamage, finalDamage, killed }
+        ENEMY_ATTACK: 'ENEMY_ATTACK',     // { attacker, target, damage }
+        HERO_DIED: 'HERO_DIED',           // { hero }
+        HERO_RESPAWNED: 'HERO_RESPAWNED', // { hero }
+
+        // Boss (09-boss-system)
+        BOSS_SPAWNED: 'BOSS_SPAWNED',     // { boss, biomeId, bossType }
+        BOSS_KILLED: 'BOSS_KILLED',       // { boss, biomeId, bossType, xpReward, respawnIn }
+        BIOME_ENTERED: 'BIOME_ENTERED',   // { biomeId, hero }
 
         // Inventory / Items
         INVENTORY_UPDATED: 'INVENTORY_UPDATED', // {items}
@@ -173,7 +198,16 @@ const GameConstants = {
         TIME_TICK: 'TIME_TICK',           // { totalTime, dayTime, seasonTime, phase }
         DAY_PHASE_CHANGE: 'DAY_PHASE_CHANGE', // { phase, prevPhase }
         SEASON_CHANGE: 'SEASON_CHANGE',   // { season, prevSeason }
-        WEATHER_CHANGE: 'WEATHER_CHANGE'  // { type, intensity }
+        WEATHER_CHANGE: 'WEATHER_CHANGE', // { type, intensity }
+
+        // Combat (Open World Biomes)
+        ENEMY_ATTACK: 'ENEMY_ATTACK',     // { attacker, target, damage, attackType }
+        ENEMY_DAMAGED: 'ENEMY_DAMAGED',   // { enemy, damage, source, remaining }
+        ENEMY_DIED: 'ENEMY_DIED',         // { enemy, killer, xpReward, lootTableId, ... }
+        ENEMY_RESPAWNED: 'ENEMY_RESPAWNED', // { enemy, biomeId, groupId, waveId }
+
+        // Loot System
+        LOOT_DROPPED: 'LOOT_DROPPED'      // { x, y, drops, totalItems }
     }
 };
 

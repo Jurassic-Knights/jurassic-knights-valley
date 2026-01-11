@@ -72,6 +72,13 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                     self.send_file(img_path)
                 else:
                     self.send_error(404)
+            elif parsed.path.startswith("/src/"):
+                # Serve source files (for ProceduralSFX.js, etc)
+                src_path = os.path.join(BASE_DIR, parsed.path[1:])  # Remove leading /
+                if os.path.exists(src_path):
+                    self.send_source_file(src_path)
+                else:
+                    self.send_error(404)
             else:
                 super().do_GET()
         except Exception as e:
@@ -120,6 +127,12 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json(result)
             elif parsed.path == "/api/remake":
                 result = self.remake_asset(data.get("cleanPath"), data.get("notes"))
+                self.send_json(result)
+            elif parsed.path == "/api/get_loot":
+                result = self.get_loot_data()
+                self.send_json(result)
+            elif parsed.path == "/api/update_loot_status":
+                result = self.update_loot_status(data.get("type"), data.get("id"), data.get("status"), data.get("note"))
                 self.send_json(result)
             else:
                 self.send_error(404)
@@ -398,6 +411,111 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
         
         return {"success": True, "message": f"Marked for remake: {old_name} -> {new_name}"}
     
+    def get_loot_data(self):
+        """Get loot data by merging all files from loot/ folder"""
+        loot_dir = os.path.join(TOOLS_DIR, "loot")
+        if not os.path.exists(loot_dir):
+            # Fallback to old single file
+            loot_file = os.path.join(TOOLS_DIR, "loot_data.json")
+            if os.path.exists(loot_file):
+                with open(loot_file, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            return {"error": "loot folder not found"}
+        
+        # Merge all files from loot folder
+        result = {"resources": [], "items": [], "equipment": [], "lootTables": [], "sets": []}
+        
+        for filename in os.listdir(loot_dir):
+            if not filename.endswith('.json'):
+                continue
+            filepath = os.path.join(loot_dir, filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            if filename == '_config.json':
+                result.update(data)  # Merge config (defaults, rarityColors, etc.)
+            elif filename.startswith('resources_'):
+                for item in data:
+                    item['category'] = filename.replace('resources_', '').replace('.json', '')
+                result['resources'].extend(data)
+            elif filename.startswith('items_'):
+                result['items'].extend(data)
+            elif filename.startswith('equipment_'):
+                result['equipment'].extend(data)
+            elif filename.startswith('enemies_'):
+                result['lootTables'].extend(data)
+            elif filename == 'sets.json':
+                result['sets'].extend(data)
+        
+        return result
+    
+    def update_loot_status(self, item_type, item_id, new_status, note=None):
+        """Update the status of a loot item (approved/declined/pending)"""
+        if not item_type or not item_id or not new_status:
+            return {"success": False, "error": "Missing type, id, or status"}
+        
+        loot_dir = os.path.join(TOOLS_DIR, "loot")
+        if not os.path.exists(loot_dir):
+            return {"success": False, "error": "loot folder not found"}
+        
+        # Find which file contains this item
+        found = False
+        target_file = None
+        target_data = None
+        target_index = None
+        
+        for filename in os.listdir(loot_dir):
+            if not filename.endswith('.json') or filename == '_config.json':
+                continue
+            
+            # Match item type to file prefix
+            if item_type == 'resources' and not filename.startswith('resources_'):
+                continue
+            elif item_type == 'items' and not filename.startswith('items_'):
+                continue
+            elif item_type == 'equipment' and not filename.startswith('equipment_'):
+                continue
+            elif item_type == 'lootTables' and not filename.startswith('enemies_'):
+                continue
+            elif item_type == 'sets' and filename != 'sets.json':
+                continue
+            
+            filepath = os.path.join(loot_dir, filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            for i, item in enumerate(data):
+                if item.get("id") == item_id or item.get("enemy") == item_id:
+                    found = True
+                    target_file = filepath
+                    target_data = data
+                    target_index = i
+                    break
+            
+            if found:
+                break
+        
+        if not found:
+            return {"success": False, "error": f"Item not found: {item_type}/{item_id}"}
+        
+        # Update status in the target file
+        target_data[target_index]["status"] = new_status
+        with open(target_file, 'w', encoding='utf-8') as f:
+            json.dump(target_data, f, indent=4)
+        
+        # Save decline note to config if provided
+        if note and new_status == 'declined':
+            config_file = os.path.join(loot_dir, "_config.json")
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+            if "declineNotes" not in config:
+                config["declineNotes"] = {}
+            config["declineNotes"][item_id] = note
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=4)
+        
+        return {"success": True, "message": f"Updated {item_type}/{item_id} to {new_status}"}
+    
     def send_json(self, data):
         content = json.dumps(data).encode('utf-8')
         self.send_response(200)
@@ -412,6 +530,17 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             content = f.read()
         ext = os.path.splitext(path)[1].lower()
         mime = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg"}.get(ext[1:], "application/octet-stream")
+        self.send_response(200)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", len(content))
+        self.end_headers()
+        self.wfile.write(content)
+    
+    def send_source_file(self, path):
+        with open(path, 'rb') as f:
+            content = f.read()
+        ext = os.path.splitext(path)[1].lower()
+        mime = {".js": "application/javascript", ".css": "text/css"}.get(ext, "text/plain")
         self.send_response(200)
         self.send_header("Content-Type", mime)
         self.send_header("Content-Length", len(content))

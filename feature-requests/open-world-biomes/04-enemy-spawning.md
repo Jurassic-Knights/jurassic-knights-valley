@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 2
 depends_on: [01-biome-config.md, 02-enemy-config.md]
 estimated_complexity: high
@@ -198,19 +198,19 @@ populateBiome(biomeId, bounds) {
 ```
 
 ## Acceptance Criteria
-- [ ] Enemy.js class created extending Entity
-- [ ] Enemy uses EntityTypes.ENEMY_DINOSAUR or ENEMY_SOLDIER
-- [ ] Enemy stores patrol area (spawnX, spawnY, patrolRadius, leashDistance)
-- [ ] Enemy has all required components (Health, Combat, Stats, AI)
-- [ ] **Elite spawning**: 5% chance, 2x stats, 3x loot
-- [ ] **isElite** and **threatLevel** properties set
-- [ ] **packAggro** flag respected per enemy type
-- [ ] **waveId** tracks respawn wave groups
-- [ ] SpawnManager.spawnEnemyGroup() creates grouped enemies
-- [ ] SpawnManager.populateBiome() spawns based on biome config
-- [ ] Enemy level scales based on biome levelRange
-- [ ] groupId links enemies for pack aggro behavior
-- [ ] EntityManager can query enemies by type
+- [x] Enemy.js class created extending Entity
+- [x] Enemy uses EntityTypes.ENEMY_DINOSAUR or ENEMY_SOLDIER
+- [x] Enemy stores patrol area (spawnX, spawnY, patrolRadius, leashDistance)
+- [x] Enemy has all required components (Health, Combat, Stats, AI)
+- [x] **Elite spawning**: 5% chance, 2x stats, 3x loot
+- [x] **isElite** and **threatLevel** properties set
+- [x] **packAggro** flag respected per enemy type
+- [x] **waveId** tracks respawn wave groups
+- [x] SpawnManager.spawnEnemyGroup() creates grouped enemies
+- [x] SpawnManager.populateBiome() spawns based on biome config
+- [x] Enemy level scales based on biome levelRange
+- [x] groupId links enemies for pack aggro behavior
+- [x] EntityManager can query enemies by type
 
 ## Notes
 - AI behavior (pack aggro) handled by 05-enemy-ai.md

@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 2
 depends_on: [02-enemy-config.md]
 estimated_complexity: high
@@ -324,16 +324,16 @@ ENEMY_KILLED: 'ENEMY_KILLED',         // { enemy, xpReward, lootTableId }
 ```
 
 ## Acceptance Criteria
-- [ ] AIComponent has aggro, leash, attack range checks
-- [ ] EnemySystem.js created with state machine
-- [ ] States implemented: WANDER, CHASE, ATTACK, LEASH_RETURN
-- [ ] Enemies wander within patrol radius
-- [ ] Enemies detect hero within aggro range
-- [ ] Enemies chase hero until attack range
-- [ ] Enemies stop chasing when hero exceeds leash distance
-- [ ] Enemies return to spawn point when leashed
-- [ ] Events emitted: ENEMY_AGGRO, ENEMY_ATTACK, ENEMY_KILLED
-- [ ] SystemConfig.js updated with EnemySystem
+- [x] AIComponent has aggro, leash, attack range checks
+- [x] EnemySystem.js created with state machine
+- [x] States implemented: WANDER, CHASE, ATTACK, LEASH_RETURN
+- [x] Enemies wander within patrol radius
+- [x] Enemies detect hero within aggro range
+- [x] Enemies chase hero until attack range
+- [x] Enemies stop chasing when hero exceeds leash distance
+- [x] Enemies return to spawn point when leashed
+- [x] Events emitted: ENEMY_AGGRO, ENEMY_ATTACK, ENEMY_KILLED
+- [x] SystemConfig.js updated with EnemySystem
 
 ## Notes
 - Actual damage application handled by 06-damage-system.md

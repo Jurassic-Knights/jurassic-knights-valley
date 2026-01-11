@@ -50,8 +50,39 @@ class SpawnManagerService {
         this.spawnHomeIslandTrees(); // Trees on home island (unified with resource system)
         this.spawnResources();
         this.spawnMerchants();
-        this.spawnProps();
+        // this.spawnProps();  // Disabled for testing
+
+        // Spawn test enemies in biomes (temporary - for testing)
+        this.spawnTestEnemies();
     }
+
+    /**
+     * Spawn test enemies near home island for debugging
+     * TODO: Replace with proper biome population when biome areas are defined
+     */
+    spawnTestEnemies() {
+        if (!window.Enemy || !window.BiomeConfig) {
+            console.log('[SpawnManager] Enemy system not loaded, skipping test spawn');
+            return;
+        }
+
+        const islandManager = this.game?.getSystem('IslandManager');
+        if (!islandManager) return;
+
+        const home = islandManager.getHomeIsland();
+        if (!home) return;
+
+        // Spawn enemies NORTH of home island (in the open world biome area)
+        // Position them in the biome area, near the center of the north exit
+        const testX = home.worldX + home.width / 2; // Center horizontally
+        const testY = home.worldY - 200; // North of home island (in biome area)
+
+        // Spawn a small group of enemy raptors
+        this.spawnEnemyGroup('grasslands', testX, testY, 'enemy_raptor', 3);
+
+        console.log('[SpawnManager] Spawned test enemies north of home island');
+    }
+
 
     /**
      * Spawn the player hero
@@ -804,6 +835,186 @@ class SpawnManagerService {
 
         drop.flyTo(tx, ty);
         console.log(`[SpawnManager] Spawned crafted item: ${type}`);
+    }
+
+    // ============================================
+    // ENEMY SPAWNING (Open World Biomes)
+    // ============================================
+
+    /**
+     * Spawn a group of enemies at a location
+     * @param {string} biomeId - Biome identifier
+     * @param {number} x - Group center X
+     * @param {number} y - Group center Y
+     * @param {string} enemyId - Enemy type ID from EntityConfig.enemy
+     * @param {number} count - Number of enemies in group
+     * @param {object} options - Additional spawn options
+     */
+    spawnEnemyGroup(biomeId, x, y, enemyId, count, options = {}) {
+        if (!window.Enemy) {
+            console.warn('[SpawnManager] Enemy class not found');
+            return [];
+        }
+
+        const groupId = options.groupId ||
+            `group_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const waveId = options.waveId || groupId;
+        const spacing = window.GameConstants?.Biome?.GROUP_SPACING || 50;
+
+        const enemies = [];
+
+        for (let i = 0; i < count; i++) {
+            // Spread enemies around group center
+            const offsetX = (Math.random() - 0.5) * spacing * 2;
+            const offsetY = (Math.random() - 0.5) * spacing * 2;
+
+            const enemy = new Enemy({
+                x: x + offsetX,
+                y: y + offsetY,
+                enemyType: enemyId,
+                biomeId: biomeId,
+                groupId: groupId,
+                waveId: waveId,
+                level: options.level || this.getEnemyLevelForBiome(biomeId),
+                forceNormal: options.forceNormal || false
+            });
+
+            if (window.EntityManager) {
+                EntityManager.add(enemy);
+            }
+
+            enemies.push(enemy);
+        }
+
+        console.log(`[SpawnManager] Spawned ${count} ${enemyId} in ${biomeId} (group: ${groupId})`);
+        return enemies;
+    }
+
+    /**
+     * Get appropriate enemy level for a biome based on its level range
+     * @param {string} biomeId - Biome identifier
+     * @returns {number} - Enemy level
+     */
+    getEnemyLevelForBiome(biomeId) {
+        const biome = window.BiomeConfig?.types?.[biomeId];
+        if (!biome || !biome.levelRange) return 1;
+
+        const { min, max } = biome.levelRange;
+        return min + Math.floor(Math.random() * (max - min + 1));
+    }
+
+    /**
+     * Populate a biome area with enemy groups based on spawn table
+     * @param {string} biomeId - Biome identifier
+     * @param {object} bounds - { x, y, width, height } spawnable area
+     * @param {object} options - Population options
+     */
+    populateBiome(biomeId, bounds, options = {}) {
+        if (!window.Enemy || !window.BiomeConfig?.types?.[biomeId]) {
+            console.warn(`[SpawnManager] Cannot populate biome: ${biomeId}`);
+            return;
+        }
+
+        const biome = BiomeConfig.types[biomeId];
+        const spawnTable = biome.enemySpawnTable;
+
+        if (!spawnTable || spawnTable.length === 0) {
+            console.log(`[SpawnManager] No spawn table for biome: ${biomeId}`);
+            return;
+        }
+
+        const padding = 100; // Edge padding
+        let totalSpawned = 0;
+
+        for (const spawn of spawnTable) {
+            // Convert weight to group count (rough: weight / 20)
+            const groupCount = Math.max(1, Math.floor(spawn.weight / 20));
+
+            for (let g = 0; g < groupCount; g++) {
+                // Random position within bounds
+                const x = bounds.x + padding + Math.random() * (bounds.width - padding * 2);
+                const y = bounds.y + padding + Math.random() * (bounds.height - padding * 2);
+
+                // Random group size from range
+                const sizeRange = spawn.groupSize || { min: 1, max: 1 };
+                const size = sizeRange.min +
+                    Math.floor(Math.random() * (sizeRange.max - sizeRange.min + 1));
+
+                const enemies = this.spawnEnemyGroup(biomeId, x, y, spawn.enemyId, size, {
+                    waveId: options.waveId || `wave_${biomeId}_${g}`
+                });
+
+                totalSpawned += enemies.length;
+            }
+        }
+
+        console.log(`[SpawnManager] Populated ${biomeId} with ${totalSpawned} enemies`);
+        return totalSpawned;
+    }
+
+    /**
+     * Spawn boss enemy for a biome
+     * @param {string} biomeId - Biome identifier
+     * @param {number} x - Boss spawn X
+     * @param {number} y - Boss spawn Y
+     */
+    spawnBiomeBoss(biomeId, x, y) {
+        const biome = window.BiomeConfig?.types?.[biomeId];
+        if (!biome || !biome.bossId) {
+            console.warn(`[SpawnManager] No boss configured for biome: ${biomeId}`);
+            return null;
+        }
+
+        // Boss spawns as a single-entity "group" with forced elite
+        const bosses = this.spawnEnemyGroup(biomeId, x, y, biome.bossId, 1, {
+            groupId: `boss_${biomeId}`,
+            waveId: `boss_wave_${biomeId}`,
+            forceNormal: false // Allow elite roll on boss
+        });
+
+        if (bosses.length > 0) {
+            const boss = bosses[0];
+            // Mark as boss (for UI/loot purposes)
+            boss.isBoss = true;
+            boss.respawnTime = biome.bossRespawnTime ||
+                window.GameConstants?.Biome?.BOSS_RESPAWN_DEFAULT || 300;
+            console.log(`[SpawnManager] Spawned boss ${biome.bossId} for ${biomeId}`);
+            return boss;
+        }
+        return null;
+    }
+
+    /**
+     * Get all enemies in a specific biome
+     * @param {string} biomeId - Biome identifier
+     * @returns {Enemy[]}
+     */
+    getEnemiesInBiome(biomeId) {
+        if (!window.EntityManager) return [];
+
+        const enemies = [
+            ...EntityManager.getByType(EntityTypes.ENEMY_DINOSAUR),
+            ...EntityManager.getByType(EntityTypes.ENEMY_SOLDIER)
+        ];
+
+        return enemies.filter(e => e.biomeId === biomeId && !e.isDead);
+    }
+
+    /**
+     * Despawn all enemies in a biome
+     * @param {string} biomeId - Biome identifier
+     */
+    clearBiomeEnemies(biomeId) {
+        const enemies = this.getEnemiesInBiome(biomeId);
+
+        for (const enemy of enemies) {
+            enemy.active = false;
+            if (window.EntityManager) {
+                EntityManager.remove(enemy);
+            }
+        }
+
+        console.log(`[SpawnManager] Cleared ${enemies.length} enemies from ${biomeId}`);
     }
 }
 

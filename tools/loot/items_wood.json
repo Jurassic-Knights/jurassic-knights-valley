@@ -1,0 +1,46 @@
+[
+    {
+        "id": "wood_t1_01",
+        "name": "Oak Plank",
+        "tier": 1,
+        "category": "wood",
+        "recipe": "2x Oak Wood",
+        "fuelCost": 1,
+        "time": "10s",
+        "biome": "grasslands",
+        "status": "pending"
+    },
+    {
+        "id": "wood_t2_02",
+        "name": "Ash Plank",
+        "tier": 2,
+        "category": "wood",
+        "recipe": "2x Ash Wood",
+        "fuelCost": 2,
+        "time": "15s",
+        "biome": "tundra",
+        "status": "pending"
+    },
+    {
+        "id": "wood_t3_03",
+        "name": "Acacia Plank",
+        "tier": 3,
+        "category": "wood",
+        "recipe": "2x Acacia Wood",
+        "fuelCost": 4,
+        "time": "20s",
+        "biome": "desert",
+        "status": "pending"
+    },
+    {
+        "id": "wood_t4_04",
+        "name": "Ironwood Plank",
+        "tier": 4,
+        "category": "wood",
+        "recipe": "2x Ironwood",
+        "fuelCost": 8,
+        "time": "30s",
+        "biome": "badlands",
+        "status": "pending"
+    }
+]

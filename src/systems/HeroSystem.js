@@ -49,6 +49,9 @@ class HeroSystem {
                 this.inputMove = vec;
             });
             // Attack events could be handled here too
+
+            // Death handler (06-damage-system)
+            EventBus.on(GameConstants.Events.HERO_DIED, (data) => this.onHeroDied(data));
         }
     }
 
@@ -94,6 +97,47 @@ class HeroSystem {
             }
         }
 
+    }
+
+    // Death/Respawn Handler (06-damage-system)
+    onHeroDied(data) {
+        const hero = data.hero;
+        if (!hero) return;
+
+        // Lock movement
+        hero.locked = true;
+
+        // Death VFX
+        if (window.VFXController && window.VFXConfig) {
+            VFXController.playForeground(hero.x, hero.y, VFXConfig.TEMPLATES?.HERO_DEATH_FX || {
+                type: 'burst',
+                color: '#FF0000',
+                count: 15
+            });
+        }
+
+        // Respawn after delay
+        setTimeout(() => {
+            // Get spawn position
+            const spawnPos = this._islandManager?.getHeroSpawnPosition?.() ||
+                window.IslandManager?.getHeroSpawnPosition?.() ||
+                { x: hero.x, y: hero.y };
+            hero.x = spawnPos.x;
+            hero.y = spawnPos.y;
+
+            // Restore health
+            if (hero.components.health) {
+                hero.components.health.respawn();
+            }
+
+            hero.locked = false;
+
+            if (window.EventBus && window.GameConstants) {
+                EventBus.emit(GameConstants.Events.HERO_RESPAWNED, { hero });
+            }
+
+            console.log('[HeroSystem] Hero respawned at', spawnPos);
+        }, 2000);
     }
 
     updateMovement(dt, hero) {
@@ -179,14 +223,33 @@ class HeroSystem {
         // Find nearest valid target within range
         let target = null;
         let minDistSq = Infinity; // Use squared distance to avoid Math.sqrt
+        const scanRange = hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE;
 
-        // Check Dinosaurs (Priority)
+        // Check Enemies (HIGHEST Priority - hostile entities)
+        // Note: EntityManager.getByType uses constructor.name ('Enemy'), not entityType
         if (window.EntityManager) {
-            // Optimization: Use Quadtree via getInRadius if available/optimized, 
-            // or just iterate active Dinos if list is small. 
-            // Querying a box around hero is best if Quadtree works well.
-            // Querying a box around hero is best if Quadtree works well.
-            const scanRange = hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE;
+            // Check both Enemy and Boss types (Boss extends Enemy but has different constructor name)
+            const enemyTypes = ['Enemy', 'Boss'];
+            for (const enemyType of enemyTypes) {
+                const candidates = EntityManager.getByType(enemyType);
+                for (const candidate of candidates) {
+                    if (!candidate.active || candidate.isDead) continue;
+
+                    const dx = candidate.x - hero.x;
+                    const dy = candidate.y - hero.y;
+                    const distSq = dx * dx + dy * dy;
+                    const rangeSq = scanRange * scanRange;
+
+                    if (distSq <= rangeSq && distSq < minDistSq) {
+                        minDistSq = distSq;
+                        target = candidate;
+                    }
+                }
+            }
+        }
+
+        // Check Dinosaurs (Second Priority)
+        if (!target && window.EntityManager) {
             const candidates = EntityManager.getInRadius(hero.x, hero.y, scanRange, 'Dinosaur');
 
             for (const candidate of candidates) {
@@ -203,11 +266,10 @@ class HeroSystem {
             }
         }
 
-        // Check Resources (Secondary Priority, mining) - Only if no dino target?
-        // Or maybe mining overrides if much closer? For now, Dinos > Resources.
+        // Check Resources (Lowest Priority, mining)
         if (!target && window.EntityManager) {
-            const scanRange = hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE;
-            const candidates = EntityManager.getInRadius(hero.x, hero.y, scanRange, 'Resource');
+            const miningRange = hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE;
+            const candidates = EntityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.state === 'depleted') continue;
 
@@ -278,17 +340,28 @@ class HeroSystem {
     tryAttack(hero, resource) {
         // Migrated from Hero.js
         if (!resource || !resource.active) return false;
-        if (resource.state === 'depleted') return false;
+
+        // Check entity type - enemies and dinos use ranged combat
+        // Use constructor.name as primary check (more reliable than entityType)
+        const isEnemy = resource.constructor.name === 'Enemy' ||
+            resource.constructor.name === 'Boss' ||
+            resource.isBoss === true;
+        const isDino = resource.constructor.name === 'Dinosaur' ||
+            resource.entityType === EntityTypes?.DINOSAUR;
+        const isRangedTarget = isDino || isEnemy;
+
+        // Skip if resource is depleted (but not for enemies/dinos)
+        if (!isRangedTarget && resource.state === 'depleted') return false;
+        // Skip if enemy is dead
+        if (isEnemy && resource.isDead) return false;
 
         // Use squared distance comparison (avoid Math.sqrt)
         const dx = hero.x - resource.x;
         const dy = hero.y - resource.y;
         const distSq = dx * dx + dy * dy;
 
-        const isDino = resource.entityType === EntityTypes.DINOSAUR;
-
         const combat = hero.components.combat;
-        const effectiveRange = isDino ? (hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE) : (hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE);
+        const effectiveRange = isRangedTarget ? (hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE) : (hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE);
         const rangeSq = effectiveRange * effectiveRange;
 
         if (distSq > rangeSq) return false;
@@ -308,12 +381,12 @@ class HeroSystem {
 
         // SFX
         if (window.AudioManager) {
-            AudioManager.playSFX(isDino ? 'sfx_hero_shoot' : 'sfx_hero_swing');
+            AudioManager.playSFX(isRangedTarget ? 'sfx_hero_shoot' : 'sfx_hero_swing');
         }
 
         // VFX: Muzzle Flash
         const vfxController = this.game.getSystem('VFXController');
-        if (isDino && vfxController && window.VFXConfig) {
+        if (isRangedTarget && vfxController && window.VFXConfig) {
             const cfg = VFXConfig.HERO.MUZZLE_FLASH;
             const dx = resource.x - hero.x;
             const dy = resource.y - hero.y;
@@ -336,7 +409,12 @@ class HeroSystem {
         let justKilled = false;
         const dmg = combat ? combat.damage : GameConstants.Combat.DEFAULT_DAMAGE;
 
-        if (resource.components && resource.components.health) {
+        console.log(`[HeroSystem] Attacking ${resource.constructor.name}, damage: ${dmg}`);
+
+        // For Enemy entities, prefer their own takeDamage method (it handles aggro/death)
+        if (isEnemy && resource.takeDamage) {
+            justKilled = resource.takeDamage(dmg, hero);
+        } else if (resource.components && resource.components.health) {
             justKilled = resource.components.health.takeDamage(dmg);
         } else if (resource.takeDamage) {
             justKilled = resource.takeDamage(dmg);

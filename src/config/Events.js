@@ -31,6 +31,17 @@ const Events = {
     // UI
     UI_UNLOCK_PROMPT: 'UI_UNLOCK_PROMPT',     // { island }
     UI_HIDE_UNLOCK_PROMPT: 'UI_HIDE_UNLOCK_PROMPT', // (void)
+
+    // Combat - Enemy AI
+    ENEMY_AGGRO: 'ENEMY_AGGRO',           // { enemy, target }
+    ENEMY_ATTACK: 'ENEMY_ATTACK',         // { attacker, target, damage }
+    ENEMY_LEASH: 'ENEMY_LEASH',           // { enemy }
+    ENEMY_KILLED: 'ENEMY_KILLED',         // { enemy, xpReward, lootTableId }
+
+    // Progression
+    XP_GAINED: 'XP_GAINED',               // { hero, amount, total, level }
+    HERO_LEVEL_UP: 'HERO_LEVEL_UP',       // { hero, oldLevel, newLevel, levelsGained }
+    HERO_RESPAWNED: 'HERO_RESPAWNED',     // { hero }
 };
 
 // Export

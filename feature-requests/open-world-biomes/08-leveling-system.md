@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 3
 depends_on: [03-hero-stats.md, 06-damage-system.md]
 estimated_complexity: medium
@@ -206,18 +206,18 @@ EventBus.on('HERO_LEVEL_UP', (data) => showLevelUpNotification(data.newLevel));
 ```
 
 ## Acceptance Criteria
-- [ ] ProgressionSystem.js fully implemented (replaces placeholder)
-- [ ] XP granted on ENEMY_KILLED event
-- [ ] Level up triggers when XP threshold reached
-- [ ] Multiple levels can be gained from one kill
-- [ ] Stats increase on level up (health, attack, defense, stamina)
-- [ ] Full heal on level up
-- [ ] VFX plays on level up
-- [ ] SFX plays on level up
-- [ ] XP_GAINED event emitted
-- [ ] HERO_LEVEL_UP event emitted
-- [ ] XP curve uses config values (xpToNextLevel, xpScaling)
-- [ ] SystemConfig updated with proper init
+- [x] ProgressionSystem.js fully implemented (replaces placeholder)
+- [x] XP granted on ENEMY_KILLED event
+- [x] Level up triggers when XP threshold reached
+- [x] Multiple levels can be gained from one kill
+- [x] Stats increase on level up (health, attack, defense, stamina)
+- [x] Full heal on level up
+- [x] VFX plays on level up
+- [x] SFX plays on level up
+- [x] XP_GAINED event emitted
+- [x] HERO_LEVEL_UP event emitted
+- [x] XP curve uses config values (xpToNextLevel, xpScaling)
+- [x] SystemConfig updated with proper init
 
 ## Notes
 - Per-level stat gains should eventually move to EntityConfig

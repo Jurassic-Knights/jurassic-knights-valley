@@ -14,7 +14,7 @@ class TimeSystem {
         this.config = GameConstants.Time;
 
         this.totalTime = 0;          // Total seconds played
-        this.dayTime = this.config.PHASES.DAWN; // Start at Dawn
+        this.dayTime = 0.5; // Start at midday (DAY phase)
         this.dayCount = 1;           // Current day number
 
         // State

@@ -1,0 +1,2100 @@
+{
+    "version": "2.2",
+    "lastUpdated": "2026-01-10",
+    "designNotes": {
+        "zones": "Designated farming areas with minerals and herbivores - reliable resource gathering",
+        "biomes": "Small bonus clumps (2-4) of resources, unique resources only spawn here requiring combat to reach",
+        "lore": "Humans and dinosaurs co-exist through WWI era. Continent divided by war and totalitarian regimes. No magic, no fantasy naming.",
+        "weaponReference": "All firearms based on WWI/WWII infantry weapons. Melee is combination of medieval and trench warfare tools."
+    },
+    "rarityColors": {
+        "common": {
+            "color": "#9e9e9e",
+            "outline": "#616161",
+            "glow": false
+        },
+        "uncommon": {
+            "color": "#4caf50",
+            "outline": "#2e7d32",
+            "glow": false
+        },
+        "rare": {
+            "color": "#2196f3",
+            "outline": "#1565c0",
+            "glow": true
+        },
+        "epic": {
+            "color": "#9c27b0",
+            "outline": "#6a1b9a",
+            "glow": true
+        },
+        "legendary": {
+            "color": "#ff9800",
+            "outline": "#e65100",
+            "glow": true
+        }
+    },
+    "defaults": {
+        "resources": {
+            "stackSize": 20,
+            "weight": 0.5,
+            "icon": "ui_icon_resource",
+            "vfx": {
+                "harvest": "vfx_gather",
+                "drop": "vfx_item_drop"
+            },
+            "sfx": {
+                "harvest": "sfx_gather",
+                "drop": "sfx_item_drop"
+            }
+        },
+        "items": {
+            "stackSize": 10,
+            "weight": 1.0,
+            "icon": "ui_icon_item",
+            "vfx": {
+                "craft": "vfx_forge_complete",
+                "drop": "vfx_item_drop"
+            },
+            "sfx": {
+                "craft": "sfx_craft_complete",
+                "drop": "sfx_item_drop"
+            }
+        },
+        "equipment": {
+            "stackSize": 1,
+            "weight": 3.0,
+            "icon": "ui_icon_equipment",
+            "vfx": {
+                "equip": "vfx_equip",
+                "drop": "vfx_item_drop_rare"
+            },
+            "sfx": {
+                "equip": "sfx_equip_armor",
+                "drop": "sfx_item_drop"
+            }
+        },
+        "weapon": {
+            "stackSize": 1,
+            "weight": 4.0,
+            "icon": "ui_icon_weapon",
+            "vfx": {
+                "equip": "vfx_equip",
+                "drop": "vfx_item_drop_rare",
+                "attack": "vfx_swing"
+            },
+            "sfx": {
+                "equip": "sfx_equip_weapon",
+                "drop": "sfx_item_drop",
+                "attack": "sfx_swing"
+            }
+        },
+        "enemy": {
+            "vfx": {
+                "spawn": "vfx_enemy_spawn",
+                "death": "vfx_blood_splatter",
+                "hit": "vfx_blood_hit",
+                "aggro": "vfx_aggro_alert"
+            },
+            "sfx": {
+                "spawn": "sfx_enemy_spawn",
+                "death": "sfx_death_grunt",
+                "hit": "sfx_flesh_hit",
+                "aggro": "sfx_aggro_growl"
+            }
+        },
+        "herbivore": {
+            "vfx": {
+                "spawn": "vfx_dust_puff",
+                "death": "vfx_blood_splatter",
+                "hit": "vfx_blood_hit",
+                "flee": "vfx_dust_trail"
+            },
+            "sfx": {
+                "spawn": "sfx_dino_call",
+                "death": "sfx_dino_death",
+                "hit": "sfx_flesh_hit",
+                "flee": "sfx_dino_panic"
+            }
+        }
+    },
+    "declineNotes": {},
+    "resources": [
+        {
+            "id": "wild_berries",
+            "name": "Wild Berries",
+            "tier": 1,
+            "source": "Berry Bush",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "raw_meat",
+            "name": "Raw Meat",
+            "tier": 1,
+            "source": "Small Herbivores",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "wheat_grain",
+            "name": "Wheat Grain",
+            "tier": 1,
+            "source": "Wild Wheat",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "fatty_meat",
+            "name": "Fatty Meat",
+            "tier": 2,
+            "source": "Large Herbivores",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "frozen_fish",
+            "name": "Frozen Fish",
+            "tier": 2,
+            "source": "Ice Hole",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "root_vegetables",
+            "name": "Root Vegetables",
+            "tier": 2,
+            "source": "Frozen Ground",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "uncommon",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "cactus_fruit",
+            "name": "Cactus Fruit",
+            "tier": 2,
+            "source": "Desert Cactus",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "sand_grub",
+            "name": "Sand Grub",
+            "tier": 2,
+            "source": "Burrow Nest",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "dried_jerky",
+            "name": "Dried Jerky",
+            "tier": 3,
+            "source": "Desert Herbivores",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "uncommon",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "charred_meat",
+            "name": "Charred Meat",
+            "tier": 3,
+            "source": "Badlands Creatures",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "uncommon",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "smoked_rations",
+            "name": "Smoked Rations",
+            "tier": 3,
+            "source": "Badlands Nest",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "uncommon",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "iron_rations",
+            "name": "Iron Rations",
+            "tier": 4,
+            "source": "Field Kitchen",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "rare",
+            "category": "food",
+            "status": "pending"
+        },
+        {
+            "id": "stone",
+            "name": "Rough Stone",
+            "tier": 1,
+            "source": "Stone Pile",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "copper_ore",
+            "name": "Copper Ore",
+            "tier": 1,
+            "source": "Copper Vein",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "clay",
+            "name": "Red Clay",
+            "tier": 1,
+            "source": "Riverbank",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "iron_ore",
+            "name": "Iron Ore",
+            "tier": 2,
+            "source": "Iron Deposit",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "coal",
+            "name": "Coal",
+            "tier": 2,
+            "source": "Coal Seam",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "salt_crystal",
+            "name": "Salt Crystal",
+            "tier": 2,
+            "source": "Salt Formation",
+            "location": "biome",
+            "biome": "tundra",
+            "rarity": "uncommon",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "sandite",
+            "name": "Sandstone",
+            "tier": 2,
+            "source": "Desert Rock",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "gold_dust",
+            "name": "Gold Dust",
+            "tier": 3,
+            "source": "Sandy Deposit",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "uncommon",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "oasis_salt",
+            "name": "Oasis Salt",
+            "tier": 2,
+            "source": "Salt Flat",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "obsite",
+            "name": "Black Rock",
+            "tier": 3,
+            "source": "Badlands Outcrop",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "uncommon",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "sulfur",
+            "name": "Sulfur",
+            "tier": 3,
+            "source": "Sulfur Vent",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "common",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "tungsten",
+            "name": "Tungsten Ore",
+            "tier": 4,
+            "source": "Deep Vein",
+            "location": "biome",
+            "biome": "badlands",
+            "rarity": "rare",
+            "category": "minerals",
+            "status": "pending"
+        },
+        {
+            "id": "oak_wood",
+            "name": "Oak Wood",
+            "tier": 1,
+            "source": "Oak Tree",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "plant_fiber",
+            "name": "Plant Fiber",
+            "tier": 1,
+            "source": "Tall Grass",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "leather_scraps",
+            "name": "Leather Scraps",
+            "tier": 1,
+            "source": "Herbivore Kills",
+            "location": "zone",
+            "biome": "grasslands",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "thick_hide",
+            "name": "Thick Hide",
+            "tier": 2,
+            "source": "Tundra Herbivores",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "ash_wood",
+            "name": "Ash Wood",
+            "tier": 2,
+            "source": "Ash Tree",
+            "location": "zone",
+            "biome": "tundra",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "bone",
+            "name": "Bone",
+            "tier": 2,
+            "source": "Carcass",
+            "location": "zone",
+            "biome": "all",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "cactus_spine",
+            "name": "Cactus Spine",
+            "tier": 2,
+            "source": "Desert Cactus",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "acacia_wood",
+            "name": "Acacia Wood",
+            "tier": 3,
+            "source": "Acacia Tree",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "sinew",
+            "name": "Sinew",
+            "tier": 2,
+            "source": "Large Herbivores",
+            "location": "zone",
+            "biome": "all",
+            "rarity": "uncommon",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "sun_bleached_bone",
+            "name": "Sun-Bleached Bone",
+            "tier": 2,
+            "source": "Desert Remains",
+            "location": "zone",
+            "biome": "desert",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "volcanic_glass",
+            "name": "Black Glass",
+            "tier": 3,
+            "source": "Badlands Outcrop",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "uncommon",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "scorch_scale",
+            "name": "Hardened Scale",
+            "tier": 3,
+            "source": "Badlands Creatures",
+            "location": "biome",
+            "biome": "badlands",
+            "rarity": "rare",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "ash",
+            "name": "Ash",
+            "tier": 3,
+            "source": "Ash Pile",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "common",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "ironwood",
+            "name": "Ironwood",
+            "tier": 4,
+            "source": "Ironwood Tree",
+            "location": "zone",
+            "biome": "badlands",
+            "rarity": "uncommon",
+            "category": "scraps",
+            "status": "pending"
+        },
+        {
+            "id": "scrap_metal",
+            "name": "Scrap Iron",
+            "tier": 1,
+            "source": "Enemy Soldiers, Debris",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "common",
+            "category": "salvage",
+            "status": "pending"
+        },
+        {
+            "id": "gunpowder",
+            "name": "Black Powder",
+            "tier": 2,
+            "source": "Enemy Soldiers",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "uncommon",
+            "category": "salvage",
+            "status": "pending"
+        },
+        {
+            "id": "ration_tin",
+            "name": "Ration Tin",
+            "tier": 1,
+            "source": "Enemy Soldiers",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "common",
+            "category": "salvage",
+            "status": "pending"
+        },
+        {
+            "id": "brass_casing",
+            "name": "Brass Casing",
+            "tier": 2,
+            "source": "Enemy Soldiers",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "common",
+            "category": "salvage",
+            "status": "pending"
+        },
+        {
+            "id": "mechanical_parts",
+            "name": "Mechanical Parts",
+            "tier": 2,
+            "source": "Enemy Sergeants, Machinery",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "uncommon",
+            "category": "salvage",
+            "status": "pending"
+        },
+        {
+            "id": "munitions",
+            "name": "Munitions",
+            "tier": 3,
+            "source": "Ammo Crate, Officers",
+            "location": "biome",
+            "biome": "all",
+            "rarity": "uncommon",
+            "category": "salvage",
+            "status": "pending"
+        }
+    ],
+    "items": [
+        {
+            "id": "copper_ingot",
+            "name": "Copper Ingot",
+            "tier": 1,
+            "category": "metal",
+            "recipe": "2x Copper Ore",
+            "time": "15s",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "iron_ingot",
+            "name": "Iron Ingot",
+            "tier": 2,
+            "category": "metal",
+            "recipe": "2x Iron Ore + 1x Coal",
+            "time": "20s",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "steel_ingot",
+            "name": "Steel Ingot",
+            "tier": 3,
+            "category": "metal",
+            "recipe": "2x Iron Ingot + 2x Coal",
+            "time": "40s",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "hardened_steel",
+            "name": "Hardened Steel",
+            "tier": 4,
+            "category": "metal",
+            "recipe": "2x Steel Ingot + 1x Tungsten",
+            "time": "60s",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "oak_plank",
+            "name": "Oak Plank",
+            "tier": 1,
+            "category": "wood",
+            "recipe": "2x Oak Wood",
+            "time": "10s",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "ash_plank",
+            "name": "Ash Plank",
+            "tier": 2,
+            "category": "wood",
+            "recipe": "2x Ash Wood",
+            "time": "15s",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "acacia_plank",
+            "name": "Acacia Plank",
+            "tier": 3,
+            "category": "wood",
+            "recipe": "2x Acacia Wood",
+            "time": "20s",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "ironwood_plank",
+            "name": "Ironwood Plank",
+            "tier": 4,
+            "category": "wood",
+            "recipe": "2x Ironwood",
+            "time": "30s",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "leather",
+            "name": "Cured Leather",
+            "tier": 1,
+            "category": "leather",
+            "recipe": "3x Leather Scraps + 1x Salt Crystal",
+            "time": "20s",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "reinforced_leather",
+            "name": "Reinforced Leather",
+            "tier": 2,
+            "category": "leather",
+            "recipe": "2x Thick Hide + 1x Leather",
+            "time": "30s",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "bone_plate",
+            "name": "Bone Plate",
+            "tier": 2,
+            "category": "bone",
+            "recipe": "3x Bone + 1x Sinew",
+            "time": "25s",
+            "biome": "all",
+            "status": "pending"
+        },
+        {
+            "id": "mechanism",
+            "name": "Basic Mechanism",
+            "tier": 1,
+            "category": "mechanical",
+            "recipe": "2x Scrap Iron + 1x Copper Ingot",
+            "time": "30s",
+            "biome": "all",
+            "status": "pending"
+        },
+        {
+            "id": "precision_mechanism",
+            "name": "Precision Mechanism",
+            "tier": 3,
+            "category": "mechanical",
+            "recipe": "1x Mechanism + 2x Iron Ingot + 1x Mechanical Parts",
+            "time": "45s",
+            "biome": "all",
+            "status": "pending"
+        },
+        {
+            "id": "rifle_stock",
+            "name": "Rifle Stock",
+            "tier": 2,
+            "category": "wood",
+            "recipe": "3x Oak Wood + 1x Leather",
+            "time": "20s",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "barrel",
+            "name": "Gun Barrel",
+            "tier": 2,
+            "category": "metal",
+            "recipe": "2x Iron Ingot + 1x Coal",
+            "time": "25s",
+            "biome": "tundra",
+            "status": "pending"
+        }
+    ],
+    "equipment": [
+        {
+            "id": "cloth_cap",
+            "name": "Cloth Cap",
+            "slot": "head",
+            "tier": 1,
+            "stats": "+2 Armor",
+            "recipe": "2x Plant Fiber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "leather_cap",
+            "name": "Leather Cap",
+            "slot": "head",
+            "tier": 1,
+            "stats": "+4 Armor",
+            "recipe": "2x Leather",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "brodie_helm",
+            "name": "Brodie Helmet",
+            "slot": "head",
+            "tier": 2,
+            "stats": "+8 Armor",
+            "recipe": "2x Iron Ingot + 1x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "stahlhelm",
+            "name": "Stahlhelm",
+            "slot": "head",
+            "tier": 2,
+            "stats": "+10 Armor",
+            "recipe": "3x Iron Ingot",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "gas_mask",
+            "name": "Gas Mask",
+            "slot": "head",
+            "tier": 2,
+            "stats": "+5 Armor, +Poison Resist",
+            "recipe": "1x Leather + 1x Mechanism",
+            "biome": "all",
+            "status": "pending"
+        },
+        {
+            "id": "desert_wrap",
+            "name": "Desert Headwrap",
+            "slot": "head",
+            "tier": 2,
+            "stats": "+4 Armor, +Heat Resist",
+            "recipe": "3x Plant Fiber",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "officers_cap",
+            "name": "Officer's Cap",
+            "slot": "head",
+            "tier": 3,
+            "stats": "+6 Armor, +Authority",
+            "recipe": "2x Steel Ingot + 1x Reinforced Leather",
+            "biome": "all",
+            "status": "pending"
+        },
+        {
+            "id": "cloth_tunic",
+            "name": "Cloth Tunic",
+            "slot": "chest",
+            "tier": 1,
+            "stats": "+3 Armor",
+            "recipe": "4x Plant Fiber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "leather_jerkin",
+            "name": "Leather Jerkin",
+            "slot": "chest",
+            "tier": 1,
+            "stats": "+6 Armor",
+            "recipe": "3x Leather",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "trench_coat",
+            "name": "Trench Coat",
+            "slot": "chest",
+            "tier": 2,
+            "stats": "+10 Armor",
+            "recipe": "4x Reinforced Leather + 1x Mechanism",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "plate_carrier",
+            "name": "Plate Carrier",
+            "slot": "chest",
+            "tier": 2,
+            "stats": "+15 Armor",
+            "recipe": "4x Iron Ingot + 2x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "greatcoat",
+            "name": "Greatcoat",
+            "slot": "chest",
+            "tier": 2,
+            "stats": "+8 Armor, +Cold Resist",
+            "recipe": "4x Thick Hide + 2x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "desert_robe",
+            "name": "Desert Robe",
+            "slot": "chest",
+            "tier": 2,
+            "stats": "+6 Armor, +Heat Resist",
+            "recipe": "4x Plant Fiber",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "articulated_plate",
+            "name": "Articulated Plate",
+            "slot": "chest",
+            "tier": 4,
+            "stats": "+25 Armor",
+            "recipe": "6x Hardened Steel + 2x Reinforced Leather",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "cloth_pants",
+            "name": "Cloth Trousers",
+            "slot": "legs",
+            "tier": 1,
+            "stats": "+2 Armor",
+            "recipe": "3x Plant Fiber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "leather_leggings",
+            "name": "Leather Leggings",
+            "slot": "legs",
+            "tier": 1,
+            "stats": "+4 Armor",
+            "recipe": "2x Leather",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "iron_greaves",
+            "name": "Iron Greaves",
+            "slot": "legs",
+            "tier": 2,
+            "stats": "+8 Armor",
+            "recipe": "3x Iron Ingot + 1x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "wool_trousers",
+            "name": "Wool Trousers",
+            "slot": "legs",
+            "tier": 2,
+            "stats": "+5 Armor, +Cold Resist",
+            "recipe": "3x Thick Hide",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "desert_trousers",
+            "name": "Desert Trousers",
+            "slot": "legs",
+            "tier": 2,
+            "stats": "+4 Armor, +Speed",
+            "recipe": "3x Plant Fiber + 1x Sinew",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "steel_greaves",
+            "name": "Steel Greaves",
+            "slot": "legs",
+            "tier": 3,
+            "stats": "+12 Armor",
+            "recipe": "3x Steel Ingot + 1x Leather",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "cloth_gloves",
+            "name": "Cloth Gloves",
+            "slot": "hands",
+            "tier": 1,
+            "stats": "+1 Armor",
+            "recipe": "1x Plant Fiber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "leather_gloves",
+            "name": "Leather Gloves",
+            "slot": "hands",
+            "tier": 1,
+            "stats": "+2 Armor",
+            "recipe": "1x Leather",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "iron_gauntlets",
+            "name": "Iron Gauntlets",
+            "slot": "hands",
+            "tier": 2,
+            "stats": "+4 Armor",
+            "recipe": "2x Iron Ingot",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "wool_gloves",
+            "name": "Wool Gloves",
+            "slot": "hands",
+            "tier": 2,
+            "stats": "+2 Armor, +Cold Resist",
+            "recipe": "2x Thick Hide",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "desert_wraps",
+            "name": "Desert Wraps",
+            "slot": "hands",
+            "tier": 2,
+            "stats": "+2 Armor, +Heat Resist",
+            "recipe": "2x Plant Fiber",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "steel_gauntlets",
+            "name": "Steel Gauntlets",
+            "slot": "hands",
+            "tier": 3,
+            "stats": "+6 Armor",
+            "recipe": "2x Steel Ingot",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "cloth_boots",
+            "name": "Cloth Boots",
+            "slot": "feet",
+            "tier": 1,
+            "stats": "+1 Armor",
+            "recipe": "2x Plant Fiber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "leather_boots",
+            "name": "Leather Boots",
+            "slot": "feet",
+            "tier": 1,
+            "stats": "+3 Armor",
+            "recipe": "2x Leather",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "iron_boots",
+            "name": "Iron Boots",
+            "slot": "feet",
+            "tier": 2,
+            "stats": "+6 Armor",
+            "recipe": "2x Iron Ingot + 1x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "wool_boots",
+            "name": "Wool Boots",
+            "slot": "feet",
+            "tier": 2,
+            "stats": "+4 Armor, +Cold Resist",
+            "recipe": "3x Thick Hide",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "sand_striders",
+            "name": "Sand Striders",
+            "slot": "feet",
+            "tier": 2,
+            "stats": "+3 Armor, +Speed",
+            "recipe": "2x Leather + 2x Sinew",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "steel_boots",
+            "name": "Steel Boots",
+            "slot": "feet",
+            "tier": 3,
+            "stats": "+8 Armor",
+            "recipe": "2x Steel Ingot + 1x Leather",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "trench_knife",
+            "name": "Trench Knife",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 1,
+            "tier": 1,
+            "stats": "5 Dmg, 3.0 Rate",
+            "recipe": "1x Copper Ingot + 1x Timber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "billhook",
+            "name": "Billhook",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 1,
+            "tier": 1,
+            "stats": "7 Dmg, 2.0 Rate",
+            "recipe": "1x Iron Ingot + 2x Timber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "cavalry_sabre",
+            "name": "Cavalry Sabre",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 1,
+            "tier": 2,
+            "stats": "12 Dmg, 2.0 Rate",
+            "recipe": "2x Iron Ingot + 1x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "falchion",
+            "name": "Falchion",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 1,
+            "tier": 2,
+            "stats": "14 Dmg, 1.5 Rate",
+            "recipe": "2x Iron Ingot + 1x Bone Plate",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "kopis",
+            "name": "Kopis",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 1,
+            "tier": 2,
+            "stats": "10 Dmg, 2.5 Rate",
+            "recipe": "2x Iron Ingot + 1x Sinew",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "punch_dagger",
+            "name": "Punch Dagger",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 1,
+            "tier": 3,
+            "stats": "15 Dmg, 3.0 Rate",
+            "recipe": "2x Steel Ingot",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "e_tool",
+            "name": "Entrenching Tool",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 2,
+            "tier": 1,
+            "stats": "8 Dmg, 1.5 Rate",
+            "recipe": "2x Iron Ingot + 1x Timber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "trench_mace",
+            "name": "Trench Mace",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 2,
+            "tier": 2,
+            "stats": "20 Dmg, 1.0 Rate, +Stagger",
+            "recipe": "3x Iron Ingot + 2x Timber",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "claymore",
+            "name": "Claymore",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 2,
+            "tier": 3,
+            "stats": "25 Dmg, 1.2 Rate",
+            "recipe": "4x Steel Ingot + 1x Reinforced Leather",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "kriegsmesser",
+            "name": "Kriegsmesser",
+            "slot": "weapon",
+            "weaponType": "melee",
+            "hands": 2,
+            "tier": 4,
+            "stats": "35 Dmg, 1.3 Rate",
+            "recipe": "4x Hardened Steel + 1x Reinforced Leather",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "nagant_revolver",
+            "name": "Nagant Revolver",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 1,
+            "tier": 1,
+            "stats": "8 Dmg, 1.5 Rate",
+            "recipe": "2x Copper Ingot + 1x Mechanism",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "webley_revolver",
+            "name": "Webley Revolver",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 1,
+            "tier": 2,
+            "stats": "12 Dmg, 1.8 Rate",
+            "recipe": "2x Iron Ingot + 1x Mechanism",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "luger_p08",
+            "name": "Luger P08",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 1,
+            "tier": 2,
+            "stats": "10 Dmg, 2.2 Rate",
+            "recipe": "2x Iron Ingot + 1x Precision Mechanism",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "colt_m1911",
+            "name": "Colt M1911",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 1,
+            "tier": 3,
+            "stats": "15 Dmg, 2.0 Rate",
+            "recipe": "2x Steel Ingot + 1x Precision Mechanism",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "mauser_c96",
+            "name": "Mauser C96",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 1,
+            "tier": 3,
+            "stats": "14 Dmg, 2.5 Rate",
+            "recipe": "3x Steel Ingot + 1x Precision Mechanism",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "lee_enfield",
+            "name": "Lee-Enfield",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 2,
+            "tier": 2,
+            "stats": "18 Dmg, 1.0 Rate",
+            "recipe": "3x Iron Ingot + 1x Rifle Stock + 1x Barrel",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "gewehr_98",
+            "name": "Gewehr 98",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 2,
+            "tier": 2,
+            "stats": "20 Dmg, 0.9 Rate",
+            "recipe": "3x Iron Ingot + 1x Rifle Stock + 1x Barrel",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "m1903_springfield",
+            "name": "M1903 Springfield",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 2,
+            "tier": 3,
+            "stats": "22 Dmg, 1.0 Rate",
+            "recipe": "3x Steel Ingot + 1x Rifle Stock + 1x Precision Mechanism",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "winchester_m1897",
+            "name": "Winchester M1897",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 2,
+            "tier": 3,
+            "stats": "28 Dmg, 0.7 Rate, +Spread",
+            "recipe": "3x Steel Ingot + 1x Rifle Stock + 1x Precision Mechanism",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "anti_materiel",
+            "name": "Anti-Materiel Rifle",
+            "slot": "weapon",
+            "weaponType": "ranged",
+            "hands": 2,
+            "tier": 4,
+            "stats": "45 Dmg, 0.4 Rate, +Armor Pierce",
+            "recipe": "4x Hardened Steel + 1x Precision Mechanism + 1x Tungsten",
+            "biome": "badlands",
+            "status": "pending"
+        },
+        {
+            "id": "heater_shield",
+            "name": "Heater Shield",
+            "slot": "weapon",
+            "weaponType": "shield",
+            "hands": 1,
+            "tier": 1,
+            "stats": "+8 Block",
+            "recipe": "2x Timber + 1x Leather",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "kite_shield",
+            "name": "Kite Shield",
+            "slot": "weapon",
+            "weaponType": "shield",
+            "hands": 1,
+            "tier": 2,
+            "stats": "+12 Block",
+            "recipe": "2x Iron Ingot + 2x Leather",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "tower_shield",
+            "name": "Tower Shield",
+            "slot": "weapon",
+            "weaponType": "shield",
+            "hands": 1,
+            "tier": 3,
+            "stats": "+18 Block, -Speed",
+            "recipe": "4x Steel Ingot + 2x Reinforced Leather",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "shovel",
+            "name": "Trench Shovel",
+            "slot": "tool",
+            "tier": 1,
+            "stats": "5 Mining Power",
+            "recipe": "2x Copper Ingot + 1x Timber",
+            "biome": "grasslands",
+            "status": "pending"
+        },
+        {
+            "id": "iron_pick",
+            "name": "Iron Pickaxe",
+            "slot": "tool",
+            "tier": 2,
+            "stats": "12 Mining Power",
+            "recipe": "2x Iron Ingot + 1x Timber",
+            "biome": "tundra",
+            "status": "pending"
+        },
+        {
+            "id": "steel_pick",
+            "name": "Steel Pickaxe",
+            "slot": "tool",
+            "tier": 3,
+            "stats": "20 Mining Power",
+            "recipe": "2x Steel Ingot + 1x Timber",
+            "biome": "desert",
+            "status": "pending"
+        },
+        {
+            "id": "hardened_pick",
+            "name": "Hardened Pickaxe",
+            "slot": "tool",
+            "tier": 4,
+            "stats": "35 Mining Power",
+            "recipe": "2x Hardened Steel + 1x Timber",
+            "biome": "badlands",
+            "status": "pending"
+        }
+    ],
+    "lootTables": [
+        {
+            "enemy": "Parasaurolophus",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "raw_meat",
+                    "chance": 100,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "leather_scraps",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Gallimimus",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "raw_meat",
+                    "chance": 100,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "sinew",
+                    "chance": 20,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Woolly Hadrosaur",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "tundra",
+            "drops": [
+                {
+                    "id": "fatty_meat",
+                    "chance": 100,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "thick_hide",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "bone",
+                    "chance": 30,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Woolly Mammoth",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "tundra",
+            "drops": [
+                {
+                    "id": "fatty_meat",
+                    "chance": 100,
+                    "min": 2,
+                    "max": 3
+                },
+                {
+                    "id": "thick_hide",
+                    "chance": 70,
+                    "min": 1,
+                    "max": 2
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Desert Triceratops",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "desert",
+            "drops": [
+                {
+                    "id": "dried_jerky",
+                    "chance": 100,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "sun_bleached_bone",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Dune Ankylosaurus",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "desert",
+            "drops": [
+                {
+                    "id": "sand_grub",
+                    "chance": 60,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "bone_plate",
+                    "chance": 30,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Badlands Stegosaurus",
+            "type": "zone_dino",
+            "enemyType": "herbivore",
+            "biome": "badlands",
+            "drops": [
+                {
+                    "id": "charred_meat",
+                    "chance": 100,
+                    "min": 2,
+                    "max": 3
+                },
+                {
+                    "id": "scorch_scale",
+                    "chance": 30,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Feral Compy Pack",
+            "type": "enemy",
+            "enemyType": "dinosaur",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "raw_meat",
+                    "chance": 60,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "bone",
+                    "chance": 15,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Feral Raptor",
+            "type": "enemy",
+            "enemyType": "dinosaur",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "raw_meat",
+                    "chance": 80,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "leather_scraps",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Tundra Raptor",
+            "type": "enemy",
+            "enemyType": "dinosaur",
+            "biome": "tundra",
+            "drops": [
+                {
+                    "id": "fatty_meat",
+                    "chance": 80,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "thick_hide",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Sand Raptor",
+            "type": "enemy",
+            "enemyType": "dinosaur",
+            "biome": "desert",
+            "drops": [
+                {
+                    "id": "dried_jerky",
+                    "chance": 100,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "sinew",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Dilophosaurus",
+            "type": "enemy",
+            "enemyType": "dinosaur",
+            "biome": "badlands",
+            "drops": [
+                {
+                    "id": "charred_meat",
+                    "chance": 70,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "volcanic_glass",
+                    "chance": 30,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Imperial Conscript",
+            "type": "enemy",
+            "enemyType": "human",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "scrap_metal",
+                    "chance": 60,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "ration_tin",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "brass_casing",
+                    "chance": 30,
+                    "min": 1,
+                    "max": 2
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Imperial Rifleman",
+            "type": "enemy",
+            "enemyType": "human",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "scrap_metal",
+                    "chance": 70,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "gunpowder",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "trench_knife",
+                    "chance": 10,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 60
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Tundra Patrol",
+            "type": "enemy",
+            "enemyType": "human",
+            "biome": "tundra",
+            "drops": [
+                {
+                    "id": "scrap_metal",
+                    "chance": 60,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "ration_tin",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "wool_gloves",
+                    "chance": 15,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 50
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Desert Skirmisher",
+            "type": "enemy",
+            "enemyType": "human",
+            "biome": "desert",
+            "drops": [
+                {
+                    "id": "brass_casing",
+                    "chance": 70,
+                    "min": 2,
+                    "max": 3
+                },
+                {
+                    "id": "gunpowder",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "webley_revolver",
+                    "chance": 10,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 60
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Badlands Sentry",
+            "type": "enemy",
+            "enemyType": "human",
+            "biome": "badlands",
+            "drops": [
+                {
+                    "id": "scrap_metal",
+                    "chance": 80,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "mechanical_parts",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "stahlhelm",
+                    "chance": 8,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 70
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Raptor Trooper",
+            "type": "enemy",
+            "enemyType": "saurian",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "leather_scraps",
+                    "chance": 70,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "scrap_metal",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "billhook",
+                    "chance": 12,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 55
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Rex Berserker",
+            "type": "enemy",
+            "enemyType": "saurian",
+            "biome": "tundra",
+            "drops": [
+                {
+                    "id": "thick_hide",
+                    "chance": 80,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "bone",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "trench_mace",
+                    "chance": 8,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 65
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Saurian Marksman",
+            "type": "enemy",
+            "enemyType": "saurian",
+            "biome": "desert",
+            "drops": [
+                {
+                    "id": "brass_casing",
+                    "chance": 80,
+                    "min": 2,
+                    "max": 4
+                },
+                {
+                    "id": "mechanical_parts",
+                    "chance": 30,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "gewehr_98",
+                    "chance": 10,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 70
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Saurian Vanguard",
+            "type": "enemy",
+            "enemyType": "saurian",
+            "biome": "badlands",
+            "drops": [
+                {
+                    "id": "scorch_scale",
+                    "chance": 60,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "munitions",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Imperial Sergeant",
+            "type": "elite",
+            "enemyType": "human",
+            "biome": "all",
+            "drops": [
+                {
+                    "id": "mechanical_parts",
+                    "chance": 80,
+                    "min": 1,
+                    "max": 2
+                },
+                {
+                    "id": "precision_mechanism",
+                    "chance": 40,
+                    "min": 1,
+                    "max": 1
+                },
+                {
+                    "id": "lee_enfield",
+                    "chance": 25,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 90
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Grasslands Alpha Raptor",
+            "type": "boss",
+            "enemyType": "dinosaur",
+            "biome": "grasslands",
+            "drops": [
+                {
+                    "id": "leather_scraps",
+                    "chance": 100,
+                    "min": 3,
+                    "max": 5
+                },
+                {
+                    "id": "sinew",
+                    "chance": 100,
+                    "min": 2,
+                    "max": 3
+                },
+                {
+                    "id": "cavalry_sabre",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 120
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Tundra Rex",
+            "type": "boss",
+            "enemyType": "dinosaur",
+            "biome": "tundra",
+            "drops": [
+                {
+                    "id": "salt_crystal",
+                    "chance": 100,
+                    "min": 3,
+                    "max": 5
+                },
+                {
+                    "id": "thick_hide",
+                    "chance": 100,
+                    "min": 3,
+                    "max": 4
+                },
+                {
+                    "id": "falchion",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 130
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Sandstorm Carnotaurus",
+            "type": "boss",
+            "enemyType": "dinosaur",
+            "biome": "desert",
+            "drops": [
+                {
+                    "id": "sun_bleached_bone",
+                    "chance": 100,
+                    "min": 4,
+                    "max": 6
+                },
+                {
+                    "id": "gold_dust",
+                    "chance": 100,
+                    "min": 2,
+                    "max": 3
+                },
+                {
+                    "id": "winchester_m1897",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 140
+                }
+            ],
+            "status": "pending"
+        },
+        {
+            "enemy": "Badlands Tyrant",
+            "type": "boss",
+            "enemyType": "dinosaur",
+            "biome": "badlands",
+            "drops": [
+                {
+                    "id": "tungsten",
+                    "chance": 100,
+                    "min": 2,
+                    "max": 3
+                },
+                {
+                    "id": "scorch_scale",
+                    "chance": 100,
+                    "min": 3,
+                    "max": 5
+                },
+                {
+                    "id": "kriegsmesser",
+                    "chance": 50,
+                    "min": 1,
+                    "max": 1,
+                    "quality": 150
+                }
+            ],
+            "status": "pending"
+        }
+    ],
+    "sets": [
+        {
+            "id": "courier_set",
+            "name": "Courier's Gear",
+            "pieces": [
+                "leather_cap",
+                "leather_jerkin",
+                "leather_leggings",
+                "leather_boots"
+            ],
+            "bonus2": "+5% Speed",
+            "bonus3": "+10 Armor",
+            "bonus4": "+10% XP",
+            "status": "pending"
+        },
+        {
+            "id": "tundra_set",
+            "name": "Tundra Guard",
+            "pieces": [
+                "brodie_helm",
+                "greatcoat",
+                "wool_trousers",
+                "wool_boots"
+            ],
+            "bonus2": "+Cold Resist",
+            "bonus3": "+15 Armor",
+            "bonus4": "+Stamina Regen",
+            "status": "pending"
+        },
+        {
+            "id": "desert_set",
+            "name": "Desert Strider",
+            "pieces": [
+                "desert_wrap",
+                "desert_robe",
+                "desert_trousers",
+                "sand_striders"
+            ],
+            "bonus2": "+Heat Resist",
+            "bonus3": "+15% Speed",
+            "bonus4": "+Stamina Regen",
+            "status": "pending"
+        },
+        {
+            "id": "knight_set",
+            "name": "Knight's Plate",
+            "pieces": [
+                "stahlhelm",
+                "articulated_plate",
+                "steel_greaves",
+                "steel_boots"
+            ],
+            "bonus2": "+25 Armor",
+            "bonus3": "+25 Armor",
+            "bonus4": "Immune to Stagger",
+            "status": "pending"
+        }
+    ]
+}

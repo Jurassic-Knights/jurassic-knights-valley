@@ -341,6 +341,52 @@ class IslandManagerService {
             });
         }
 
+        // 3. Add Open World Biome Zones (all directions around island grid)
+        // These extend walkable area to the "open world" for enemy encounters
+        const worldSize = this.getWorldSize();
+        const gridEndX = this.mapPadding + this.gridCols * this.islandSize + (this.gridCols - 1) * this.waterGap;
+        const gridEndY = this.mapPadding + this.gridRows * this.islandSize + (this.gridRows - 1) * this.waterGap;
+
+        // North biome zone (above the island grid)
+        this.walkableZones.push({
+            x: 0,
+            y: 0,
+            width: worldSize.width,
+            height: this.mapPadding + 200,
+            id: 'biome_north',
+            type: 'biome'
+        });
+
+        // South biome zone (below the island grid)
+        this.walkableZones.push({
+            x: 0,
+            y: gridEndY - 200,
+            width: worldSize.width,
+            height: worldSize.height - gridEndY + 200,
+            id: 'biome_south',
+            type: 'biome'
+        });
+
+        // West biome zone (left of the island grid)  
+        this.walkableZones.push({
+            x: 0,
+            y: 0,
+            width: this.mapPadding + 200,
+            height: worldSize.height,
+            id: 'biome_west',
+            type: 'biome'
+        });
+
+        // East biome zone (right of the island grid)
+        this.walkableZones.push({
+            x: gridEndX - 200,
+            y: 0,
+            width: worldSize.width - gridEndX + 200,
+            height: worldSize.height,
+            id: 'biome_east',
+            type: 'biome'
+        });
+
         console.log(`[IslandManager] Rebuilt walkable zones: ${this.walkableZones.length} active zones`);
     }
 
@@ -395,10 +441,16 @@ class IslandManagerService {
             const hasWestBridge = island.gridX > 0;
             const hasEastBridge = island.gridX < this.gridCols - 1;
 
+            // BIOME ACCESS: Home island has exits to the north and west biome areas
+            const hasBiomeNorthExit = (island.type === 'home');
+            const hasBiomeWestExit = (island.type === 'home');
+
             // Top edge (Y = 0)
             for (let cell = 0; cell < zoneCells; cell++) {
                 // Skip bridge opening if connected
                 if (hasNorthBridge && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
+                // Skip biome exit opening (same position as bridge would be)
+                if (hasBiomeNorthExit && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
 
                 this.collisionBlocks.push({
                     x: zoneX + cell * gridCellSize,
@@ -427,6 +479,8 @@ class IslandManagerService {
             // Left edge (X = 0), excluding corners already added
             for (let cell = 1; cell < zoneCells - 1; cell++) {
                 if (hasWestBridge && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
+                // Skip biome exit opening
+                if (hasBiomeWestExit && cell >= bridgeOpenStart && cell <= bridgeOpenEnd) continue;
 
                 this.collisionBlocks.push({
                     x: zoneX,

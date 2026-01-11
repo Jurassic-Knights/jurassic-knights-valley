@@ -30,9 +30,11 @@ class EntityManagerService {
         this.game = game;
 
         if (window.Quadtree) {
-            // Default 4500x4500 based on GameRenderer
-            this.tree = new Quadtree({ x: 0, y: 0, width: 4500, height: 4500 });
-            console.log('[EntityManager] Quadtree initialized');
+            // Use GameRenderer's dynamic world size, fallback to calculated default
+            const worldW = window.GameRenderer?.worldWidth || 7680;
+            const worldH = window.GameRenderer?.worldHeight || 7680;
+            this.tree = new Quadtree({ x: 0, y: 0, width: worldW, height: worldH });
+            console.log(`[EntityManager] Quadtree initialized (${worldW}x${worldH})`);
         }
 
         console.log('[EntityManager] Initialized');

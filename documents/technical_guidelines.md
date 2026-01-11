@@ -2,30 +2,39 @@
 
 ## 1. Naming Conventions
 
-### Asset IDs (Snake Case)
-| Category | Prefix | Example |
-|----------|--------|---------|
-| UI Elements | `ui_` | `ui_btn_primary`, `ui_icon_shop` |
-| Dinosaurs | `dino_` | `dino_velociraptor_base`, `dino_trex_attack` |
-| NPCs | `npc_` | `npc_merchant_home`, `npc_merchant_cross` |
-| Characters | `char_` | `char_merchant_quarry`, `char_hero` |
-| World Assets | `world_` | `world_bridge_planks`, `world_hero` |
-| Drops | `drop_` | `drop_wood`, `drop_iron_ore` |
-| Items | `item_` | `item_scrap_plate`, `item_iron_ingot` |
-| Resources | (no prefix) | `wood`, `iron_ore`, `fossil_fuel` |
-| Props | `prop_` | `prop_dead_stump` |
-| Effects | `fx_` | `fx_spark_gold` |
-| Sound Effects | `sfx_` | `sfx_click` |
-| Music | `bgm_` | `bgm_main_theme` |
+### ⚠️ UNIVERSAL PRINCIPLE: IDs are Decoupled from Display Names
+
+> **CRITICAL**: All IDs follow a **stable, generic pattern** that never references display names.
+> This allows renaming assets/items/entities at any time without breaking references.
+
+**Pattern:** `{category}_{qualifier}_{index}`
+
+| ID Type | Pattern | Good Example | Bad Example |
+|---------|---------|--------------|-------------|
+| UI | `ui_{type}_{index}` | `ui_btn_01` | `ui_btn_attack` |
+| Sprites | `{category}_{tier}_{index}` | `dino_t2_01` | `dino_velociraptor` |
+| Resources | `{type}_t{tier}_{index}` | `mineral_t1_01` | `iron_ore` |
+| Items | `{category}_t{tier}_{index}` | `metal_t2_01` | `iron_ingot` |
+| Equipment | `{slot}_t{tier}_{index}` | `weapon_t3_01` | `cavalry_sabre` |
+| Enemies | `{type}_t{tier}_{index}` | `dinosaur_t2_01` | `velociraptor` |
+| Audio | `{type}_{category}_{index}` | `sfx_combat_01` | `sfx_sword_swing` |
+
+**Rules:**
+- **IDs are permanent** - never change once assigned
+- **Display names are flexible** - change freely via `name` field
+- **Index is zero-padded** - 2 digits (01-99)
+- **Tier is single digit** - 1-4 where applicable
+- **Use snake_case** - never camelCase or spaces
+
+**Why?**
+- "Velociraptor" could become "Utahraptor" in a lore update
+- "Iron Ore" could become "Ferrite" for thematic reasons
+- `dino_t2_01` stays valid regardless of name changes
 
 ### File Naming
-- Use `snake_case`.
-- Match Asset ID where possible.
-- Suffixes: `_clean` (processed), `_original` (raw), `_approved` (reviewed).
-
-### Entity Logic IDs
-- Permanent, `snake_case`, descriptive.
-- Example: `velociraptor`, `tyrannosaurus`, `knight_captain`.
+- Use `snake_case`
+- Suffixes: `_clean` (processed), `_original` (raw), `_approved` (reviewed)
+- Files can include display names since filenames are easier to update than code references
 
 ---
 

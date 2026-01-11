@@ -62,6 +62,14 @@ const ProceduralSFX = {
             'sfx_dino_death': () => this.dinoDeath(),
             'sfx_dino_respawn': () => this.dinoRespawn(),
             'sfx_pterodactyl_swoop': () => this.pterodactylSwoop(),
+
+            // Enemy Combat Sounds
+            'sfx_enemy_aggro': () => this.enemyAggro(),
+            'sfx_enemy_attack': () => this.enemyAttack(),
+            'sfx_enemy_hurt': () => this.dinoHurt(), // Reuse dino hurt
+            'sfx_enemy_death': () => this.dinoDeath(), // Reuse dino death
+            'sfx_loot_drop': () => this.lootDrop(),
+            'sfx_pack_aggro': () => this.packAggro(),
         };
 
         const handler = handlers[id];
@@ -527,6 +535,83 @@ const ProceduralSFX = {
         filter.frequency.setValueAtTime(150, this.ctx.currentTime);
         filter.frequency.linearRampToValueAtTime(400, this.ctx.currentTime + 0.4);
         filter.frequency.linearRampToValueAtTime(150, this.ctx.currentTime + 0.8);
+    },
+
+    // ==================== ENEMY COMBAT SOUNDS ====================
+
+    enemyAggro() {
+        // Threatening growl: Low rumble rising in pitch
+        const osc = this.ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(60, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.25);
+
+        // Add vibrato for menacing effect
+        const lfo = this.ctx.createOscillator();
+        lfo.frequency.value = 20;
+        const lfoGain = this.ctx.createGain();
+        lfoGain.gain.value = 15;
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 300;
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.masterGain);
+
+        lfo.start();
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.3);
+        lfo.stop(this.ctx.currentTime + 0.3);
+    },
+
+    enemyAttack() {
+        // Bite/slash sound: Quick sharp noise burst
+        this.playNoise(0.1, 0.005, 0.08, 0.35, 1500);
+        // Low thump for impact
+        this.playTone(80, 0.08, 'triangle', 0.2, 0.005, 0.06);
+        // Slight metallic ring (claws)
+        setTimeout(() => this.playTone(500, 0.05, 'sine', 0.05), 30);
+    },
+
+    lootDrop() {
+        // Satisfying treasure drop: Coins/items hitting ground
+        // Multiple quick thuds with increasing ring
+        this.playTone(150, 0.06, 'triangle', 0.12, 0.005, 0.05);
+        setTimeout(() => {
+            this.playTone(280, 0.08, 'triangle', 0.1, 0.01, 0.07);
+        }, 50);
+        setTimeout(() => {
+            this.playTone(400, 0.1, 'sine', 0.08, 0.02, 0.08);
+        }, 100);
+        // Light noise for items settling
+        this.playNoise(0.15, 0.05, 0.1, 0.05, 800);
+    },
+
+    packAggro() {
+        // Multiple enemies aggro: Layered growls
+        this.enemyAggro();
+        setTimeout(() => this.enemyAggro(), 80);
+        setTimeout(() => {
+            // Additional lower growl
+            const osc = this.ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.value = 50;
+            const gain = this.ctx.createGain();
+            gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.2);
+        }, 150);
     },
 
     // ==================== AMBIENT WEATHER ====================

@@ -1,0 +1,58 @@
+[
+    {
+        "id": "courier_set",
+        "name": "Courier's Gear",
+        "pieces": [
+            "leather_cap",
+            "leather_jerkin",
+            "leather_leggings",
+            "leather_boots"
+        ],
+        "bonus2": "+5% Speed",
+        "bonus3": "+10 Armor",
+        "bonus4": "+10% XP",
+        "status": "pending"
+    },
+    {
+        "id": "tundra_set",
+        "name": "Tundra Guard",
+        "pieces": [
+            "brodie_helm",
+            "greatcoat",
+            "wool_trousers",
+            "wool_boots"
+        ],
+        "bonus2": "+Cold Resist",
+        "bonus3": "+15 Armor",
+        "bonus4": "+Stamina Regen",
+        "status": "pending"
+    },
+    {
+        "id": "desert_set",
+        "name": "Desert Strider",
+        "pieces": [
+            "desert_wrap",
+            "desert_robe",
+            "desert_trousers",
+            "sand_striders"
+        ],
+        "bonus2": "+Heat Resist",
+        "bonus3": "+15% Speed",
+        "bonus4": "+Stamina Regen",
+        "status": "pending"
+    },
+    {
+        "id": "knight_set",
+        "name": "Knight's Plate",
+        "pieces": [
+            "stahlhelm",
+            "articulated_plate",
+            "steel_greaves",
+            "steel_boots"
+        ],
+        "bonus2": "+25 Armor",
+        "bonus3": "+25 Armor",
+        "bonus4": "Immune to Stagger",
+        "status": "pending"
+    }
+]

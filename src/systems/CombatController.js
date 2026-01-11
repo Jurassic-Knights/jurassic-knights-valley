@@ -94,6 +94,26 @@ class CombatController {
             }
         }
 
+        // Check enemies (highest priority - hostile entities)
+        // Note: Use constructor.name ('Enemy', 'Boss') since entityType varies
+        const enemies = window.EntityManager ? [
+            ...EntityManager.getByType('Enemy'),
+            ...EntityManager.getByType('Boss')
+        ] : [];
+
+        for (const enemy of enemies) {
+            if (enemy.active && !enemy.isDead) {
+                const dist = enemy.distanceTo ? enemy.distanceTo(hero) :
+                    Math.sqrt((enemy.x - hero.x) ** 2 + (enemy.y - hero.y) ** 2);
+                // Enemies are valid targets within gun range
+                if (dist <= gunDist && dist < closestDist) {
+                    closestDist = dist;
+                    closestTarget = enemy;
+                    targetType = 'enemy';
+                }
+            }
+        }
+
         // Auto-attack closest target
         if (closestTarget) {
             // console.log(`[Combat] Target found: ${targetType}`);

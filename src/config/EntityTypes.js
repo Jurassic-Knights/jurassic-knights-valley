@@ -8,7 +8,9 @@
 
 const EntityTypes = {
     HERO: 'hero',
-    DINOSAUR: 'dinosaur',
+    DINOSAUR: 'dinosaur',           // Passive zone dinos
+    ENEMY_DINOSAUR: 'enemy_dinosaur', // Hostile dinosaurs
+    ENEMY_SOLDIER: 'enemy_soldier',   // Hostile soldiers
     RESOURCE: 'resource',
     MERCHANT: 'merchant',
     DROPPED_ITEM: 'dropped_item',

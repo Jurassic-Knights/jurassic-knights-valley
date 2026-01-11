@@ -243,25 +243,37 @@ class HeroRendererSystem {
         ctx.translate(hero.x, hero.y);
 
         const baseAngle = Math.atan2(aimY, aimX);
+        const facingRight = aimX >= 0;
 
-        // Determine Weapon Type (Gun vs Shovel)
-        const isGun = hero.targetResource &&
-            hero.targetResource.entityType === EntityTypes.DINOSAUR;
+        // Determine Weapon Type (Gun for combat targets, Shovel for resources)
+        // Combat targets: Dinosaur, Enemy, Boss
+        const target = hero.targetResource;
+        const isGun = target && (
+            target.entityType === EntityTypes?.DINOSAUR ||
+            target.constructor?.name === 'Dinosaur' ||
+            target.constructor?.name === 'Enemy' ||
+            target.constructor?.name === 'Boss'
+        );
 
         if (isGun) {
-            this.drawRifle(ctx, hero, baseAngle);
+            this.drawRifle(ctx, hero, baseAngle, facingRight);
         } else {
-            this.drawShovel(ctx, hero, baseAngle);
+            this.drawShovel(ctx, hero, baseAngle, facingRight);
         }
 
         ctx.restore();
     }
 
-    drawRifle(ctx, hero, baseAngle) {
+    drawRifle(ctx, hero, baseAngle, facingRight = true) {
         const cfg = window.RenderConfig ? RenderConfig.Hero.WEAPON.RIFLE : null;
         if (!cfg) return;
 
         ctx.rotate(baseAngle);
+
+        // When aiming left (west), flip Y to keep weapon right-side up
+        if (!facingRight) {
+            ctx.scale(1, -1);
+        }
 
         // Recoil Animation
         let recoil = 0;
@@ -302,7 +314,7 @@ class HeroRendererSystem {
         }
     }
 
-    drawShovel(ctx, hero, baseAngle) {
+    drawShovel(ctx, hero, baseAngle, facingRight = true) {
         const cfg = window.RenderConfig ? RenderConfig.Hero.WEAPON.SHOVEL : null;
         if (!cfg) return;
 
@@ -331,6 +343,14 @@ class HeroRendererSystem {
         }
 
         ctx.rotate(baseAngle + swingOffset);
+
+        // Flip shovel horizontally (source image was flipped)
+        // Also flip Y when aiming left (west) to keep weapon right-side up
+        if (!facingRight) {
+            ctx.scale(-1, -1); // Both X and Y flip when facing left
+        } else {
+            ctx.scale(-1, 1);  // Just X flip when facing right
+        }
 
         // Draw Sprite
         const shovelPath = window.AssetLoader ? AssetLoader.getImagePath('tool_shovel') : null;

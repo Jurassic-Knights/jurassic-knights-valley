@@ -1,0 +1,68 @@
+[
+    {
+        "id": "hands_t1_01",
+        "name": "Cloth Gloves",
+        "slot": "hands",
+        "tier": 1,
+        "stats": "+1 Armor",
+        "recipe": "1x Plant Fiber",
+        "biome": "grasslands",
+        "status": "pending",
+        "fuelCost": 1
+    },
+    {
+        "id": "hands_t1_02",
+        "name": "Leather Gloves",
+        "slot": "hands",
+        "tier": 1,
+        "stats": "+2 Armor",
+        "recipe": "1x Leather",
+        "biome": "grasslands",
+        "status": "pending",
+        "fuelCost": 1
+    },
+    {
+        "id": "hands_t2_03",
+        "name": "Iron Gauntlets",
+        "slot": "hands",
+        "tier": 2,
+        "stats": "+4 Armor",
+        "recipe": "2x Iron Ingot",
+        "biome": "tundra",
+        "status": "pending",
+        "fuelCost": 2
+    },
+    {
+        "id": "hands_t2_04",
+        "name": "Wool Gloves",
+        "slot": "hands",
+        "tier": 2,
+        "stats": "+2 Armor, +Cold Resist",
+        "recipe": "2x Thick Hide",
+        "biome": "tundra",
+        "status": "pending",
+        "fuelCost": 2
+    },
+    {
+        "id": "hands_t2_05",
+        "name": "Desert Wraps",
+        "slot": "hands",
+        "tier": 2,
+        "stats": "+2 Armor, +Heat Resist",
+        "recipe": "2x Plant Fiber",
+        "biome": "desert",
+        "status": "pending",
+        "fuelCost": 2
+    },
+    {
+        "id": "hands_t3_06",
+        "name": "Steel Gauntlets",
+        "slot": "hands",
+        "tier": 3,
+        "stats": "+6 Armor",
+        "recipe": "2x Steel Ingot",
+        "biome": "badlands",
+        "status": "pending",
+        "fuelCost": 4
+    }
+]

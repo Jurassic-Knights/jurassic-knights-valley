@@ -1,0 +1,68 @@
+[
+    {
+        "id": "legs_t1_01",
+        "name": "Cloth Trousers",
+        "slot": "legs",
+        "tier": 1,
+        "stats": "+2 Armor",
+        "recipe": "3x Plant Fiber",
+        "biome": "grasslands",
+        "status": "pending",
+        "fuelCost": 1
+    },
+    {
+        "id": "legs_t1_02",
+        "name": "Leather Leggings",
+        "slot": "legs",
+        "tier": 1,
+        "stats": "+4 Armor",
+        "recipe": "2x Leather",
+        "biome": "grasslands",
+        "status": "pending",
+        "fuelCost": 1
+    },
+    {
+        "id": "legs_t2_03",
+        "name": "Iron Greaves",
+        "slot": "legs",
+        "tier": 2,
+        "stats": "+8 Armor",
+        "recipe": "3x Iron Ingot + 1x Leather",
+        "biome": "tundra",
+        "status": "pending",
+        "fuelCost": 2
+    },
+    {
+        "id": "legs_t2_04",
+        "name": "Wool Trousers",
+        "slot": "legs",
+        "tier": 2,
+        "stats": "+5 Armor, +Cold Resist",
+        "recipe": "3x Thick Hide",
+        "biome": "tundra",
+        "status": "pending",
+        "fuelCost": 2
+    },
+    {
+        "id": "legs_t2_05",
+        "name": "Desert Trousers",
+        "slot": "legs",
+        "tier": 2,
+        "stats": "+4 Armor, +Speed",
+        "recipe": "3x Plant Fiber + 1x Sinew",
+        "biome": "desert",
+        "status": "pending",
+        "fuelCost": 2
+    },
+    {
+        "id": "legs_t3_06",
+        "name": "Steel Greaves",
+        "slot": "legs",
+        "tier": 3,
+        "stats": "+12 Armor",
+        "recipe": "3x Steel Ingot + 1x Leather",
+        "biome": "badlands",
+        "status": "pending",
+        "fuelCost": 4
+    }
+]

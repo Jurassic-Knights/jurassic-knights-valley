@@ -13,9 +13,16 @@ const GameRenderer = {
     debugMode: false,
     gridMode: false, // Separate toggle for grid overlay
 
-    // Fixed world size (game units) - scaled up for 1024px islands
-    worldWidth: 4500,
-    worldHeight: 4500,
+    // Dynamic world size based on island grid configuration
+    // Formula: (mapPadding * 2) + (gridSize * islandSize) + ((gridSize - 1) * waterGap)
+    get worldWidth() {
+        const gc = window.GameConstants?.World || { MAP_PADDING: 2048, GRID_COLS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
+        return gc.MAP_PADDING * 2 + gc.GRID_COLS * gc.ISLAND_SIZE + (gc.GRID_COLS - 1) * gc.WATER_GAP;
+    },
+    get worldHeight() {
+        const gc = window.GameConstants?.World || { MAP_PADDING: 2048, GRID_ROWS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
+        return gc.MAP_PADDING * 2 + gc.GRID_ROWS * gc.ISLAND_SIZE + (gc.GRID_ROWS - 1) * gc.WATER_GAP;
+    },
 
     // Viewport (what portion of the world is visible)
     viewport: {

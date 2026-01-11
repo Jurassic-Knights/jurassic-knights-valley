@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 2
 depends_on: [02-enemy-config.md, 03-hero-stats.md]
 estimated_complexity: medium
@@ -183,16 +183,16 @@ onHeroDied(data) {
 ```
 
 ## Acceptance Criteria
-- [ ] DamageSystem.js created
-- [ ] calculateDamage() applies defense mitigation
-- [ ] Enemies can damage hero via ENEMY_ATTACK event
-- [ ] Hero health decreases from enemy attacks
-- [ ] VFX plays when hero is hit
-- [ ] SFX plays when hero is hit
-- [ ] HERO_DIED event emits on death
-- [ ] Hero respawns at home after death
-- [ ] Events emitted: DAMAGE_DEALT, HERO_DIED, HERO_RESPAWNED
-- [ ] SystemConfig updated with DamageSystem
+- [x] DamageSystem.js created
+- [x] calculateDamage() applies defense mitigation
+- [x] Enemies can damage hero via ENEMY_ATTACK event
+- [x] Hero health decreases from enemy attacks
+- [x] VFX plays when hero is hit
+- [x] SFX plays when hero is hit
+- [x] HERO_DIED event emits on death
+- [x] Hero respawns at home after death
+- [x] Events emitted: DAMAGE_DEALT, HERO_DIED, HERO_RESPAWNED
+- [x] SystemConfig updated with DamageSystem
 
 ## Notes
 - Defense formula uses diminishing returns

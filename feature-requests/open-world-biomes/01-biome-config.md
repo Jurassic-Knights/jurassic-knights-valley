@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 1
 depends_on: none
 estimated_complexity: medium
@@ -99,12 +99,12 @@ GameConstants.Biome = {
 ```
 
 ## Acceptance Criteria
-- [ ] BiomeConfig.js created with all 4 biomes defined
-- [ ] Each biome has: id, name, difficulty, levelRange, enemySpawnTable, bossId
-- [ ] Difficulty multipliers are data-driven, not hardcoded
-- [ ] GameConstants.Biome section added
-- [ ] No hardcoded values in config (all tunable)
-- [ ] File registers with window.BiomeConfig
+- [x] BiomeConfig.js created with all 4 biomes defined
+- [x] Each biome has: id, name, difficulty, levelRange, enemySpawnTable, bossId
+- [x] Difficulty multipliers are data-driven, not hardcoded
+- [x] GameConstants.Biome section added
+- [x] No hardcoded values in config (all tunable)
+- [x] File registers with window.BiomeConfig
 
 ## Notes
 - Visual themes are placeholders for future renderer integration

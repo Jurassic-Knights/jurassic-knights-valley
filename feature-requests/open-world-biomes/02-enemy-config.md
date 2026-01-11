@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 priority: 1
 depends_on: none
 estimated_complexity: medium
@@ -167,17 +167,17 @@ EntityConfig.enemy = {
 ```
 
 ## Acceptance Criteria
-- [ ] EntityTypes.ENEMY_DINOSAUR and ENEMY_SOLDIER added
-- [ ] EntityConfig.enemy section created with defaults
-- [ ] At least 3 enemy dinosaur types defined
-- [ ] At least 2 hostile soldier types defined
-- [ ] Each enemy has: health, damage, speed, attackType, xpReward, lootTableId
-- [ ] **packAggro** flag per enemy type (true/false)
-- [ ] **threatLevel** (1-5) for UI indicators
-- [ ] **eliteMultipliers** and spawn chance defined
-- [ ] **transitionZones** mapping biome borders to enemy mixes
-- [ ] Attack types (melee/ranged) have separate configs
-- [ ] All values are config-driven, no hardcoding
+- [x] EntityTypes.ENEMY_DINOSAUR and ENEMY_SOLDIER added
+- [x] EntityConfig.enemy section created with defaults
+- [x] At least 3 enemy dinosaur types defined
+- [x] At least 2 hostile soldier types defined
+- [x] Each enemy has: health, damage, speed, attackType, xpReward, lootTableId
+- [x] **packAggro** flag per enemy type (true/false)
+- [x] **threatLevel** (1-5) for UI indicators
+- [x] **eliteMultipliers** and spawn chance defined
+- [x] **transitionZones** mapping biome borders to enemy mixes
+- [x] Attack types (melee/ranged) have separate configs
+- [x] All values are config-driven, no hardcoding
 
 ## Notes
 - packAggro = false for solo hunters (Rex, Brute)

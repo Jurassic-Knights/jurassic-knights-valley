@@ -14,9 +14,9 @@ The world is a fusion of **Late WW1 Trench Warfare** and **Medieval Knight Cultu
 -   **The Beasts**: Knights ride dinosaurs (*Triceratops*, *T-Rex*) instead of horses. These are treated as heavy military assets, living tanks, or beasts of burden—not pets.
 
 ### History (Brief)
-1.  **The Ancient Era**: The Valley forms from primordial forces. Dinosaurs rule unchallenged.
-2.  **The First Knights**: Humans discover the Valley. The first orders learn to coexist with and tame the beasts.
-3.  **The Current Age**: The "Jurassic Knights" era. A perpetual deadlock of trench warfare, industrialization, and mechanized chivalry.
+1.  **The Dawn Age**: Humans and dinosaurs evolved together on this continent. Early civilizations tamed beasts alongside horses.
+2.  **The First Orders**: Medieval knight orders formed, with dinosaurs serving as heavy cavalry and living war machines.
+3.  **The Current Age**: The "Great War" era. A perpetual deadlock of trench warfare, industrialization, and mechanized chivalry.
 
 ### Societal Rules & Reality
 **The "No Magic" Reality**:
@@ -131,9 +131,18 @@ Processes materials into:
 ### Equipment & Gear
 
 **Armors**
--   **Standard Issue (Light)**: Trench coat + boiled leather. "Better than a shirt."
--   **Grenadier Kit (Medium)**: Flak vest + Grenade webbing.
--   **Storm-Plate (Heavy)**: Full articulated plate + hydraulic assist. "Walking tanks."
+-   **Light**: Cloth tunic, leather jerkin, trench coat. For scouts and skirmishers.
+-   **Medium**: Brodie/Stahlhelm helmet, greatcoat, plate carrier. Standard infantry.
+-   **Heavy**: Full articulated plate. Knight officers and shock troops.
+
+**Firearms (WW1 Era Authentic)**
+-   **Pistols (1-Hand)**: Nagant Revolver, Webley Revolver, Luger P08, Colt M1911, Mauser C96.
+-   **Rifles (2-Hand)**: Lee-Enfield, Gewehr 98, Winchester M1897 (trench gun), M1903 Springfield.
+
+**Melee Weapons (Medieval + WW1 Trench)**
+-   **1-Hand**: Trench Knife, Billhook, Cavalry Sabre, Falchion, Kopis, Punch Dagger.
+-   **2-Hand**: Entrenching Tool (E-Tool), Trench Mace, Claymore, Kriegsmesser.
+-   **Shields (1-Hand, can dual-wield)**: Heater Shield, Kite Shield, Tower Shield.
 
 **Trinkets**
 -   **Brass Pocket Watch**: +Resolve Recovery.
