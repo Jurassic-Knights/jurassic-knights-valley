@@ -89,7 +89,7 @@
         "type": "enemy",
         "enemyType": "saurian",
         "biome": "tundra",
-        "status": "declined",
+        "status": "pending",
         "stats": {
             "health": 90,
             "damage": 18,
@@ -124,7 +124,7 @@
                 "max": 1
             }
         ],
-        "sourceDescription": "anthropomorphic Deinonychus lancer, warm brown and tan medium plate armor with dark red trim and brass rivets, stahlhelm with face guard, lance, exposed dinosaur feet",
+        "sourceDescription": "white and grey clothing with brown fur trim, polished steel armor, stahlhelm with face guard, lance, exposed dinosaur feet with claws",
         "groupId": "saurian_t2_01",
         "vfx": {
             "spawn": {
@@ -492,7 +492,7 @@
         "type": "enemy",
         "enemyType": "saurian",
         "biome": "tundra",
-        "status": "declined",
+        "status": "pending",
         "stats": {
             "health": 70,
             "damage": 12,
@@ -521,7 +521,7 @@
                 "max": 1
             }
         ],
-        "sourceDescription": "Parasaurolophus herald, brown and tan clothing, iron armor with a shotgun, curved head crest, stahlhelm helmet, war horn, exposed parasaurolophus feet with claws",
+        "sourceDescription": "navy blue and charcoal grey clothing, blackened iron armor, curved head crest, stahlhelm helmet, shotgun, war horn, exposed parasaurolophus feet with claws",
         "groupId": "saurian_t2_02",
         "vfx": {
             "spawn": {
@@ -883,7 +883,7 @@
         "type": "boss",
         "enemyType": "saurian",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "stats": {
             "health": 500,
             "damage": 40,
@@ -919,7 +919,7 @@
                 "max": 1
             }
         ],
-        "sourceDescription": "Spinosaurus commander, dark grey and forest green clothing, gunmetal armor, distinctive sail on back, ornate great helm with face guard, halberd, exposed spinosaurus feet with claws",
+        "sourceDescription": "Spinosaurus commander, coal black and ash grey clothing, dark iron armor, distinctive sail on back, ornate great helm with face guard, machine gun, exposed spinosaurus feet with claws",
         "groupId": "saurian_t4_02",
         "vfx": {
             "spawn": {
