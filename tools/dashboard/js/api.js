@@ -13,6 +13,20 @@ async function fetchCategory(categoryName) {
     return await resp.json();
 }
 
+/**
+ * Fetch entity registry from game files
+ * @returns {Object} EntityRegistry data
+ */
+async function fetchEntities() {
+    try {
+        const resp = await fetch('/api/get_entities');
+        return await resp.json();
+    } catch (e) {
+        console.warn('Entity API not available:', e);
+        return null;
+    }
+}
+
 // Change asset status (approve/decline)
 async function changeStatus(path, newStatus) {
     const resp = await fetch('/api/change_status', {
