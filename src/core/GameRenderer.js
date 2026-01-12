@@ -572,186 +572,12 @@ const GameRenderer = {
     },
 
     /**
-     * Draw islands and bridges (replaces old grid)
+     * Draw islands and bridges (delegates to GridRenderer)
      */
     drawGrid() {
-        const islandManager = this.game ? this.game.getSystem('IslandManager') : null;
-        const assetLoader = this.game ? this.game.getSystem('AssetLoader') : null;
-
-        if (!islandManager) {
-            // Fallback to old grid pattern
-            const gridSize = 50;
-            this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-            this.ctx.lineWidth = 1;
-            const offsetX = -this.viewport.x % gridSize;
-            const offsetY = -this.viewport.y % gridSize;
-            for (let x = offsetX; x < this.canvas.width; x += gridSize) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(x, 0);
-                this.ctx.lineTo(x, this.canvas.height);
-                this.ctx.stroke();
-            }
-            for (let y = offsetY; y < this.canvas.height; y += gridSize) {
-                this.ctx.beginPath();
-                this.ctx.moveTo(0, y);
-                this.ctx.lineTo(this.canvas.width, y);
-                this.ctx.stroke();
-            }
-            return;
+        if (window.GridRenderer) {
+            GridRenderer.drawGrid(this.ctx, this.viewport, this.canvas, this.game);
         }
-
-        // Save context and apply viewport transform
-        this.ctx.save();
-        this.ctx.translate(-this.viewport.x, -this.viewport.y);
-
-        // Draw islands (land tiles)
-        const islandColor = '#4A5D23';  // Muddy green
-        const islandBorder = '#3A4D13'; // Darker border
-        for (const island of islandManager.islands) {
-            // Island fill
-            let drawn = false;
-
-            // Try to draw background image
-            if (assetLoader) {
-                let assetId = 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
-                if (island.type === 'home') assetId = 'world_island_home';
-
-                const bgPath = assetLoader.getImagePath(assetId);
-                if (bgPath) {
-                    if (!this._zoneImages) this._zoneImages = {};
-
-                    if (!this._zoneImages[assetId]) {
-                        this._zoneImages[assetId] = new Image();
-                        this._zoneImages[assetId].src = bgPath;
-                    }
-
-                    const img = this._zoneImages[assetId];
-                    if (img.complete && img.naturalWidth) {
-                        // Scale up by 20%
-                        const scale = 1.2;
-                        const w = island.width * scale;
-                        const h = island.height * scale;
-                        const x = island.worldX - (w - island.width) / 2;
-                        const y = island.worldY - (h - island.height) / 2;
-
-                        this.ctx.drawImage(img, x, y, w, h);
-                        drawn = true;
-                    }
-                }
-            }
-
-
-            if (!drawn) {
-                this.ctx.fillStyle = islandColor;
-                this.ctx.fillRect(island.worldX, island.worldY, island.width, island.height);
-
-                // Island border (Fallback only)
-                this.ctx.strokeStyle = islandBorder;
-                this.ctx.lineWidth = 3;
-                this.ctx.strokeRect(island.worldX, island.worldY, island.width, island.height);
-            }
-
-            // If locked, draw fog overlay
-            // If locked, draw fog overlay
-            if (!island.unlocked) {
-                // FOG VFX REMOVED - Placeholder
-                // Note: Main fog rendering handled by WorldRenderer
-
-                // Lock icon
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                this.ctx.font = 'bold 80px "Courier New", sans-serif';
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillText('🔒', island.worldX + island.width / 2, island.worldY + island.height / 2 - 40);
-
-                // Cost label
-                this.ctx.fillStyle = '#FFD700';
-                this.ctx.font = 'bold 32px "Courier New", sans-serif';
-                this.ctx.fillText(`${island.unlockCost} Gold`, island.worldX + island.width / 2, island.worldY + island.height / 2 + 60);
-            } else {
-                // Island name label (only for unlocked)
-                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                this.ctx.font = '28px sans-serif'; // Doubled from 14
-                this.ctx.textAlign = 'center';
-                this.ctx.fillText(island.name, island.worldX + island.width / 2, island.worldY + 50); // Offset adjusted
-            }
-        }
-
-        // Draw bridges
-        // ... (lines 306-330 kept same, drawing loop omitted for brevity in search/replace) ...
-        const bridgeColor = '#6B5A3A';  // Wooden bridge color
-        const bridges = islandManager.getBridges();
-        // Check for bridge texture (use directly as image, not pattern)
-        let planksImg = null;
-        if (assetLoader) {
-            planksImg = assetLoader.cache.get('world_bridge_planks');
-            if (!planksImg) {
-                assetLoader.preloadImage('world_bridge_planks');
-            }
-        }
-
-        for (const bridge of bridges) {
-            this.ctx.save();
-
-            // Draw Bridge
-            if (planksImg) {
-                // If we have the image, we scale it to fit the bridge (Stretch/Squash)
-                // Assuming planks.png is a square texture of minimal horizontal planks
-
-                this.ctx.translate(bridge.x + bridge.width / 2, bridge.y + bridge.height / 2);
-
-                if (bridge.type === 'horizontal') {
-                    // Horizontal Bridge: We want vertical planks.
-                    // Image: Horizontal planks.
-                    // Rotate 90 degrees.
-                    this.ctx.rotate(Math.PI / 2);
-
-                    // Draw centered (swapped dimensions because of rotation)
-                    // We want to fill the bridge area: w=bridge.width, h=bridge.height.
-                    // In rotated space:
-                    //   Local X aligns with World Y (Screen Top-Down). 
-                    //   Local Y aligns with World -X (Screen Right-Left).
-                    // We render the image into the rect (-h/2, -w/2, h, w).
-                    // Image stretches to fit.
-                    this.ctx.drawImage(planksImg, -bridge.height / 2, -bridge.width / 2, bridge.height, bridge.width);
-                } else {
-                    // Vertical Bridge: We want horizontal planks.
-                    // Image: Horizontal planks.
-                    // No rotation needed.
-                    // Translate back to top-left? No, we are at center.
-                    this.ctx.drawImage(planksImg, -bridge.width / 2, -bridge.height / 2, bridge.width, bridge.height);
-                }
-            } else {
-                // FALLBACK (No image yet)
-                this.ctx.fillStyle = '#8D6E63'; // Wood
-                this.ctx.fillRect(bridge.x, bridge.y, bridge.width, bridge.height);
-
-                // Drawer helper lines (Old style)
-                this.ctx.strokeStyle = '#5A4A2A';
-                this.ctx.lineWidth = 2;
-                if (bridge.type === 'horizontal') {
-                    for (let x = bridge.x + 10; x < bridge.x + bridge.width; x += 15) {
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(x, bridge.y);
-                        this.ctx.lineTo(x, bridge.y + bridge.height);
-                        this.ctx.stroke();
-                    }
-                } else {
-                    for (let y = bridge.y + 10; y < bridge.y + bridge.height; y += 15) {
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(bridge.x, y);
-                        this.ctx.lineTo(bridge.x + bridge.width, y);
-                        this.ctx.stroke();
-                    }
-                }
-            }
-
-            this.ctx.restore();
-        }
-
-
-
-        this.ctx.restore();
     },
 
     /**
@@ -864,54 +690,12 @@ const GameRenderer = {
     },
 
     /**
-     * Draw home outpost at center of world or home island
+     * Draw home outpost (delegates to HomeOutpostRenderer)
      */
     drawHomeOutpost() {
-        let centerX = this.worldWidth / 2;
-        let centerY = this.worldHeight / 2;
-
-        // Use IslandManager if available
-        const islandManager = this.game ? this.game.getSystem('IslandManager') : null;
-        if (islandManager) {
-            const home = islandManager.getHomeIsland();
-            if (home) {
-                centerX = home.worldX + home.width / 2;
-                centerY = home.worldY + home.height / 2;
-            }
+        if (window.HomeOutpostRenderer) {
+            HomeOutpostRenderer.draw(this.ctx, this.worldWidth(), this.worldHeight(), this.game);
         }
-
-        const radius = 200;
-
-        // Outer glow
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, radius + 10, 0, Math.PI * 2);
-        this.ctx.fillStyle = 'rgba(76, 175, 80, 0.05)';
-        this.ctx.fill();
-
-        // Base circle
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-        this.ctx.fillStyle = 'rgba(76, 175, 80, 0.1)';
-        this.ctx.fill();
-
-        // Border
-        this.ctx.strokeStyle = '#4CAF50'; // Green
-        this.ctx.lineWidth = 6; // Bigger line
-        this.ctx.setLineDash([40, 20]); // Bigger dashes
-
-        // Animate rotation (marching ants effect)
-        this.ctx.lineDashOffset = -(performance.now() / 15);
-
-        this.ctx.stroke();
-        this.ctx.setLineDash([]);
-        this.ctx.lineDashOffset = 0;
-
-        // Label (kept for clarity, scaled up)
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-        this.ctx.font = 'bold 40px sans-serif'; // Doubled from 20
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-        this.ctx.fillText('REST AREA', centerX, centerY);
     }
 };
 
