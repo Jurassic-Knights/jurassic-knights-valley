@@ -6,8 +6,8 @@
 
 class Hero extends Entity {
     constructor(config = {}) {
-        // 1. Load Config (Cascading)
-        const baseConfig = window.EntityConfig ? EntityConfig.hero.base : {};
+        // 1. Load Config from EntityRegistry (v2 architecture) or fallback
+        const baseConfig = window.EntityRegistry?.hero || {};
         // Merge: Config < Constructor Args
         const finalConfig = { ...baseConfig, ...config };
 
