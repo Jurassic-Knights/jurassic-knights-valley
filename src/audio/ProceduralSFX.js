@@ -89,6 +89,17 @@ if (window.SFX) {
             osc.start();
             osc.stop(this.ctx.currentTime + duration);
             return { osc, gain };
+        },
+
+        // Weather ambience (stub - implement proper looping ambience later)
+        setWeather(type) {
+            console.log(`[SFX] Weather ambience: ${type}`);
+            // TODO: Implement looping rain/storm ambience
+        },
+
+        playThunder() {
+            // Low rumbling thunder
+            this.playNoise(1.5, 0.1, 1.2, 0.4, 200);
         }
     };
 
