@@ -43,13 +43,13 @@ const HomeBase = {
      */
     init() {
         if (!window.IslandManager) {
-            console.error('[HomeBase] IslandManager not found');
+            Logger.error('[HomeBase]', 'IslandManager not found');
             return;
         }
 
         const home = IslandManager.getHomeIsland();
         if (!home) {
-            console.error('[HomeBase] Home island not found');
+            Logger.error('[HomeBase]', 'Home island not found');
             return;
         }
 
@@ -66,7 +66,7 @@ const HomeBase = {
         }
 
         // Trees are now spawned by SpawnManager.spawnHomeIslandTrees()
-        console.log('[HomeBase] Initialized (trees spawned via SpawnManager)');
+        Logger.info('[HomeBase]', 'Initialized (trees spawned via SpawnManager)');
 
         // Bind Forge Button
         const btn = document.getElementById('btn-open-craft');
@@ -87,7 +87,7 @@ const HomeBase = {
         if (bounds) {
             const centerX = bounds.x + bounds.width / 2;
             const centerY = bounds.y + bounds.height / 2;
-            const restRadius = 200;
+            const restRadius = GameConstants.Interaction.REST_AREA_RADIUS;
 
             const dx = hero.x - centerX;
             const dy = hero.y - centerY;
@@ -99,11 +99,11 @@ const HomeBase = {
             if (isAtHome && !wasAtHome) {
                 hero.isAtHomeOutpost = true;
                 if (window.EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
-                console.log('[HomeBase] Hero entered rest area');
+                Logger.debug('[HomeBase]', 'Hero entered rest area');
             } else if (!isAtHome && wasAtHome) {
                 hero.isAtHomeOutpost = false;
                 if (window.EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
-                console.log('[HomeBase] Hero exited rest area');
+                Logger.debug('[HomeBase]', 'Hero exited rest area');
             }
 
             this._heroAtHome = isAtHome;
@@ -116,14 +116,14 @@ const HomeBase = {
             const dist = Math.sqrt(dx * dx + dy * dy);
 
             const wasAtForge = this._heroAtForge || false;
-            const isAtForge = dist < 200;
+            const isAtForge = dist < GameConstants.Interaction.FORGE_AREA_RADIUS;
 
             if (isAtForge && !wasAtForge) {
                 if (window.EventBus) EventBus.emit(GameConstants.Events.FORGE_ENTERED);
-                console.log('[HomeBase] Hero entered forge area');
+                Logger.debug('[HomeBase]', 'Hero entered forge area');
             } else if (!isAtForge && wasAtForge) {
                 if (window.EventBus) EventBus.emit(GameConstants.Events.FORGE_EXITED);
-                console.log('[HomeBase] Hero exited forge area');
+                Logger.debug('[HomeBase]', 'Hero exited forge area');
             }
 
             this._heroAtForge = isAtForge;

@@ -62,6 +62,15 @@ const GameConstants = {
         ATTACK_COOLDOWN: 0.5
     },
 
+    // Interaction Radii
+    Interaction: {
+        REST_AREA_RADIUS: 200,
+        FORGE_AREA_RADIUS: 200,
+        MERCHANT_RADIUS: 140,
+        RESOURCE_PICKUP_RADIUS: 145,
+        DROPPED_ITEM_PICKUP_RADIUS: 140
+    },
+
     // Time Configuration
     Time: {
         REAL_SECONDS_PER_GAME_DAY: 300, // 5 minutes per day cycle
