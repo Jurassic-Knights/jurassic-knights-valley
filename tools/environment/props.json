@@ -37,12 +37,11 @@
         "name": "Oil Drum",
         "type": "prop",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "rusted oil drum, industrial markings, dented surface, oil stains",
         "files": {
             "original": "assets/images/environment/props/prop_barrel_badlands_original.png"
-        },
-        "declineNote": "no industrial markings"
+        }
     },
     {
         "id": "prop_crate_grasslands",
@@ -93,12 +92,11 @@
         "name": "Oil Lantern",
         "type": "prop",
         "biome": "grasslands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "hanging oil lantern, brass frame, glass panels, warm glow",
         "files": {
             "original": "assets/images/environment/props/prop_lamp_grasslands_original.png"
-        },
-        "declineNote": "not hanging"
+        }
     },
     {
         "id": "prop_lamp_tundra",
@@ -116,24 +114,22 @@
         "name": "Desert Lamp",
         "type": "prop",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "ornate brass lamp, perforated shade, warm amber glow, sand-worn patina",
         "files": {
             "original": "assets/images/environment/props/prop_lamp_desert_original.png"
-        },
-        "declineNote": "don't mention sand"
+        }
     },
     {
         "id": "prop_lamp_badlands",
         "name": "Industrial Light",
         "type": "prop",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "industrial cage light, exposed bulb, rusted mount, electrical wiring",
         "files": {
             "original": "assets/images/environment/props/prop_lamp_badlands_original.png"
-        },
-        "declineNote": "no mount and no wiring"
+        }
     },
     {
         "id": "prop_cart_grasslands",
@@ -173,12 +169,11 @@
         "name": "Ore Cart",
         "type": "prop",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "rusted mine cart, iron wheels, coal dust, industrial rails",
         "files": {
             "original": "assets/images/environment/props/prop_cart_badlands_original.png"
-        },
-        "declineNote": "no rails"
+        }
     },
     {
         "id": "prop_tent_grasslands",
@@ -196,36 +191,33 @@
         "name": "Fur Tent",
         "type": "prop",
         "biome": "tundra",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "animal hide tent, thick fur lining, snow-weighted base, chimney vent",
         "files": {
             "original": "assets/images/environment/props/prop_tent_tundra_original.png"
-        },
-        "declineNote": "no smoke"
+        }
     },
     {
         "id": "prop_tent_desert",
         "name": "Bedouin Tent",
         "type": "prop",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "desert tent, striped fabric, open front, shade canopy, sand anchors",
         "files": {
             "original": "assets/images/environment/props/prop_tent_desert_original.png"
-        },
-        "declineNote": "no shade"
+        }
     },
     {
         "id": "prop_tent_badlands",
         "name": "Bunker Tent",
         "type": "prop",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "reinforced military tent, camouflage canvas, sandbag walls, radio equipment",
         "files": {
             "original": "assets/images/environment/props/prop_tent_badlands_original.png"
-        },
-        "declineNote": "no radios"
+        }
     },
     {
         "id": "prop_debris_grasslands",
@@ -299,24 +291,22 @@
         "name": "Fire Pit",
         "type": "prop",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "sunken fire pit, adobe rim, burning desert brush, cooking grate",
         "files": {
             "original": "assets/images/environment/props/prop_campfire_desert_original.png"
-        },
-        "declineNote": "don't mention desert"
+        }
     },
     {
         "id": "prop_campfire_badlands",
         "name": "Barrel Fire",
         "type": "prop",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "burning oil drum fire, industrial waste fuel, red-orange glow, smoke",
         "files": {
             "original": "assets/images/environment/props/prop_campfire_badlands_original.png"
-        },
-        "declineNote": "no smoke or fire "
+        }
     },
     {
         "id": "prop_sandbags_grasslands",
@@ -334,7 +324,7 @@
         "name": "Snow Wall",
         "type": "prop",
         "biome": "tundra",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "packed snow fortification, ice blocks, military defense position",
         "files": {
             "original": "assets/images/environment/props/prop_sandbags_tundra_original.png"
@@ -345,7 +335,7 @@
         "name": "Desert Barricade",
         "type": "prop",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "sand-filled basket fortification, woven reed barriers, defensive position",
         "files": {
             "original": "assets/images/environment/props/prop_sandbags_desert_original.png"
@@ -356,7 +346,7 @@
         "name": "Trench Wall",
         "type": "prop",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "reinforced trench wall, corrugated iron, sandbags, barbed wire top",
         "files": {
             "original": "assets/images/environment/props/prop_sandbags_badlands_original.png"

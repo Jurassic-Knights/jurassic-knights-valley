@@ -1,82 +1,130 @@
 [
     {
-        "id":  "building_t1_01",
-        "name":  "Forge",
-        "category":  "industrial",
-        "status":  "clean",
-        "sourceDescription":  "WWI era military blacksmith forge building, smoke stack, anvils, rusty metal exterior, industrial wartime aesthetic",
-        "groupId":  "building_t1_01",
-        "files":  {
-                      "original":  "assets/images/buildings/building_forge_final_original.png",
-                      "clean":  "assets/images/buildings/building_forge_clean.png"
-                  },
-        "vfx":  {
-                    "construction":  {
-                                         "id":  "vfx_construct_building_t1_01",
-                                         "status":  "pending"
-                                     },
-                    "destruction":  {
-                                        "id":  "vfx_destroy_building_t1_01",
-                                        "status":  "pending"
-                                    },
-                    "ambient":  {
-                                    "id":  "vfx_ambient_building_t1_01",
-                                    "status":  "pending"
-                                }
-                },
-        "sfx":  {
-                    "construction":  {
-                                         "id":  "sfx_construct_building_t1_01",
-                                         "status":  "approved"
-                                     },
-                    "destruction":  {
-                                        "id":  "sfx_destroy_building_t1_01",
-                                        "status":  "approved"
-                                    },
-                    "ambient":  {
-                                    "id":  "sfx_ambient_building_t1_01",
-                                    "status":  "approved"
-                                }
-                }
+        "id": "building_t1_01",
+        "name": "Forge",
+        "category": "industrial",
+        "status": "clean",
+        "sourceDescription": "WWI era military blacksmith forge building, smoke stack, anvils, rusty metal exterior, industrial wartime aesthetic",
+        "groupId": "building_t1_01",
+        "files": {
+            "original": "assets/images/buildings/building_forge_final_original.png",
+            "clean": "assets/images/buildings/building_forge_clean.png"
+        },
+        "vfx": {
+            "construction": {
+                "id": "vfx_construct_building_t1_01",
+                "status": "pending"
+            },
+            "destruction": {
+                "id": "vfx_destroy_building_t1_01",
+                "status": "pending"
+            },
+            "ambient": {
+                "id": "vfx_ambient_building_t1_01",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "construction": {
+                "id": "sfx_construct_building_t1_01",
+                "status": "approved"
+            },
+            "destruction": {
+                "id": "sfx_destroy_building_t1_01",
+                "status": "approved"
+            },
+            "ambient": {
+                "id": "sfx_ambient_building_t1_01",
+                "status": "approved"
+            }
+        }
     },
     {
-        "id":  "building_t1_02",
-        "name":  "Outpost",
-        "category":  "residential",
-        "status":  "clean",
-        "sourceDescription":  "WWI era military outpost building, sandbags, wooden supports, command tent style, battlefield headquarters aesthetic",
-        "groupId":  "building_t1_02",
-        "files":  {
-                      "original":  "assets/images/buildings/building_outpost_final_original.png",
-                      "clean":  "assets/images/buildings/building_outpost_clean.png"
-                  },
-        "vfx":  {
-                    "construction":  {
-                                         "id":  "vfx_construct_building_t1_02",
-                                         "status":  "pending"
-                                     },
-                    "destruction":  {
-                                        "id":  "vfx_destroy_building_t1_02",
-                                        "status":  "pending"
-                                    },
-                    "ambient":  {
-                                    "id":  "vfx_ambient_building_t1_02",
-                                    "status":  "pending"
-                                }
-                },
-        "sfx":  {
-                    "construction":  {
-                                         "id":  "sfx_construct_building_t1_02",
-                                         "status":  "approved"
-                                     },
-                    "destruction":  {
-                                        "id":  "sfx_destroy_building_t1_02",
-                                        "status":  "approved"
-                                    },
-                    "ambient":  {
-                                    "id":  "sfx_ambient_building_t1_02",
-                                    "status":  "approved"
-                                }
-                }
+        "id": "building_t1_02",
+        "name": "Outpost",
+        "category": "residential",
+        "status": "clean",
+        "sourceDescription": "WWI era military outpost building, sandbags, wooden supports, command tent style, battlefield headquarters aesthetic",
+        "groupId": "building_t1_02",
+        "files": {
+            "original": "assets/images/buildings/building_outpost_final_original.png",
+            "clean": "assets/images/buildings/building_outpost_clean.png"
+        },
+        "vfx": {
+            "construction": {
+                "id": "vfx_construct_building_t1_02",
+                "status": "pending"
+            },
+            "destruction": {
+                "id": "vfx_destroy_building_t1_02",
+                "status": "pending"
+            },
+            "ambient": {
+                "id": "vfx_ambient_building_t1_02",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "construction": {
+                "id": "sfx_construct_building_t1_02",
+                "status": "approved"
+            },
+            "destruction": {
+                "id": "sfx_destroy_building_t1_02",
+                "status": "approved"
+            },
+            "ambient": {
+                "id": "sfx_ambient_building_t1_02",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "building_watchtower_grasslands",
+        "name": "Watchtower",
+        "category": "military",
+        "biome": "grasslands",
+        "status": "declined",
+        "sourceDescription": "wooden watchtower, platform with railing, ladder access, thatched roof",
+        "groupId": "building_watchtower_grasslands",
+        "files": {
+            "original": "assets/images/buildings/building_watchtower_grasslands_original.png"
+        }
+    },
+    {
+        "id": "building_outpost_tower_tundra",
+        "name": "Outpost Tower",
+        "category": "military",
+        "biome": "tundra",
+        "status": "declined",
+        "sourceDescription": "fortified stone tower, snow-covered roof, arrow slits, signal fire platform",
+        "groupId": "building_outpost_tower_tundra",
+        "files": {
+            "original": "assets/images/buildings/building_outpost_tower_tundra_original.png"
+        }
+    },
+    {
+        "id": "building_minaret_tower_desert",
+        "name": "Minaret Tower",
+        "category": "military",
+        "biome": "desert",
+        "status": "declined",
+        "sourceDescription": "tall sandstone tower, domed top, weathered surface, ancient construction",
+        "groupId": "building_minaret_tower_desert",
+        "files": {
+            "original": "assets/images/buildings/building_minaret_tower_desert_original.png"
+        }
+    },
+    {
+        "id": "building_guard_tower_badlands",
+        "name": "Guard Tower",
+        "category": "military",
+        "biome": "badlands",
+        "status": "declined",
+        "sourceDescription": "concrete guard tower, searchlight mount, machine gun nest, military bunker",
+        "groupId": "building_guard_tower_badlands",
+        "files": {
+            "original": "assets/images/buildings/building_guard_tower_badlands_original.png"
+        }
     }
 ]

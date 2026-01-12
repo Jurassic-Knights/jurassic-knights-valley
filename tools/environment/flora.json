@@ -53,7 +53,7 @@
         "files": {
             "original": "assets/images/environment/flora/flora_grass_grasslands_original.png"
         },
-        "declineNote": "not square shaped"
+        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
     },
     {
         "id": "flora_grass_tundra",
@@ -87,7 +87,7 @@
         "files": {
             "original": "assets/images/environment/flora/flora_grass_badlands_original.png"
         },
-        "declineNote": "not square shaped"
+        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
     },
     {
         "id": "flora_flower_grasslands",
@@ -175,7 +175,8 @@
         "sourceDescription": "thick moss patch, cold-adapted, grey-green color, rocky surface growth",
         "files": {
             "original": "assets/images/environment/flora/flora_moss_tundra_original.png"
-        }
+        },
+        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
     },
     {
         "id": "flora_stump_grasslands",
@@ -329,7 +330,8 @@
         "sourceDescription": "sun-baked sandstone boulder, wind-eroded surface, desert weathering",
         "files": {
             "original": "assets/images/environment/flora/flora_rock_desert_original.png"
-        }
+        },
+        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
     },
     {
         "id": "flora_rock_badlands",

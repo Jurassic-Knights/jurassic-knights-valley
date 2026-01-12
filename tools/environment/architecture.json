@@ -81,12 +81,11 @@
         "name": "Industrial Road",
         "type": "architecture",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "cracked asphalt segment, oil stains, tank treads marks, rusted debris",
         "files": {
             "original": "assets/images/environment/architecture/arch_road_badlands_original.png"
-        },
-        "declineNote": "no tank treads, no asphalt"
+        }
     },
     {
         "id": "arch_wall_grasslands",
@@ -115,7 +114,7 @@
         "name": "Adobe Wall",
         "type": "architecture",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "sun-baked mud brick wall, crumbling edges, sand-weathered surface, ancient construction",
         "files": {
             "original": "assets/images/environment/architecture/arch_wall_desert_original.png"
@@ -203,7 +202,7 @@
         "name": "Desert Gate",
         "type": "architecture",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "carved sandstone gate arch, ancient inscriptions, sun-bleached surface",
         "files": {
             "original": "assets/images/environment/architecture/arch_gate_desert_original.png"
@@ -247,7 +246,7 @@
         "name": "Obelisk Marker",
         "type": "architecture",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "ancient stone obelisk, carved symbols, sun-bleached surface, sand-buried base",
         "files": {
             "original": "assets/images/environment/architecture/arch_post_desert_original.png"
@@ -258,55 +257,10 @@
         "name": "Warning Post",
         "type": "architecture",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "rusted metal warning post, radiation symbol, danger markings, industrial",
         "files": {
             "original": "assets/images/environment/architecture/arch_post_badlands_original.png"
-        },
-        "declineNote": "no radiation"
-    },
-    {
-        "id": "arch_tower_grasslands",
-        "name": "Watchtower",
-        "type": "architecture",
-        "biome": "grasslands",
-        "status": "declined",
-        "sourceDescription": "wooden watchtower, platform with railing, ladder access, thatched roof",
-        "files": {
-            "original": "assets/images/environment/architecture/arch_tower_grasslands_original.png"
-        }
-    },
-    {
-        "id": "arch_tower_tundra",
-        "name": "Outpost Tower",
-        "type": "architecture",
-        "biome": "tundra",
-        "status": "declined",
-        "sourceDescription": "fortified stone tower, snow-covered roof, arrow slits, signal fire platform",
-        "files": {
-            "original": "assets/images/environment/architecture/arch_tower_tundra_original.png"
-        }
-    },
-    {
-        "id": "arch_tower_desert",
-        "name": "Minaret Tower",
-        "type": "architecture",
-        "biome": "desert",
-        "status": "declined",
-        "sourceDescription": "tall sandstone tower, domed top, weathered surface, ancient construction",
-        "files": {
-            "original": "assets/images/environment/architecture/arch_tower_desert_original.png"
-        }
-    },
-    {
-        "id": "arch_tower_badlands",
-        "name": "Guard Tower",
-        "type": "architecture",
-        "biome": "badlands",
-        "status": "declined",
-        "sourceDescription": "concrete guard tower, searchlight mount, machine gun nest, military bunker",
-        "files": {
-            "original": "assets/images/environment/architecture/arch_tower_badlands_original.png"
         }
     },
     {

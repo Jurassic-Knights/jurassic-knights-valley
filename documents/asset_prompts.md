@@ -345,8 +345,10 @@ sprite of [ARCHITECTURE DESCRIPTION], game world structure, stoneshard style, hi
 
 ### Flora (Vegetation)
 ```
-sprite of [FLORA DESCRIPTION], game world vegetation, stoneshard style, high fidelity pixel art, natural growth, isometric perspective, isolated on white background, no text, no letters
+sprite of [FLORA DESCRIPTION], game world vegetation, stoneshard style, high fidelity pixel art, natural growth, standalone asset, white background, no ground, no square tile, no text, no letters
 ```
+
+> **IMPORTANT**: Flora assets must be **standalone vegetation only** - NO isometric tiles, NO ground beneath, NO terrain base. The asset should appear to "float" on the white background with no visible base or platform. Think individual clumps of grass, single bushes, or standalone rocks.
 
 **Examples:**
 - Shrubs, bushes, grass patches
