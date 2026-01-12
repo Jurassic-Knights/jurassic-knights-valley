@@ -8,10 +8,10 @@
 
 class Dinosaur extends Entity {
     constructor(config = {}) {
-        // 1. Load Config
-        const defaults = window.EntityConfig ? EntityConfig.dinosaur.defaults : {};
-        const variantConfig = (window.EntityConfig && config.species) ?
-            EntityConfig.dinosaur.variants[config.species] : {};
+        // 1. Load Config from BaseCreature (v2 architecture)
+        const defaults = window.BaseCreature || {};
+        const variantConfig = window.EntityRegistry?.creatures?.hostile?.[config.species] ||
+            window.EntityRegistry?.creatures?.passive?.[config.species] || {};
 
         // Merge: Defaults < Variant < Constructor
         const finalConfig = { ...defaults, ...variantConfig, ...config };
@@ -99,10 +99,15 @@ class Dinosaur extends Entity {
     }
 
     getSpeciesFromResource(type) {
-        if (window.EntityConfig && EntityConfig.dinosaur.speciesMap) {
-            return EntityConfig.dinosaur.speciesMap[type] || EntityConfig.dinosaur.speciesMap.default;
-        }
-        return 'velociraptor';
+        // Static mapping - no longer in EntityConfig
+        const speciesMap = {
+            'primal_meat': 'velociraptor',
+            'iron_ore': 'tyrannosaurus',
+            'scrap_metal': 'ankylosaurus',
+            'fossil_fuel': 'triceratops',
+            'default': 'velociraptor'
+        };
+        return speciesMap[type] || speciesMap.default;
     }
 
     /**
@@ -111,8 +116,11 @@ class Dinosaur extends Entity {
     _loadSprites() {
         if (!window.AssetLoader) return;
 
-        const keys = (window.EntityConfig && EntityConfig.dinosaur.spriteKeys) ?
-            EntityConfig.dinosaur.spriteKeys : [];
+        // Static sprite keys - no longer from EntityConfig
+        const keys = [
+            'dino_base', 'dino_velociraptor_base', 'dino_tyrannosaurus_base',
+            'dino_triceratops_base', 'dino_ankylosaurus_base'
+        ];
 
         let loaded = 0;
 
@@ -168,7 +176,7 @@ class Dinosaur extends Entity {
         if (!this.active || !hero) return false;
         if (this.state === 'dead') return false;
         // Use config value for interaction range
-        const range = (window.EntityConfig && EntityConfig.dinosaur.defaults.interactionRange) || 120;
+        const range = window.BaseCreature?.interactionRange || 120;
         return this.distanceTo(hero) < range;
     }
 

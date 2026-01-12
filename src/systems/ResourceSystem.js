@@ -37,7 +37,7 @@ class ResourceSystem {
 
         // Play material-specific respawn SFX - config-driven
         if (window.AudioManager) {
-            const typeConfig = (window.EntityConfig && EntityConfig.resource.types[res.resourceType]) || {};
+            const typeConfig = window.EntityRegistry?.resources?.[res.resourceType] || {};
             const suffix = typeConfig.sfxSuffix || 'metal';
             AudioManager.playSFX(`sfx_respawn_${suffix}`);
         }

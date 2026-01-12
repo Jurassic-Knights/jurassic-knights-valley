@@ -31,8 +31,7 @@ class DroppedItem extends Entity {
         this.color = (window.Resource && Resource.COLORS) ? Resource.COLORS[this.resourceType] : '#888888';
 
         // Determine rarity
-        const typeConfig = (window.EntityConfig && EntityConfig.resource && EntityConfig.resource.types) ?
-            (EntityConfig.resource.types[this.resourceType] || {}) : {};
+        const typeConfig = window.EntityRegistry?.resources?.[this.resourceType] || {};
         this.rarity = typeConfig.rarity || 'common';
 
         this.rarityColor = (window.Resource && Resource.RARITY_COLORS) ?

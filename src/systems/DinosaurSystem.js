@@ -123,7 +123,7 @@ class DinosaurSystem {
 
         // Bounds Check - use config value for padding
         if (dino.islandBounds) {
-            const padding = (window.EntityConfig && EntityConfig.dinosaur.defaults.boundsPadding) || 30;
+            const padding = window.BaseCreature?.boundsPadding || 30;
             if (nextX < dino.islandBounds.x + padding || nextX > dino.islandBounds.x + dino.islandBounds.width - padding) {
                 dino.wanderDirection.x *= -1;
                 nextX = dino.x + dino.wanderDirection.x * 5;

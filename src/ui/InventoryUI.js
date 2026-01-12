@@ -109,8 +109,8 @@ class InventoryPanel extends UIPanel {
             slot.className = 'inventory-slot';
 
             let name = key;
-            if (window.EntityConfig && EntityConfig.resource.types[key]) {
-                name = EntityConfig.resource.types[key].name;
+            if (window.EntityRegistry?.resources?.[key]) {
+                name = EntityRegistry.resources[key].name;
             } else if (window.Resource && Resource.TYPES && Resource.TYPES[key]) {
                 name = Resource.TYPES[key].name;
             }
