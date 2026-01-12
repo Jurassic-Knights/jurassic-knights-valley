@@ -321,21 +321,9 @@ class Enemy extends Entity {
             this.attackCooldown -= dt / 1000;
         }
 
-        // State machine (basic - full AI in 05-enemy-ai.md)
-        switch (this.state) {
-            case 'idle':
-            case 'wander':
-                this.updateWander(dt);
-                break;
-            case 'chase':
-                this.updateChase(dt);
-                break;
-            case 'attack':
-                this.updateAttack(dt);
-                break;
-            case 'returning':
-                this.updateReturning(dt);
-                break;
+        // Delegate AI state machine to EnemyAI module
+        if (window.EnemyAI) {
+            EnemyAI.updateState(this, dt);
         }
 
         // Update animation

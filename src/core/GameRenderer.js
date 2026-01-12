@@ -550,94 +550,27 @@ const GameRenderer = {
     },
 
     /**
-     * Draw world boundary indicator
+     * Draw world boundary indicator (delegates to DebugOverlays)
      */
     drawWorldBoundary() {
-        this.ctx.save();
-        this.ctx.translate(-this.viewport.x, -this.viewport.y);
-
-        // Draw world border
-        this.ctx.strokeStyle = 'rgba(212, 175, 55, 0.5)';
-        this.ctx.lineWidth = 4;
-        this.ctx.strokeRect(0, 0, this.worldWidth, this.worldHeight);
-
-        // --- DEBUG: Show Collision Blocks (Red) ---
-        const islandManager = this.game ? this.game.getSystem('IslandManager') : null;
-        if (this.debugMode && islandManager && islandManager.collisionBlocks) {
-            this.ctx.strokeStyle = '#FF0000';
-            this.ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-            this.ctx.lineWidth = 1;
-
-            for (const block of islandManager.collisionBlocks) {
-                this.ctx.beginPath();
-                this.ctx.rect(block.x, block.y, block.width, block.height);
-                this.ctx.fill();
-                this.ctx.stroke();
-            }
-
-            // --- DEBUG: Draw 128px Grid Overlay ---
-            this.drawDebugGrid();
+        if (window.DebugOverlays) {
+            DebugOverlays.drawWorldBoundary(
+                this.ctx,
+                this.viewport,
+                this.worldWidth(),
+                this.worldHeight(),
+                this.game
+            );
         }
-
-        this.ctx.restore();
     },
 
     /**
-     * Draw 128px gameplay grid overlay (debug only)
+     * Draw 128px gameplay grid overlay (delegates to DebugOverlays)
      */
     drawDebugGrid() {
-        const cellSize = window.GameConstants ? GameConstants.Grid.CELL_SIZE : 128;
-
-        // Get visible bounds with padding
-        const bounds = this.getVisibleBounds();
-        const startGx = Math.floor(bounds.left / cellSize);
-        const startGy = Math.floor(bounds.top / cellSize);
-        const endGx = Math.ceil(bounds.right / cellSize);
-        const endGy = Math.ceil(bounds.bottom / cellSize);
-
-        this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)'; // Yellow grid lines
-        this.ctx.lineWidth = 1;
-        this.ctx.font = '10px monospace';
-        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.5)';
-
-        // Draw vertical lines
-        for (let gx = startGx; gx <= endGx; gx++) {
-            const x = gx * cellSize;
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, bounds.top);
-            this.ctx.lineTo(x, bounds.bottom);
-            this.ctx.stroke();
+        if (window.DebugOverlays) {
+            DebugOverlays.drawDebugGrid(this.ctx, this.getVisibleBounds());
         }
-
-        // Draw horizontal lines
-        for (let gy = startGy; gy <= endGy; gy++) {
-            const y = gy * cellSize;
-            this.ctx.beginPath();
-            this.ctx.moveTo(bounds.left, y);
-            this.ctx.lineTo(bounds.right, y);
-            this.ctx.stroke();
-        }
-
-        // Draw X,Y label in center of each cell (large, stacked)
-        this.ctx.fillStyle = 'rgba(255, 255, 0, 0.7)';
-        this.ctx.font = 'bold 32px monospace';
-        this.ctx.textAlign = 'center';
-        this.ctx.textBaseline = 'middle';
-
-        for (let gx = startGx; gx <= endGx; gx++) {
-            for (let gy = startGy; gy <= endGy; gy++) {
-                const centerX = gx * cellSize + cellSize / 2;
-                const centerY = gy * cellSize + cellSize / 2;
-                // X on top
-                this.ctx.fillText(`X${gx}`, centerX, centerY - 20);
-                // Y on bottom
-                this.ctx.fillText(`Y${gy}`, centerX, centerY + 20);
-            }
-        }
-
-        // Reset text alignment
-        this.ctx.textAlign = 'left';
-        this.ctx.textBaseline = 'alphabetic';
     },
 
     /**
