@@ -128,7 +128,7 @@ class Resource extends Entity {
         if (this.health <= 0) {
             // SFX: Break - use config-driven sfxSuffix
             if (window.AudioManager) {
-                const typeConfig = (window.EntityConfig && EntityConfig.resource.types[this.resourceType]) || {};
+                const typeConfig = window.EntityRegistry?.resources?.[this.resourceType] || {};
                 const suffix = typeConfig.sfxSuffix || 'metal';
                 AudioManager.playSFX(`sfx_resource_break_${suffix}`);
             }
@@ -166,8 +166,7 @@ class Resource extends Entity {
         let newDuration = this.maxRespawnTime; // Default base
 
         // Base value lookup
-        const typeConfig = (window.EntityConfig && EntityConfig.resource) ?
-            EntityConfig.resource.types[this.resourceType] : {};
+        const typeConfig = window.EntityRegistry?.resources?.[this.resourceType] || {};
         const baseTime = typeConfig.respawnTime || 30;
 
         if (this.islandGridX !== undefined) {

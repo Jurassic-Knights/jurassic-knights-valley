@@ -17,7 +17,7 @@ class ResourceRendererService {
 
         // Shake logic (if damaged) - skipped for simplification or handled by Tween?
         // Check if this resource type uses custom rendering (e.g., trees handled elsewhere)
-        const typeConfig = (window.EntityConfig && EntityConfig.resource.types[res.resourceType]) || {};
+        const typeConfig = window.EntityRegistry?.resources?.[res.resourceType] || {};
         if (typeConfig.skipDefaultRender) return;
 
         if (res.state === 'depleted') {
