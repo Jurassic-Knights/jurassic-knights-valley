@@ -44,8 +44,7 @@ This workflow handles TWO scenarios:
    | UI Icons | `reference/style_samples/UI_style.png` |
    | Resources/Items | `reference/style_samples/human_base.png` |
    | Equipment | `reference/style_samples/human_base.png` |
-   | Props | `reference/style_samples/zone_home.png` |
-   | Environment/Zones | `reference/style_samples/zone_home.png` |
+   | Props | `reference/style_samples/medic_crate.png` |
    | Nodes (full) | `reference/style_samples/node.png` |
    | Nodes (consumed) | Use the APPROVED full version of same node as reference |
 
