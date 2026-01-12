@@ -4,7 +4,7 @@
  * Friendly trader who sells items and buys loot.
  */
 
-const Merchant = {
+const MerchantEntity = {
     ...window.BaseNPC,
 
     id: 'merchant',
@@ -36,4 +36,4 @@ const Merchant = {
 };
 
 window.EntityRegistry.npcs = window.EntityRegistry.npcs || {};
-window.EntityRegistry.npcs.merchant = Merchant;
+window.EntityRegistry.npcs.merchant = MerchantEntity;

@@ -12,10 +12,9 @@ class Resource extends Entity {
      * @param {object} config
      */
     constructor(config = {}) {
-        // 1. Load Config
-        const defaults = window.EntityConfig ? EntityConfig.resource.defaults : {};
-        const typeConfig = (window.EntityConfig && config.resourceType) ?
-            EntityConfig.resource.types[config.resourceType] : {};
+        // 1. Load Config from EntityRegistry (v2) or BaseResource fallback
+        const defaults = window.BaseResource || {};
+        const typeConfig = (window.EntityRegistry?.resources?.[config.resourceType]) || {};
 
         // Merge
         const finalConfig = { ...defaults, ...typeConfig, ...config };
