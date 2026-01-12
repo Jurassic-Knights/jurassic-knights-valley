@@ -1,6 +1,11 @@
 /**
  * MinimapSystem
- * Renders a miniature world map showing islands, biomes, and hero position.
+ * Renders a miniature world map centered on the player with zoom controls.
+ * 
+ * Features:
+ * - Player-centered view for large 30k×30k world
+ * - Zoom in/out with +/- buttons
+ * - Shows biome colors, roads, islands, enemies
  * 
  * Owner: UI Engineer
  */
@@ -11,7 +16,15 @@ class MinimapSystem {
         this.ctx = null;
         this.modal = null;
         this.isOpen = false;
-        this.scale = 1;
+
+        // Zoom settings
+        this.zoomLevel = 1;
+        this.minZoom = 0.25;  // Show 4x area
+        this.maxZoom = 4;     // Show 1/4 area
+        this.zoomStep = 0.5;
+
+        // View radius at zoom 1 (how much world to show)
+        this.baseViewRadius = 3000; // pixels of world radius to show
 
         console.log('[MinimapSystem] Constructed');
     }
@@ -42,7 +55,81 @@ class MinimapSystem {
             });
         }
 
+        // Create zoom controls
+        this.createZoomControls();
+
         console.log('[MinimapSystem] Initialized');
+    }
+
+    createZoomControls() {
+        if (!this.modal) return;
+
+        // Find or create container
+        const mapContent = this.modal.querySelector('.modal-content') || this.modal;
+
+        // Check if controls already exist
+        if (mapContent.querySelector('.minimap-zoom-controls')) return;
+
+        const controls = document.createElement('div');
+        controls.className = 'minimap-zoom-controls';
+        controls.style.cssText = `
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        `;
+
+        const btnStyle = `
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        `;
+
+        const btnZoomIn = document.createElement('button');
+        btnZoomIn.textContent = '+';
+        btnZoomIn.style.cssText = btnStyle;
+        btnZoomIn.addEventListener('click', () => this.zoomIn());
+        btnZoomIn.addEventListener('mouseenter', () => btnZoomIn.style.background = 'rgba(255, 255, 255, 0.4)');
+        btnZoomIn.addEventListener('mouseleave', () => btnZoomIn.style.background = 'rgba(255, 255, 255, 0.2)');
+
+        const btnZoomOut = document.createElement('button');
+        btnZoomOut.textContent = '−';
+        btnZoomOut.style.cssText = btnStyle;
+        btnZoomOut.addEventListener('click', () => this.zoomOut());
+        btnZoomOut.addEventListener('mouseenter', () => btnZoomOut.style.background = 'rgba(255, 255, 255, 0.4)');
+        btnZoomOut.addEventListener('mouseleave', () => btnZoomOut.style.background = 'rgba(255, 255, 255, 0.2)');
+
+        controls.appendChild(btnZoomIn);
+        controls.appendChild(btnZoomOut);
+
+        // Make modal content relative for absolute positioning
+        if (mapContent.style.position !== 'relative') {
+            mapContent.style.position = 'relative';
+        }
+        mapContent.appendChild(controls);
+    }
+
+    zoomIn() {
+        this.zoomLevel = Math.min(this.maxZoom, this.zoomLevel + this.zoomStep);
+        this.render();
+    }
+
+    zoomOut() {
+        this.zoomLevel = Math.max(this.minZoom, this.zoomLevel - this.zoomStep);
+        this.render();
     }
 
     toggle() {
@@ -67,115 +154,129 @@ class MinimapSystem {
     }
 
     /**
-     * Render the minimap showing world, islands, and hero
+     * Render the minimap centered on the player
      */
     render() {
         if (!this.ctx || !this.canvas) return;
 
-        const islandManager = this.game?.getSystem('IslandManager');
         const hero = this.game?.hero;
-
-        if (!islandManager) {
-            console.warn('[MinimapSystem] No IslandManager available');
-            return;
-        }
-
-        const worldSize = islandManager.getWorldSize();
         const canvasSize = this.canvas.width;
-
-        // Calculate scale to fit world in canvas
-        this.scale = canvasSize / Math.max(worldSize.width, worldSize.height);
-
         const ctx = this.ctx;
 
         // Clear canvas
         ctx.fillStyle = '#0d1117';
         ctx.fillRect(0, 0, canvasSize, canvasSize);
 
-        // Draw background (open world biomes)
-        ctx.fillStyle = '#1a2633';
-        ctx.fillRect(0, 0, canvasSize, canvasSize);
+        // Calculate view area (world coordinates centered on hero)
+        const viewRadius = this.baseViewRadius / this.zoomLevel;
+        const heroX = hero?.x || 15000;
+        const heroY = hero?.y || 15000;
 
-        // Draw water between islands
-        ctx.fillStyle = '#0a4b6e';
-        const padding = islandManager.mapPadding * this.scale;
-        ctx.fillRect(
-            padding,
-            padding,
-            (worldSize.width - islandManager.mapPadding * 2) * this.scale,
-            (worldSize.height - islandManager.mapPadding * 2) * this.scale
-        );
+        // Scale: canvas pixels per world pixel
+        this.scale = canvasSize / (viewRadius * 2);
 
-        // Draw islands
-        const islands = islandManager.islands || [];
-        for (const island of islands) {
-            const x = island.worldX * this.scale;
-            const y = island.worldY * this.scale;
-            const w = island.width * this.scale;
-            const h = island.height * this.scale;
+        // World coordinates of view bounds
+        const viewLeft = heroX - viewRadius;
+        const viewTop = heroY - viewRadius;
 
-            // Island color based on state
-            if (island.type === 'home') {
-                ctx.fillStyle = '#4CAF50'; // Green for home
-            } else if (island.unlocked) {
-                ctx.fillStyle = '#2196F3'; // Blue for unlocked
-            } else {
-                ctx.fillStyle = '#37474F'; // Gray for locked
+        // Convert world coord to canvas coord
+        const toCanvas = (worldX, worldY) => ({
+            x: (worldX - viewLeft) * this.scale,
+            y: (worldY - viewTop) * this.scale
+        });
+
+        // Draw biome backgrounds as polygons
+        if (window.BiomeManager) {
+            for (const biome of Object.values(BiomeManager.BIOMES)) {
+                const polygon = biome.polygon;
+                if (!polygon || polygon.length < 3) continue;
+
+                // Convert polygon points to canvas coords
+                const points = polygon.map(p => toCanvas(p.x, p.y));
+
+                // Draw filled polygon
+                ctx.fillStyle = biome.color + '60'; // Semi-transparent
+                ctx.beginPath();
+                ctx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    ctx.lineTo(points[i].x, points[i].y);
+                }
+                ctx.closePath();
+                ctx.fill();
+
+                // Draw polygon border
+                ctx.strokeStyle = biome.color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Calculate centroid for label
+                let cx = 0, cy = 0;
+                for (const p of points) {
+                    cx += p.x;
+                    cy += p.y;
+                }
+                cx /= points.length;
+                cy /= points.length;
+
+                // Biome name at centroid (if on screen)
+                if (cx > 20 && cx < canvasSize - 20 && cy > 20 && cy < canvasSize - 20) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(biome.name, cx, cy);
+                }
             }
 
-            ctx.fillRect(x, y, w, h);
+            // Draw roads as curved splines
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            for (const road of BiomeManager.ROADS) {
+                if (!road.points || road.points.length < 4) continue;
 
-            // Island border
-            ctx.strokeStyle = island.unlocked ? '#fff' : '#555';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(x, y, w, h);
+                // Convert control points to canvas coords
+                const p0 = toCanvas(road.points[0].x, road.points[0].y);
+                const p1 = toCanvas(road.points[1].x, road.points[1].y);
+                const p2 = toCanvas(road.points[2].x, road.points[2].y);
+                const p3 = toCanvas(road.points[3].x, road.points[3].y);
 
-            // Zone name (small text)
-            if (island.name && w > 30) {
-                ctx.fillStyle = island.unlocked ? '#fff' : '#888';
-                ctx.font = '8px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(
-                    island.name.split(' ')[0].substring(0, 6),
-                    x + w / 2,
-                    y + h / 2 + 3
-                );
+                // Draw cubic Bezier curve
+                ctx.beginPath();
+                ctx.moveTo(p0.x, p0.y);
+                ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+                ctx.stroke();
             }
         }
 
-        // Draw bridges between unlocked islands
-        ctx.strokeStyle = '#8B4513';
-        ctx.lineWidth = 3;
-        for (const island of islands) {
-            if (!island.unlocked) continue;
+        // Draw Ironhaven islands
+        const islandManager = this.game?.getSystem('IslandManager');
+        if (islandManager) {
+            const islands = islandManager.islands || [];
+            for (const island of islands) {
+                const pos = toCanvas(island.worldX, island.worldY);
+                const w = island.width * this.scale;
+                const h = island.height * this.scale;
 
-            const cx = (island.worldX + island.width / 2) * this.scale;
-            const cy = (island.worldY + island.height / 2) * this.scale;
+                // Skip if not visible
+                if (pos.x + w < 0 || pos.x > canvasSize || pos.y + h < 0 || pos.y > canvasSize) continue;
 
-            // Check each neighbor
-            for (const neighbor of islands) {
-                if (!neighbor.unlocked) continue;
-                if (neighbor === island) continue;
-
-                // Only draw to right/bottom neighbors to avoid duplicates
-                if (neighbor.gridX === island.gridX + 1 && neighbor.gridY === island.gridY) {
-                    // East bridge
-                    const nx = (neighbor.worldX + neighbor.width / 2) * this.scale;
-                    const ny = (neighbor.worldY + neighbor.height / 2) * this.scale;
-                    ctx.beginPath();
-                    ctx.moveTo(cx, cy);
-                    ctx.lineTo(nx, ny);
-                    ctx.stroke();
+                // Island color based on state
+                if (island.type === 'home') {
+                    ctx.fillStyle = '#4CAF50'; // Green for home
+                } else if (island.unlocked) {
+                    ctx.fillStyle = '#2196F3'; // Blue for unlocked
+                } else {
+                    ctx.fillStyle = '#37474F'; // Gray for locked
                 }
-                if (neighbor.gridY === island.gridY + 1 && neighbor.gridX === island.gridX) {
-                    // South bridge
-                    const nx = (neighbor.worldX + neighbor.width / 2) * this.scale;
-                    const ny = (neighbor.worldY + neighbor.height / 2) * this.scale;
-                    ctx.beginPath();
-                    ctx.moveTo(cx, cy);
-                    ctx.lineTo(nx, ny);
-                    ctx.stroke();
-                }
+
+                ctx.fillRect(pos.x, pos.y, w, h);
+
+                // Island border
+                ctx.strokeStyle = island.unlocked ? '#fff' : '#555';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(pos.x, pos.y, w, h);
             }
         }
 
@@ -185,77 +286,84 @@ class MinimapSystem {
             ctx.fillStyle = '#F44336';
             for (const enemy of enemies) {
                 if (!enemy.active || enemy.isDead) continue;
-                const ex = enemy.x * this.scale;
-                const ey = enemy.y * this.scale;
+                const pos = toCanvas(enemy.x, enemy.y);
+                if (pos.x < 0 || pos.x > canvasSize || pos.y < 0 || pos.y > canvasSize) continue;
                 ctx.beginPath();
-                ctx.arc(ex, ey, 3, 0, Math.PI * 2);
+                ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Draw bosses as larger pulsing icons
+            // Draw bosses
             const bosses = EntityManager.getByType('Boss');
             for (const boss of bosses) {
                 if (!boss.active || boss.isDead) continue;
-                const bx = boss.x * this.scale;
-                const by = boss.y * this.scale;
+                const pos = toCanvas(boss.x, boss.y);
+                if (pos.x < 0 || pos.x > canvasSize || pos.y < 0 || pos.y > canvasSize) continue;
 
-                // Pulsing glow effect
                 const pulse = Math.sin(Date.now() / 150) * 0.3 + 1;
-
-                // Draw glow
                 ctx.fillStyle = 'rgba(255, 69, 0, 0.5)';
                 ctx.beginPath();
-                ctx.arc(bx, by, 10 * pulse, 0, Math.PI * 2);
+                ctx.arc(pos.x, pos.y, 10 * pulse, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Draw boss marker (skull-ish)
                 ctx.fillStyle = '#FF4500';
                 ctx.beginPath();
-                ctx.arc(bx, by, 6, 0, Math.PI * 2);
+                ctx.arc(pos.x, pos.y, 6, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Draw skull indicator
                 ctx.fillStyle = '#FFF';
                 ctx.font = 'bold 10px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('☠', bx, by);
+                ctx.fillText('☠', pos.x, pos.y);
             }
         }
 
-        // Draw hero position
+        // Draw hero at center (always visible)
         if (hero) {
-            const hx = hero.x * this.scale;
-            const hy = hero.y * this.scale;
-
-            // Pulsing effect
+            const centerX = canvasSize / 2;
+            const centerY = canvasSize / 2;
             const pulse = Math.sin(Date.now() / 200) * 0.3 + 1;
 
-            // Hero arrow/triangle pointing in facing direction
-            ctx.save();
-            ctx.translate(hx, hy);
-
-            // Draw glow
+            // Glow
             ctx.fillStyle = 'rgba(255, 87, 34, 0.4)';
             ctx.beginPath();
-            ctx.arc(0, 0, 8 * pulse, 0, Math.PI * 2);
+            ctx.arc(centerX, centerY, 12 * pulse, 0, Math.PI * 2);
             ctx.fill();
 
-            // Draw hero marker
+            // Hero marker
+            ctx.save();
+            ctx.translate(centerX, centerY);
             ctx.fillStyle = '#FF5722';
             ctx.beginPath();
-            ctx.moveTo(0, -6);
-            ctx.lineTo(5, 6);
-            ctx.lineTo(-5, 6);
+            ctx.moveTo(0, -8);
+            ctx.lineTo(6, 8);
+            ctx.lineTo(-6, 8);
             ctx.closePath();
             ctx.fill();
-
             ctx.restore();
         }
+
+        // Draw current biome name
+        if (window.BiomeManager && hero) {
+            const biomeInfo = BiomeManager.getDebugInfo(hero.x, hero.y);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(biomeInfo, 10, 10);
+        }
+
+        // Draw zoom level
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(`Zoom: ${this.zoomLevel.toFixed(1)}x`, canvasSize - 10, canvasSize - 10);
     }
 
     /**
-     * Update called each frame (for live minimap if needed in future)
+     * Update called each frame (for live minimap)
      */
     update(dt) {
         // Re-render if open to show hero movement

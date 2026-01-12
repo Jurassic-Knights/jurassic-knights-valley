@@ -1,0 +1,29 @@
+{
+    "version": "1.0",
+    "lastUpdated": "2026-01-11",
+    "description": "World environment objects - props, flora, buildings, debris",
+    "statusWorkflow": [
+        "pending",
+        "approved",
+        "declined",
+        "clean",
+        "missing"
+    ],
+    "categories": {
+        "flora": "Trees, bushes, grass, flowers",
+        "rocks": "Boulders, stone formations, cliffs",
+        "buildings": "Forge, outpost, shelter, bunker",
+        "debris": "Wrecks, ruins, barricades",
+        "furniture": "Beds, chairs, tables, cabinets, shelves",
+        "interactables": "Chests, crates, campfires, doors",
+        "nodes": "Harvestable resource nodes - wood, ore, scrap"
+    },
+    "defaultVFX": {
+        "interact": "vfx_interact",
+        "destroy": "vfx_debris"
+    },
+    "defaultSFX": {
+        "interact": "sfx_interact",
+        "destroy": "sfx_break"
+    }
+}

@@ -13,15 +13,28 @@ const GameRenderer = {
     debugMode: false,
     gridMode: false, // Separate toggle for grid overlay
 
-    // Dynamic world size based on island grid configuration
-    // Formula: (mapPadding * 2) + (gridSize * islandSize) + ((gridSize - 1) * waterGap)
+    // Dynamic world size - uses full biome world if defined, else Ironhaven-only
     get worldWidth() {
-        const gc = window.GameConstants?.World || { MAP_PADDING: 2048, GRID_COLS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
-        return gc.MAP_PADDING * 2 + gc.GRID_COLS * gc.ISLAND_SIZE + (gc.GRID_COLS - 1) * gc.WATER_GAP;
+        const gc = window.GameConstants?.World;
+        // If expanded world is defined, use it
+        if (gc?.TOTAL_WIDTH) {
+            return gc.TOTAL_WIDTH;
+        }
+        // Fallback: Ironhaven-only (old formula)
+        const defaults = { MAP_PADDING: 2048, GRID_COLS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
+        const cfg = gc || defaults;
+        return cfg.MAP_PADDING * 2 + cfg.GRID_COLS * cfg.ISLAND_SIZE + (cfg.GRID_COLS - 1) * cfg.WATER_GAP;
     },
     get worldHeight() {
-        const gc = window.GameConstants?.World || { MAP_PADDING: 2048, GRID_ROWS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
-        return gc.MAP_PADDING * 2 + gc.GRID_ROWS * gc.ISLAND_SIZE + (gc.GRID_ROWS - 1) * gc.WATER_GAP;
+        const gc = window.GameConstants?.World;
+        // If expanded world is defined, use it
+        if (gc?.TOTAL_HEIGHT) {
+            return gc.TOTAL_HEIGHT;
+        }
+        // Fallback: Ironhaven-only (old formula)
+        const defaults = { MAP_PADDING: 2048, GRID_ROWS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
+        const cfg = gc || defaults;
+        return cfg.MAP_PADDING * 2 + cfg.GRID_ROWS * cfg.ISLAND_SIZE + (cfg.GRID_ROWS - 1) * cfg.WATER_GAP;
     },
 
     // Viewport (what portion of the world is visible)
@@ -75,6 +88,7 @@ const GameRenderer = {
 
         // GC Optimization: Cache system references for render loop
         this._worldRenderer = this.game.getSystem('WorldRenderer');
+        this._roadRenderer = this.game.getSystem('RoadRenderer');
         this._vfxController = this.game.getSystem('VFXController');
         this._homeBase = this.game.getSystem('HomeBase');
         this._heroRenderer = this.game.getSystem('HeroRenderer');
@@ -319,6 +333,17 @@ const GameRenderer = {
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
         if (timing) { timing.world += performance.now() - t0; }
+
+        // --- ROAD LAYER --- (After world, before entities)
+        if (timing) t0 = performance.now();
+        const roadRenderer = this._roadRenderer;
+        if (roadRenderer) {
+            this.ctx.save();
+            this.ctx.translate(-this.viewport.x, -this.viewport.y);
+            roadRenderer.render(this.ctx, this.viewport);
+            this.ctx.restore();
+        }
+        if (timing) { timing.roads = (timing.roads || 0) + performance.now() - t0; }
 
         // --- VFX LAYER (Background) --- (Use cached ref)
         if (timing) t0 = performance.now();

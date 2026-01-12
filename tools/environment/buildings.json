@@ -1,0 +1,82 @@
+[
+    {
+        "id":  "building_t1_01",
+        "name":  "Forge",
+        "category":  "industrial",
+        "status":  "clean",
+        "sourceDescription":  "WWI era military blacksmith forge building, smoke stack, anvils, rusty metal exterior, industrial wartime aesthetic",
+        "groupId":  "building_t1_01",
+        "files":  {
+                      "original":  "assets/images/buildings/building_forge_final_original.png",
+                      "clean":  "assets/images/buildings/building_forge_clean.png"
+                  },
+        "vfx":  {
+                    "construction":  {
+                                         "id":  "vfx_construct_building_t1_01",
+                                         "status":  "pending"
+                                     },
+                    "destruction":  {
+                                        "id":  "vfx_destroy_building_t1_01",
+                                        "status":  "pending"
+                                    },
+                    "ambient":  {
+                                    "id":  "vfx_ambient_building_t1_01",
+                                    "status":  "pending"
+                                }
+                },
+        "sfx":  {
+                    "construction":  {
+                                         "id":  "sfx_construct_building_t1_01",
+                                         "status":  "approved"
+                                     },
+                    "destruction":  {
+                                        "id":  "sfx_destroy_building_t1_01",
+                                        "status":  "approved"
+                                    },
+                    "ambient":  {
+                                    "id":  "sfx_ambient_building_t1_01",
+                                    "status":  "approved"
+                                }
+                }
+    },
+    {
+        "id":  "building_t1_02",
+        "name":  "Outpost",
+        "category":  "residential",
+        "status":  "clean",
+        "sourceDescription":  "WWI era military outpost building, sandbags, wooden supports, command tent style, battlefield headquarters aesthetic",
+        "groupId":  "building_t1_02",
+        "files":  {
+                      "original":  "assets/images/buildings/building_outpost_final_original.png",
+                      "clean":  "assets/images/buildings/building_outpost_clean.png"
+                  },
+        "vfx":  {
+                    "construction":  {
+                                         "id":  "vfx_construct_building_t1_02",
+                                         "status":  "pending"
+                                     },
+                    "destruction":  {
+                                        "id":  "vfx_destroy_building_t1_02",
+                                        "status":  "pending"
+                                    },
+                    "ambient":  {
+                                    "id":  "vfx_ambient_building_t1_02",
+                                    "status":  "pending"
+                                }
+                },
+        "sfx":  {
+                    "construction":  {
+                                         "id":  "sfx_construct_building_t1_02",
+                                         "status":  "approved"
+                                     },
+                    "destruction":  {
+                                        "id":  "sfx_destroy_building_t1_02",
+                                        "status":  "approved"
+                                    },
+                    "ambient":  {
+                                    "id":  "sfx_ambient_building_t1_02",
+                                    "status":  "approved"
+                                }
+                }
+    }
+]

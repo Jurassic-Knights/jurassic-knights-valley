@@ -17,6 +17,10 @@ class IslandManagerService {
         this.bridgeWidth = GameConstants.World.BRIDGE_WIDTH;
         this.mapPadding = GameConstants.World.MAP_PADDING;
 
+        // Ironhaven offset - shifts all island content to center of world
+        this.ironhavenOffsetX = GameConstants.World.IRONHAVEN_OFFSET_X || 0;
+        this.ironhavenOffsetY = GameConstants.World.IRONHAVEN_OFFSET_Y || 0;
+
         // Wall boundaries
         this.wallWidth = GameConstants.World.WALL_WIDTH;
         this.wallPadTop = GameConstants.World.WALL_PAD_TOP;
@@ -68,9 +72,9 @@ class IslandManagerService {
                     resourceType: zoneResourceTypes[row][col],
                     unlocked: unlockedSet.has(key),
                     unlockCost: this.unlockCosts[index],
-                    // World coordinates
-                    worldX: this.mapPadding + col * this.cellSize,
-                    worldY: this.mapPadding + row * this.cellSize,
+                    // World coordinates (offset by Ironhaven position)
+                    worldX: this.ironhavenOffsetX + this.mapPadding + col * this.cellSize,
+                    worldY: this.ironhavenOffsetY + this.mapPadding + row * this.cellSize,
                     width: this.islandSize,
                     height: this.islandSize
                 });
@@ -256,8 +260,8 @@ class IslandManagerService {
 
         for (let row = 0; row < this.gridRows; row++) {
             for (let col = 0; col < this.gridCols; col++) {
-                const baseX = this.mapPadding + col * this.cellSize;
-                const baseY = this.mapPadding + row * this.cellSize;
+                const baseX = this.ironhavenOffsetX + this.mapPadding + col * this.cellSize;
+                const baseY = this.ironhavenOffsetY + this.mapPadding + row * this.cellSize;
 
                 // Horizontal bridge to the right
                 if (col < this.gridCols - 1) {
@@ -341,66 +345,30 @@ class IslandManagerService {
             });
         }
 
-        // 3. Add Open World Biome Zones (all directions around island grid)
-        // These extend walkable area to the "open world" for enemy encounters
-        const worldSize = this.getWorldSize();
-        const gridEndX = this.mapPadding + this.gridCols * this.islandSize + (this.gridCols - 1) * this.waterGap;
-        const gridEndY = this.mapPadding + this.gridRows * this.islandSize + (this.gridRows - 1) * this.waterGap;
-
-        // North biome zone (above the island grid)
-        this.walkableZones.push({
-            x: 0,
-            y: 0,
-            width: worldSize.width,
-            height: this.mapPadding + 200,
-            id: 'biome_north',
-            type: 'biome'
-        });
-
-        // South biome zone (below the island grid)
-        this.walkableZones.push({
-            x: 0,
-            y: gridEndY - 200,
-            width: worldSize.width,
-            height: worldSize.height - gridEndY + 200,
-            id: 'biome_south',
-            type: 'biome'
-        });
-
-        // West biome zone (left of the island grid)  
-        this.walkableZones.push({
-            x: 0,
-            y: 0,
-            width: this.mapPadding + 200,
-            height: worldSize.height,
-            id: 'biome_west',
-            type: 'biome'
-        });
-
-        // East biome zone (right of the island grid)
-        this.walkableZones.push({
-            x: gridEndX - 200,
-            y: 0,
-            width: worldSize.width - gridEndX + 200,
-            height: worldSize.height,
-            id: 'biome_east',
-            type: 'biome'
-        });
+        // 3. Biome walkability now handled by BiomeManager.isValidPosition()
+        // No need to add rectangular zones - polygon hit testing is used
 
         console.log(`[IslandManager] Rebuilt walkable zones: ${this.walkableZones.length} active zones`);
     }
 
     /**
      * Check if world position is walkable
-     * Uses efficient cached zone list
+     * Uses zone list for islands/bridges, BiomeManager for outer biomes
      */
     isWalkable(x, y) {
+        // First check island/bridge zones (Ironhaven internal)
         for (const zone of this.walkableZones) {
             if (x >= zone.x && x <= zone.x + zone.width &&
                 y >= zone.y && y <= zone.y + zone.height) {
                 return true;
             }
         }
+
+        // Fallback: Check BiomeManager for outer biome polygons
+        if (window.BiomeManager) {
+            return BiomeManager.isValidPosition(x, y);
+        }
+
         return false;
     }
 

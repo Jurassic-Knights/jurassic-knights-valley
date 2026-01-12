@@ -22,6 +22,65 @@ NODE_UPGRADE_CHANCE: 0.05  // 5%
 CATEGORIES: ['food', 'minerals', 'scraps', 'items', 'equipment']
 ```
 
+### Fuel System (Forge Crafting)
+
+| Fuel Type | ID | Fuel Value | Notes |
+|-----------|-----|-----------|-------|
+| Wood (any) | `oak_wood` | 1 | Any wood type provides 1 fuel |
+| Coal | `coal` | 2 | Coal provides 2 fuel |
+
+| Item Tier | Fuel Cost | Example |
+|-----------|-----------|---------|
+| T1 | 1 fuel | 1 log |
+| T2 | 2 fuel | 2 logs or 1 coal |
+| T3 | 4 fuel | 4 logs or 2 coal |
+| T4 | 8 fuel | 8 logs or 4 coal |
+
+### Equipment Merge System
+
+Merge two identical equipment pieces to increase quality percentage.
+
+```javascript
+// Formula
+result = max(a, b) + (min(a, b) * mergeBonus)
+
+// Merge bonus by current quality
+below 120%: +20% of lower item
+120-150%:   +10% of lower item
+above 150%: +5% of lower item
+
+// Quality cap: 200%
+```
+
+### Rarity Colors
+
+| Rarity | Color | Outline | Glow |
+|--------|-------|---------|------|
+| Common | `#9e9e9e` | `#616161` | No |
+| Uncommon | `#4caf50` | `#2e7d32` | No |
+| Rare | `#2196f3` | `#1565c0` | Yes |
+| Epic | `#9c27b0` | `#6a1b9a` | Yes |
+| Legendary | `#ff9800` | `#e65100` | Yes |
+
+**Quality Color Gradient:**
+| Range | Color |
+|-------|-------|
+| 0-49% | `#f44336` (Red) |
+| 50-79% | `#ff9800` (Orange) |
+| 80-99% | `#ffeb3b` (Yellow) |
+| 100-119% | `#4caf50` (Green) |
+| 120-149% | `#2196f3` (Blue) |
+| 150-200% | `#9c27b0` (Purple/Gold) |
+
+### Item Defaults
+
+| Category | Stack Size | Weight | Icon |
+|----------|-----------|--------|------|
+| Resources | 20 | 0.5 | `ui_icon_resource` |
+| Items | 10 | 1.0 | `ui_icon_item` |
+| Equipment | 1 | 3.0 | `ui_icon_equipment` |
+| Weapons | 1 | 4.0 | `ui_icon_weapon` |
+
 ---
 
 ## 2. Zone Progression (8 Zones + Home)

@@ -13,6 +13,15 @@ const GameConstants = {
 
     // World / Island Configuration
     World: {
+        // Full world dimensions (30k x 30k for all biomes)
+        TOTAL_WIDTH: 30000,
+        TOTAL_HEIGHT: 30000,
+
+        // Ironhaven offset (where the island grid starts in world space)
+        IRONHAVEN_OFFSET_X: 10000,
+        IRONHAVEN_OFFSET_Y: 10000,
+
+        // Existing island grid settings (used within Ironhaven)
         GRID_COLS: 3,
         GRID_ROWS: 3,
         ISLAND_SIZE: 1024,       // 8 grid cells (8 * 128)
@@ -105,7 +114,8 @@ const GameConstants = {
         GROUP_SPACING: 50,            // Min distance between spawned group members
         PACK_AGGRO_RADIUS: 150,       // Range for pack members to join aggro
         ELITE_SPAWN_CHANCE: 0.05,     // 5% chance for elite variant
-        TRANSITION_BLEND_WIDTH: 200   // Gradient border width between biomes
+        TRANSITION_BLEND_WIDTH: 200,  // Gradient border width between biomes
+        ROAD_SPEED_MULTIPLIER: 1.3    // 30% speed boost on roads
     },
 
     // Spawning & Population

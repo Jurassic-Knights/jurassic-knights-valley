@@ -13,76 +13,241 @@ When generating assets, ALWAYS include a reference image. Use the appropriate re
 
 | Asset Type | Reference Image |
 |------------|-----------------|
-| **Dinosaurs** | `reference/style_samples/dino_velociraptor_base_original.png` |
-| **All Others** (Items, Resources, Characters, UI) | `reference/style_samples/world_hero.png` |
-| **Consumed Resources** | Use the approved base resource (e.g., `assets/images/resources/{name}_approved_original.png`) |
-
-**Full paths:**
-```
-Dinosaurs:    C:\Users\Anthony\.gemini\antigravity\scratch\jurassic-knights-valley\reference\style_samples\dino_velociraptor_base_original.png
-All Others:   C:\Users\Anthony\.gemini\antigravity\scratch\jurassic-knights-valley\reference\style_samples\world_hero.png
-```
+| **Dinosaurs (armored)** | `reference/style_samples/velociraptor_armor.png` |
+| **Herbivores (naked)** | `reference/style_samples/velociraptor.png` |
+| **Saurians (small/agile)** | `reference/style_samples/saurian.png` |
+| **Saurians (large/stocky)** | `reference/style_samples/saurian_wide.png` |
+| **Humans** | `reference/style_samples/human_base.png` |
+| **Items/Resources** | `reference/style_samples/human_base.png` |
+| **Equipment** | `reference/style_samples/human_base.png` |
+| **UI Icons** | `reference/style_samples/UI_style.png` |
+| **Architecture** | `reference/style_samples/wood_fence.png` |
+| **Architecture (bridges)** | `reference/style_samples/bridge.png` |
+| **Props** | `reference/style_samples/human_base.png` |
+| **Flora** | `reference/style_samples/human_base.png` |
+| **Environment** | `reference/style_samples/medic_crate.png` |
+| **Environment (walls)** | `reference/style_samples/wood_fence.png` |
+| **Environment (bridges)** | `reference/style_samples/bridge.png` |
+| **Environment (furniture)** | `reference/style_samples/bench.png` |
+| **Nodes (full)** | `reference/style_samples/node.png` |
+| **Nodes (consumed)** | Use the approved full version of same node |
 
 ---
 
-## Base Prompt Structure
+## How sourceDescription Works
 
-All prompts follow this structure:
+The `sourceDescription` field in each asset's JSON is **NOT a full prompt**. It contains **ONLY the unique, contextual details** specific to that asset. The regenerate workflow combines:
+
 ```
-icon/sprite of [SUBJECT], game [TYPE] asset, stoneshard style, high fidelity pixel art, [MATERIAL KEYWORDS], match the isometric perspective of the reference image, isolated on white background, no text, no letters, no watermark, no particles, no VFX, no smoke, no fire
+[TEMPLATE FROM asset_prompts.md] + [sourceDescription from JSON]
 ```
+
+### sourceDescription Should Include:
+- **Physical traits**: body shape, size, distinctive features
+- **Coloring**: hide/skin/fur color, patterns, markings
+- **Species details**: horns, plates, frills, spikes, claws
+- **Biome adaptations**: "thick fur", "desert-adapted hide", "swamp-dwelling"
+- **Equipment/gear** (for armored units): specific armor pieces, weapons
+- **Unique visual traits**: scars, battle damage, wear patterns
+
+### sourceDescription Should NOT Include:
+- Template boilerplate (already in asset_prompts.md)
+- "stoneshard style, high fidelity pixel art" (already in template)
+- "isolated on white background" (already in template)
+- "no text, no letters" (already in template)
+- "side profile" (already in template for creatures)
+- **Poses** - all assets use neutral poses defined in template
+- **Emotions/states** - no "frightened", "angry", "tired", etc. - describe outfit/gear only
+
+### Examples:
+
+**BAD sourceDescription (includes pose):**
+```
+"brownish-green hide, grazing pose with lowered head"
+```
+
+**GOOD sourceDescription (physical appearance only):**
+```
+"thumb spike visible, bulky herbivore build, brownish-green hide with darker stripes"
+```
+
+**Biome-Aware Examples:**
+- **Grasslands Herbivore**: "bright green-brown coloring, healthy muscular build"
+- **Tundra Herbivore**: "thick white fur, frost-resistant hide, breath mist effect"
+- **Desert Herbivore**: "pale sandy coloring, sun-bleached cracked skin, lean build"
+- **Badlands Human**: "ash-covered armor, respirator mask, scorched uniform, mining equipment"
 
 ---
 
 ## Category Templates
 
-### Drops (Resource Pickups)
-```
-sprite of [DROP DESCRIPTION], game item asset, stoneshard style, high fidelity pixel art, rusty, gritty, weathered, isolated on white background, no text, no letters, no watermark, no particles, no VFX, no smoke, no fire
-```
 
-**Examples:**
-- `sprite of a pile of raw wood logs` → drop_wood
-- `sprite of jagged rusty metal scrap sheets and debris` → drop_scrap_metal
-- `sprite of a heavy chunk of raw grey iron ore rock` → drop_iron_ore
-- `sprite of a shiny raw gold nugget` → drop_gold
-- `sprite of a dark oily fossil fuel canister` → drop_fossil_fuel
-- `sprite of a raw bloody red meat steak chunk` → drop_primal_meat
+### Dinosaurs (Armored) - from dinosaur.json
+> These are war-beasts with armor/gear
+```
+full body sprite of a chibi [SPECIES NAME], a completely different dinosaur than the reference image, game creature asset, stoneshard style, high fidelity pixel art, war-beast appearance, heavy plating, facing left, side profile, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+```
 
 ---
 
-### Items (Crafted Materials)
+### Herbivores (Naked) - from herbivore.json
+> These are natural dinosaurs WITHOUT any armor or gear
 ```
-sprite of [ITEM DESCRIPTION], game item asset, stoneshard style, high fidelity pixel art, rusty, gritty, weathered, match the isometric perspective of the reference image, isolated on white background, no text, no letters, no watermark, no particles, no VFX, no smoke, no fire
+full body sprite of a chibi [SPECIES NAME], a completely different dinosaur than the reference image, game creature asset, stoneshard style, high fidelity pixel art, natural appearance, no armor, no gear, facing left, side profile, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
-
-**Examples:**
-- `sprite of a refined cast iron ingot bar` → item_iron_ingot
-- `sprite of a rusted scrap metal plate sheet` → item_scrap_plate
 
 ---
 
-### Weapons & Tools
+### Saurians - from saurian.json
+> These are anthropomorphic dinosaur soldiers with medieval + WWI aesthetic. sometimes they wear headgear sometimes they don't it depends on the character design.
 ```
-icon of [WEAPON/TOOL DESCRIPTION], game ui asset, stoneshard style, high fidelity pixel art, rusty, gritty, weathered, straight horizontal angle, side view, isolated on white background, no text, no letters, no watermark, no particles, no VFX, no smoke, no fire
+full body sprite of an anthropomorphic [SPECIES NAME], a different character than the reference image, game creature asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, armored and outfitted soldier appearance, facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
-> **IMPORTANT**: Weapons and tools must be angled **straight and horizontally** (like lying flat on a table).
-
-**Examples:**
-- `sprite of a military entrenching shovel with wooden handle, straight horizontal angle` → tool_shovel
-- `sprite of a weathered vintage military pistol or revolver, straight horizontal angle` → tool_gun
+**Size-based reference selection:**
+- Small/agile saurians → use `saurian.png`
+- Large/stocky saurians → use `saurian_wide.png`
 
 ---
 
-### Characters (NPCs, Merchants, Hero)
+### Humans - from human.json
+> All humans must have faces covered (Helmet Mandate) with medieval + WWI aesthetic
 ```
-full body sprite of [CHARACTER DESCRIPTION], game character asset, stoneshard style, high fidelity pixel art, wearing WWI-era military gear, gas mask or helmet covering face, match the isometric perspective of the reference image, isolated on white background, no text, no letters, no watermark, no particles, no VFX, no smoke, no fire
+full body sprite of a [DESCRIPTION], a different character and headgear or helmet than the reference image, game character asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, wearing military gear with medieval armor elements, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+```
+
+**Face covering options** (VARY - avoid overusing gas mask):
+
+**Sparingly (< 20% each):**
+- gas mask
+- full-face helmet
+
+**Preferred (use more frequently):**
+- stahlhelm with face guard
+- medieval war helm / knight helmet
+- iron mask / riveted faceplate  
+- hooded mask / leather hood with goggles
+- skull visor / death mask
+- barbuta / sallet / great helm
+- combat helmet with visor
+
+**Zone-appropriate:**
+- Grasslands: stahlhelm, combat helmet
+- Tundra: hooded mask, fur-lined helm
+- Desert: cloth-wrapped face, goggles
+- Badlands: iron mask, skull visor
+- Swamp: diving helmet, gas mask
+
+---
+
+## Enemy Biome Visual Identities
+
+When generating enemies, match their uniforms, armor, and equipment to their assigned biome. **Humans and Saurians share the same military** and wear matching uniforms/armor.
+
+> **IMPORTANT RULES:**
+> - **Unique/Named Characters** (bosses, captains, specialists) may use ANY fitting color palette for their character design - not restricted to biome colors
+> - **Saurians NEVER wear shoes or boots** - they have exposed dinosaur feet with claws
+> - **Distinctive Gear is OPTIONAL** - not every soldier needs biome-specific accessories
+
+### Grasslands (Home Region)
+**Uniform Style:** Standard military - slightly dirty
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | brown, tan, dark red trim | iron |
+| **Ranged** | dark grey, forest green | gunmetal, steel |
+- **Dinosaurs:** Bronze barding, tan saddle cloth
+- **Optional Gear:** Backpacks, canteens, binoculars
+
+### Tundra (Frozen North)
+**Uniform Style:** Heavy insulated - bulky, fur-lined
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | white, grey, brown fur trim | polished steel |
+| **Ranged** | navy blue, charcoal grey | blackened iron, dark steel |
+- **Dinosaurs:** Thick white/grey fur, armor covered in snow
+- **Optional Gear:** thermal cloaks, fur gloves, fur boots
+
+### Desert (Arid Wastes)
+**Uniform Style:** Light, loose-fitting - protection from sun
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | sand tan, terracotta, cream | bronze |
+| **Ranged** | pale cream, dusty brown | dark leather |
+- **Dinosaurs:** Light mesh barding, sand-scoured hide
+- **Optional Gear:** Water skins, cloth wraps, goggles
+
+### Badlands (Volcanic/Industrial)
+**Uniform Style:** Heavy industrial - heat-resistant
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | rust orange, charred brown | blackened iron |
+| **Ranged** | coal black, ash grey | dark iron |
+- **Dinosaurs:** Soot-stained barding, heat vents in armor
+- **Optional Gear:** Welding visors, heat-resistant aprons
+
+### Dead Woods (Haunted Forest)
+**Uniform Style:** Decayed, moss-covered - camouflaged
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | rotting brown, dried blood, olive | tarnished copper, corroded iron |
+| **Ranged** | sickly green, mold grey | corroded black, rusted iron |
+- **Dinosaurs:** Mottled grey-green hide, fungal growths
+- **Optional Gear:** Lanterns, plague masks
+
+### Bone Valley (Ancient Graveyard)  
+**Uniform Style:** Bone-decorated, ritualistic
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | bleached white, bone ivory, blood red | bone plate, obsidian trim |
+| **Ranged** | dark grey, fossil brown | obsidian black, amber inlays |
+- **Dinosaurs:** Fossil fragments in barding, skull masks
+- **Optional Gear:** Bone clubs, jaw-bone necklaces
+
+### The Ruins (Ancient Civilization)
+**Uniform Style:** Ancient-styled, ceremonial
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | royal purple, faded gold, cream | polished bronze, gold trim |
+| **Ranged** | stone grey, jade green | verdigris bronze, aged copper |
+- **Dinosaurs:** Temple guardian barding, ancient symbols
+- **Optional Gear:** Ceremonial staffs
+
+### Crossroads (Trade Hub)
+**Uniform Style:** Eclectic, well-traveled
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | mixed patchwork | salvaged mixed metals |
+| **Ranged** | varied mercenary colors | mismatched plate |
+- **Dinosaurs:** Multi-cultural barding
+- **Optional Gear:** Coin pouches, maps
+
+### Scrap Yard (Junkyard)
+**Uniform Style:** Improvised, salvaged
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | oil-stained brown, rust orange | welded scrap, corroded iron |
+| **Ranged** | grimy grey, mud brown | cold grey steel, oxidized green |
+- **Dinosaurs:** Salvaged vehicle parts, chain-link
+- **Optional Gear:** Wrenches, welding torches
+
+### Mud Flats (Swamp)
+**Uniform Style:** Waterproof, amphibious
+| Role | Clothing Colors | Armor Colors |
+|------|-----------------|--------------|
+| **Melee** | murky brown, mud orange, olive | rusted copper, barnacle-covered |
+| **Ranged** | grey-green, dark algae | sealed steel, greenish patina |
+- **Dinosaurs:** Waterproof barding, mud-caked hide
+- **Optional Gear:** Harpoons, diving helmets
+
+
+### NPCs/Merchants
+```
+full body sprite of a [MERCHANT TYPE], a different character and headgear than the reference image, game character asset, stoneshard style, high fidelity pixel art, wearing WWI-era military gear, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 **Zone-Themed Merchants:**
-- Home Outpost: quartermaster uniform, supply crates, command insignia
-- Quarry: dusty grey uniform, miner's helmet
+- Home Outpost: quartermaster uniform, supply crates, command insignia, full-face helmet
+- Quarry: dusty grey uniform, miner's helmet with visor
 - Iron Ridge: rust-stained overalls, welding mask
 - Dead Woods: tattered cloak, plague doctor mask
 - Crossroads: travel-worn coat, wide-brimmed hat with visor
@@ -93,59 +258,133 @@ full body sprite of [CHARACTER DESCRIPTION], game character asset, stoneshard st
 
 ---
 
-### Dinosaurs
+### Items (Crafted Materials)
 ```
-full body sprite of [DINOSAUR SPECIES], game creature asset, stoneshard style, high fidelity pixel art, war-beast appearance, heavy plating optional, side profile, match the isometric perspective of the reference image, isolated on white background, no text, no letters, no watermark, no particles, no VFX, no smoke, no fire
+sprite of [ITEM DESCRIPTION], game item asset, stoneshard style, high fidelity pixel art, rusty, gritty, weathered, isometric perspective, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
-
-**Species Keywords:**
-- Velociraptor: agile, feathered, predatory stance
-- T-Rex: massive jaws, tiny arms, imposing
-- Triceratops: armored frill, three horns, sturdy
-- Pteranodon: wingspan, flying pose, leathery wings
-- Stegosaurus: back plates, tail spikes, docile
-- Ankylosaurus: armored shell, club tail, tank-like
-- Spinosaurus: sail back, crocodile snout, semi-aquatic
 
 ---
 
-### World Resources (Harvestable)
+### Resources (Drops)
 ```
-sprite of [RESOURCE DESCRIPTION], game world asset, stoneshard style, high fidelity pixel art, weathered, natural, match the isometric perspective of the reference image, isolated on white background
+sprite of [DROP DESCRIPTION], game item asset, stoneshard style, high fidelity pixel art, rusty, gritty, weathered, isometric perspective, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 **Examples:**
-- `sprite of a dead fallen tree trunk with exposed roots` → wood
-- `sprite of a raw iron ore rock outcrop with rust-colored veins` → iron_ore
-- `sprite of a raw gold ore rock outcrop with shiny golden veins` → gold
-- `sprite of a pile of abandoned rusted machinery parts` → scrap_metal
-- `sprite of a dark oil seep or tar pit with bubbling black sludge` → fossil_fuel
+- `sprite of a pile of raw wood logs` → drop_wood
+- `sprite of jagged rusty metal scrap sheets and debris` → drop_scrap_metal
+- `sprite of a heavy chunk of raw grey iron ore rock` → drop_iron_ore
 
 ---
 
-### Consumed Resources (Depleted State)
-
-> **PREREQUISITE**: The base resource (`{name}_approved_original.png`) must exist and be approved before generating the consumed version.
-
-> **IMPORTANT**: For consumed resources, use the **approved base resource image** as your reference image (NOT the style_samples folder). The prompt should describe it as the broken-down, depleted version of that specific resource.
-
-**Reference Image**: Use `assets/images/resources/{resource_name}_approved_original.png`
-
+### Equipment (Weapons, Armor, Tools)
 ```
-sprite showing the consumed and depleted version of this resource, same style, harvested remains, broken down, picked over, match the isometric perspective of the reference image, isolated on white background
+icon of [EQUIPMENT DESCRIPTION], game ui asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, legendary unique ornate appearance, rusty, gritty, weathered, flat horizontal laying position facing right, profile view, no angle, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
-**Examples:**
-- Use `wood_approved_original.png` as reference → `sprite of a chopped tree stump with axe marks, harvested remains` → wood_consumed
-- Use `iron_ore_approved_original.png` as reference → `sprite of a depleted mined rock with pick marks, crumbled remains` → iron_ore_consumed
-- Use `gold_approved_original.png` as reference → `sprite of a depleted gold ore with traces remaining, mined out` → gold_consumed
-- Use `scrap_metal_approved_original.png` as reference → `sprite of a picked-over pile with only small debris remaining` → scrap_metal_consumed
-- Use `fossil_fuel_approved_original.png` as reference → `sprite of a drained tar pit with dried oily residue` → fossil_fuel_consumed
+> **IMPORTANT**: Weapons and tools must be angled **flat and horizontally** (like lying on a table viewed from directly above). Do NOT use isometric perspective for weapons.
+
+**Weapon Design Rules:**
+- **Never basic** - Weapons should usually but not always look legendary, hulking, unique, or ornate (not standard military issue)
+- **Medieval+WWI fusion** - Blend archaic craftsmanship with industrial warfare elements
+- **Examples of fusion**: gilded engravings on a rifle, serrated bayonet blade, chainmail-wrapped grip, brass fittings on sword
+- **Examples of dinosaur fusion**: it's also possible to integrate dinosaur elements into weapons, but more rare.
+
+**Enemy Weapon Types:**
+
+| Ranged | Melee |
+|--------|-------|
+| rifle | sword |
+| pistol | longsword |
+| submachine_gun | greatsword |
+| machine_gun | axe |
+| crossbow | war_axe |
+| flamethrower | mace |
+| shotgun | war_hammer |
+| sniper_rifle | lance |
+| bazooka | halberd |
+| | spear |
+| | dual_blades |
+| | flail |
+| | knife |
+
+---
 
 ### UI Icons
 ```
-icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconography, rusted iron frame, worn leather texture, brass accents, isolated on white background
+icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconography, isolated on white background
 ```
+
+> Note: UI icons may include text/letters if meaningful for the icon purpose 
+
+---
+
+### Props (World Objects)
+```
+sprite of [PROP DESCRIPTION], game world prop, stoneshard style, high fidelity pixel art, weathered, isometric perspective, isolated on white background, no text, no letters
+```
+
+> Note: Props may include text/letters if contextually appropriate (e.g., signs, labels on crates)
+
+---
+
+### Architecture (Structures)
+```
+sprite of [ARCHITECTURE DESCRIPTION], game world structure, stoneshard style, high fidelity pixel art, weathered, medieval/WWI aesthetic, horizontal side view, facing left to right, isolated on white background, no text, no letters
+```
+
+> **IMPORTANT**: Architecture assets must be rendered in **horizontal side view** (left to right), NOT isometric diagonal. Think of viewing a fence or wall from the side.
+
+**Examples:**
+- Fences, walls, gates, bridges
+- Roads, paths, trenches
+- Towers, posts, signposts
+- Barricades, rails, ladders
+
+---
+
+### Flora (Vegetation)
+```
+sprite of [FLORA DESCRIPTION], game world vegetation, stoneshard style, high fidelity pixel art, natural growth, isometric perspective, isolated on white background, no text, no letters
+```
+
+**Examples:**
+- Shrubs, bushes, grass patches
+- Mushrooms, flowers, ferns
+- Stumps, logs, fallen branches
+- Boulders, rocks (biome-specific)
+
+---
+
+### Nodes (Full - Harvestable)
+```
+[RESOURCE TYPE] harvestable resource node, top-down RPG asset, stoneshard style, high fidelity pixel art, [DESCRIPTION], isolated on white background, no text, no letters
+```
+
+---
+
+### Nodes (Consumed/Depleted)
+> **PREREQUISITE**: The base node must be approved before generating consumed version
+> **Reference**: Use the APPROVED full version of the same node as reference
+
+```
+depleted [RESOURCE TYPE] with [DEPLETED STATE DESCRIPTION], top-down RPG asset, stoneshard style, high fidelity pixel art, harvested remains, isolated on white background, no text, no letters
+```
+
+---
+
+### Environment/Backgrounds
+```
+game environment background of [ZONE DESCRIPTION], high-fidelity pixel art, Stoneshard style, top-down RPG, [ZONE KEYWORDS], detailed texture, sharp pixels
+```
+
+**Zone Visual Identities:**
+- Home Outpost: Mud, Timber, Green grass, Military supplies
+- Quarry Fields: Grey stone, Dust, Excavation pits
+- Iron Ridge: Rust orange, Industrial debris, Red clay
+- Dead Woods: Desaturated green-grey, Twisted roots, Fog
+- Bone Valley: Bleached white bone, Beige sand, Fossils
+- The Ruins: Ancient stone, Moss, Mystery
 
 ---
 
@@ -154,14 +393,14 @@ icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconog
 **NEVER include in prompts:**
 - Glowing runes or magical effects
 - particles, sparkles, VFX, smoke, fire
-- Text, letters, or numbers (unless the asset type calls for it like a sign)
 - Modern technology (phones, screens)
 - Bright neon colors
+- "no watermark" (removed from all prompts)
 
 **ALWAYS include:**
-- `no text, no letters, no watermark` (unless the asset type calls for it like a sign)
+- `no text, no letters` (except UI icons and Props where contextual)
 - `isolated on white background` (for BG removal pipeline)
-- `stoneshard style` or `high fidelity pixel art`
+- `stoneshard style` and `high fidelity pixel art`
 
 ---
 
@@ -175,28 +414,4 @@ icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconog
 | Approved | `{name}_approved_original.png` | `wood_approved_original.png` |
 | Declined | `{name}_declined_original.png` | `wood_declined_original.png` |
 | Production | `{name}_clean.png` | `wood_clean.png` |
-
-**Lifecycle:**
-1. Generated → `_original.png` (pending review)
-2. Approved in dashboard → `_approved_original.png`
-3. Cleaned via Photoshop → `_clean.png` (production-ready, 10px padding, transparent bg)
-4. If declined → `_declined_original.png` (for regeneration)
-
-**Key:**
-- `_original.png` = raw, unprocessed (white background)
-- `_approved` = approved, awaiting cleaning
-- `_declined` = needs regeneration
-- `_clean.png` = production-ready (transparent background, scaled to 10px padding)
-
----
-
-## Post-Generation Pipeline
-
-1. Save generated image as `{asset_name}_original.png`
-2. Review in Asset Dashboard, mark as **Approved** → becomes `{name}_approved_original.png`
-3. Run Photoshop background removal (processes `*_approved_original.png` files):
-   ```powershell
-   python scripts/photoshop_remove_bg.py "assets/images/<folder>"
-   ```
-4. Register `_clean.png` in `src/core/AssetLoader.js`
 

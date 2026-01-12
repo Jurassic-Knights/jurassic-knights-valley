@@ -42,12 +42,89 @@ Ground visuals in physical reality.
 ### Characters & Entities
 -   **Style**: High-Fidelity Pixel Art, Realistic proportions.
 -   **Constraint**: **NEVER** generate text/letters/numbers in the image.
--   **Prompt Addition**: "no text, no letters, no watermark".
+-   **Prompt Addition**: "no text, no letters".
+-   **Saurians**: Use "anthropomorphic [SPECIES]" to describe humanoid dinosaur warriors.
+-   **Herbivores**: Natural dinosaurs - NO armor, NO gear.
+-   **Humans**: Must specify exact face covering - VARY THE TYPES (see below).
+
+### Medieval + WWI Fusion Aesthetic
+All human and saurian soldiers must blend **medieval armor** with **WWI military technology**:
+
+**Armor Elements (Medieval):**
+- Plate armor, chain mail, brigandine, leather jerkin
+- Pauldrons, gauntlets, greaves, breastplates
+- Knight helms, barbuta, sallet, great helms
+- Shields (kite, tower, heater, buckler)
+
+**Military Elements (WWI):**
+- Uniforms: trench coat, field jacket, tunic, greatcoat
+- Gear: ammunition belts, pouches, bandoliers, harnesses
+- Equipment: gas mask, goggles, combat helmet (stahlhelm)
+- Insignia: rank badges, unit patches, medals
+
+**Weapon Guidelines (based on attackType):**
+| attackType | Melee Weapons | Ranged Weapons |
+|------------|---------------|----------------|
+| **melee** | sword, axe, mace, lance, halberd, billhook, trench club, bayonet | *(n/a)* |
+| **ranged** | *(n/a)* | rifle, pistol, submachine gun, machine gun, crossbow |
+
+**Fusion Examples:**
+- "plate armor over trench coat, stahlhelm with face guard, wielding a trench mace"
+- "chain mail under field jacket, medieval war helm, carrying a bolt-action rifle"
+- "leather brigandine, ammunition bandolier, great helm, wielding a halberd"
+- "WWI officer uniform, pauldron on left shoulder, barbuta helmet, pistol holster"
+
+### Face Covering Variety (Helmet Mandate)
+To avoid repetitive designs, distribute face coverings across human units:
+
+**Common (use sparingly, < 20% each):**
+- gas mask
+- full-face helmet
+
+**Preferred (use more frequently):**
+- stahlhelm with face guard
+- medieval war helm / knight helmet
+- iron mask / riveted faceplate
+- hooded mask / leather hood with goggles
+- welding mask
+- skull visor / death mask
+- plague doctor mask
+- barbuta helmet / sallet helm / great helm
+- combat helmet with visor
+- miner helmet with lamp
+
+**Zone-Themed Suggestions:**
+- Grasslands: stahlhelm, combat helmet
+- Tundra: hooded mask, fur-lined helm
+- Desert: cloth-wrapped face, goggles
+- Badlands: iron mask, skull visor
+- Swamp: diving helmet, gas mask (appropriate here)
+
+### Avoiding Scene Generation
+sourceDescriptions must describe ONLY the character, not their environment:
+
+**FORBIDDEN scene-implying words:**
+- emplacement, defensive position, fortification, turret
+- trench, bunker, sandbags, barricade, platform
+- battlefield, environment, background, ground
+- explosion, smoke, fire, debris
+- camp, outpost, deployment, formation
+
+**ALLOWED character descriptors:**
+- equipment they carry/wear
+- physical appearance and build
+- armor and clothing details
+- weapons held (not mounted)
 
 ### UI & Icons
 -   **Style**: Detailed Pixel Art Iconography, cleaner than world assets but textured.
 -   **Materials**: Pixelated parchment, rusted iron, worn leather, brass frames.
 -   **Reference**: Stoneshard UI, Diablo 2 inventory.
+-   **Text allowed**: UI icons may include text/letters if meaningful (e.g., "X" close button).
+
+### Props (World Objects)
+-   **Style**: High-Fidelity Pixel Art, top-down perspective.
+-   **Text allowed**: Props may include text/letters if contextually appropriate (e.g., signs, crate labels).
 
 ### Zone Visual Identities
 *   **Home Outpost**: Mud, Timber, Green grass, Military supplies.

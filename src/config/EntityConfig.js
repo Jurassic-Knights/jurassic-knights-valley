@@ -19,7 +19,7 @@ const EntityConfig = {
             maxHealth: 100,
             stamina: 100,
             maxStamina: 100,
-            speed: 700, // Pixels per second
+            speed: 1400, // Pixels per second
             attack: {
                 damage: 10,
                 rate: 2, // Attacks per second

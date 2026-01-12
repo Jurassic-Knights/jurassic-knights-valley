@@ -59,7 +59,7 @@ class Hero extends Entity {
         // Stats (New Phase 17, expanded 03-hero-stats)
         if (window.StatsComponent) {
             this.components.stats = new StatsComponent(this, {
-                speed: finalConfig.speed || 700,
+                speed: finalConfig.speed || 1400,
                 maxStamina: finalConfig.maxStamina || 100,
                 stamina: finalConfig.stamina, // Defaults to max
                 // Combat Stats (03-hero-stats)

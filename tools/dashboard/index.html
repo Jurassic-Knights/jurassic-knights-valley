@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Dashboard (Modular)</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>🦖 Asset Dashboard <span class="server-badge">Modular</span></h1>
+        <div class="controls">
+            <button id="btnTemplates" class="secondary" onclick="showTemplatesView()">📝 Templates</button>
+            <button id="btnSyncToGame" class="secondary" onclick="syncAssetsToGame()" style="background:#4caf50;">🔄
+                Sync to Game</button>
+            <button id="btnEnemies" class="secondary" onclick="showCategoryView('enemies')"
+                style="background:#e91e63;">🦖 Enemies</button>
+            <button id="btnNpcs" class="secondary" onclick="showCategoryView('npcs')" style="background:#4caf50;">👤
+                NPCs</button>
+            <button id="btnItems" class="secondary" onclick="showCategoryView('items')" style="background:#795548;">🧱
+                Items</button>
+            <button id="btnEquipment" class="secondary" onclick="showCategoryView('equipment')"
+                style="background:#9c27b0;">⚔️ Equipment</button>
+            <button id="btnResources" class="secondary" onclick="showCategoryView('resources')"
+                style="background:#ff9800;">🪨 Resources</button>
+            <button id="btnNodes" class="secondary" onclick="showCategoryView('nodes')" style="background:#6d4c41;">⛏️
+                Nodes</button>
+            <button id="btnEnvironment" class="secondary" onclick="showCategoryView('environment')"
+                style="background:#8bc34a;">🌲 Environment</button>
+            <button id="btnUI" class="secondary" onclick="showCategoryView('ui')" style="background:#03a9f4;">🖼️
+                UI</button>
+            <button id="btnRefresh" class="secondary" onclick="loadManifest()">🔄</button>
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat pending"><span class="stat-value" id="statPending">-</span><span
+                class="stat-label">Pending</span></div>
+        <div class="stat approved"><span class="stat-value" id="statApproved">-</span><span
+                class="stat-label">Approved</span></div>
+        <div class="stat declined"><span class="stat-value" id="statDeclined">-</span><span
+                class="stat-label">Declined</span></div>
+        <div class="stat clean"><span class="stat-value" id="statClean">-</span><span class="stat-label">Clean</span>
+        </div>
+    </div>
+
+    <div class="sticky-bar">
+        <div class="filters">
+            <div class="filter-row">
+                <span class="filter-label">Status:</span>
+                <button class="filter-btn secondary active" data-filter="all">All</button>
+                <button class="filter-btn secondary" data-filter="pending">Pending</button>
+                <button class="filter-btn secondary" data-filter="approved">Approved</button>
+                <button class="filter-btn secondary" data-filter="declined">Declined</button>
+                <button class="filter-btn secondary" data-filter="clean">Clean</button>
+                <button class="filter-btn secondary" data-filter="missing" style="border-color: var(--accent);">⚠️
+                    Missing</button>
+            </div>
+            <div class="filter-row">
+                <span class="filter-label">Folder:</span>
+                <div class="category-filters" id="categoryFilters"></div>
+            </div>
+        </div>
+    </div>
+
+    <main id="mainContent">
+        <div class="loading">Loading assets...</div>
+    </main>
+
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <div class="modal-header">
+            <button class="modal-toggle" id="toggleComparison" onclick="toggleComparisonView()">📊 Compare</button>
+        </div>
+        <img id="modalImage" src="" alt="Preview" style="display:block;">
+        <div class="comparison-view" id="comparisonView" style="display:none;">
+            <div class="comparison-panel original">
+                <img id="compareOriginal" src="" alt="Original">
+                <div class="comparison-label">Original</div>
+            </div>
+            <div class="comparison-panel clean">
+                <img id="compareClean" src="" alt="Clean">
+                <div class="comparison-label">Clean</div>
+            </div>
+        </div>
+        <div class="modal-info" id="modalInfo"></div>
+    </div>
+
+    <!-- Modular SFX System -->
+    <script src="/src/audio/SFX_Core.js"></script>
+    <script src="/src/audio/SFX_UI.js"></script>
+    <script src="/src/audio/SFX_Resources.js"></script>
+    <script src="/src/audio/SFX_Enemies.js"></script>
+    <script src="/src/audio/SFX_Dinosaurs.js"></script>
+    <script src="/src/audio/SFX_Herbivores.js"></script>
+    <script src="/src/audio/SFX_Saurians.js"></script>
+    <script src="/src/audio/SFX_Humans.js"></script>
+    <script src="/src/audio/ProceduralSFX.js"></script>
+
+    <!-- Dashboard Modules -->
+    <script src="js/state.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/views.js"></script>
+
+    <!-- Rendering Modules (split for scalability) -->
+    <script src="js/filters.js"></script>
+    <script src="js/cardBuilders.js"></script>
+    <script src="js/categoryRenderer.js"></script>
+    <script src="js/legacyAssets.js"></script>
+    <script src="js/lootRenderer.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

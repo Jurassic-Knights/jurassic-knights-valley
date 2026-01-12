@@ -27,6 +27,7 @@ const SystemConfig = [
     { global: 'QuestManager', priority: 3, init: true },
 
     // --- 3. World Logic ---
+    { global: 'BiomeManager', priority: 9, init: true },  // Biome boundaries & roads
     { global: 'IslandManager', priority: 10, init: true },
     { global: 'SpawnManager', priority: 11, init: true, start: true },
     { global: 'DinosaurSystem', priority: 12, init: false }, // Logic only? Check init
@@ -53,6 +54,7 @@ const SystemConfig = [
     { global: 'ProgressBarRenderer', priority: 32, init: false }, // Helper
     { global: 'ProgressBarRenderer', priority: 32, init: false }, // Helper
     { global: 'WorldRenderer', priority: 32, init: true }, // Static World
+    { global: 'RoadRenderer', priority: 32, init: true },  // Spline roads
     { global: 'EnvironmentRenderer', priority: 32, init: true }, // Ambient Overlay
     { global: 'GameRenderer', priority: 33, init: true },
     { global: 'UIManager', priority: 40, init: true },

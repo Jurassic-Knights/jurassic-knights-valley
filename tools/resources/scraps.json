@@ -1,0 +1,198 @@
+[
+    {
+        "id": "scraps_t1_01",
+        "name": "Oak Wood",
+        "tier": 1,
+        "source": "Oak Tree",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending",
+        "sourceDescription": "oak wood logs and branches, game pickup asset, light brown wood, fresh timber",
+        "files": {
+            "original": "assets/images/resources/scraps_t1_01_original.png"
+        }
+    },
+    {
+        "id": "scraps_t1_02",
+        "name": "Plant Fiber",
+        "tier": 1,
+        "source": "Tall Grass",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "plant fiber bundle, game pickup asset, green fibrous plant material, natural crafting material",
+        "files": {
+            "original": "assets/images/resources/scraps_t1_02_original.png"
+        }
+    },
+    {
+        "id": "scraps_t1_03",
+        "name": "Leather Scraps",
+        "tier": 1,
+        "source": "Herbivore Kills",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "leather scraps and hide pieces, game pickup asset, brown leather fragments, animal hide",
+        "files": {
+            "original": "assets/images/resources/scraps_t1_03_original.png"
+        }
+    },
+    {
+        "id": "scraps_t2_04",
+        "name": "Thick Hide",
+        "tier": 2,
+        "source": "Tundra Herbivores",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "thick animal hide, game pickup asset, heavy brown fur-lined hide, durable leather",
+        "files": {
+            "original": "assets/images/resources/scraps_t2_04_original.png"
+        }
+    },
+    {
+        "id": "scraps_t2_05",
+        "name": "Ash Wood",
+        "tier": 2,
+        "source": "Ash Tree",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "ash wood logs, game pickup asset, pale grey-cream wood, flexible timber",
+        "files": {
+            "original": "assets/images/resources/scraps_t2_05_original.png"
+        }
+    },
+    {
+        "id": "scraps_t2_06",
+        "name": "Bone",
+        "tier": 2,
+        "source": "Carcass",
+        "location": "zone",
+        "biome": "all",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "animal bones, game pickup asset, white-cream colored bones, crafting material",
+        "files": {
+            "original": "assets/images/resources/scraps_t2_06_original.png"
+        }
+    },
+    {
+        "id": "scraps_t2_07",
+        "name": "Cactus Spine",
+        "tier": 2,
+        "source": "Desert Cactus",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "cactus spines and needles, game pickup asset, sharp brown-white thorns, desert material",
+        "files": {
+            "original": "assets/images/resources/scraps_t2_07_original.png"
+        }
+    },
+    {
+        "id": "scraps_t3_08",
+        "name": "Acacia Wood",
+        "tier": 3,
+        "source": "Acacia Tree",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "acacia wood logs, game pickup asset, reddish-brown hardwood, desert timber",
+        "files": {
+            "original": "assets/images/resources/scraps_t3_08_original.png"
+        }
+    },
+    {
+        "id": "scraps_t2_09",
+        "name": "Sinew",
+        "tier": 2,
+        "source": "Large Herbivores",
+        "location": "zone",
+        "biome": "all",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "animal sinew tendons, game pickup asset, white stringy tendons, binding material",
+        "files": {
+            "original": "assets/images/resources/scraps_t2_09_original.png"
+        }
+    },
+    {
+        "id": "scraps_t2_10",
+        "name": "Sun-Bleached Bone",
+        "tier": 2,
+        "source": "Desert Remains",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "sun-bleached white bones, game pickup asset, pure white weathered bones, desert material",
+        "files": {
+            "original": "assets/images/resources/scraps_t2_10_original.png"
+        }
+    },
+    {
+        "id": "scraps_t3_11",
+        "name": "Black Glass",
+        "tier": 3,
+        "source": "Badlands Outcrop",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "volcanic black glass obsidian, game pickup asset, sharp shiny black volcanic glass, rare material",
+        "files": {
+            "original": "assets/images/resources/scraps_t3_11_original.png"
+        }
+    },
+    {
+        "id": "scraps_t3_12",
+        "name": "Hardened Scale",
+        "tier": 3,
+        "source": "Badlands Creatures",
+        "location": "biome",
+        "biome": "badlands",
+        "rarity": "rare",
+        "status": "approved",
+        "sourceDescription": "hardened dinosaur scale, game pickup asset, dark grey tough reptilian scale, armor material",
+        "files": {
+            "original": "assets/images/resources/scraps_t3_12_original.png"
+        }
+    },
+    {
+        "id": "scraps_t3_13",
+        "name": "Ash",
+        "tier": 3,
+        "source": "Ash Pile",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "grey volcanic ash pile, game pickup asset, fine grey powder ash, volcanic material",
+        "files": {
+            "original": "assets/images/resources/scraps_t3_13_original.png"
+        }
+    },
+    {
+        "id": "scraps_t4_14",
+        "name": "Ironwood",
+        "tier": 4,
+        "source": "Ironwood Tree",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "ironwood logs, game pickup asset, extremely dark dense wood, premium timber",
+        "files": {
+            "original": "assets/images/resources/scraps_t4_14_original.png"
+        }
+    }
+]

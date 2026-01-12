@@ -151,8 +151,11 @@ class HeroSystem {
         hero.prevY = hero.y;
 
         // Calculate new position
-        const newX = hero.x + move.x * hero.speed * dtSec;
-        const newY = hero.y + move.y * hero.speed * dtSec;
+        // Apply road speed bonus from BiomeManager
+        const speedMultiplier = window.BiomeManager?.getSpeedMultiplier?.(hero.x, hero.y) || 1.0;
+        const effectiveSpeed = hero.speed * speedMultiplier;
+        const newX = hero.x + move.x * effectiveSpeed * dtSec;
+        const newY = hero.y + move.y * effectiveSpeed * dtSec;
 
         // Check collision blocks
         let canMoveX = true;

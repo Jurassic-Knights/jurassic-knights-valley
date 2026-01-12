@@ -1,0 +1,700 @@
+[
+    {
+        "id": "nodes_t1_01",
+        "name": "Dead Tree",
+        "tier": 1,
+        "nodeType": "wood",
+        "resourceDrop": "wood",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "clean",
+        "harvestCount": 3,
+        "respawnTime": 30,
+        "sourceDescription": "dead tree stump harvestable resource node full of wood, asset, gnarled bark, weathered wood",
+        "consumedSourceDescription": "depleted dead tree stump with no wood remaining, asset, bare stump, broken bark, empty husk",
+        "files": {
+            "original": "assets/images/nodes/nodes_t1_01_original.png",
+            "clean": "assets/images/nodes/nodes_t1_01_clean.png",
+            "consumed_original": "assets/images/nodes/nodes_t1_01_consumed_original.png",
+            "consumed_clean": "assets/images/nodes/nodes_t1_01_consumed_clean.png"
+        },
+        "consumedStatus": "approved",
+        "consumedDeclineNote": "test"
+    },
+    {
+        "id": "nodes_t2_01",
+        "name": "Iron Ore Deposit",
+        "tier": 2,
+        "nodeType": "mineral",
+        "resourceDrop": "iron_ore",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "clean",
+        "harvestCount": 5,
+        "respawnTime": 60,
+        "sourceDescription": "iron ore deposit rock formation full of ore, asset, rusty metallic veins, stone outcrop",
+        "consumedSourceDescription": "depleted iron ore deposit with mined out cavity, asset, empty rock shell, pickaxe marks, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/nodes_t2_01_original.png",
+            "clean": "assets/images/nodes/nodes_t2_01_clean.png",
+            "consumed_original": "assets/images/nodes/nodes_t2_01_consumed_original.png",
+            "consumed_clean": "assets/images/nodes/nodes_t2_01_consumed_clean.png"
+        }
+    },
+    {
+        "id": "nodes_t2_02",
+        "name": "Scrap Metal Pile",
+        "tier": 2,
+        "nodeType": "salvage",
+        "resourceDrop": "scrap_metal",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "clean",
+        "harvestCount": 4,
+        "respawnTime": 45,
+        "sourceDescription": "pile of scrap metal debris full of salvage, asset, rusted machinery parts, WWI tank wreckage",
+        "consumedSourceDescription": "depleted scrap metal pile picked clean of useful parts, asset, empty rust patches, broken frame, no salvage remaining",
+        "files": {
+            "original": "assets/images/nodes/nodes_t2_02_original.png",
+            "clean": "assets/images/nodes/nodes_t2_02_clean.png",
+            "consumed_original": "assets/images/nodes/nodes_t2_02_consumed_original.png",
+            "consumed_clean": "assets/images/nodes/nodes_t2_02_consumed_clean.png"
+        }
+    },
+    {
+        "id": "nodes_t3_01",
+        "name": "Tar Pit",
+        "tier": 3,
+        "nodeType": "fuel",
+        "resourceDrop": "fossil_fuel",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "clean",
+        "harvestCount": 3,
+        "respawnTime": 90,
+        "sourceDescription": "bubbling tar pit resource node full of fossil fuel, asset, black ooze, oily sheen, prehistoric swamp",
+        "consumedSourceDescription": "dried up tar pit with no fuel remaining, asset, cracked dried mud, empty depression, drained pool",
+        "files": {
+            "original": "assets/images/nodes/nodes_t3_01_original.png",
+            "clean": "assets/images/nodes/nodes_t3_01_clean.png",
+            "consumed_original": "assets/images/nodes/nodes_t3_01_consumed_original.png",
+            "consumed_clean": "assets/images/nodes/nodes_t3_01_consumed_clean.png"
+        }
+    },
+    {
+        "id": "nodes_t4_01",
+        "name": "Gold Vein",
+        "tier": 4,
+        "nodeType": "mineral",
+        "resourceDrop": "gold",
+        "biome": "tundra",
+        "rarity": "rare",
+        "status": "clean",
+        "harvestCount": 2,
+        "respawnTime": 120,
+        "sourceDescription": "gold ore vein in rock face full of gold, asset, glittering yellow metallic streaks, rare mineral",
+        "consumedSourceDescription": "mined out gold vein with empty cavity, asset, bare rock face, pickaxe marks, no gold remaining",
+        "files": {
+            "original": "assets/images/nodes/nodes_t4_01_original.png",
+            "clean": "assets/images/nodes/nodes_t4_01_clean.png",
+            "consumed_original": "assets/images/nodes/nodes_t4_01_consumed_original.png",
+            "consumed_clean": "assets/images/nodes/nodes_t4_01_consumed_clean.png"
+        },
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_acacia_tree",
+        "name": "Acacia Tree",
+        "tier": 3,
+        "nodeType": "wood",
+        "resourceDrop": "Acacia Wood",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "acacia tree, harvestable tree, full of wood, natural growth",
+        "consumedSourceDescription": "depleted acacia tree, bare stump, no wood remaining",
+        "files": {
+            "original": "assets/images/nodes/node_acacia_tree_original.png",
+            "consumed_original": "assets/images/nodes/node_acacia_tree_consumed_original.png"
+        },
+        "yields": [
+            "Acacia Wood"
+        ],
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_ash_pile",
+        "name": "Ash Pile",
+        "tier": 3,
+        "nodeType": "mineral",
+        "resourceDrop": "Ash",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "ash pile, resource deposit, minerals visible",
+        "consumedSourceDescription": "depleted ash pile, empty, picked clean",
+        "files": {
+            "original": "assets/images/nodes/node_ash_pile_original.png",
+            "consumed_original": "assets/images/nodes/node_ash_pile_consumed_original.png"
+        },
+        "yields": [
+            "Ash"
+        ],
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_ash_tree",
+        "name": "Ash Tree",
+        "tier": 2,
+        "nodeType": "wood",
+        "resourceDrop": "Ash Wood",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "ash tree, harvestable tree, full of wood, natural growth",
+        "consumedSourceDescription": "depleted ash tree, bare stump, no wood remaining",
+        "files": {
+            "original": "assets/images/nodes/node_ash_tree_original.png",
+            "consumed_original": "assets/images/nodes/node_ash_tree_consumed_original.png"
+        },
+        "yields": [
+            "Ash Wood"
+        ],
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_badlands_nest",
+        "name": "Badlands Nest",
+        "tier": 3,
+        "nodeType": "foraging",
+        "resourceDrop": "Smoked Rations",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "badlands nest, creature nest, resources visible",
+        "consumedSourceDescription": "empty badlands nest, ransacked, abandoned",
+        "files": {
+            "original": "assets/images/nodes/node_badlands_nest_original.png",
+            "consumed_original": "assets/images/nodes/node_badlands_nest_consumed_original.png"
+        },
+        "yields": [
+            "Smoked Rations"
+        ],
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_badlands_outcrop",
+        "name": "Badlands Outcrop",
+        "tier": 3,
+        "nodeType": "mineral",
+        "resourceDrop": "Black Rock",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "badlands outcrop, resource deposit, minerals visible",
+        "consumedSourceDescription": "depleted badlands outcrop, empty, picked clean",
+        "files": {
+            "original": "assets/images/nodes/node_badlands_outcrop_original.png",
+            "consumed_original": "assets/images/nodes/node_badlands_outcrop_consumed_original.png"
+        },
+        "yields": [
+            "Black Rock",
+            "Black Glass"
+        ],
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_berry_bush",
+        "name": "Berry Bush",
+        "tier": 1,
+        "nodeType": "food",
+        "resourceDrop": "Wild Berries",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "berry bush, foraging node, berries or fruit visible, natural vegetation",
+        "consumedSourceDescription": "depleted berry bush, bare branches, no berries remaining",
+        "files": {
+            "original": "assets/images/nodes/node_berry_bush_original.png",
+            "consumed_original": "assets/images/nodes/node_berry_bush_consumed_original.png"
+        },
+        "yields": [
+            "Wild Berries"
+        ],
+        "consumedStatus": "declined"
+    },
+    {
+        "id": "node_burrow_nest",
+        "name": "Burrow Nest",
+        "tier": 2,
+        "nodeType": "foraging",
+        "resourceDrop": "Sand Grub",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "burrow nest, creature nest, resources visible",
+        "consumedSourceDescription": "empty burrow nest, ransacked, abandoned",
+        "files": {
+            "original": "assets/images/nodes/node_burrow_nest_original.png"
+        },
+        "yields": [
+            "Sand Grub"
+        ]
+    },
+    {
+        "id": "node_carcass",
+        "name": "Carcass",
+        "tier": 2,
+        "nodeType": "salvage",
+        "resourceDrop": "Bone",
+        "biome": "all",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "carcass, animal remains, bones and materials visible",
+        "consumedSourceDescription": "stripped carcass, bare bones, nothing left",
+        "files": {
+            "original": "assets/images/nodes/node_carcass_original.png"
+        },
+        "yields": [
+            "Bone"
+        ]
+    },
+    {
+        "id": "node_coal_seam",
+        "name": "Coal Seam",
+        "tier": 2,
+        "nodeType": "mineral",
+        "resourceDrop": "Coal",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "coal seam, mining node, ore visible in rock, pickaxe marks",
+        "consumedSourceDescription": "depleted coal seam, mined out cavity, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/node_coal_seam_original.png"
+        },
+        "yields": [
+            "Coal"
+        ]
+    },
+    {
+        "id": "node_copper_vein",
+        "name": "Copper Vein",
+        "tier": 1,
+        "nodeType": "mineral",
+        "resourceDrop": "Copper Ore",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "copper vein, mining node, ore visible in rock, pickaxe marks",
+        "consumedSourceDescription": "depleted copper vein, mined out cavity, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/node_copper_vein_original.png"
+        },
+        "yields": [
+            "Copper Ore"
+        ]
+    },
+    {
+        "id": "node_deep_vein",
+        "name": "Deep Vein",
+        "tier": 4,
+        "nodeType": "mineral",
+        "resourceDrop": "Tungsten Ore",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 90,
+        "sourceDescription": "deep vein, mining node, ore visible in rock, pickaxe marks",
+        "consumedSourceDescription": "depleted deep vein, mined out cavity, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/node_deep_vein_original.png"
+        },
+        "yields": [
+            "Tungsten Ore"
+        ]
+    },
+    {
+        "id": "node_desert_cactus",
+        "name": "Desert Cactus",
+        "tier": 2,
+        "nodeType": "plant",
+        "resourceDrop": "Cactus Fruit",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "desert cactus, harvestable desert plant, fruit and spines",
+        "consumedSourceDescription": "harvested desert cactus, bare cactus, no fruit",
+        "files": {
+            "original": "assets/images/nodes/node_desert_cactus_original.png"
+        },
+        "yields": [
+            "Cactus Fruit",
+            "Cactus Spine"
+        ]
+    },
+    {
+        "id": "node_desert_remains",
+        "name": "Desert Remains",
+        "tier": 2,
+        "nodeType": "salvage",
+        "resourceDrop": "Sun-Bleached Bone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "desert remains, animal remains, bones and materials visible",
+        "consumedSourceDescription": "stripped desert remains, bare bones, nothing left",
+        "files": {
+            "original": "assets/images/nodes/node_desert_remains_original.png"
+        },
+        "yields": [
+            "Sun-Bleached Bone"
+        ]
+    },
+    {
+        "id": "node_desert_rock",
+        "name": "Desert Rock",
+        "tier": 2,
+        "nodeType": "mineral",
+        "resourceDrop": "Sandstone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "desert rock, rock formation, harvestable stone",
+        "consumedSourceDescription": "depleted desert rock, crumbled, nothing usable",
+        "files": {
+            "original": "assets/images/nodes/node_desert_rock_original.png"
+        },
+        "yields": [
+            "Sandstone"
+        ]
+    },
+    {
+        "id": "node_field_kitchen",
+        "name": "Field Kitchen",
+        "tier": 4,
+        "nodeType": "salvage",
+        "resourceDrop": "Iron Rations",
+        "biome": "all",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 5,
+        "respawnTime": 90,
+        "sourceDescription": "field kitchen, military supplies, WWI-era container",
+        "consumedSourceDescription": "empty field kitchen, looted, nothing remaining",
+        "files": {
+            "original": "assets/images/nodes/node_field_kitchen_original.png"
+        },
+        "yields": [
+            "Iron Rations"
+        ]
+    },
+    {
+        "id": "node_frozen_ground",
+        "name": "Frozen Ground",
+        "tier": 2,
+        "nodeType": "foraging",
+        "resourceDrop": "Root Vegetables",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "frozen ground, digging spot, disturbed earth, resources beneath",
+        "consumedSourceDescription": "dug out frozen ground, empty hole, no resources",
+        "files": {
+            "original": "assets/images/nodes/node_frozen_ground_original.png"
+        },
+        "yields": [
+            "Root Vegetables"
+        ]
+    },
+    {
+        "id": "node_ice_hole",
+        "name": "Ice Hole",
+        "tier": 2,
+        "nodeType": "fishing",
+        "resourceDrop": "Frozen Fish",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "ice hole, fishing spot, dark water, fish visible below",
+        "consumedSourceDescription": "depleted ice hole, murky water, no fish remaining",
+        "files": {
+            "original": "assets/images/nodes/node_ice_hole_original.png"
+        },
+        "yields": [
+            "Frozen Fish"
+        ]
+    },
+    {
+        "id": "node_iron_deposit",
+        "name": "Iron Deposit",
+        "tier": 2,
+        "nodeType": "mineral",
+        "resourceDrop": "Iron Ore",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "iron deposit, mining node, ore visible in rock, pickaxe marks",
+        "consumedSourceDescription": "depleted iron deposit, mined out cavity, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/node_iron_deposit_original.png"
+        },
+        "yields": [
+            "Iron Ore"
+        ]
+    },
+    {
+        "id": "node_ironwood_tree",
+        "name": "Ironwood Tree",
+        "tier": 4,
+        "nodeType": "wood",
+        "resourceDrop": "Ironwood",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 5,
+        "respawnTime": 90,
+        "sourceDescription": "ironwood tree, harvestable tree, full of wood, natural growth",
+        "consumedSourceDescription": "depleted ironwood tree, bare stump, no wood remaining",
+        "files": {
+            "original": "assets/images/nodes/node_ironwood_tree_original.png"
+        },
+        "yields": [
+            "Ironwood"
+        ]
+    },
+    {
+        "id": "node_oak_tree",
+        "name": "Oak Tree",
+        "tier": 1,
+        "nodeType": "wood",
+        "resourceDrop": "Oak Wood",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "oak tree, harvestable tree, full of wood, natural growth",
+        "consumedSourceDescription": "depleted oak tree, bare stump, no wood remaining",
+        "files": {
+            "original": "assets/images/nodes/node_oak_tree_original.png"
+        },
+        "yields": [
+            "Oak Wood"
+        ]
+    },
+    {
+        "id": "node_riverbank",
+        "name": "Riverbank",
+        "tier": 1,
+        "nodeType": "foraging",
+        "resourceDrop": "Red Clay",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "riverbank deposit, clay and sediment visible, muddy",
+        "consumedSourceDescription": "dug out riverbank, empty hole, no clay",
+        "files": {
+            "original": "assets/images/nodes/node_riverbank_original.png"
+        },
+        "yields": [
+            "Red Clay"
+        ]
+    },
+    {
+        "id": "node_salt_flat",
+        "name": "Salt Flat",
+        "tier": 2,
+        "nodeType": "mineral",
+        "resourceDrop": "Oasis Salt",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "salt flat, surface mineral deposit, salt crystals visible",
+        "consumedSourceDescription": "harvested salt flat, scraped clean",
+        "files": {
+            "original": "assets/images/nodes/node_salt_flat_original.png"
+        },
+        "yields": [
+            "Oasis Salt"
+        ]
+    },
+    {
+        "id": "node_salt_formation",
+        "name": "Salt Formation",
+        "tier": 2,
+        "nodeType": "mineral",
+        "resourceDrop": "Salt Crystal",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 60,
+        "sourceDescription": "salt formation, resource deposit, minerals visible",
+        "consumedSourceDescription": "depleted salt formation, empty, picked clean",
+        "files": {
+            "original": "assets/images/nodes/node_salt_formation_original.png"
+        },
+        "yields": [
+            "Salt Crystal"
+        ]
+    },
+    {
+        "id": "node_sandy_deposit",
+        "name": "Sandy Deposit",
+        "tier": 3,
+        "nodeType": "mineral",
+        "resourceDrop": "Gold Dust",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "sandy deposit, mining node, ore visible in rock, pickaxe marks",
+        "consumedSourceDescription": "depleted sandy deposit, mined out cavity, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/node_sandy_deposit_original.png"
+        },
+        "yields": [
+            "Gold Dust"
+        ]
+    },
+    {
+        "id": "node_silver_vein",
+        "name": "Silver Vein",
+        "tier": 3,
+        "nodeType": "mineral",
+        "resourceDrop": "Silver Ore",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "silver vein, mining node, ore visible in rock, pickaxe marks",
+        "consumedSourceDescription": "depleted silver vein, mined out cavity, no ore remaining",
+        "files": {
+            "original": "assets/images/nodes/node_silver_vein_original.png"
+        },
+        "yields": [
+            "Silver Ore"
+        ]
+    },
+    {
+        "id": "node_stone_pile",
+        "name": "Stone Pile",
+        "tier": 1,
+        "nodeType": "mineral",
+        "resourceDrop": "Rough Stone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "stone pile, resource deposit, minerals visible",
+        "consumedSourceDescription": "depleted stone pile, empty, picked clean",
+        "files": {
+            "original": "assets/images/nodes/node_stone_pile_original.png"
+        },
+        "yields": [
+            "Rough Stone"
+        ]
+    },
+    {
+        "id": "node_sulfur_vent",
+        "name": "Sulfur Vent",
+        "tier": 3,
+        "nodeType": "foraging",
+        "resourceDrop": "Sulfur",
+        "biome": "badlands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 5,
+        "respawnTime": 75,
+        "sourceDescription": "sulfur vent, resource node, harvestable",
+        "consumedSourceDescription": "depleted sulfur vent, empty, exhausted",
+        "files": {
+            "original": "assets/images/nodes/node_sulfur_vent_original.png"
+        },
+        "yields": [
+            "Sulfur"
+        ],
+        "declineNote": "no smoke"
+    },
+    {
+        "id": "node_tall_grass",
+        "name": "Tall Grass",
+        "tier": 1,
+        "nodeType": "plant",
+        "resourceDrop": "Plant Fiber",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "declined",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "tall grass, harvestable plant, ready for gathering",
+        "consumedSourceDescription": "harvested tall grass, cut stalks, regrowth needed",
+        "files": {
+            "original": "assets/images/nodes/node_tall_grass_original.png"
+        },
+        "yields": [
+            "Plant Fiber"
+        ]
+    },
+    {
+        "id": "node_wild_wheat",
+        "name": "Wild Wheat",
+        "tier": 1,
+        "nodeType": "plant",
+        "resourceDrop": "Wheat Grain",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "pending",
+        "harvestCount": 3,
+        "respawnTime": 45,
+        "sourceDescription": "wild wheat, harvestable plant, ready for gathering",
+        "consumedSourceDescription": "harvested wild wheat, cut stalks, regrowth needed",
+        "files": {
+            "original": "assets/images/nodes/node_wild_wheat_original.png"
+        },
+        "yields": [
+            "Wheat Grain"
+        ]
+    }
+]

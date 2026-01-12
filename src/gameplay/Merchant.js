@@ -46,23 +46,24 @@ class Merchant extends Entity {
 
     /**
      * Get the sprite asset ID based on zone theme
+     * Maps to numbered IDs: npc_merchant_01 through npc_merchant_08
      */
     getSpriteId() {
-        if (!this.islandName) return 'npc_merchant_cross';
+        if (!this.islandName) return 'npc_merchant_04'; // Default: Crossroads
         const name = this.islandName.toLowerCase();
 
-        let suffix = 'cross'; // Default
-        if (name.includes('home')) suffix = 'home';
-        else if (name.includes('quarry')) suffix = 'quarry';
-        else if (name.includes('iron')) suffix = 'iron';
-        else if (name.includes('dead')) suffix = 'dead';
-        else if (name.includes('cross')) suffix = 'cross';
-        else if (name.includes('scrap')) suffix = 'scrap';
-        else if (name.includes('mud')) suffix = 'mud';
-        else if (name.includes('bone')) suffix = 'bone';
-        else if (name.includes('ruins')) suffix = 'ruins';
+        // Biome to numbered ID mapping
+        if (name.includes('home')) return 'npc_merchant_04'; // No home merchant, use crossroads
+        else if (name.includes('quarry')) return 'npc_merchant_01';
+        else if (name.includes('iron')) return 'npc_merchant_02';
+        else if (name.includes('dead')) return 'npc_merchant_03';
+        else if (name.includes('cross')) return 'npc_merchant_04';
+        else if (name.includes('scrap')) return 'npc_merchant_05';
+        else if (name.includes('mud')) return 'npc_merchant_06';
+        else if (name.includes('bone')) return 'npc_merchant_07';
+        else if (name.includes('ruins')) return 'npc_merchant_08';
 
-        return `npc_merchant_${suffix}`;
+        return 'npc_merchant_04'; // Default: Crossroads
     }
 
     /**

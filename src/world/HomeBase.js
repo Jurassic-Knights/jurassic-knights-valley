@@ -59,8 +59,8 @@ const HomeBase = {
 
         // PERF: Cache image paths at init
         if (window.AssetLoader) {
-            this._outpostPath = AssetLoader.getImagePath('building_outpost');
-            this._forgePath = AssetLoader.getImagePath('building_forge');
+            this._outpostPath = AssetLoader.getImagePath('building_residential_01');
+            this._forgePath = AssetLoader.getImagePath('building_industrial_01');
             this._treePath = AssetLoader.getImagePath('world_wood');
             this._treeConsumedPath = AssetLoader.getImagePath('world_wood_consumed');
         }
@@ -146,8 +146,8 @@ const HomeBase = {
                 this._cachedHome = home;
                 this._cachedBounds = IslandManager.getPlayableBounds(home);
                 if (window.AssetLoader) {
-                    this._outpostPath = AssetLoader.getImagePath('building_outpost');
-                    this._forgePath = AssetLoader.getImagePath('building_forge');
+                    this._outpostPath = AssetLoader.getImagePath('building_residential_01');
+                    this._forgePath = AssetLoader.getImagePath('building_industrial_01');
                     this._treePath = AssetLoader.getImagePath('world_wood');
                     this._treeConsumedPath = AssetLoader.getImagePath('world_wood_consumed');
                 }

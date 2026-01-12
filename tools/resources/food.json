@@ -1,0 +1,170 @@
+[
+    {
+        "id": "food_t1_01",
+        "name": "Wild Berries",
+        "tier": 1,
+        "source": "Berry Bush",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "handful of wild berries, game pickup asset, red and purple berries, fresh natural food",
+        "files": {
+            "original": "assets/images/resources/food_t1_01_original.png"
+        }
+    },
+    {
+        "id": "food_t1_02",
+        "name": "Raw Meat",
+        "tier": 1,
+        "source": "Small Herbivores",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "raw meat cut steak, game pickup asset, bloody red raw meat, fresh kill",
+        "files": {
+            "original": "assets/images/resources/food_t1_02_original.png"
+        }
+    },
+    {
+        "id": "food_t1_03",
+        "name": "Wheat Grain",
+        "tier": 1,
+        "source": "Wild Wheat",
+        "location": "zone",
+        "biome": "grasslands",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "bundle of wheat grain stalks, game pickup asset, golden wheat sheaf, harvest food",
+        "files": {
+            "original": "assets/images/resources/food_t1_03_original.png"
+        }
+    },
+    {
+        "id": "food_t2_04",
+        "name": "Fatty Meat",
+        "tier": 2,
+        "source": "Large Herbivores",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "fatty meat cut with marbling, game pickup asset, thick red meat with white fat, quality meat",
+        "files": {
+            "original": "assets/images/resources/food_t2_04_original.png"
+        }
+    },
+    {
+        "id": "food_t2_05",
+        "name": "Frozen Fish",
+        "tier": 2,
+        "source": "Ice Hole",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "frozen fish, game pickup asset, icy blue-silver fish, tundra food",
+        "files": {
+            "original": "assets/images/resources/food_t2_05_original.png"
+        }
+    },
+    {
+        "id": "food_t2_06",
+        "name": "Root Vegetables",
+        "tier": 2,
+        "source": "Frozen Ground",
+        "location": "zone",
+        "biome": "tundra",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "root vegetables tubers, game pickup asset, brown potatoes and carrots, earthy food",
+        "files": {
+            "original": "assets/images/resources/food_t2_06_original.png"
+        }
+    },
+    {
+        "id": "food_t2_07",
+        "name": "Cactus Fruit",
+        "tier": 2,
+        "source": "Desert Cactus",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "prickly pear cactus fruit, game pickup asset, pink-red desert fruit, thorny",
+        "files": {
+            "original": "assets/images/resources/food_t2_07_original.png"
+        }
+    },
+    {
+        "id": "food_t2_08",
+        "name": "Sand Grub",
+        "tier": 2,
+        "source": "Burrow Nest",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "common",
+        "status": "approved",
+        "sourceDescription": "fat sand grub worm, game pickup asset, pale cream-colored larva, protein source",
+        "files": {
+            "original": "assets/images/resources/food_t2_08_original.png"
+        }
+    },
+    {
+        "id": "food_t3_09",
+        "name": "Dried Jerky",
+        "tier": 3,
+        "source": "Desert Herbivores",
+        "location": "zone",
+        "biome": "desert",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "dried meat jerky strips, game pickup asset, dark brown preserved meat, military rations",
+        "files": {
+            "original": "assets/images/resources/food_t3_09_original.png"
+        }
+    },
+    {
+        "id": "food_t3_10",
+        "name": "Charred Meat",
+        "tier": 3,
+        "source": "Badlands Creatures",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "charred meat with char marks, game pickup asset, dark brown fire-cooked meat, volcanic terrain food",
+        "files": {
+            "original": "assets/images/resources/food_t3_10_original.png"
+        }
+    },
+    {
+        "id": "food_t3_11",
+        "name": "Smoked Rations",
+        "tier": 3,
+        "source": "Badlands Nest",
+        "location": "zone",
+        "biome": "badlands",
+        "rarity": "uncommon",
+        "status": "approved",
+        "sourceDescription": "smoked military rations package, game pickup asset, preserved meat in wrapped bundle, long-lasting food",
+        "files": {
+            "original": "assets/images/resources/food_t3_11_original.png"
+        }
+    },
+    {
+        "id": "food_t4_12",
+        "name": "Iron Rations",
+        "tier": 4,
+        "source": "Field Kitchen",
+        "location": "biome",
+        "biome": "all",
+        "rarity": "rare",
+        "status": "approved",
+        "sourceDescription": "military iron rations tin and contents, game pickup asset, metal tin with preserved food, premium military supplies",
+        "files": {
+            "original": "assets/images/resources/food_t4_12_original.png"
+        }
+    }
+]

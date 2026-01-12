@@ -1,0 +1,378 @@
+[
+    {
+        "id": "arch_fence_grasslands",
+        "name": "Wooden Fence",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "weathered wooden fence post and rails, rustic farm style, moss-covered, aged timber",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_fence_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_fence_tundra",
+        "name": "Frozen Fence",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "frost-covered wooden fence, icicles hanging, snow-dusted rails, frozen post",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_fence_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_fence_desert",
+        "name": "Sandstone Fence",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "bleached wooden fence, sun-cracked posts, sand-worn rails, dried rope bindings",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_fence_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_fence_badlands",
+        "name": "Scrap Fence",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "rusted metal fence, salvaged sheet metal, barbed wire top, industrial debris",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_fence_badlands_original.png"
+        }
+    },
+    {
+        "id": "arch_road_grasslands",
+        "name": "Dirt Path",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "worn dirt path segment, wagon wheel ruts, grass edges, packed earth",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_road_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_road_tundra",
+        "name": "Frozen Trail",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "icy path segment, compacted snow, frost-covered stones, frozen puddles",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_road_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_road_desert",
+        "name": "Sand Trail",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "sandy path segment, wind-swept dunes, sun-baked stones, dried cracked earth",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_road_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_road_badlands",
+        "name": "Industrial Road",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "declined",
+        "sourceDescription": "cracked asphalt segment, oil stains, tank treads marks, rusted debris",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_road_badlands_original.png"
+        },
+        "declineNote": "no tank treads, no asphalt"
+    },
+    {
+        "id": "arch_wall_grasslands",
+        "name": "Stone Wall",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "stacked fieldstone wall, moss growth, aged mortar, low border wall",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_wall_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_wall_tundra",
+        "name": "Ice Wall",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "packed snow wall, ice block construction, frost-covered surface, frozen barrier",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_wall_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_wall_desert",
+        "name": "Adobe Wall",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "declined",
+        "sourceDescription": "sun-baked mud brick wall, crumbling edges, sand-weathered surface, ancient construction",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_wall_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_wall_badlands",
+        "name": "Fortified Wall",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "reinforced concrete wall, blast damage, bullet holes, barbed wire topping, military bunker style",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_wall_badlands_original.png"
+        }
+    },
+    {
+        "id": "arch_bridge_grasslands",
+        "name": "Wooden Bridge",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "rustic timber bridge, rope railings, worn planks, stone supports",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_bridge_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_bridge_tundra",
+        "name": "Ice Bridge",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "frozen ice bridge, reinforced timber, icicle formations, snow-covered deck",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_bridge_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_bridge_desert",
+        "name": "Stone Bridge",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "ancient sandstone bridge, weathered arch, sand-worn surface, crumbling edges",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_bridge_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_bridge_badlands",
+        "name": "Metal Bridge",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "rusted iron bridge, riveted plates, industrial construction, tank-crossing capable",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_bridge_badlands_original.png"
+        }
+    },
+    {
+        "id": "arch_gate_grasslands",
+        "name": "Farm Gate",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "wooden farm gate, iron hinges, weathered timber, simple latch",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_gate_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_gate_tundra",
+        "name": "Outpost Gate",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "heavy timber gate, reinforced with iron, fur-wrapped handles, frost-covered",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_gate_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_gate_desert",
+        "name": "Desert Gate",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "declined",
+        "sourceDescription": "carved sandstone gate arch, ancient inscriptions, sun-bleached surface",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_gate_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_gate_badlands",
+        "name": "Checkpoint Gate",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "military checkpoint barrier, steel gate, barbed wire, warning signs",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_gate_badlands_original.png"
+        }
+    },
+    {
+        "id": "arch_post_grasslands",
+        "name": "Signpost",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "wooden direction signpost, multiple arrow signs, weathered paint",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_post_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_post_tundra",
+        "name": "Trail Marker",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "tall trail marker post, red flag, snow-buried base, rope bindings",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_post_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_post_desert",
+        "name": "Obelisk Marker",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "declined",
+        "sourceDescription": "ancient stone obelisk, carved symbols, sun-bleached surface, sand-buried base",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_post_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_post_badlands",
+        "name": "Warning Post",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "declined",
+        "sourceDescription": "rusted metal warning post, radiation symbol, danger markings, industrial",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_post_badlands_original.png"
+        },
+        "declineNote": "no radiation"
+    },
+    {
+        "id": "arch_tower_grasslands",
+        "name": "Watchtower",
+        "type": "architecture",
+        "biome": "grasslands",
+        "status": "declined",
+        "sourceDescription": "wooden watchtower, platform with railing, ladder access, thatched roof",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_tower_grasslands_original.png"
+        }
+    },
+    {
+        "id": "arch_tower_tundra",
+        "name": "Outpost Tower",
+        "type": "architecture",
+        "biome": "tundra",
+        "status": "declined",
+        "sourceDescription": "fortified stone tower, snow-covered roof, arrow slits, signal fire platform",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_tower_tundra_original.png"
+        }
+    },
+    {
+        "id": "arch_tower_desert",
+        "name": "Minaret Tower",
+        "type": "architecture",
+        "biome": "desert",
+        "status": "declined",
+        "sourceDescription": "tall sandstone tower, domed top, weathered surface, ancient construction",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_tower_desert_original.png"
+        }
+    },
+    {
+        "id": "arch_tower_badlands",
+        "name": "Guard Tower",
+        "type": "architecture",
+        "biome": "badlands",
+        "status": "declined",
+        "sourceDescription": "concrete guard tower, searchlight mount, machine gun nest, military bunker",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_tower_badlands_original.png"
+        }
+    },
+    {
+        "id": "arch_fence_all",
+        "name": "Iron Fence",
+        "type": "architecture",
+        "biome": "all",
+        "status": "pending",
+        "sourceDescription": "wrought iron fence, spear-point tops, rusted patina, military standard",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_fence_all_original.png"
+        }
+    },
+    {
+        "id": "arch_road_cobble",
+        "name": "Cobblestone Road",
+        "type": "architecture",
+        "biome": "all",
+        "status": "pending",
+        "sourceDescription": "worn cobblestone path, mortar gaps, wagon-wheel grooves, medieval construction",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_road_cobble_original.png"
+        }
+    },
+    {
+        "id": "arch_barricade_all",
+        "name": "Wooden Barricade",
+        "type": "architecture",
+        "biome": "all",
+        "status": "pending",
+        "sourceDescription": "military wooden barricade, crossed timber, rope bindings, battlefield construction",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_barricade_all_original.png"
+        }
+    },
+    {
+        "id": "arch_trench_all",
+        "name": "Trench Segment",
+        "type": "architecture",
+        "biome": "all",
+        "status": "pending",
+        "sourceDescription": "WWI trench wall segment, wooden supports, sandbag reinforcement, mud texture",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_trench_all_original.png"
+        }
+    },
+    {
+        "id": "arch_railtrack_all",
+        "name": "Rail Track",
+        "type": "architecture",
+        "biome": "all",
+        "status": "pending",
+        "sourceDescription": "iron rail track segment, wooden sleepers, rusty rails, industrial railway",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_railtrack_all_original.png"
+        }
+    },
+    {
+        "id": "arch_ladder_all",
+        "name": "Wooden Ladder",
+        "type": "architecture",
+        "biome": "all",
+        "status": "pending",
+        "sourceDescription": "tall wooden ladder, rope bindings, worn rungs, military equipment",
+        "files": {
+            "original": "assets/images/environment/architecture/arch_ladder_all_original.png"
+        }
+    }
+]

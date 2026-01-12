@@ -117,16 +117,19 @@ class BossSystem {
             };
         }
 
-        // Fallback to positions in biome areas (world is ~7680x7680)
-        // Island grid is centered around ~2048 to ~5120, so biomes are outside
+        // Fallback to positions within Ironhaven (island grid area)
+        // Ironhaven is at offset (10000, 10000), islands ~2048 to 5120 inside that
+        const offsetX = window.GameConstants?.World?.IRONHAVEN_OFFSET_X || 10000;
+        const offsetY = window.GameConstants?.World?.IRONHAVEN_OFFSET_Y || 10000;
+
         const defaults = {
-            'grasslands': { x: 6000, y: 3000 },    // Far east (outside grid)
-            'tundra': { x: 3000, y: 6000 },        // Far south (outside grid)
-            'desert': { x: 6000, y: 6000 },        // Southeast corner
-            'lava_crags': { x: 1000, y: 1000 }     // Northwest corner (near home for testing)
+            'grasslands': { x: offsetX + 5500, y: offsetY + 3000 },    // Near east edge of Ironhaven
+            'tundra': { x: offsetX + 3000, y: offsetY + 5500 },        // Near south edge of Ironhaven
+            'desert': { x: offsetX + 5500, y: offsetY + 5500 },        // Southeast of Ironhaven
+            'lava_crags': { x: offsetX + 3000, y: offsetY + 3000 }     // Center of Ironhaven (for testing)
         };
 
-        return defaults[biomeId] || { x: 2000, y: 2000 };
+        return defaults[biomeId] || { x: offsetX + 3500, y: offsetY + 3500 };
     }
 
     /**

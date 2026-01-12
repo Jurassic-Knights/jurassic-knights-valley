@@ -1,0 +1,62 @@
+[
+    {
+        "id": "metal_t1_01",
+        "name": "Copper Ingot",
+        "tier": 1,
+        "category": "metal",
+        "recipe": "2x Copper Ore",
+        "fuelCost": 1,
+        "time": "15s",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "refined copper ingot bar, rusty orange-red copper color, gritty, weathered, industrial metal bar",
+        "files": {
+            "original": "assets/images/items/metal_t1_01_original.png"
+        }
+    },
+    {
+        "id": "metal_t2_02",
+        "name": "Iron Ingot",
+        "tier": 2,
+        "category": "metal",
+        "recipe": "2x Iron Ore + 1x Coal",
+        "fuelCost": 2,
+        "time": "20s",
+        "biome": "tundra",
+        "status": "approved",
+        "sourceDescription": "refined cast iron ingot bar, dark grey iron color, gritty, weathered, heavy industrial metal bar",
+        "files": {
+            "original": "assets/images/items/metal_t2_02_original.png"
+        }
+    },
+    {
+        "id": "metal_t3_03",
+        "name": "Steel Ingot",
+        "tier": 3,
+        "category": "metal",
+        "recipe": "2x Iron Ingot + 2x Coal",
+        "fuelCost": 4,
+        "time": "40s",
+        "biome": "desert",
+        "status": "approved",
+        "sourceDescription": "refined steel ingot bar, silvery grey polished steel color, gritty, weathered, high quality forged metal bar",
+        "files": {
+            "original": "assets/images/items/metal_t3_03_original.png"
+        }
+    },
+    {
+        "id": "metal_t4_04",
+        "name": "Hardened Steel",
+        "tier": 4,
+        "category": "metal",
+        "recipe": "2x Steel Ingot + 1x Tungsten Ore",
+        "fuelCost": 8,
+        "time": "60s",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "hardened steel alloy ingot bar, dark bluish-grey hardened steel with tempered finish, gritty, weathered, premium military-grade forged metal bar",
+        "files": {
+            "original": "assets/images/items/metal_t4_04_original.png"
+        }
+    }
+]

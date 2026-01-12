@@ -1,0 +1,262 @@
+{
+    "vfx": [
+        {
+            "id": "vfx_idle_npc_t1_01",
+            "entity": "npc_t1_01",
+            "name": "Quarry Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_01",
+            "entity": "npc_t1_01",
+            "name": "Quarry Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_02",
+            "entity": "npc_t1_02",
+            "name": "Iron Ridge Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_02",
+            "entity": "npc_t1_02",
+            "name": "Iron Ridge Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_03",
+            "entity": "npc_t1_03",
+            "name": "Dead Woods Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_03",
+            "entity": "npc_t1_03",
+            "name": "Dead Woods Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_04",
+            "entity": "npc_t1_04",
+            "name": "Crossroads Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_04",
+            "entity": "npc_t1_04",
+            "name": "Crossroads Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_05",
+            "entity": "npc_t1_05",
+            "name": "Scrap Yard Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_05",
+            "entity": "npc_t1_05",
+            "name": "Scrap Yard Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_06",
+            "entity": "npc_t1_06",
+            "name": "Mud Flats Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_06",
+            "entity": "npc_t1_06",
+            "name": "Mud Flats Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_07",
+            "entity": "npc_t1_07",
+            "name": "Bone Valley Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_07",
+            "entity": "npc_t1_07",
+            "name": "Bone Valley Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_idle_npc_t1_08",
+            "entity": "npc_t1_08",
+            "name": "Ruins Merchant",
+            "event": "idle",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_interact_npc_t1_08",
+            "entity": "npc_t1_08",
+            "name": "Ruins Merchant",
+            "event": "interact",
+            "assetType": "vfx",
+            "status": "pending"
+        }
+    ],
+    "sfx": [
+        {
+            "id": "sfx_greet_npc_t1_01",
+            "entity": "npc_t1_01",
+            "name": "Quarry Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_01",
+            "entity": "npc_t1_01",
+            "name": "Quarry Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_02",
+            "entity": "npc_t1_02",
+            "name": "Iron Ridge Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_02",
+            "entity": "npc_t1_02",
+            "name": "Iron Ridge Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_03",
+            "entity": "npc_t1_03",
+            "name": "Dead Woods Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_03",
+            "entity": "npc_t1_03",
+            "name": "Dead Woods Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_04",
+            "entity": "npc_t1_04",
+            "name": "Crossroads Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_04",
+            "entity": "npc_t1_04",
+            "name": "Crossroads Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_05",
+            "entity": "npc_t1_05",
+            "name": "Scrap Yard Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_05",
+            "entity": "npc_t1_05",
+            "name": "Scrap Yard Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_06",
+            "entity": "npc_t1_06",
+            "name": "Mud Flats Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_06",
+            "entity": "npc_t1_06",
+            "name": "Mud Flats Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_07",
+            "entity": "npc_t1_07",
+            "name": "Bone Valley Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_07",
+            "entity": "npc_t1_07",
+            "name": "Bone Valley Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_greet_npc_t1_08",
+            "entity": "npc_t1_08",
+            "name": "Ruins Merchant",
+            "event": "greet",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_trade_npc_t1_08",
+            "entity": "npc_t1_08",
+            "name": "Ruins Merchant",
+            "event": "trade",
+            "assetType": "sfx",
+            "status": "pending"
+        }
+    ]
+}

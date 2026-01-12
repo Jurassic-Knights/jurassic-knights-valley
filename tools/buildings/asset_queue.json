@@ -1,0 +1,102 @@
+{
+    "vfx": [
+        {
+            "id": "vfx_construct_building_t1_01",
+            "entity": "building_t1_01",
+            "name": "Forge",
+            "event": "construction",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_destroy_building_t1_01",
+            "entity": "building_t1_01",
+            "name": "Forge",
+            "event": "destruction",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_ambient_building_t1_01",
+            "entity": "building_t1_01",
+            "name": "Forge",
+            "event": "ambient",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_construct_building_t1_02",
+            "entity": "building_t1_02",
+            "name": "Outpost",
+            "event": "construction",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_destroy_building_t1_02",
+            "entity": "building_t1_02",
+            "name": "Outpost",
+            "event": "destruction",
+            "assetType": "vfx",
+            "status": "pending"
+        },
+        {
+            "id": "vfx_ambient_building_t1_02",
+            "entity": "building_t1_02",
+            "name": "Outpost",
+            "event": "ambient",
+            "assetType": "vfx",
+            "status": "pending"
+        }
+    ],
+    "sfx": [
+        {
+            "id": "sfx_construct_building_t1_01",
+            "entity": "building_t1_01",
+            "name": "Forge",
+            "event": "construction",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_destroy_building_t1_01",
+            "entity": "building_t1_01",
+            "name": "Forge",
+            "event": "destruction",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_ambient_building_t1_01",
+            "entity": "building_t1_01",
+            "name": "Forge",
+            "event": "ambient",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_construct_building_t1_02",
+            "entity": "building_t1_02",
+            "name": "Outpost",
+            "event": "construction",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_destroy_building_t1_02",
+            "entity": "building_t1_02",
+            "name": "Outpost",
+            "event": "destruction",
+            "assetType": "sfx",
+            "status": "pending"
+        },
+        {
+            "id": "sfx_ambient_building_t1_02",
+            "entity": "building_t1_02",
+            "name": "Outpost",
+            "event": "ambient",
+            "assetType": "sfx",
+            "status": "pending"
+        }
+    ]
+}

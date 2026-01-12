@@ -47,15 +47,17 @@ class EnvironmentRenderer {
 
 
         // Lighting Keyframes (Time 0.0 - 1.0)
+        // Synced with GameConstants.Time.PHASES: DAWN=0.05, DAY=0.15, DUSK=0.75, NIGHT=0.90
         // r, g, b: 0-255, a: 0-1
         this.lightingSchedule = [
             { time: 0.00, color: { r: 10, g: 10, b: 35 }, alpha: 0.85 },  // Midnight (Deep Blue)
-            { time: 0.15, color: { r: 10, g: 10, b: 35 }, alpha: 0.85 },  // Night Hold
-            { time: 0.20, color: { r: 255, g: 100, b: 50 }, alpha: 0.3 }, // Dawn (Orange)
-            { time: 0.25, color: { r: 255, g: 255, b: 255 }, alpha: 0.0 }, // Day Start (Clear)
+            { time: 0.05, color: { r: 10, g: 10, b: 35 }, alpha: 0.7 },   // Dawn Start (still dark)
+            { time: 0.10, color: { r: 255, g: 100, b: 50 }, alpha: 0.3 }, // Dawn (Orange sunrise)
+            { time: 0.15, color: { r: 255, g: 255, b: 255 }, alpha: 0.0 }, // Day Start (Clear)
             { time: 0.70, color: { r: 255, g: 255, b: 255 }, alpha: 0.0 }, // Day End
-            { time: 0.75, color: { r: 180, g: 100, b: 200 }, alpha: 0.3 }, // Dusk (Purple)
-            { time: 0.80, color: { r: 10, g: 10, b: 35 }, alpha: 0.8 },   // Night Start
+            { time: 0.75, color: { r: 180, g: 100, b: 200 }, alpha: 0.25 }, // Dusk Start (Purple)
+            { time: 0.85, color: { r: 100, g: 50, b: 150 }, alpha: 0.5 },  // Dusk End (Deeper purple)
+            { time: 0.90, color: { r: 10, g: 10, b: 35 }, alpha: 0.75 },  // Night Start
             { time: 1.00, color: { r: 10, g: 10, b: 35 }, alpha: 0.85 }   // Loop to Midnight
         ];
 
