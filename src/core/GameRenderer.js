@@ -229,83 +229,34 @@ const GameRenderer = {
     },
 
     /**
-     * Render the composite shadow pass
-     * Set simpleShadows = true for performance (simple ellipses instead of sprite shadows)
+     * Render the composite shadow pass (delegates to ShadowRenderer)
      */
-    simpleShadows: false, // Use complex sprite shadows
+    simpleShadows: false,
 
     renderShadowPass(entities) {
-        if (!this.ctx || !window.EnvironmentRenderer) return;
-
-        // PERFORMANCE MODE: Simple ellipse shadows (much faster)
-        if (this.simpleShadows) {
-            this.renderSimpleShadows(entities);
-            return;
+        if (window.ShadowRenderer) {
+            ShadowRenderer.simpleShadows = this.simpleShadows;
+            ShadowRenderer.renderShadowPass(
+                this.ctx,
+                entities,
+                this.viewport,
+                {
+                    heroRenderer: this._heroRenderer,
+                    dinosaurRenderer: this._dinosaurRenderer,
+                    resourceRenderer: this._resourceRenderer
+                },
+                this._renderTiming
+            );
         }
-
-        const timing = this._renderTiming;
-        let tSub;
-
-        // PERF: Render shadows directly to main canvas instead of intermediate
-        // This avoids the expensive 18ms+ drawImage composite step
-        this.ctx.save();
-        this.ctx.translate(-this.viewport.x, -this.viewport.y);
-        this.ctx.globalAlpha = window.EnvironmentRenderer.shadowAlpha || 0.3;
-
-        // Render Opaque Shadows - Use cached refs
-        const heroRenderer = this._heroRenderer;
-        const dinosaurRenderer = this._dinosaurRenderer;
-        const resourceRenderer = this._resourceRenderer;
-
-        for (const entity of entities) {
-            if (timing) tSub = performance.now();
-
-            if (entity === this.hero) {
-                if (heroRenderer) heroRenderer.drawShadow(this.ctx, entity, false);
-                if (timing) { timing.shadowHero = (timing.shadowHero || 0) + performance.now() - tSub; }
-            } else if (entity.entityType === EntityTypes.DINOSAUR) {
-                if (dinosaurRenderer) dinosaurRenderer.renderShadow(this.ctx, entity, false);
-                if (timing) { timing.shadowDino = (timing.shadowDino || 0) + performance.now() - tSub; }
-            } else if (entity.entityType === EntityTypes.RESOURCE) {
-                if (resourceRenderer) resourceRenderer.renderShadow(this.ctx, entity, false);
-                if (timing) { timing.shadowRes = (timing.shadowRes || 0) + performance.now() - tSub; }
-            } else if (entity.entityType === EntityTypes.MERCHANT) {
-                if (typeof entity.drawShadow === 'function') entity.drawShadow(this.ctx, false);
-                if (timing) { timing.shadowMerch = (timing.shadowMerch || 0) + performance.now() - tSub; }
-            } else {
-                if (typeof entity.drawShadow === 'function') entity.drawShadow(this.ctx, false);
-                if (timing) { timing.shadowOther = (timing.shadowOther || 0) + performance.now() - tSub; }
-            }
-        }
-
-        this.ctx.restore();
-        // No composite step needed - shadows rendered directly!
     },
 
     /**
-     * Fast simple ellipse shadows (performance mode)
+     * Fast simple ellipse shadows (delegates to ShadowRenderer)
      */
     renderSimpleShadows(entities) {
-        const alpha = window.EnvironmentRenderer?.shadowAlpha || 0.3;
-
-        this.ctx.save();
-        this.ctx.translate(-this.viewport.x, -this.viewport.y);
-        this.ctx.fillStyle = 'rgba(0, 0, 0, ' + alpha + ')';
-
-        for (const entity of entities) {
-            const w = entity.width || 64;
-            const h = entity.height || 64;
-            const shadowW = w * 0.4;
-            const shadowH = h * 0.15;
-            const x = entity.x;
-            const y = entity.y + h * 0.4; // At feet
-
-            this.ctx.beginPath();
-            this.ctx.ellipse(x, y, shadowW, shadowH, 0, 0, Math.PI * 2);
-            this.ctx.fill();
+        if (window.ShadowRenderer) {
+            ShadowRenderer.renderSimpleShadows(this.ctx, entities, this.viewport);
         }
-
-        this.ctx.restore();
     },
 
     /**
