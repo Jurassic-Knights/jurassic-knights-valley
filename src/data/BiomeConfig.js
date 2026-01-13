@@ -1,10 +1,10 @@
 /**
  * BiomeConfig - Biome Type Definitions
  * 
- * REFACTOR NOTICE: Prop/Foliage configs moved to PropConfig.js
- * 
  * Contains open world biome definitions, difficulty multipliers,
  * and enemy spawning rules.
+ * 
+ * @see PropConfig.js for prop spawning and decoration config
  */
 
 const BiomeConfig = {
@@ -114,13 +114,7 @@ const BiomeConfig = {
     transitionZones: {
         blendWidth: 200,
         mixedSpawnChance: 0.3
-    },
-
-    // Backward compatibility aliases
-    get FOLIAGE_MAP() { return (window.PropConfig || {}).FOLIAGE_MAP || {}; },
-    get ITEM_MAP() { return (window.PropConfig || {}).ITEM_MAP || {}; },
-    get MERCHANT() { return (window.PropConfig || {}).MERCHANT || {}; },
-    get PROPS() { return (window.PropConfig || {}).SPAWN || {}; }
+    }
 };
 
 window.BiomeConfig = BiomeConfig;

@@ -10,8 +10,6 @@
  * REMAINING SECTIONS:
  * - droppedItem: Dropped item defaults
  * - npc: NPC defaults
- * 
- * @see EnemyConfig.js, LootTableConfig.js, BossConfig.js
  */
 
 const EntityConfig = {
@@ -41,23 +39,11 @@ const EntityConfig = {
                 color: '#8E44AD'
             }
         }
-    },
-
-    // ============================================
-    // BACKWARD COMPATIBILITY ALIASES
-    // Reference new configs for systems that haven't migrated
-    // ============================================
-    get enemy() { return window.EnemyConfig || {}; },
-    get lootTables() { return window.LootTableConfig || {}; },
-    get boss() { return window.BossConfig || {}; }
+    }
 };
 
 window.EntityConfig = EntityConfig;
 
 if (window.Registry) {
     Registry.register('EntityConfig', EntityConfig);
-} else {
-    window.addEventListener('load', () => {
-        if (window.Registry) Registry.register('EntityConfig', EntityConfig);
-    });
 }
