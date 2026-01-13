@@ -27,7 +27,7 @@ const ResponsiveManager = {
         this.detect();
         window.addEventListener('resize', () => this.onResize());
         window.addEventListener('orientationchange', () => this.onResize());
-        console.log(`[ResponsiveManager] Initialized: ${this.currentFormat} (${this.currentOrientation})`);
+        Logger.info(`[ResponsiveManager] Initialized: ${this.currentFormat} (${this.currentOrientation})`);
     },
 
     /**

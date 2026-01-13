@@ -26,7 +26,7 @@ class MinimapSystem {
         // View radius at zoom 1 (how much world to show)
         this.baseViewRadius = 3000; // pixels of world radius to show
 
-        console.log('[MinimapSystem] Constructed');
+        Logger.info('[MinimapSystem] Constructed');
     }
 
     init(game) {
@@ -58,7 +58,7 @@ class MinimapSystem {
         // Create zoom controls
         this.createZoomControls();
 
-        console.log('[MinimapSystem] Initialized');
+        Logger.info('[MinimapSystem] Initialized');
     }
 
     createZoomControls() {

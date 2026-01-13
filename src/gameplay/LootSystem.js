@@ -21,7 +21,7 @@ const LootSystem = {
     init(game) {
         this.game = game;
         this.initListeners();
-        console.log('[LootSystem] Initialized');
+        Logger.info('[LootSystem] Initialized');
     },
 
     /**
@@ -54,7 +54,7 @@ const LootSystem = {
         // Spawn the drops at enemy position
         if (drops.length > 0) {
             this.spawnDrops(enemy.x, enemy.y, drops);
-            console.log(`[LootSystem] Dropped ${drops.length} items from ${tableId}`);
+            Logger.info(`[LootSystem] Dropped ${drops.length} items from ${tableId}`);
         }
     },
 
@@ -68,7 +68,7 @@ const LootSystem = {
     generateLoot(tableId, level = 1, lootMultiplier = 1) {
         const table = window.EntityConfig?.lootTables?.[tableId];
         if (!table) {
-            console.warn(`[LootSystem] Unknown loot table: ${tableId}`);
+            Logger.warn(`[LootSystem] Unknown loot table: ${tableId}`);
             return [];
         }
 
@@ -134,7 +134,7 @@ const LootSystem = {
      */
     spawnDrops(x, y, drops) {
         if (!window.SpawnManager) {
-            console.warn('[LootSystem] SpawnManager not found');
+            Logger.warn('[LootSystem] SpawnManager not found');
             return;
         }
 

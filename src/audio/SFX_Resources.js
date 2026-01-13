@@ -176,6 +176,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_Resources] Registered 17 sounds');
+        Logger.info('[SFX_Resources] Registered 17 sounds');
     }
 })();

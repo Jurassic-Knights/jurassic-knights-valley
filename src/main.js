@@ -6,7 +6,7 @@
  */
 
 (async function main() {
-    console.log('=== Jurassic Knights: Valley ===');
+    Logger.info('=== Jurassic Knights: Valley ===');
 
     try {
         // Initialize and start the game
@@ -25,7 +25,7 @@
             throw new Error('Game initialization failed');
         }
     } catch (error) {
-        console.error('[FATAL]', error);
+        Logger.error('[FATAL]', error);
 
         // Show error screen
         const app = document.getElementById('app');

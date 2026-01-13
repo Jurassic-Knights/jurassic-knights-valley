@@ -4,7 +4,7 @@
  */
 class DinosaurRendererService {
     constructor() {
-        console.log('[DinosaurRenderer] Initialized');
+        Logger.info('[DinosaurRenderer] Initialized');
     }
 
     render(ctx, dino, includeShadow = true) {

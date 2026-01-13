@@ -901,6 +901,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_Dinosaurs] Registered 80 high-fidelity sounds (16 dinosaurs × 5)');
+        Logger.info('[SFX_Dinosaurs] Registered 80 high-fidelity sounds (16 dinosaurs × 5)');
     }
 })();

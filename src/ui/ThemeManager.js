@@ -73,9 +73,9 @@ class ThemeManagerService {
                 const locals = JSON.parse(saved);
                 // Deep merge or simple assign
                 config = { ...config, ...locals };
-                console.log('[ThemeManager] Loaded local overrides');
+                Logger.info('[ThemeManager] Loaded local overrides');
             } catch (e) {
-                console.warn('[ThemeManager] Corrupt local storage', e);
+                Logger.warn('[ThemeManager] Corrupt local storage', e);
             }
         }
 

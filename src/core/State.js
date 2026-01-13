@@ -18,7 +18,7 @@ class State {
         // Try to load from localStorage
         const saved = this.load();
         this.data = saved ? { ...defaults, ...saved } : { ...defaults };
-        console.log('[State] Initialized');
+        Logger.info('[State] Initialized');
     }
 
     /**
@@ -82,7 +82,7 @@ class State {
         try {
             localStorage.setItem(this.saveKey, JSON.stringify(this.data));
         } catch (e) {
-            console.error('[State] Save failed:', e);
+            Logger.error('[State] Save failed:', e);
         }
     }
 
@@ -94,7 +94,7 @@ class State {
             const saved = localStorage.getItem(this.saveKey);
             return saved ? JSON.parse(saved) : null;
         } catch (e) {
-            console.error('[State] Load failed:', e);
+            Logger.error('[State] Load failed:', e);
             return null;
         }
     }

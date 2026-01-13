@@ -9,7 +9,7 @@ class WorldRenderer {
         this.backgroundPattern = null;
         this._zoneImages = {};
         this._fogPattern = null;
-        console.log('[WorldRenderer] Constructed');
+        Logger.info('[WorldRenderer] Constructed');
     }
 
     init(game) {
@@ -22,7 +22,7 @@ class WorldRenderer {
         // PERF: Pre-load all zone images at init time
         this._preloadZoneImages();
 
-        console.log('[WorldRenderer] Initialized');
+        Logger.info('[WorldRenderer] Initialized');
     }
 
     /**
@@ -61,7 +61,7 @@ class WorldRenderer {
             }
         }
 
-        console.log(`[WorldRenderer] Pre-loaded ${Object.keys(this._zoneImages).length} zone images`);
+        Logger.info(`[WorldRenderer] Pre-loaded ${Object.keys(this._zoneImages).length} zone images`);
     }
 
     /**

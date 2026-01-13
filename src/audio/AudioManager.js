@@ -25,7 +25,7 @@ const AudioManager = {
             });
         }
 
-        console.log('[AudioManager] Waiting for user interaction...');
+        Logger.info('[AudioManager] Waiting for user interaction...');
     },
 
     warmUp() {
@@ -61,9 +61,9 @@ const AudioManager = {
             }
 
             this.initialized = true;
-            console.log('[AudioManager] Initialized with ProceduralSFX');
+            Logger.info('[AudioManager] Initialized with ProceduralSFX');
         } catch (e) {
-            console.error('[AudioManager] Failed to initialize:', e);
+            Logger.error('[AudioManager] Failed to initialize:', e);
         }
     },
 
@@ -94,7 +94,7 @@ const AudioManager = {
         const config = AssetLoader.getAudio(id);
         if (!config) return;
 
-        console.log(`[AudioManager] Play BGM: ${id}`);
+        Logger.info(`[AudioManager] Play BGM: ${id}`);
     },
 
     /**

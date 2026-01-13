@@ -56,7 +56,7 @@ const GameRenderer = {
         this.game = game;
         this.canvas = document.getElementById('game-canvas');
         if (!this.canvas) {
-            console.error('[GameRenderer] Canvas not found');
+            Logger.error('[GameRenderer] Canvas not found');
             return false;
         }
 
@@ -98,7 +98,7 @@ const GameRenderer = {
         this._fogSystem = this.game.getSystem('FogOfWarSystem');
         this._envRenderer = this.game.getSystem('EnvironmentRenderer');
 
-        console.log('[GameRenderer] Initialized');
+        Logger.info('[GameRenderer] Initialized');
         return true;
     },
 
@@ -138,7 +138,7 @@ const GameRenderer = {
         this.resize();
         // Force re-render to clear artifacts immediately
         if (this.ctx) this.render();
-        console.log(`[GameRenderer] Viewport Updated: ${Math.floor(this.viewport.width)}x${Math.floor(this.viewport.height)} (Container: ${containerWidth}x${containerHeight})`);
+        Logger.info(`[GameRenderer] Viewport Updated: ${Math.floor(this.viewport.width)}x${Math.floor(this.viewport.height)} (Container: ${containerWidth}x${containerHeight})`);
     },
 
     /**
@@ -536,7 +536,7 @@ const GameRenderer = {
      */
     toggleDebug() {
         this.debugMode = !this.debugMode;
-        console.log(`[GameRenderer] Debug mode: ${this.debugMode}`);
+        Logger.info(`[GameRenderer] Debug mode: ${this.debugMode}`);
         return this.debugMode;
     },
 
@@ -545,7 +545,7 @@ const GameRenderer = {
      */
     toggleGrid() {
         this.gridMode = !this.gridMode;
-        console.log(`[GameRenderer] Grid mode: ${this.gridMode}`);
+        Logger.info(`[GameRenderer] Grid mode: ${this.gridMode}`);
         return this.gridMode;
     },
 

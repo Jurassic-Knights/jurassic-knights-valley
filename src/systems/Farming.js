@@ -19,7 +19,7 @@ const Farming = {
         const cropDef = CropsData?.[cropId];
 
         if (!cropDef) {
-            console.warn(`[Farming] Unknown crop: ${cropId}`);
+            Logger.warn(`[Farming] Unknown crop: ${cropId}`);
             return false;
         }
 
@@ -32,7 +32,7 @@ const Farming = {
             plantedDay: GameState?.get('day') || 0
         });
 
-        console.log(`[Farming] Planted ${cropId} at ${x},${y}`);
+        Logger.info(`[Farming] Planted ${cropId} at ${x},${y}`);
         return true;
     },
 

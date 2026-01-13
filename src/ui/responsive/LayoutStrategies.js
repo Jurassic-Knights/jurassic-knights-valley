@@ -10,11 +10,11 @@ class BaseLayout {
     }
 
     enter() {
-        console.log(`[LayoutStrategy] Entering ${this.constructor.name}`);
+        Logger.info(`[LayoutStrategy] Entering ${this.constructor.name}`);
     }
 
     exit() {
-        console.log(`[LayoutStrategy] Exiting ${this.constructor.name}`);
+        Logger.info(`[LayoutStrategy] Exiting ${this.constructor.name}`);
     }
 
     // Default implementation: do nothing

@@ -18,9 +18,9 @@ const DialogueSystem = {
             const response = await fetch('assets/dialogue/dialogues.json');
             const data = await response.json();
             this.dialogues = data.dialogues || {};
-            console.log('[DialogueSystem] Initialized');
+            Logger.info('[DialogueSystem] Initialized');
         } catch (error) {
-            console.error('[DialogueSystem] Failed to load dialogues:', error);
+            Logger.error('[DialogueSystem] Failed to load dialogues:', error);
         }
     },
 
@@ -31,7 +31,7 @@ const DialogueSystem = {
     start(dialogueId) {
         const dialogue = this.dialogues[dialogueId];
         if (!dialogue) {
-            console.warn(`[DialogueSystem] Dialogue not found: ${dialogueId}`);
+            Logger.warn(`[DialogueSystem] Dialogue not found: ${dialogueId}`);
             return false;
         }
 

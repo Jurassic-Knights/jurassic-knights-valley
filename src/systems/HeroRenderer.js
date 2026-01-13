@@ -6,7 +6,7 @@
  */
 class HeroRendererSystem {
     constructor() {
-        console.log('[HeroRenderer] Initialized');
+        Logger.info('[HeroRenderer] Initialized');
     }
 
     /**

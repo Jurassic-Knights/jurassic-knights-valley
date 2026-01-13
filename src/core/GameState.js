@@ -16,7 +16,7 @@ class GameState {
 
         // Ensure global access
         window.GameState = this;
-        console.log('[GameState] Initialized');
+        Logger.info('[GameState] Initialized');
 
         if (window.Registry) Registry.register('GameState', this);
     }
@@ -41,7 +41,7 @@ class GameState {
         };
 
         this.data = { ...this.data, ...defaults };
-        console.log('[GameState] State initialized. Gold:', this.data.gold);
+        Logger.info('[GameState] State initialized. Gold:', this.data.gold);
 
         // Sync back to hero if needed? Or assume Hero is source of truth for some things?
         // For now, simple merge.

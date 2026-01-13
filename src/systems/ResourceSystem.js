@@ -4,7 +4,7 @@
  */
 class ResourceSystem {
     constructor() {
-        console.log('[ResourceSystem] Initialized');
+        Logger.info('[ResourceSystem] Initialized');
     }
 
     init(game) {

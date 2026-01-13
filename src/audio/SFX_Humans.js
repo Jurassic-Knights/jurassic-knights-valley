@@ -419,6 +419,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_Humans] Registered 60 high-fidelity sounds (12 humans × 5)');
+        Logger.info('[SFX_Humans] Registered 60 high-fidelity sounds (12 humans × 5)');
     }
 })();

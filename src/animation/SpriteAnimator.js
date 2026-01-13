@@ -17,9 +17,9 @@ const SpriteAnimator = {
             const response = await fetch('assets/registry/animations.json');
             const data = await response.json();
             this.animations = data.animations || {};
-            console.log('[SpriteAnimator] Initialized');
+            Logger.info('[SpriteAnimator] Initialized');
         } catch (error) {
-            console.warn('[SpriteAnimator] No animation registry found');
+            Logger.warn('[SpriteAnimator] No animation registry found');
         }
     },
 
@@ -38,7 +38,7 @@ const SpriteAnimator = {
     play(entityId, animId) {
         const anim = this.getAnimation(animId);
         if (!anim) {
-            console.warn(`[SpriteAnimator] Animation not found: ${animId}`);
+            Logger.warn(`[SpriteAnimator] Animation not found: ${animId}`);
             return null;
         }
 

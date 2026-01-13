@@ -43,7 +43,7 @@ const InputManager = {
             this.initJoystick();
         }
 
-        console.log(`[InputManager] Initialized (Mobile: ${this.isMobile})`);
+        Logger.info(`[InputManager] Initialized (Mobile: ${this.isMobile})`);
     },
 
     /**
@@ -55,7 +55,7 @@ const InputManager = {
         const joystickKnob = document.getElementById('joystick-knob');
 
         if (!joystickArea) {
-            console.warn('[InputManager] Joystick elements not found');
+            Logger.warn('[InputManager] Joystick elements not found');
             return;
         }
 

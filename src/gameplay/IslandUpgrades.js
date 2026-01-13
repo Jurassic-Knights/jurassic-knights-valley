@@ -42,7 +42,7 @@ const IslandUpgrades = {
                 respawnTime: { level: 1, max: this.caps.respawnTime }        // Start with 1
             };
         }
-        console.log(`[IslandUpgrades] Initialized ${Object.keys(this.islands).length} islands`);
+        Logger.info(`[IslandUpgrades] Initialized ${Object.keys(this.islands).length} islands`);
     },
 
     /**
@@ -99,8 +99,8 @@ const IslandUpgrades = {
         if (!upgrade || upgrade.level >= upgrade.max) return false;
 
         upgrade.level++;
-        console.log(`[IslandUpgrades] ${island.name} ${type} upgraded to level ${upgrade.level} (Max: ${upgrade.max})`);
-        console.log(`[IslandUpgrades] New state:`, JSON.stringify(upgrade));
+        Logger.info(`[IslandUpgrades] ${island.name} ${type} upgraded to level ${upgrade.level} (Max: ${upgrade.max})`);
+        Logger.info(`[IslandUpgrades] New state:`, JSON.stringify(upgrade));
         return true;
     },
 

@@ -50,7 +50,7 @@ const PlatformManager = {
         this.currentMode = isTouchDevice ? this.MODES.MOBILE : this.MODES.PC;
 
         this.applyMode();
-        console.log(`[PlatformManager] Initialized: ${this.currentMode} (auto-detected)`);
+        Logger.info(`[PlatformManager] Initialized: ${this.currentMode} (auto-detected)`);
 
         // Force mobile mode per user request
         this.setMode(this.MODES.MOBILE);
@@ -62,7 +62,7 @@ const PlatformManager = {
      */
     setMode(mode) {
         if (mode !== this.MODES.MOBILE && mode !== this.MODES.PC) {
-            console.error(`[PlatformManager] Invalid mode: ${mode}`);
+            Logger.error(`[PlatformManager] Invalid mode: ${mode}`);
             return;
         }
 
@@ -75,7 +75,7 @@ const PlatformManager = {
             this.emit('modechange', this.getConfig());
         }
 
-        console.log(`[PlatformManager] Mode set to: ${mode} (manual)`);
+        Logger.info(`[PlatformManager] Mode set to: ${mode} (manual)`);
     },
 
     /**

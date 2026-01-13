@@ -48,7 +48,7 @@ class TextureAlignerService {
         if (window.UI_MANIFEST) {
             this.availableImages = window.UI_MANIFEST;
         } else {
-            console.warn('UI_MANIFEST missing, using fallback');
+            Logger.warn('UI_MANIFEST missing, using fallback');
             this.availableImages = ['ui_footer_dashboard.png'];
         }
 
@@ -224,7 +224,7 @@ class TextureAlignerService {
 
             alert(`Connected to ${handle.name}. Click 'SAVE TO DISK' to overwrite.`);
         } catch (err) {
-            console.warn('File access denied:', err);
+            Logger.warn('File access denied:', err);
         }
     }
 
@@ -240,7 +240,7 @@ class TextureAlignerService {
             await writable.close();
             // alert('Saved to ui_theme.js successfully!'); // Silent save is better for rapid tweaks
         } catch (err) {
-            console.error('Save failed:', err);
+            Logger.error('Save failed:', err);
             alert('Save failed (see console).');
         }
     }

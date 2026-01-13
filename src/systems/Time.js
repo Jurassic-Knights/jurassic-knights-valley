@@ -21,7 +21,7 @@ class TimeSystem {
         this.SEASONS = ['spring', 'summer', 'fall', 'winter'];
 
         this.initialized = false;
-        console.log('[TimeSystem] Constructed');
+        Logger.info('[TimeSystem] Constructed');
     }
 
     /**
@@ -38,7 +38,7 @@ class TimeSystem {
             });
         }
         this.initialized = true;
-        console.log('[TimeSystem] Initialized');
+        Logger.info('[TimeSystem] Initialized');
     }
 
     /**
@@ -122,17 +122,17 @@ class TimeSystem {
 
     // Event callbacks (override or subscribe)
     onNewDay() {
-        console.log('[TimeSystem] New day');
+        Logger.info('[TimeSystem] New day');
         // Trigger daily updates
         if (window.Farming) Farming.updateDaily();
     }
 
     onNewSeason() {
-        console.log('[TimeSystem] New season:', this.getSeason());
+        Logger.info('[TimeSystem] New season:', this.getSeason());
     }
 
     onNewYear() {
-        console.log('[TimeSystem] New year:', GameState.get('year'));
+        Logger.info('[TimeSystem] New year:', GameState.get('year'));
     }
 }
 

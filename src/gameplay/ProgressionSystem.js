@@ -8,7 +8,7 @@ const ProgressionSystem = {
     init(game) {
         this.game = game;
         this.initListeners();
-        console.log('[ProgressionSystem] Initialized');
+        Logger.info('[ProgressionSystem] Initialized');
     },
 
     initListeners() {
@@ -111,7 +111,7 @@ const ProgressionSystem = {
             AudioManager.playSFX('sfx_level_up');
         }
 
-        console.log(`[ProgressionSystem] Hero leveled up to ${newLevel}!`);
+        Logger.info(`[ProgressionSystem] Hero leveled up to ${newLevel}!`);
     },
 
     /**

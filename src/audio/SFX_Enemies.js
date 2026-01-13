@@ -168,6 +168,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_Enemies] Registered 11 sounds');
+        Logger.info('[SFX_Enemies] Registered 11 sounds');
     }
 })();

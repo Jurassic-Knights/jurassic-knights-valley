@@ -59,7 +59,7 @@ const CraftingManager = {
             this.unlockedSlots = window.GameState.get('forge_unlocked_slots') || 1;
         }
         this.initializeSlots();
-        console.log(`[CraftingManager] Initialized with ${this.unlockedSlots} slots`);
+        Logger.info(`[CraftingManager] Initialized with ${this.unlockedSlots} slots`);
     },
 
     initializeSlots() {
@@ -113,7 +113,7 @@ const CraftingManager = {
         const slot = this.slots[slotId];
         if (slot) slot.unlocked = true;
 
-        console.log(`[Crafting] Unlocked Slot ${slotId}`);
+        Logger.info(`[Crafting] Unlocked Slot ${slotId}`);
         return true;
     },
 
@@ -126,27 +126,27 @@ const CraftingManager = {
     startCrafting(slotId, recipeId, quantity) {
         const slot = this.slots[slotId];
         if (!slot) {
-            console.error(`[Crafting] Invalid slot ${slotId}`);
+            Logger.error(`[Crafting] Invalid slot ${slotId}`);
             return false;
         }
         if (!slot.unlocked) {
-            console.error(`[Crafting] Slot ${slotId} is locked`);
+            Logger.error(`[Crafting] Slot ${slotId} is locked`);
             return false;
         }
         if (slot.status !== 'idle') {
-            console.error(`[Crafting] Slot ${slotId} is busy: ${slot.status}`);
+            Logger.error(`[Crafting] Slot ${slotId} is busy: ${slot.status}`);
             return false;
         }
 
         const recipe = this.getRecipe(recipeId);
         if (!recipe) {
-            console.error(`[Crafting] Unknown recipe ${recipeId}`);
+            Logger.error(`[Crafting] Unknown recipe ${recipeId}`);
             return false;
         }
 
         // Check costs
         if (!this.canAfford(recipe, quantity)) {
-            console.warn(`[Crafting] Cannot afford ${quantity}x ${recipe.id}`);
+            Logger.warn(`[Crafting] Cannot afford ${quantity}x ${recipe.id}`);
             return false;
         }
 
@@ -160,7 +160,7 @@ const CraftingManager = {
         slot.duration = recipe.duration * 1000; // Duration PER ITEM
         slot.startTime = Date.now();
 
-        console.log(`[Crafting] Started queue of ${quantity}x ${recipe.name} in Slot ${slotId}`);
+        Logger.info(`[Crafting] Started queue of ${quantity}x ${recipe.name} in Slot ${slotId}`);
         return true;
     },
 
@@ -197,7 +197,7 @@ const CraftingManager = {
             }
         }
 
-        console.log(`[Crafting] Crafted 1x ${recipe.name}, Remaining: ${slot.quantity - 1}`);
+        Logger.info(`[Crafting] Crafted 1x ${recipe.name}, Remaining: ${slot.quantity - 1}`);
 
         // 2. Visuals: Spawn via SpawnManager
         if (window.SpawnManager) {

@@ -7,13 +7,13 @@ class InteractionSystem {
     constructor() {
         this.game = null;
         this.magnetActiveCount = 0;
-        console.log('[InteractionSystem] Constructed');
+        Logger.info('[InteractionSystem] Constructed');
     }
 
     init(game) {
         this.game = game;
         this.initListeners();
-        console.log('[InteractionSystem] Initialized');
+        Logger.info('[InteractionSystem] Initialized');
     }
 
     initListeners() {
@@ -133,7 +133,7 @@ class InteractionSystem {
 
         if (count > 0) {
             this.magnetActiveCount = count;
-            console.log(`[InteractionSystem] Magnet triggered for ${count} items`);
+            Logger.info(`[InteractionSystem] Magnet triggered for ${count} items`);
             if (window.AudioManager) AudioManager.playSFX('sfx_ui_magnet');
         }
     }

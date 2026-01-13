@@ -14,12 +14,12 @@ class PathfindingSystem {
         this.pathCache = new Map(); // Cache recent paths
         this.cacheTimeout = 2000; // Clear cache after 2 seconds
 
-        console.log('[PathfindingSystem] Constructed');
+        Logger.info('[PathfindingSystem] Constructed');
     }
 
     init(game) {
         this.game = game;
-        console.log('[PathfindingSystem] Initialized');
+        Logger.info('[PathfindingSystem] Initialized');
         return true;
     }
 

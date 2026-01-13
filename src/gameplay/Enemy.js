@@ -352,7 +352,7 @@ class Enemy extends Entity {
                     AudioManager.playSFX('sfx_enemy_aggro');
                 }
 
-                console.log(`[Enemy] ${this.enemyName} aggro on hero at distance ${dist.toFixed(0)}`);
+                Logger.info(`[Enemy] ${this.enemyName} aggro on hero at distance ${dist.toFixed(0)}`);
                 return;
             }
         }
@@ -475,7 +475,7 @@ class Enemy extends Entity {
             this.wanderTarget = null;  // Reset wander target
             this.wanderTimer = 0;  // Reset wander timer
             this.health = this.maxHealth; // Heal when returning home
-            console.log(`[Enemy] ${this.enemyName} returned to patrol, ready to aggro again`);
+            Logger.info(`[Enemy] ${this.enemyName} returned to patrol, ready to aggro again`);
             return;
         }
 
@@ -492,7 +492,7 @@ class Enemy extends Entity {
         if (this.isDead) return false;
 
         this.health -= amount;
-        console.log(`[Enemy] ${this.enemyName} took ${amount} damage! HP: ${this.health}/${this.maxHealth}`);
+        Logger.info(`[Enemy] ${this.enemyName} took ${amount} damage! HP: ${this.health}/${this.maxHealth}`);
 
         // Emit damage event
         if (window.EventBus) {
@@ -583,7 +583,7 @@ class Enemy extends Entity {
             AudioManager.playSFX('sfx_enemy_death');
         }
 
-        console.log(`[Enemy] ${this.enemyName} died. Respawn in ${this.respawnTime}s`);
+        Logger.info(`[Enemy] ${this.enemyName} died. Respawn in ${this.respawnTime}s`);
     }
 
     /**
@@ -607,7 +607,7 @@ class Enemy extends Entity {
             });
         }
 
-        console.log(`[Enemy] ${this.enemyName} respawned`);
+        Logger.info(`[Enemy] ${this.enemyName} respawned`);
     }
 
     /**

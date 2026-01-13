@@ -91,6 +91,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_UI] Registered 5 sounds');
+        Logger.info('[SFX_UI] Registered 5 sounds');
     }
 })();

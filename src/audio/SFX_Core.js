@@ -23,7 +23,7 @@ const SFX = {
     init(audioContext, masterGain) {
         this.ctx = audioContext;
         this.masterGain = masterGain;
-        console.log('[SFX] Core initialized');
+        Logger.info('[SFX] Core initialized');
     },
 
     /**
@@ -45,7 +45,7 @@ const SFX = {
             return;
         }
 
-        console.warn(`[SFX] Unknown sound: ${id}`);
+        Logger.warn(`[SFX] Unknown sound: ${id}`);
     },
 
     // ==================== HELPERS ====================

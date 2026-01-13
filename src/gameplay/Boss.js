@@ -49,7 +49,7 @@ class Boss extends Enemy {
         // Increased threat level for bosses
         this.threatLevel = finalConfig.threatLevel || 5;
 
-        console.log(`[Boss] Created ${this.bossName} in ${config.biomeId || 'unknown'}`);
+        Logger.info(`[Boss] Created ${this.bossName} in ${config.biomeId || 'unknown'}`);
     }
 
     /**
@@ -99,7 +99,7 @@ class Boss extends Enemy {
             });
         }
 
-        console.log(`[Boss] ${this.bossName} defeated! Respawns in ${this.respawnTime}s`);
+        Logger.info(`[Boss] ${this.bossName} defeated! Respawns in ${this.respawnTime}s`);
     }
 
     /**
@@ -116,7 +116,7 @@ class Boss extends Enemy {
             });
         }
 
-        console.log(`[Boss] ${this.bossName} has respawned!`);
+        Logger.info(`[Boss] ${this.bossName} has respawned!`);
     }
 }
 

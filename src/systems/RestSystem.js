@@ -11,13 +11,13 @@
 class RestSystem {
     constructor() {
         this.game = null;
-        console.log('[RestSystem] Constructed');
+        Logger.info('[RestSystem] Constructed');
     }
 
     init(game) {
         this.game = game;
         this.initListeners();
-        console.log('[RestSystem] Initialized');
+        Logger.info('[RestSystem] Initialized');
     }
 
     initListeners() {
@@ -32,11 +32,11 @@ class RestSystem {
 
         // Validation (Double check location)
         if (!hero.isAtHomeOutpost) {
-            console.warn('[RestSystem] Cannot rest outside home outpost');
+            Logger.warn('[RestSystem] Cannot rest outside home outpost');
             return;
         }
 
-        console.log('[RestSystem] Resting...');
+        Logger.info('[RestSystem] Resting...');
 
         // 1. Play Rest Melody SFX
         if (window.AudioManager) AudioManager.playSFX('sfx_rest_melody');
@@ -53,13 +53,13 @@ class RestSystem {
     }
 
     performRestLogic(hero) {
-        console.log('[RestSystem] Performing rest logic (Restore stats)...');
+        Logger.info('[RestSystem] Performing rest logic (Restore stats)...');
 
         // Feature: Resilience Bonus
         // If resting with 0 Resolve (Stamina), gain permanent +1 Max Resolve
         if (hero.stamina <= 0.1) { // 0.1 epsilon for float safety
             hero.maxStamina += 1;
-            console.log(`[RestSystem] Resilience Bonus! Max Stamina increased to ${hero.maxStamina}`);
+            Logger.info(`[RestSystem] Resilience Bonus! Max Stamina increased to ${hero.maxStamina}`);
 
             // Visual feedback for bonus?
             if (window.VFXController && hero) {
@@ -83,14 +83,14 @@ class RestSystem {
         if (window.GameState) {
             // GameState might auto-save on set, but we can force explicit save if needed
             // For now, just updating gold/inventory in GameState is handled elsewhere
-            console.log('[RestSystem] Game Saved (Simulated)');
+            Logger.info('[RestSystem] Game Saved (Simulated)');
         }
 
         // Respawn Resources?
         // In the future, this advances the "Day" and respawns resources logic in ResourceSystem/SpawnManager
 
         // Feedback
-        console.log('[RestSystem] Rest Complete. HP/Stamina Restored.');
+        Logger.info('[RestSystem] Rest Complete. HP/Stamina Restored.');
 
         // Emit events for UI updates
         if (window.EventBus) {

@@ -7,13 +7,13 @@
 class EconomySystem {
     constructor() {
         this.game = null;
-        console.log('[EconomySystem] Constructed');
+        Logger.info('[EconomySystem] Constructed');
     }
 
     init(game) {
         this.game = game;
         this.initListeners();
-        console.log('[EconomySystem] Initialized');
+        Logger.info('[EconomySystem] Initialized');
     }
 
     initListeners() {
@@ -70,7 +70,7 @@ class EconomySystem {
             EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
         }
 
-        console.log(`[EconomySystem] Spent ${amount}. New Balance: ${newGold}`);
+        Logger.info(`[EconomySystem] Spent ${amount}. New Balance: ${newGold}`);
         return true;
     }
 
@@ -98,7 +98,7 @@ class EconomySystem {
             EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
         }
 
-        console.log(`[EconomySystem] Added ${amount}. New Balance: ${newGold}`);
+        Logger.info(`[EconomySystem] Added ${amount}. New Balance: ${newGold}`);
     }
 
     /**
@@ -124,7 +124,7 @@ class EconomySystem {
             }
         } else {
             // Failed
-            console.log('[EconomySystem] Insufficient funds for unlock');
+            Logger.info('[EconomySystem] Insufficient funds for unlock');
             if (window.AudioManager) AudioManager.playSFX('sfx_ui_error');
             // Optional: Emit TRANSACTION_FAILED for UI feedback
         }
@@ -169,7 +169,7 @@ class EconomySystem {
             }
         } else {
             if (window.AudioManager) AudioManager.playSFX('sfx_ui_error');
-            console.log('[EconomySystem] Insufficient funds for upgrade');
+            Logger.info('[EconomySystem] Insufficient funds for upgrade');
         }
     }
 }

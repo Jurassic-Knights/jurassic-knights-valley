@@ -14,10 +14,10 @@
 // If SFX is already loaded from SFX_Core.js, just create alias
 if (window.SFX) {
     window.ProceduralSFX = window.SFX;
-    console.log('[ProceduralSFX] Using modular SFX system');
+    Logger.info('[ProceduralSFX] Using modular SFX system');
 } else {
     // Fallback: Load SFX_Core inline for environments that can't load multiple files
-    console.warn('[ProceduralSFX] SFX_Core not found - loading inline fallback');
+    Logger.warn('[ProceduralSFX] SFX_Core not found - loading inline fallback');
 
     const SFX = {
         ctx: null,
@@ -28,7 +28,7 @@ if (window.SFX) {
         init(audioContext, masterGain) {
             this.ctx = audioContext;
             this.masterGain = masterGain;
-            console.log('[SFX] Initialized');
+            Logger.info('[SFX] Initialized');
         },
 
         register(categoryHandlers) {
@@ -41,7 +41,7 @@ if (window.SFX) {
             if (handler) {
                 handler.call(this);
             } else {
-                console.warn(`[SFX] Unknown sound: ${id}`);
+                Logger.warn(`[SFX] Unknown sound: ${id}`);
             }
         },
 
@@ -93,7 +93,7 @@ if (window.SFX) {
 
         // Weather ambience (stub - implement proper looping ambience later)
         setWeather(type) {
-            console.log(`[SFX] Weather ambience: ${type}`);
+            Logger.info(`[SFX] Weather ambience: ${type}`);
             // TODO: Implement looping rain/storm ambience
         },
 

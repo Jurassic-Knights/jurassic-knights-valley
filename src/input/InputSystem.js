@@ -21,7 +21,7 @@ class InputSystem {
             'MENU': ['Escape', 'p', 'P']
         };
 
-        console.log('[InputSystem] Initialized');
+        Logger.info('[InputSystem] Initialized');
     }
 
     init(game) {
@@ -91,7 +91,7 @@ class InputSystem {
             for (const intent of currentFrameIntents) {
                 if (!this.inputState.intents.has(intent)) {
                     EventBus.emit(GameConstants.Events.INPUT_INTENT, { intent: intent, phase: 'START' });
-                    // console.log(`[Input] Intent START: ${intent}`);
+                    // Logger.info(`[Input] Intent START: ${intent}`);
                 }
             }
 
@@ -99,7 +99,7 @@ class InputSystem {
             for (const intent of this.inputState.intents) {
                 if (!currentFrameIntents.has(intent)) {
                     EventBus.emit(GameConstants.Events.INPUT_INTENT, { intent: intent, phase: 'END' });
-                    // console.log(`[Input] Intent END: ${intent}`);
+                    // Logger.info(`[Input] Intent END: ${intent}`);
                 }
             }
         }

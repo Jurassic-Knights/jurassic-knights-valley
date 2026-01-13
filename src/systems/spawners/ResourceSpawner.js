@@ -37,7 +37,7 @@ class ResourceSpawner {
 
                     if (window.EntityManager) EntityManager.add(gold);
                 }
-                console.log(`[ResourceSpawner] Spawned ${goldCount} gold on home island`);
+                Logger.info(`[ResourceSpawner] Spawned ${goldCount} gold on home island`);
             }
         }
 
@@ -46,7 +46,7 @@ class ResourceSpawner {
             islandManager.islands.filter(i => i.type !== 'home' && i.unlocked) : [];
 
         if (islands.length === 0) {
-            console.log('[ResourceSpawner] No other unlocked islands for spawning');
+            Logger.info('[ResourceSpawner] No other unlocked islands for spawning');
             return;
         }
 
@@ -107,7 +107,7 @@ class ResourceSpawner {
             if (window.EntityManager) EntityManager.add(resource);
         }
 
-        console.log(`[ResourceSpawner] Spawned ${count - startIndex} ${type} in ${island.name} (grid-aligned)`);
+        Logger.info(`[ResourceSpawner] Spawned ${count - startIndex} ${type} in ${island.name} (grid-aligned)`);
     }
 
     /**
@@ -142,7 +142,7 @@ class ResourceSpawner {
             if (window.EntityManager) EntityManager.add(dino);
         }
 
-        console.log(`[ResourceSpawner] Spawned ${count} dinosaurs on ${island.name}`);
+        Logger.info(`[ResourceSpawner] Spawned ${count} dinosaurs on ${island.name}`);
     }
 
     /**
@@ -253,7 +253,7 @@ class ResourceSpawner {
             }
         }
 
-        console.log(`[ResourceSpawner] Spawned ${placedTrees.length} trees on Home Island`);
+        Logger.info(`[ResourceSpawner] Spawned ${placedTrees.length} trees on Home Island`);
     }
 }
 

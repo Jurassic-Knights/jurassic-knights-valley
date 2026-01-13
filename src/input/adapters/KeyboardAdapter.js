@@ -51,12 +51,12 @@ class KeyboardAdapter {
 
 if (window.InputSystem) {
     window.InputSystem.registerAdapter(new KeyboardAdapter());
-    console.log('[KeyboardAdapter] Registered');
+    Logger.info('[KeyboardAdapter] Registered');
 } else {
     window.addEventListener('load', () => {
         if (window.InputSystem) {
             window.InputSystem.registerAdapter(new KeyboardAdapter());
-            console.log('[KeyboardAdapter] Registered (Deferred)');
+            Logger.info('[KeyboardAdapter] Registered (Deferred)');
         }
     });
 }

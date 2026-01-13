@@ -48,19 +48,19 @@ class Game {
      * Initialize the game
      */
     async init() {
-        console.log('[Game] Initializing...');
+        Logger.info('[Game] Initializing...');
 
         // 1. Sort Systems by Priority
         // This ensures AssetLoader (-5) runs before GameRenderer (33)
         if (!window.SystemConfig) {
-            console.error('[Game] SystemConfig not found! Critical failure.');
+            Logger.error('[Game] SystemConfig not found! Critical failure.');
             return false;
         }
 
         const sortedSystems = [...SystemConfig].sort((a, b) => a.priority - b.priority);
 
         // 2. Bootloader Loop (Init Phase)
-        console.log(`[Game] Booting ${sortedSystems.length} systems...`);
+        Logger.info(`[Game] Booting ${sortedSystems.length} systems...`);
 
         for (const config of sortedSystems) {
             const name = config.global;
@@ -68,7 +68,7 @@ class Game {
             if (!sys) sys = window[name]; // Fallback
 
             if (!sys) {
-                // console.warn(`[Game] System not found: ${name}`);
+                // Logger.warn(`[Game] System not found: ${name}`);
                 continue;
             }
 
@@ -77,14 +77,14 @@ class Game {
                 if (typeof sys.init === 'function') {
                     // Check for Async
                     if (config.isAsync) {
-                        console.log(`[Game] Awaiting async init: ${name}`);
+                        Logger.info(`[Game] Awaiting async init: ${name}`);
                         await sys.init(this);
                     } else {
                         sys.init(this);
                     }
-                    console.log(`[Game] Initialized ${name}`);
+                    Logger.info(`[Game] Initialized ${name}`);
                 } else {
-                    console.warn(`[Game] System ${name} missing init() method`);
+                    Logger.warn(`[Game] System ${name} missing init() method`);
                 }
             }
 
@@ -104,20 +104,20 @@ class Game {
             // Check if IslandUpgrades was already init in loop? 
             // Currently SystemConfig says init:false for it because it needs args.
             IslandUpgrades.init(IslandManager.islands);
-            console.log('[Game] Initialized IslandUpgrades');
+            Logger.info('[Game] Initialized IslandUpgrades');
         }
 
         // Create Hero (Now handled by SpawnManager.start())
         // this.createHero();
 
         // 4. Start Phase (Logic that needs everything ready)
-        console.log('[Game] Starting systems...');
+        Logger.info('[Game] Starting systems...');
         for (const config of sortedSystems) {
             if (config.start) {
                 const sys = window[config.global] || (window.Registry && Registry.get(config.global));
                 if (sys && typeof sys.start === 'function') {
                     sys.start();
-                    console.log(`[Game] Started ${config.global}`);
+                    Logger.info(`[Game] Started ${config.global}`);
                 }
             }
         }
@@ -131,7 +131,7 @@ class Game {
         // Event Listeners (Could be moved to a GameEventHandler system)
         // ISLAND_UNLOCKED now handled by SpawnManager directly
 
-        console.log('[Game] Boot Complete.');
+        Logger.info('[Game] Boot Complete.');
         return true;
     }
 
@@ -166,7 +166,7 @@ class Game {
         this.isRunning = true;
         this.lastTime = performance.now();
         this.loop();
-        console.log('[Game] Started');
+        Logger.info('[Game] Started');
     }
 
     /**
@@ -174,7 +174,7 @@ class Game {
      */
     stop() {
         this.isRunning = false;
-        console.log('[Game] Stopped');
+        Logger.info('[Game] Stopped');
     }
 
     /**
@@ -297,7 +297,7 @@ class Game {
             frameCount: 0,
             startTime: performance.now()
         };
-        console.log('[Game] Profiling started...');
+        Logger.info('[Game] Profiling started...');
     }
 
     /**
@@ -310,16 +310,16 @@ class Game {
         const elapsed = (performance.now() - p.startTime) / 1000;
         const avgFps = p.frameCount / elapsed;
 
-        console.log('=== FRAME PROFILE ===');
-        console.log(`Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`);
-        console.log('--- Systems (ms total) ---');
+        Logger.info('=== FRAME PROFILE ===');
+        Logger.info(`Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`);
+        Logger.info('--- Systems (ms total) ---');
         for (const [name, time] of Object.entries(p.systems).sort((a, b) => b[1] - a[1])) {
-            console.log(`  ${name}: ${time.toFixed(1)}ms (${(time / p.frameCount).toFixed(2)}ms/frame)`);
+            Logger.info(`  ${name}: ${time.toFixed(1)}ms (${(time / p.frameCount).toFixed(2)}ms/frame)`);
         }
-        console.log(`--- EntityManager: ${p.entityManager.toFixed(1)}ms (${(p.entityManager / p.frameCount).toFixed(2)}ms/frame)`);
-        console.log(`--- GameRenderer: ${p.gameRenderer.toFixed(1)}ms (${(p.gameRenderer / p.frameCount).toFixed(2)}ms/frame)`);
-        console.log(`--- VFX Foreground: ${p.vfxForeground.toFixed(1)}ms (${(p.vfxForeground / p.frameCount).toFixed(2)}ms/frame)`);
-        console.log('=====================');
+        Logger.info(`--- EntityManager: ${p.entityManager.toFixed(1)}ms (${(p.entityManager / p.frameCount).toFixed(2)}ms/frame)`);
+        Logger.info(`--- GameRenderer: ${p.gameRenderer.toFixed(1)}ms (${(p.gameRenderer / p.frameCount).toFixed(2)}ms/frame)`);
+        Logger.info(`--- VFX Foreground: ${p.vfxForeground.toFixed(1)}ms (${(p.vfxForeground / p.frameCount).toFixed(2)}ms/frame)`);
+        Logger.info('=====================');
 
         this._profile = null;
     }

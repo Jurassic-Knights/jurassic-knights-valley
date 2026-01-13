@@ -12,7 +12,7 @@ class MerchantPanel extends UIPanel {
     }
 
     init() {
-        console.log('[MerchantPanel] Initializing...');
+        Logger.info('[MerchantPanel] Initializing...');
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.bindEvents());
         } else {
@@ -77,7 +77,7 @@ class MerchantPanel extends UIPanel {
      * Override Open logic
      */
     onOpen() {
-        console.log('[MerchantPanel] Opening for:', this.currentMerchant ? this.currentMerchant.islandName : 'None');
+        Logger.info('[MerchantPanel] Opening for:', this.currentMerchant ? this.currentMerchant.islandName : 'None');
         if (!this.currentMerchant) {
             // If opened manually or without target, maybe close?
             // Or just render empty?

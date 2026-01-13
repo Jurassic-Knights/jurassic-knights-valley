@@ -56,7 +56,7 @@ class Resource extends Entity {
 
         if (onHome && this.resourceType !== 'wood') {
             this.active = false;
-            // console.warn(`[Resource] Suppressed invalid ${this.resourceType} on Home Island`);
+            // Logger.warn(`[Resource] Suppressed invalid ${this.resourceType} on Home Island`);
         }
     }
 

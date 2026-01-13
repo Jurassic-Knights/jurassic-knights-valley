@@ -12,7 +12,7 @@ class InventoryPanel extends UIPanel {
     }
 
     init() {
-        console.log('[InventoryPanel] Initializing...');
+        Logger.info('[InventoryPanel] Initializing...');
 
         // Wait for DOM
         if (document.readyState === 'loading') {
@@ -23,14 +23,14 @@ class InventoryPanel extends UIPanel {
     }
 
     bindEvents() {
-        console.log('[InventoryPanel] Binding events...');
+        Logger.info('[InventoryPanel] Binding events...');
 
         // Setup Binds
         const btnInventory = document.getElementById('btn-inventory');
         if (btnInventory) {
             const toggleFn = (e) => {
                 if (!e) return;
-                console.log(`[InventoryPanel] Button Triggered via ${e.type}. Current State: ${this.isOpen}`);
+                Logger.info(`[InventoryPanel] Button Triggered via ${e.type}. Current State: ${this.isOpen}`);
 
                 if (e.type === 'touchstart') {
                     e.preventDefault();
@@ -47,9 +47,9 @@ class InventoryPanel extends UIPanel {
 
             newBtn.addEventListener('click', toggleFn);
             newBtn.addEventListener('touchstart', toggleFn, { passive: false });
-            console.log('[InventoryPanel] Button Listeners Attached');
+            Logger.info('[InventoryPanel] Button Listeners Attached');
         } else {
-            console.error('[InventoryPanel] Button not found!');
+            Logger.error('[InventoryPanel] Button not found!');
         }
 
         const btnClose = document.getElementById('btn-close-inventory');

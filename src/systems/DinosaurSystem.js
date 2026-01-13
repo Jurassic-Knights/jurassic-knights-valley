@@ -4,7 +4,7 @@
  */
 class DinosaurSystem {
     constructor() {
-        console.log('[DinosaurSystem] Initialized');
+        Logger.info('[DinosaurSystem] Initialized');
     }
 
     init(game) {

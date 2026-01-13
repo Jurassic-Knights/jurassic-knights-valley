@@ -14,13 +14,13 @@ const FogOfWarSystem = {
 
     init(game) {
         this.game = game;
-        console.log('[FogOfWarSystem] Initialized');
+        Logger.info('[FogOfWarSystem] Initialized');
 
         // Load the fog texture
         this.fogTexture = new Image();
         this.fogTexture.onload = () => {
             this.textureLoaded = true;
-            console.log('[FogOfWarSystem] Fog texture loaded');
+            Logger.info('[FogOfWarSystem] Fog texture loaded');
         };
         this.fogTexture.src = 'assets/images/vfx/fog_of_war.png';
 
@@ -141,7 +141,7 @@ const FogOfWarSystem = {
                 cloud.rotationSpeed = (Math.random() - 0.5) * 0.01;
             }
 
-            console.log(`[FogOfWarSystem] Dispersing fog for island ${id}`);
+            Logger.info(`[FogOfWarSystem] Dispersing fog for island ${id}`);
         }
     },
 

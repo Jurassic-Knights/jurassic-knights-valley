@@ -46,7 +46,7 @@ const MaterialLibrary = {
 
         // 4. Validate Processor
         if (typeof this[material] !== 'function') {
-            console.warn(`[MaterialLibrary] Unknown material: ${material}`);
+            Logger.warn(`[MaterialLibrary] Unknown material: ${material}`);
             return source; // Fallback to original
         }
 

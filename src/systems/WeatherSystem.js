@@ -30,7 +30,7 @@ class WeatherSystem {
         // Initial weather roll
         this.rollWeather();
 
-        console.log('[WeatherSystem] Initialized');
+        Logger.info('[WeatherSystem] Initialized');
     }
 
     /**
@@ -40,7 +40,7 @@ class WeatherSystem {
     setWeatherOverride(type) {
         if (!type || type === 'auto') {
             this.overrideEnabled = false;
-            console.log('[WeatherSystem] Override Disabled (Auto)');
+            Logger.info('[WeatherSystem] Override Disabled (Auto)');
             // Force a roll to pick new weather naturally
             this.rollWeather();
             return;
@@ -48,7 +48,7 @@ class WeatherSystem {
 
         this.overrideEnabled = true;
         this.setWeather(type);
-        console.log(`[WeatherSystem] Override Enabled: ${type}`);
+        Logger.info(`[WeatherSystem] Override Enabled: ${type}`);
     }
 
     update(dt) {
@@ -67,7 +67,7 @@ class WeatherSystem {
 
     handleSeasonChange(data) {
         this.currentSeason = data.season;
-        console.log(`[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`);
+        Logger.info(`[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`);
         // Force a weather change on season start (if not overridden)
         if (!this.overrideEnabled) {
             this.tryChangeWeather(true);
@@ -107,7 +107,7 @@ class WeatherSystem {
 
     setWeather(type) {
         this.currentWeather = type;
-        console.log(`[WeatherSystem] Weather Changed to: ${type}`);
+        Logger.info(`[WeatherSystem] Weather Changed to: ${type}`);
 
         EventBus.emit(GameConstants.Events.WEATHER_CHANGE, {
             type: type,

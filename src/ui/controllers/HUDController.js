@@ -7,7 +7,7 @@
 class HUDController {
     constructor() {
         this.initListeners();
-        console.log('[HUDController] Initialized');
+        Logger.info('[HUDController] Initialized');
     }
 
     initListeners() {

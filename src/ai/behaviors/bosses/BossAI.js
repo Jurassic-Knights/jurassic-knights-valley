@@ -66,7 +66,7 @@ const BossAI = {
      * Handle phase transition
      */
     onPhaseChange(boss, oldPhase, newPhase) {
-        console.log(`[BossAI] ${boss.enemyName} entered Phase ${newPhase}`);
+        Logger.info(`[BossAI] ${boss.enemyName} entered Phase ${newPhase}`);
 
         // Phase-specific buffs
         if (newPhase === 2) {
@@ -111,7 +111,7 @@ const BossAI = {
      */
     executeAbility(boss, hero) {
         const ability = boss.currentAbility;
-        console.log(`[BossAI] ${boss.enemyName} uses ${ability}`);
+        Logger.info(`[BossAI] ${boss.enemyName} uses ${ability}`);
 
         if (window.EventBus) {
             EventBus.emit('BOSS_ABILITY', {

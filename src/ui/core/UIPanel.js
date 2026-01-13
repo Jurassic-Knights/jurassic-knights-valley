@@ -41,7 +41,7 @@ class UIPanel {
      * Initialize logic (override in subclass)
      */
     init() {
-        console.log(`[UIPanel] Init ${this.id}`);
+        Logger.info(`[UIPanel] Init ${this.id}`);
     }
 
     /**
@@ -132,13 +132,13 @@ class UIPanel {
 
         const target = document.getElementById('modal-layer');
         if (!target) {
-            console.error('[UIPanel] Undock Failed: modal-layer not found!');
+            Logger.error('[UIPanel] Undock Failed: modal-layer not found!');
             return;
         }
 
         if (!this.el) this.el = document.getElementById(this.id);
 
-        console.log(`[UIPanel] Undocking ${this.id} to modal-layer...`);
+        Logger.info(`[UIPanel] Undocking ${this.id} to modal-layer...`);
 
         if (this.el && this.el.parentElement !== target) {
             target.appendChild(this.el);
@@ -147,7 +147,7 @@ class UIPanel {
 
             this.close(); // Reset state
             this.isDocked = false;
-            console.log(`[UIPanel] ${this.id} Undocked Successfully.`);
+            Logger.info(`[UIPanel] ${this.id} Undocked Successfully.`);
         }
     }
 }

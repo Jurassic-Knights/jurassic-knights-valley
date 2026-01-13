@@ -35,7 +35,7 @@ class IslandManagerService {
         this.walkableZones = [];
         this.collisionBlocks = [];  // New: blocks that prevent movement
 
-        console.log('[IslandManager] Constructed');
+        Logger.info('[IslandManager] Constructed');
     }
 
     /**
@@ -87,7 +87,7 @@ class IslandManagerService {
         // Initialize collision blocks
         this.rebuildCollisionBlocks();
 
-        console.log(`[IslandManager] Initialized ${this.islands.length} zones`);
+        Logger.info(`[IslandManager] Initialized ${this.islands.length} zones`);
     }
 
     /**
@@ -123,12 +123,12 @@ class IslandManagerService {
             window.GameState.set('unlocks', unlocked);
         }
 
-        console.log(`[IslandManager] Unlocked zone: ${island.name}`);
+        Logger.info(`[IslandManager] Unlocked zone: ${island.name}`);
 
         // AAA Feature: Artillery Bombardment Effect on Unlock
         if (window.VFXController && window.VFXController.bombardZone) {
             const bounds = this.getPlayableBounds(island);
-            console.log('[IslandManager] Triggering bombardment on:', island.name, bounds);
+            Logger.info('[IslandManager] Triggering bombardment on:', island.name, bounds);
             // Translate bounds to format expected by bombardZone
             const targetZone = {
                 worldX: bounds.x,
@@ -138,7 +138,7 @@ class IslandManagerService {
             };
             VFXController.bombardZone(targetZone);
         } else {
-            console.warn('[IslandManager] VFXController or bombardZone not found!');
+            Logger.warn('[IslandManager] VFXController or bombardZone not found!');
         }
 
         // Rebuild walkable zones to include the new island
@@ -348,7 +348,7 @@ class IslandManagerService {
         // 3. Biome walkability now handled by BiomeManager.isValidPosition()
         // No need to add rectangular zones - polygon hit testing is used
 
-        console.log(`[IslandManager] Rebuilt walkable zones: ${this.walkableZones.length} active zones`);
+        Logger.info(`[IslandManager] Rebuilt walkable zones: ${this.walkableZones.length} active zones`);
     }
 
     /**
@@ -475,7 +475,7 @@ class IslandManagerService {
             }
         }
 
-        console.log(`[IslandManager] Rebuilt collision blocks: ${this.collisionBlocks.length} blocks`);
+        Logger.info(`[IslandManager] Rebuilt collision blocks: ${this.collisionBlocks.length} blocks`);
     }
 
     /**

@@ -81,7 +81,7 @@ class EnvironmentRenderer {
         if (window.RainVFX) { this.vfx.RAIN = new RainVFX(); this.vfx.RAIN.init(); }
         if (window.SnowVFX) { this.vfx.SNOW = new SnowVFX(); this.vfx.SNOW.init(); }
 
-        console.log('[EnvironmentRenderer] Initialized');
+        Logger.info('[EnvironmentRenderer] Initialized');
     }
 
     /**
@@ -89,7 +89,7 @@ class EnvironmentRenderer {
      * @param {string} type - Weather Type (RAIN, SNOW, FOG, CLEAR)
      */
     setWeather(type) {
-        console.log(`[EnvironmentRenderer] Weather set to: ${type}`);
+        Logger.info(`[EnvironmentRenderer] Weather set to: ${type}`);
         this.weatherType = type;
 
         // Reset all
@@ -219,7 +219,7 @@ class EnvironmentRenderer {
         if (window.ProceduralSFX) {
             ProceduralSFX.playThunder();
         }
-        console.log('[Weather] Lightning Strike!');
+        Logger.info('[Weather] Lightning Strike!');
     }
 
     updateWind(dt) {
@@ -236,7 +236,7 @@ class EnvironmentRenderer {
                 this.wind.gusting = false;
                 this.wind.targetX = isStorm ? 50 : this.wind.baseX; // Basic storm wind is higher
                 this.wind.timer = isStorm ? (1 + Math.random() * 2) : (5 + Math.random() * 10); // Storm: short calm
-                // console.log('[Weather] Wind Gust Ended');
+                // Logger.info('[Weather] Wind Gust Ended');
             } else {
                 // Start Gust
                 // Storm: Almost always gust again soon
@@ -248,7 +248,7 @@ class EnvironmentRenderer {
                     const strength = isStorm ? (300 + Math.random() * 300) : (100 + Math.random() * 150);
                     this.wind.targetX = strength;
                     this.wind.timer = isStorm ? (3 + Math.random() * 3) : (2 + Math.random() * 4);
-                    // console.log(`[Weather] Wind Gust Started (Force: ${this.wind.targetX.toFixed(0)})`);
+                    // Logger.info(`[Weather] Wind Gust Started (Force: ${this.wind.targetX.toFixed(0)})`);
                 } else {
                     // Stay calm a bit longer
                     this.wind.timer = 2 + Math.random() * 3;

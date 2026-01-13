@@ -20,7 +20,7 @@ class EntityManagerService {
         // GC Optimization: Pool for Quadtree insert wrappers (keyed by entity)
         this._insertPool = new WeakMap();
 
-        console.log('[EntityManager] Constructed');
+        Logger.info('[EntityManager] Constructed');
     }
     // ...
     // (We just need to change the class name and the window assignment.
@@ -34,10 +34,10 @@ class EntityManagerService {
             const worldW = window.GameRenderer?.worldWidth || 7680;
             const worldH = window.GameRenderer?.worldHeight || 7680;
             this.tree = new Quadtree({ x: 0, y: 0, width: worldW, height: worldH });
-            console.log(`[EntityManager] Quadtree initialized (${worldW}x${worldH})`);
+            Logger.info(`[EntityManager] Quadtree initialized (${worldW}x${worldH})`);
         }
 
-        console.log('[EntityManager] Initialized');
+        Logger.info('[EntityManager] Initialized');
     }
 
     /**
@@ -98,7 +98,7 @@ class EntityManagerService {
         }
         this.entitiesByType[type].push(entity);
 
-        console.log(`[EntityManager] Added ${type}. Total: ${this.entities.length}`);
+        Logger.info(`[EntityManager] Added ${type}. Total: ${this.entities.length}`);
 
         // Optional: Trigger event?
         // if (window.EventBus) EventBus.emit(Events.ENTITY_SPAWNED, entity);

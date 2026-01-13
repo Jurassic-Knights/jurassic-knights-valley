@@ -34,7 +34,7 @@ class StatsComponent extends Component {
         this.xpToNextLevel = config.xpToNextLevel || 100;
         this.xpScaling = config.xpScaling || 1.5;
 
-        console.log(`[StatsComponent] Attached to ${parent.constructor.name}`);
+        Logger.info(`[StatsComponent] Attached to ${parent.constructor.name}`);
     }
 
     /**

@@ -6,12 +6,12 @@ class GamepadAdapter {
         this.gamepadIndex = null;
 
         window.addEventListener("gamepadconnected", (e) => {
-            console.log("[Gamepad] Connected:", e.gamepad.id);
+            Logger.info("[Gamepad] Connected:", e.gamepad.id);
             this.gamepadIndex = e.gamepad.index;
         });
 
         window.addEventListener("gamepaddisconnected", (e) => {
-            console.log("[Gamepad] Disconnected");
+            Logger.info("[Gamepad] Disconnected");
             if (this.gamepadIndex === e.gamepad.index) {
                 this.gamepadIndex = null;
             }

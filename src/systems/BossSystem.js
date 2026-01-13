@@ -15,7 +15,7 @@ class BossSystem {
         this.bosses = new Map();        // biomeId -> Boss instance
         this.respawnTimers = new Map(); // biomeId -> remaining time (ms)
 
-        console.log('[BossSystem] Constructed');
+        Logger.info('[BossSystem] Constructed');
     }
 
     init(game) {
@@ -27,7 +27,7 @@ class BossSystem {
             this.spawnAllBosses();
         }, 1000);
 
-        console.log('[BossSystem] Initialized');
+        Logger.info('[BossSystem] Initialized');
     }
 
     initListeners() {
@@ -53,14 +53,14 @@ class BossSystem {
         // Get biome config
         const biome = window.BiomeConfig?.types?.[biomeId];
         if (!biome?.bossId) {
-            console.log(`[BossSystem] No boss configured for biome: ${biomeId}`);
+            Logger.info(`[BossSystem] No boss configured for biome: ${biomeId}`);
             return null;
         }
 
         // Get boss type config
         const bossConfig = window.EntityConfig?.boss?.types?.[biome.bossId];
         if (!bossConfig) {
-            console.log(`[BossSystem] Boss type not found: ${biome.bossId}`);
+            Logger.info(`[BossSystem] Boss type not found: ${biome.bossId}`);
             return null;
         }
 
@@ -93,7 +93,7 @@ class BossSystem {
             });
         }
 
-        console.log(`[BossSystem] Spawned ${boss.bossName} in ${biomeId}`);
+        Logger.info(`[BossSystem] Spawned ${boss.bossName} in ${biomeId}`);
         return boss;
     }
 
@@ -149,7 +149,7 @@ class BossSystem {
         const respawnTime = enemy.respawnTime * 1000; // Convert to ms
         this.respawnTimers.set(biomeId, respawnTime);
 
-        console.log(`[BossSystem] ${enemy.bossName} killed. Respawning in ${enemy.respawnTime}s`);
+        Logger.info(`[BossSystem] ${enemy.bossName} killed. Respawning in ${enemy.respawnTime}s`);
     }
 
     /**

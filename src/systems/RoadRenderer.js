@@ -13,13 +13,13 @@ class RoadRenderer {
         this.tileSize = 128; // 1 grid cell
         this.tileLoaded = false;
 
-        console.log('[RoadRenderer] Constructed');
+        Logger.info('[RoadRenderer] Constructed');
     }
 
     init(game) {
         this.game = game;
         this.loadRoadTile();
-        console.log('[RoadRenderer] Initialized');
+        Logger.info('[RoadRenderer] Initialized');
     }
 
     /**
@@ -32,7 +32,7 @@ class RoadRenderer {
             if (tile && tile.complete && tile.naturalWidth) {
                 this.roadTile = tile;
                 this.tileLoaded = true;
-                console.log('[RoadRenderer] Road tile loaded from AssetLoader');
+                Logger.info('[RoadRenderer] Road tile loaded from AssetLoader');
                 return;
             }
         }
@@ -81,7 +81,7 @@ class RoadRenderer {
         this.roadTile.src = canvas.toDataURL();
         this.tileLoaded = true;
 
-        console.log('[RoadRenderer] Procedural road tile created');
+        Logger.info('[RoadRenderer] Procedural road tile created');
     }
 
     /**

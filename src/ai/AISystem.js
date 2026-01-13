@@ -11,13 +11,13 @@ class AISystem {
     constructor() {
         this.game = null;
         this.behaviors = {};
-        console.log('[AISystem] Constructed');
+        Logger.info('[AISystem] Constructed');
     }
 
     init(game) {
         this.game = game;
         this.registerDefaultBehaviors();
-        console.log('[AISystem] Initialized');
+        Logger.info('[AISystem] Initialized');
     }
 
     /**
@@ -37,7 +37,7 @@ class AISystem {
      */
     registerBehavior(type, handler) {
         this.behaviors[type] = handler;
-        console.log(`[AISystem] Registered behavior: ${type}`);
+        Logger.info(`[AISystem] Registered behavior: ${type}`);
     }
 
     /**

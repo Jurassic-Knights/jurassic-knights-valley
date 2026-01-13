@@ -35,7 +35,7 @@ class DropSpawner {
 
         if (window.EntityManager) EntityManager.add(drop);
 
-        console.log(`[DropSpawner] Spawned drop: ${resourceType} x${amount} at ${x},${y}`);
+        Logger.info(`[DropSpawner] Spawned drop: ${resourceType} x${amount} at ${x},${y}`);
     }
 
     /**
@@ -76,7 +76,7 @@ class DropSpawner {
         }
 
         drop.flyTo(tx, ty);
-        console.log(`[DropSpawner] Spawned crafted item: ${type}`);
+        Logger.info(`[DropSpawner] Spawned crafted item: ${type}`);
     }
 }
 

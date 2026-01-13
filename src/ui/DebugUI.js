@@ -13,7 +13,7 @@ const DebugUI = {
     init() {
         this.container = document.getElementById('cheat-bar');
         if (!this.container) {
-            console.warn('[DebugUI] Cheat bar not found');
+            Logger.warn('[DebugUI] Cheat bar not found');
             return;
         }
 
@@ -24,7 +24,7 @@ const DebugUI = {
         this.setupOverrideDropdowns(); // New
         this.updateActiveButton();
 
-        console.log('[DebugUI] Initialized');
+        Logger.info('[DebugUI] Initialized');
     },
 
     /**
@@ -39,7 +39,7 @@ const DebugUI = {
                 for (const island of IslandManager.islands) {
                     island.unlocked = true;
                 }
-                console.log('[DebugUI] All islands unlocked!');
+                Logger.info('[DebugUI] All islands unlocked!');
             }
         };
         this.addControl('Islands', unlockBtn);
@@ -53,7 +53,7 @@ const DebugUI = {
                 if (merchant) {
                     GameInstance.hero.x = merchant.x;
                     GameInstance.hero.y = merchant.y - 50; // Slightly above
-                    console.log('[DebugUI] Teleported to merchant at', merchant.islandName);
+                    Logger.info('[DebugUI] Teleported to merchant at', merchant.islandName);
                 }
             }
         };
@@ -224,48 +224,48 @@ const DebugUI = {
         const timeSelect = document.getElementById('cheat-time');
         if (timeSelect) {
             timeSelect.addEventListener('change', (e) => {
-                console.log('[DebugUI] Time dropdown changed to:', e.target.value);
+                Logger.info('[DebugUI] Time dropdown changed to:', e.target.value);
                 if (window.TimeSystem) {
                     window.TimeSystem.setTimeOverride(e.target.value);
                 } else {
-                    console.warn('[DebugUI] TimeSystem not found on window!');
+                    Logger.warn('[DebugUI] TimeSystem not found on window!');
                 }
                 e.target.blur(); // Remove focus so movement keys don't change selection
             });
         } else {
-            console.warn('[DebugUI] cheat-time select not found!');
+            Logger.warn('[DebugUI] cheat-time select not found!');
         }
 
         // Season Override
         const seasonSelect = document.getElementById('cheat-season');
         if (seasonSelect) {
             seasonSelect.addEventListener('change', (e) => {
-                console.log('[DebugUI] Season dropdown changed to:', e.target.value);
+                Logger.info('[DebugUI] Season dropdown changed to:', e.target.value);
                 if (window.TimeSystem) {
                     window.TimeSystem.setSeasonOverride(e.target.value);
                 } else {
-                    console.warn('[DebugUI] TimeSystem not found on window!');
+                    Logger.warn('[DebugUI] TimeSystem not found on window!');
                 }
                 e.target.blur();
             });
         } else {
-            console.warn('[DebugUI] cheat-season select not found!');
+            Logger.warn('[DebugUI] cheat-season select not found!');
         }
 
         // Weather Override
         const weatherSelect = document.getElementById('cheat-weather');
         if (weatherSelect) {
             weatherSelect.addEventListener('change', (e) => {
-                console.log('[DebugUI] Weather dropdown changed to:', e.target.value);
+                Logger.info('[DebugUI] Weather dropdown changed to:', e.target.value);
                 if (window.WeatherSystem) {
                     window.WeatherSystem.setWeatherOverride(e.target.value);
                 } else {
-                    console.warn('[DebugUI] WeatherSystem not found on window!');
+                    Logger.warn('[DebugUI] WeatherSystem not found on window!');
                 }
                 e.target.blur();
             });
         } else {
-            console.warn('[DebugUI] cheat-weather select not found!');
+            Logger.warn('[DebugUI] cheat-weather select not found!');
         }
     }
 };

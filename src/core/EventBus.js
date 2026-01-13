@@ -8,7 +8,7 @@
 class EventBusHub {
     constructor() {
         this.listeners = {};
-        console.log('[EventBus] Initialized');
+        Logger.info('[EventBus] Initialized');
     }
 
     /**

@@ -112,7 +112,7 @@ const AssetLoader = {
         };
         this.registries.vfx = { presets: {} };
 
-        console.log('[AssetLoader] Registries loaded (auto-generated, ' + Object.keys(this.registries.images.assets).length + ' images, ' + Object.keys(this.registries.audio.assets).length + ' audio)');
+        Logger.info('[AssetLoader] Registries loaded (auto-generated, ' + Object.keys(this.registries.images.assets).length + ' images, ' + Object.keys(this.registries.audio.assets).length + ' audio)');
         return true;
     },
 
@@ -124,13 +124,13 @@ const AssetLoader = {
     getImagePath(id) {
         const asset = this.registries.images?.assets?.[id];
         if (!asset) {
-            console.warn(`[AssetLoader] Image not found: ${id}, using placeholder`);
+            Logger.warn(`[AssetLoader] Image not found: ${id}, using placeholder`);
             return this.basePath + 'images/PH.png';
         }
 
         // SAFETY: Never allow _original assets in production
         if (asset.path.includes('_original')) {
-            console.error(`[AssetLoader] BLOCKED: Cannot use _original asset: ${asset.path}`);
+            Logger.error(`[AssetLoader] BLOCKED: Cannot use _original asset: ${asset.path}`);
             return this.basePath + 'images/PH.png';
         }
 
@@ -155,7 +155,7 @@ const AssetLoader = {
     createImage(src, onLoad) {
         const img = new Image();
         img.onerror = () => {
-            console.warn(`[AssetLoader] Image load failed: ${src}, using placeholder`);
+            Logger.warn(`[AssetLoader] Image load failed: ${src}, using placeholder`);
             img.src = this.basePath + 'images/PH.png';
         };
         if (onLoad) {
@@ -173,7 +173,7 @@ const AssetLoader = {
     getAudio(id) {
         const asset = this.registries.audio?.assets?.[id];
         if (!asset) {
-            console.warn(`[AssetLoader] Audio not found: ${id}`);
+            Logger.warn(`[AssetLoader] Audio not found: ${id}`);
             return null;
         }
         return {
@@ -212,7 +212,7 @@ const AssetLoader = {
                 resolve(img);
             };
             img.onerror = () => {
-                console.warn(`[AssetLoader] Image failed to load: ${path}, using placeholder`);
+                Logger.warn(`[AssetLoader] Image failed to load: ${path}, using placeholder`);
                 const placeholder = new Image();
                 placeholder.onload = () => {
                     this.cache.set(id, placeholder);

@@ -17,7 +17,7 @@ class EnemySpawner {
      */
     spawnTestEnemies() {
         if (!window.Enemy || !window.BiomeConfig) {
-            console.log('[EnemySpawner] Enemy system not loaded, skipping test spawn');
+            Logger.info('[EnemySpawner] Enemy system not loaded, skipping test spawn');
             return;
         }
 
@@ -31,7 +31,7 @@ class EnemySpawner {
         const testY = home.worldY - 200;
 
         this.spawnEnemyGroup('grasslands', testX, testY, 'enemy_raptor', 3);
-        console.log('[EnemySpawner] Spawned test enemies north of home island');
+        Logger.info('[EnemySpawner] Spawned test enemies north of home island');
     }
 
     /**
@@ -39,7 +39,7 @@ class EnemySpawner {
      */
     spawnEnemyGroup(biomeId, x, y, enemyId, count, options = {}) {
         if (!window.Enemy) {
-            console.warn('[EnemySpawner] Enemy class not found');
+            Logger.warn('[EnemySpawner] Enemy class not found');
             return [];
         }
 
@@ -72,7 +72,7 @@ class EnemySpawner {
             enemies.push(enemy);
         }
 
-        console.log(`[EnemySpawner] Spawned ${count} ${enemyId} in ${biomeId} (group: ${groupId})`);
+        Logger.info(`[EnemySpawner] Spawned ${count} ${enemyId} in ${biomeId} (group: ${groupId})`);
         return enemies;
     }
 
@@ -92,7 +92,7 @@ class EnemySpawner {
      */
     populateBiome(biomeId, bounds, options = {}) {
         if (!window.Enemy || !window.BiomeConfig?.types?.[biomeId]) {
-            console.warn(`[EnemySpawner] Cannot populate biome: ${biomeId}`);
+            Logger.warn(`[EnemySpawner] Cannot populate biome: ${biomeId}`);
             return;
         }
 
@@ -100,7 +100,7 @@ class EnemySpawner {
         const spawnTable = biome.enemySpawnTable;
 
         if (!spawnTable || spawnTable.length === 0) {
-            console.log(`[EnemySpawner] No spawn table for biome: ${biomeId}`);
+            Logger.info(`[EnemySpawner] No spawn table for biome: ${biomeId}`);
             return;
         }
 
@@ -126,7 +126,7 @@ class EnemySpawner {
             }
         }
 
-        console.log(`[EnemySpawner] Populated ${biomeId} with ${totalSpawned} enemies`);
+        Logger.info(`[EnemySpawner] Populated ${biomeId} with ${totalSpawned} enemies`);
         return totalSpawned;
     }
 
@@ -136,7 +136,7 @@ class EnemySpawner {
     spawnBiomeBoss(biomeId, x, y) {
         const biome = window.BiomeConfig?.types?.[biomeId];
         if (!biome || !biome.bossId) {
-            console.warn(`[EnemySpawner] No boss configured for biome: ${biomeId}`);
+            Logger.warn(`[EnemySpawner] No boss configured for biome: ${biomeId}`);
             return null;
         }
 
@@ -151,7 +151,7 @@ class EnemySpawner {
             boss.isBoss = true;
             boss.respawnTime = biome.bossRespawnTime ||
                 window.GameConstants?.Biome?.BOSS_RESPAWN_DEFAULT || 300;
-            console.log(`[EnemySpawner] Spawned boss ${biome.bossId} for ${biomeId}`);
+            Logger.info(`[EnemySpawner] Spawned boss ${biome.bossId} for ${biomeId}`);
             return boss;
         }
         return null;
@@ -184,7 +184,7 @@ class EnemySpawner {
             }
         }
 
-        console.log(`[EnemySpawner] Cleared ${enemies.length} enemies from ${biomeId}`);
+        Logger.info(`[EnemySpawner] Cleared ${enemies.length} enemies from ${biomeId}`);
     }
 }
 

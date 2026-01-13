@@ -37,14 +37,14 @@ class AIComponent extends Component {
         this.attackWindup = 0;
         this.isAttacking = false;
 
-        console.log(`[AIComponent] Attached to ${parent.constructor.name}`);
+        Logger.info(`[AIComponent] Attached to ${parent.constructor.name}`);
     }
 
     setState(newState) {
         if (this.state === newState) return;
         this.previousState = this.state;
         this.state = newState;
-        // console.log(`[AI] ${this.parent.id} switched to ${newState}`);
+        // Logger.info(`[AI] ${this.parent.id} switched to ${newState}`);
     }
 
     /**

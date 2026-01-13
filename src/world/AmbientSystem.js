@@ -133,7 +133,7 @@ const AmbientSystem = {
         this.creatures = [];
         this.spawnTimer = 0;
         this.setNextSpawnTime();
-        console.log('[AmbientSystem] Initialized');
+        Logger.info('[AmbientSystem] Initialized');
     },
 
     setNextSpawnTime() {
@@ -214,7 +214,7 @@ const AmbientSystem = {
 
         // Play distant swoop sound
         if (window.AudioManager) {
-            console.log('[AmbientSystem] Playing pterodactyl swoop SFX');
+            Logger.info('[AmbientSystem] Playing pterodactyl swoop SFX');
             AudioManager.playSFX('sfx_pterodactyl_swoop');
         }
     },

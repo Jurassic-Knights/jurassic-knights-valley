@@ -16,11 +16,11 @@ class QuestManagerService {
         ];
         this.questIndex = 0;
 
-        console.log('[QuestManager] Initialized Service');
+        Logger.info('[QuestManager] Initialized Service');
     }
 
     init() {
-        console.log('[QuestManager] Starting Quest Chain...');
+        Logger.info('[QuestManager] Starting Quest Chain...');
         this.startQuest(this.quests[0]);
     }
 
@@ -36,7 +36,7 @@ class QuestManagerService {
      */
     startQuest(questConfig) {
         if (!questConfig) {
-            console.log('[QuestManager] No more quests!');
+            Logger.info('[QuestManager] No more quests!');
             this.activeQuest = null;
             if (window.UIManager) UIManager.hideQuestPanel();
             return;
@@ -47,7 +47,7 @@ class QuestManagerService {
             current: 0
         };
 
-        console.log(`[QuestManager] Started Quest: ${this.activeQuest.description}`);
+        Logger.info(`[QuestManager] Started Quest: ${this.activeQuest.description}`);
         this.updateUI();
     }
 
@@ -67,7 +67,7 @@ class QuestManagerService {
                 this.activeQuest.current = this.activeQuest.target;
             }
 
-            console.log(`[QuestManager] Progress: ${this.activeQuest.current}/${this.activeQuest.target}`);
+            Logger.info(`[QuestManager] Progress: ${this.activeQuest.current}/${this.activeQuest.target}`);
             this.updateUI(true); // true = animate
 
             // Check completion
@@ -81,7 +81,7 @@ class QuestManagerService {
      * Complete the current quest
      */
     completeQuest() {
-        console.log('[QuestManager] Quest Complete!');
+        Logger.info('[QuestManager] Quest Complete!');
 
         // VFX: Quest Complete Popup
         if (window.VFXController && window.UIManager) {

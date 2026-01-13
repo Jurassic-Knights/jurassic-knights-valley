@@ -6,7 +6,7 @@
  */
 class EnemySystem {
     constructor() {
-        console.log('[EnemySystem] Initialized');
+        Logger.info('[EnemySystem] Initialized');
     }
 
     init(game) {

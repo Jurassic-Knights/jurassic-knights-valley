@@ -69,7 +69,7 @@ const VFXTriggerService = {
     triggerMagnetCompletionVFX(hero) {
         if (!hero || !window.VFXController) return;
 
-        console.log('[VFXTriggerService] Magnetic Singularity Triggered');
+        Logger.info('[VFXTriggerService] Magnetic Singularity Triggered');
 
         const x = hero.x;
         const y = hero.y;

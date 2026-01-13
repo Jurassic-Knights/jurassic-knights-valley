@@ -32,7 +32,7 @@ class TimeSystem {
 
     init(game) {
         this.game = game;
-        console.log('[TimeSystem] Initialized');
+        Logger.info('[TimeSystem] Initialized');
     }
 
     /**
@@ -43,7 +43,7 @@ class TimeSystem {
         if (!phase || phase === 'auto') {
             this.overrideEnabled = false;
             this.overrideTime = null;
-            console.log('[TimeSystem] Override Disabled (Auto)');
+            Logger.info('[TimeSystem] Override Disabled (Auto)');
             return;
         }
 
@@ -57,7 +57,7 @@ class TimeSystem {
             default: this.overrideTime = 0.50;
         }
         this.dayTime = this.overrideTime;
-        console.log(`[TimeSystem] Override Enabled: ${phase} (dayTime=${this.overrideTime})`);
+        Logger.info(`[TimeSystem] Override Enabled: ${phase} (dayTime=${this.overrideTime})`);
 
         // Emit immediately so lighting updates
         this.checkPhase();
@@ -77,14 +77,14 @@ class TimeSystem {
     setSeasonOverride(season) {
         if (!season || season === 'auto') {
             this.overrideSeason = null;
-            console.log('[TimeSystem] Season Override Disabled');
+            Logger.info('[TimeSystem] Season Override Disabled');
             return;
         }
         const idx = this.config.SEASONS.indexOf(season);
         if (idx !== -1) {
             this.overrideSeason = season;
             this.currentSeasonIdx = idx;
-            console.log(`[TimeSystem] Season Override: ${season}`);
+            Logger.info(`[TimeSystem] Season Override: ${season}`);
             EventBus.emit(GameConstants.Events.SEASON_CHANGE, {
                 season: season,
                 prevSeason: season // Forcing same to avoid logic issues
@@ -162,7 +162,7 @@ class TimeSystem {
         if (newPhase !== this.currentPhase) {
             const prevPhase = this.currentPhase;
             this.currentPhase = newPhase;
-            console.log(`[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase}`);
+            Logger.info(`[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase}`);
             EventBus.emit(GameConstants.Events.DAY_PHASE_CHANGE, {
                 phase: newPhase,
                 prevPhase: prevPhase
@@ -177,7 +177,7 @@ class TimeSystem {
         this.dayCount++;
         this.seasonDayCount++;
 
-        console.log(`[TimeSystem] Day ${this.dayCount} Started`);
+        Logger.info(`[TimeSystem] Day ${this.dayCount} Started`);
 
         // Check Season Change
         if (this.seasonDayCount > this.config.DAYS_PER_SEASON) {
@@ -196,7 +196,7 @@ class TimeSystem {
 
         const newSeason = this.config.SEASONS[this.currentSeasonIdx];
 
-        console.log(`[TimeSystem] Season Change: ${prevSeason} -> ${newSeason}`);
+        Logger.info(`[TimeSystem] Season Change: ${prevSeason} -> ${newSeason}`);
         EventBus.emit(GameConstants.Events.SEASON_CHANGE, {
             season: newSeason,
             prevSeason: prevSeason

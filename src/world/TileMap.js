@@ -34,10 +34,10 @@ const TileMap = {
                 }
             }
 
-            console.log(`[TileMap] Loaded: ${mapPath}`);
+            Logger.info(`[TileMap] Loaded: ${mapPath}`);
             return true;
         } catch (error) {
-            console.error('[TileMap] Failed to load map:', error);
+            Logger.error('[TileMap] Failed to load map:', error);
             return false;
         }
     },

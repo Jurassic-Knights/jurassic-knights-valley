@@ -7,7 +7,7 @@
 class ServiceRegistry {
     constructor() {
         this.services = new Map();
-        console.log('[Registry] Initialized');
+        Logger.info('[Registry] Initialized');
 
         // Expose globally for now
         window.Registry = this;
@@ -20,11 +20,11 @@ class ServiceRegistry {
      */
     register(name, instance) {
         if (this.services.has(name)) {
-            console.error(`[Registry] CRITICAL: Service ${name} is being overwritten! Check initialization order.`);
+            Logger.error(`[Registry] CRITICAL: Service ${name} is being overwritten! Check initialization order.`);
             throw new Error(`Service ${name} already registered.`);
         }
         this.services.set(name, instance);
-        console.log(`[Registry] Registered: ${name}`);
+        Logger.info(`[Registry] Registered: ${name}`);
     }
 
     /**
@@ -43,7 +43,7 @@ class ServiceRegistry {
     assert(name) {
         const service = this.services.get(name);
         if (!service) {
-            console.error(`[Registry] Missing critical dependency: ${name}`);
+            Logger.error(`[Registry] Missing critical dependency: ${name}`);
             throw new Error(`[Registry] Critical dependency missing: ${name}`);
         }
         return service;
@@ -54,7 +54,7 @@ class ServiceRegistry {
      */
     clear() {
         this.services.clear();
-        console.log('[Registry] Cleared');
+        Logger.info('[Registry] Cleared');
     }
 }
 

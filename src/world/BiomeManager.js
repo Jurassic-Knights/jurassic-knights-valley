@@ -141,8 +141,8 @@ const BiomeManager = {
     IRONHAVEN_OFFSET: { x: 10000, y: 10000 },
 
     init() {
-        console.log('[BiomeManager] Initialized - World size:', this.WORLD_WIDTH, 'x', this.WORLD_HEIGHT);
-        console.log('[BiomeManager] Biomes:', Object.keys(this.BIOMES).join(', '));
+        Logger.info('[BiomeManager] Initialized - World size:', this.WORLD_WIDTH, 'x', this.WORLD_HEIGHT);
+        Logger.info('[BiomeManager] Biomes:', Object.keys(this.BIOMES).join(', '));
     },
 
     /**

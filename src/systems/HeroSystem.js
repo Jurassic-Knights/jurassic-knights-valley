@@ -28,7 +28,7 @@ class HeroSystem {
         };
 
         this.initListeners();
-        console.log('[HeroSystem] Initialized');
+        Logger.info('[HeroSystem] Initialized');
     }
 
     init(game) {
@@ -136,7 +136,7 @@ class HeroSystem {
                 EventBus.emit(GameConstants.Events.HERO_RESPAWNED, { hero });
             }
 
-            console.log('[HeroSystem] Hero respawned at', spawnPos);
+            Logger.info('[HeroSystem] Hero respawned at', spawnPos);
         }, 2000);
     }
 
@@ -412,7 +412,7 @@ class HeroSystem {
         let justKilled = false;
         const dmg = combat ? combat.damage : GameConstants.Combat.DEFAULT_DAMAGE;
 
-        console.log(`[HeroSystem] Attacking ${resource.constructor.name}, damage: ${dmg}`);
+        Logger.info(`[HeroSystem] Attacking ${resource.constructor.name}, damage: ${dmg}`);
 
         // For Enemy entities, prefer their own takeDamage method (it handles aggro/death)
         if (isEnemy && resource.takeDamage) {

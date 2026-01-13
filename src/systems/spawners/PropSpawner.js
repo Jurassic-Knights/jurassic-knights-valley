@@ -41,13 +41,13 @@ class PropSpawner {
      */
     spawnProps() {
         if (!window.Prop) {
-            console.warn('[PropSpawner] Prop class not found, skipping prop spawn.');
+            Logger.warn('[PropSpawner] Prop class not found, skipping prop spawn.');
             return;
         }
 
         const islandManager = this.spawnManager.game?.getSystem('IslandManager');
         if (!islandManager) {
-            console.warn('[PropSpawner] IslandManager not found.');
+            Logger.warn('[PropSpawner] IslandManager not found.');
             return;
         }
 
@@ -69,7 +69,7 @@ class PropSpawner {
                 this.spawnScatteredItems(island, itemList, spawnedProps);
             }
         }
-        console.log(`[PropSpawner] Spawned ${spawnedProps.length} props.`);
+        Logger.info(`[PropSpawner] Spawned ${spawnedProps.length} props.`);
     }
 
     spawnFoliage(island, foliageList, spawnedProps) {

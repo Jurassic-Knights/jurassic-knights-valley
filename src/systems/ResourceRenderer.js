@@ -4,7 +4,7 @@
  */
 class ResourceRendererService {
     constructor() {
-        console.log('[ResourceRenderer] Initialized');
+        Logger.info('[ResourceRenderer] Initialized');
     }
 
     render(ctx, res, includeShadow = true) {

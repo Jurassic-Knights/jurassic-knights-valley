@@ -13,7 +13,7 @@ class VFXSystem {
         this.activeSequences = []; // List of sequences currently playing
         this.initialized = false;
 
-        console.log('[VFXSystem] Constructed');
+        Logger.info('[VFXSystem] Constructed');
     }
 
     init(game) {
@@ -26,16 +26,16 @@ class VFXSystem {
 
             this.bgParticles.init('vfx-canvas');
             this.fgParticles.init('vfx-canvas-fg');
-            console.log('[VFXSystem] Particles initialized');
+            Logger.info('[VFXSystem] Particles initialized');
         } else {
-            console.error('[VFXSystem] ParticleSystem not found! Check load order.');
+            Logger.error('[VFXSystem] ParticleSystem not found! Check load order.');
         }
 
         // Subscribe to game state for implicit event detection
         // const gameState = this.game ? this.game.getSystem('GameState') : null;
 
         this.initialized = true;
-        console.log('[VFXSystem] Initialized');
+        Logger.info('[VFXSystem] Initialized');
         if (window.Registry) Registry.register('VFXController', this);
     }
 
@@ -90,7 +90,7 @@ class VFXSystem {
             config = { type: cue.type, ...(cue.params || {}) };
         } else {
             // cue.template might refer to a template that doesn't exist?
-            console.warn('[VFXSystem] Invalid cue config:', cue);
+            Logger.warn('[VFXSystem] Invalid cue config:', cue);
             return;
         }
 
@@ -113,7 +113,7 @@ class VFXSystem {
      */
     playSequence(sequenceName, x, y, options = {}) {
         if (!window.VFXConfig || !VFXConfig.SEQUENCES[sequenceName]) {
-            console.warn(`[VFXSystem] Sequence not found: ${sequenceName}`);
+            Logger.warn(`[VFXSystem] Sequence not found: ${sequenceName}`);
             return;
         }
 
@@ -155,7 +155,7 @@ class VFXSystem {
             if (window.VFXConfig && VFXConfig.TEMPLATES[configOrTemplateName]) {
                 config = VFXConfig.TEMPLATES[configOrTemplateName];
             } else {
-                console.warn(`[VFXSystem] Template not found: ${configOrTemplateName}`);
+                Logger.warn(`[VFXSystem] Template not found: ${configOrTemplateName}`);
                 return;
             }
         }

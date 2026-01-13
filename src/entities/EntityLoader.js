@@ -15,7 +15,7 @@ const EntityLoader = {
      * Called after all entity files are loaded
      */
     init() {
-        console.log('[EntityLoader] Initializing entity registry...');
+        Logger.info('[EntityLoader] Initializing entity registry...');
 
         // Ensure registry exists
         window.EntityRegistry = window.EntityRegistry || {
@@ -45,7 +45,7 @@ const EntityLoader = {
         };
 
         const total = Object.values(counts).reduce((a, b) => a + b, 0);
-        console.log(`[EntityLoader] Loaded ${total} entities:`, counts);
+        Logger.info(`[EntityLoader] Loaded ${total} entities:`, counts);
     },
 
     /**
@@ -61,7 +61,7 @@ const EntityLoader = {
             if (current && current[part] !== undefined) {
                 current = current[part];
             } else {
-                console.warn(`[EntityLoader] Entity not found: ${path}`);
+                Logger.warn(`[EntityLoader] Entity not found: ${path}`);
                 return null;
             }
         }

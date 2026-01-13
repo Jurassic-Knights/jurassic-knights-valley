@@ -428,6 +428,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_Saurians] Registered 60 high-fidelity sounds (12 saurians × 5)');
+        Logger.info('[SFX_Saurians] Registered 60 high-fidelity sounds (12 saurians × 5)');
     }
 })();

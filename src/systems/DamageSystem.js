@@ -71,7 +71,7 @@ const DamageSystem = {
     init(game) {
         this.game = game;
         this.initListeners();
-        console.log('[DamageSystem] Initialized');
+        Logger.info('[DamageSystem] Initialized');
     },
 
     initListeners() {

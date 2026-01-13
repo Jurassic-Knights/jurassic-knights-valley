@@ -408,6 +408,6 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        console.log('[SFX_Herbivores] Registered 50 high-fidelity sounds (10 herbivores × 5)');
+        Logger.info('[SFX_Herbivores] Registered 50 high-fidelity sounds (10 herbivores × 5)');
     }
 })();

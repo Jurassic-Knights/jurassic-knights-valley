@@ -11,7 +11,7 @@ class CombatController {
     constructor() {
         this.game = null;
         this._logTimer = 0;
-        console.log('[CombatController] Constructed');
+        Logger.info('[CombatController] Constructed');
     }
 
     /**
@@ -20,7 +20,7 @@ class CombatController {
      */
     init(game) {
         this.game = game;
-        console.log('[CombatController] Initialized');
+        Logger.info('[CombatController] Initialized');
         if (window.Registry) Registry.register('CombatController', this);
     }
 
@@ -42,7 +42,7 @@ class CombatController {
 
         // Debug once per second
         if (doLog) {
-            // console.log(`[CombatController] Entities - Resources: ${resources.length}, Dinos: ${dinosaurs.length}`);
+            // Logger.info(`[CombatController] Entities - Resources: ${resources.length}, Dinos: ${dinosaurs.length}`);
         }
 
         const combat = hero.components && hero.components.combat;
@@ -116,7 +116,7 @@ class CombatController {
 
         // Auto-attack closest target
         if (closestTarget) {
-            // console.log(`[Combat] Target found: ${targetType}`);
+            // Logger.info(`[Combat] Target found: ${targetType}`);
             // Freeze dinosaurs while being attacked
             if (targetType === 'dinosaur') {
                 closestTarget.isBeingAttacked = true;

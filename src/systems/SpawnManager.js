@@ -21,7 +21,7 @@ class SpawnManagerService {
         this.enemySpawner = null;
         this.dropSpawner = null;
 
-        console.log('[SpawnManager] Initialized Service');
+        Logger.info('[SpawnManager] Initialized Service');
     }
 
     /**
@@ -37,7 +37,7 @@ class SpawnManagerService {
         if (window.DropSpawner) this.dropSpawner = new DropSpawner(this);
 
         this.initListeners();
-        console.log('[SpawnManager] Initialized');
+        Logger.info('[SpawnManager] Initialized');
     }
 
     initListeners() {
@@ -59,7 +59,7 @@ class SpawnManagerService {
     start() {
         if (!this.game) return;
 
-        console.log('[SpawnManager] Starting lifecycle...');
+        Logger.info('[SpawnManager] Starting lifecycle...');
         this.spawnHero();
 
         if (this.resourceSpawner) {
@@ -110,14 +110,14 @@ class SpawnManagerService {
 
         if (window.EntityManager) {
             EntityManager.add(hero);
-            console.log(`[SpawnManager] Hero added. Total: ${EntityManager.getAll().length}`);
+            Logger.info(`[SpawnManager] Hero added. Total: ${EntityManager.getAll().length}`);
         }
 
         if (window.GameState) {
             hero.inventory.gold = window.GameState.get('gold') || 0;
         }
 
-        console.log('[SpawnManager] Hero spawned at home island');
+        Logger.info('[SpawnManager] Hero spawned at home island');
     }
 
     // ============================================
@@ -168,7 +168,7 @@ class SpawnManagerService {
             if (window.EntityManager) EntityManager.add(merchant);
         }
 
-        console.log(`[SpawnManager] Spawned ${this.merchants.length} merchants`);
+        Logger.info(`[SpawnManager] Spawned ${this.merchants.length} merchants`);
     }
 
     getMerchantNearHero(hero) {
@@ -198,7 +198,7 @@ class SpawnManagerService {
         if (!island) return;
 
         const count = window.IslandUpgrades ? IslandUpgrades.getResourceSlots(gridX, gridY) : 1;
-        console.log(`[SpawnManager] Initializing ${island.name} (${island.category}), count: ${count}`);
+        Logger.info(`[SpawnManager] Initializing ${island.name} (${island.category}), count: ${count}`);
 
         if (this.resourceSpawner) {
             if (island.category === 'resource') {
@@ -208,7 +208,7 @@ class SpawnManagerService {
             }
         }
 
-        console.log(`[SpawnManager] Initialized unlocked island: ${island.name}`);
+        Logger.info(`[SpawnManager] Initialized unlocked island: ${island.name}`);
     }
 
     refreshIslandResources(gridX, gridY) {
@@ -273,7 +273,7 @@ class SpawnManagerService {
             }
         }
 
-        console.log(`[SpawnManager] Updated respawn timers for island ${gridX},${gridY}`);
+        Logger.info(`[SpawnManager] Updated respawn timers for island ${gridX},${gridY}`);
     }
 
     // ============================================
