@@ -1,65 +1,17 @@
 /**
- * Biome Configuration
- * Centralized data for biome-specific props, items, and spawn rules.
+ * BiomeConfig - Biome Type Definitions
+ * 
+ * REFACTOR NOTICE: Prop/Foliage configs moved to PropConfig.js
+ * 
+ * Contains open world biome definitions, difficulty multipliers,
+ * and enemy spawning rules.
  */
+
 const BiomeConfig = {
-    // Foliage (Clusters)
-    FOLIAGE_MAP: {
-        'Dead Woods': ['prop_dead_stump', 'prop_dead_roots'],
-        'Mud Flats': ['prop_mud_reeds', 'prop_mud_puddle'],
-        'Bone Valley': ['prop_bone_ribs'], // Ribs act as landscape
-        'The Ruins': ['prop_ruins_slab'],
-        'Scrap Yard': ['prop_scrap_tire'], // Tires as "industrial foliage"
-        'Iron Ridge': ['prop_iron_pipe']   // Pipes as "industrial foliage"
-    },
-
-    // Items (Scattered)
-    ITEM_MAP: {
-        'Quarry Fields': ['prop_quarry_crate', 'prop_quarry_drill'],
-        'Iron Ridge': ['prop_iron_gear'],
-        'Crossroads': ['prop_cross_sign', 'prop_cross_post'],
-        'Scrap Yard': ['prop_scrap_cog'],
-        'Bone Valley': ['prop_bone_skull'], // Skulls are items
-        'The Ruins': ['prop_ruins_pillar']
-    },
-
-    // Merchant Spawning Configuration
-    MERCHANT: {
-        PADDING: 70, // Distance from wall/bridge edges
-        DEFAULT_OFFSET: 60
-    },
-
-    // Prop Spawning Configuration
-    PROPS: {
-        // Universal Rules
-        MIN_DIST: 80, // Minimum distance between any props
-        BRIDGE_VISUAL_PADDING: 100, // Exclusion zone around bridges
-
-        // Foliage Clusters
-        CLUSTERS: {
-            COUNT_MIN: 4,
-            COUNT_RND: 3,
-            PROPS_PER_CLUSTER_MIN: 3,
-            PROPS_PER_CLUSTER_RND: 3,
-            RADIUS: 120
-        },
-
-        // Scattered Items
-        ITEMS: {
-            COUNT_MIN: 2,
-            COUNT_RND: 3,
-            MIN_DIST_MULTIPLIER: 1.5 // Items need more breathing room
-        }
-    },
-
     // ============================================
     // OPEN WORLD BIOMES (Enemy Territory)
     // ============================================
 
-    /**
-     * Open world biome types extending organically from the zone grid.
-     * Players can freely travel to any biome at their own risk.
-     */
     types: {
         grasslands: {
             id: 'grasslands',
@@ -77,7 +29,7 @@ const BiomeConfig = {
                 { enemyId: 'feral_soldier', weight: 40, groupSize: { min: 1, max: 2 } }
             ],
             bossId: 'grasslands_alpha',
-            bossRespawnTime: 300 // 5 minutes
+            bossRespawnTime: 300
         },
         tundra: {
             id: 'tundra',
@@ -96,7 +48,7 @@ const BiomeConfig = {
                 { enemyId: 'mammoth_rider', weight: 25, groupSize: { min: 1, max: 1 } }
             ],
             bossId: 'tundra_warlord',
-            bossRespawnTime: 360 // 6 minutes
+            bossRespawnTime: 360
         },
         desert: {
             id: 'desert',
@@ -115,7 +67,7 @@ const BiomeConfig = {
                 { enemyId: 'sand_wyrm', weight: 25, groupSize: { min: 1, max: 1 } }
             ],
             bossId: 'desert_overlord',
-            bossRespawnTime: 420 // 7 minutes
+            bossRespawnTime: 420
         },
         lava_crags: {
             id: 'lava_crags',
@@ -135,14 +87,10 @@ const BiomeConfig = {
                 { enemyId: 'ember_hound', weight: 15, groupSize: { min: 3, max: 6 } }
             ],
             bossId: 'lava_tyrant',
-            bossRespawnTime: 480 // 8 minutes
+            bossRespawnTime: 480
         }
     },
 
-    /**
-     * Difficulty multipliers for enemy stats based on biome difficulty tier.
-     * Applied to base enemy stats at spawn time.
-     */
     difficultyMultipliers: {
         1: { health: 1.0, damage: 1.0, xp: 1.0, loot: 1.0 },
         2: { health: 1.5, damage: 1.3, xp: 1.5, loot: 1.25 },
@@ -150,34 +98,29 @@ const BiomeConfig = {
         4: { health: 3.0, damage: 2.0, xp: 3.0, loot: 2.0 }
     },
 
-    /**
-     * Elite enemy variant multipliers (rare spawns).
-     * Applied on top of difficulty multipliers.
-     */
     eliteMultipliers: {
-        stats: 2.0,   // 2x health/damage
-        loot: 3.0,    // 3x loot drops
-        xp: 2.5       // 2.5x experience
+        stats: 2.0,
+        loot: 3.0,
+        xp: 2.5
     },
 
-    /**
-     * Default patrol and aggro behavior settings.
-     * Can be overridden per-biome or per-enemy type.
-     */
     patrolDefaults: {
-        areaRadius: 300,      // Enemies wander within this radius from spawn
-        leashDistance: 500,   // Stop chasing player beyond this distance
-        aggroRange: 200,      // Detection range for player
-        packAggroRadius: 150  // Range at which pack members join aggro
+        areaRadius: 300,
+        leashDistance: 500,
+        aggroRange: 200,
+        packAggroRadius: 150
     },
 
-    /**
-     * Transition zone configuration where biomes blend together.
-     */
     transitionZones: {
-        blendWidth: 200,      // Width of gradient border between biomes
-        mixedSpawnChance: 0.3 // Chance to spawn enemy from adjacent biome
-    }
+        blendWidth: 200,
+        mixedSpawnChance: 0.3
+    },
+
+    // Backward compatibility aliases
+    get FOLIAGE_MAP() { return (window.PropConfig || {}).FOLIAGE_MAP || {}; },
+    get ITEM_MAP() { return (window.PropConfig || {}).ITEM_MAP || {}; },
+    get MERCHANT() { return (window.PropConfig || {}).MERCHANT || {}; },
+    get PROPS() { return (window.PropConfig || {}).SPAWN || {}; }
 };
 
 window.BiomeConfig = BiomeConfig;
