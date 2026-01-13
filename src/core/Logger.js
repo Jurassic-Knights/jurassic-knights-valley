@@ -38,7 +38,7 @@ const Logger = {
 
     setLevel(level) {
         this.currentLevel = level;
-        Logger.info(`[Logger] Level set to: ${this._getLevelName(level)}`);
+        console.log(`[Logger] Level set to: ${this._getLevelName(level)}`);
     },
 
     _getLevelName(level) {
@@ -53,25 +53,25 @@ const Logger = {
 
     debug(tag, ...args) {
         if (this.currentLevel <= this.LEVELS.DEBUG) {
-            Logger.info(...this._format(this.LEVELS.DEBUG, tag, ...args));
+            console.log(...this._format(this.LEVELS.DEBUG, tag, ...args));
         }
     },
 
     info(tag, ...args) {
         if (this.currentLevel <= this.LEVELS.INFO) {
-            Logger.info(...this._format(this.LEVELS.INFO, tag, ...args));
+            console.log(...this._format(this.LEVELS.INFO, tag, ...args));
         }
     },
 
     warn(tag, ...args) {
         if (this.currentLevel <= this.LEVELS.WARN) {
-            Logger.warn(...this._format(this.LEVELS.WARN, tag, ...args));
+            console.warn(...this._format(this.LEVELS.WARN, tag, ...args));
         }
     },
 
     error(tag, ...args) {
         if (this.currentLevel <= this.LEVELS.ERROR) {
-            Logger.error(...this._format(this.LEVELS.ERROR, tag, ...args));
+            console.error(...this._format(this.LEVELS.ERROR, tag, ...args));
         }
     },
 

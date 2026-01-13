@@ -48,12 +48,11 @@
         "name": "Tall Grass",
         "type": "flora",
         "biome": "grasslands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "tall wild grass patch, green blades, seed heads, meadow vegetation",
         "files": {
             "original": "assets/images/environment/flora/flora_grass_grasslands_original.png"
-        },
-        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
+        }
     },
     {
         "id": "flora_grass_tundra",
@@ -82,12 +81,11 @@
         "name": "Scorched Grass",
         "type": "flora",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "burnt grass patch, charred blades, ash residue, fire damage",
         "files": {
             "original": "assets/images/environment/flora/flora_grass_badlands_original.png"
-        },
-        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
+        }
     },
     {
         "id": "flora_flower_grasslands",
@@ -171,12 +169,11 @@
         "name": "Tundra Moss",
         "type": "flora",
         "biome": "tundra",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "thick moss patch, cold-adapted, grey-green color, rocky surface growth",
         "files": {
             "original": "assets/images/environment/flora/flora_moss_tundra_original.png"
-        },
-        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
+        }
     },
     {
         "id": "flora_stump_grasslands",
@@ -326,12 +323,11 @@
         "name": "Desert Boulder",
         "type": "flora",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "sun-baked sandstone boulder, wind-eroded surface, desert weathering",
         "files": {
             "original": "assets/images/environment/flora/flora_rock_desert_original.png"
-        },
-        "declineNote": "Generated on isometric tile - must be standalone floating vegetation with no ground/tile"
+        }
     },
     {
         "id": "flora_rock_badlands",

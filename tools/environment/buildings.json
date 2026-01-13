@@ -84,7 +84,7 @@
         "name": "Watchtower",
         "category": "military",
         "biome": "grasslands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "wooden watchtower, platform with railing, ladder access, thatched roof",
         "groupId": "building_watchtower_grasslands",
         "files": {
@@ -96,7 +96,7 @@
         "name": "Outpost Tower",
         "category": "military",
         "biome": "tundra",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "fortified stone tower, snow-covered roof, arrow slits, signal fire platform",
         "groupId": "building_outpost_tower_tundra",
         "files": {
@@ -108,7 +108,7 @@
         "name": "Minaret Tower",
         "category": "military",
         "biome": "desert",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "tall sandstone tower, domed top, weathered surface, ancient construction",
         "groupId": "building_minaret_tower_desert",
         "files": {
@@ -120,7 +120,7 @@
         "name": "Guard Tower",
         "category": "military",
         "biome": "badlands",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "concrete guard tower, searchlight mount, machine gun nest, military bunker",
         "groupId": "building_guard_tower_badlands",
         "files": {

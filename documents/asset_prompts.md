@@ -113,7 +113,7 @@ full body sprite of an anthropomorphic [SPECIES NAME], a different character tha
 ### Humans - from human.json
 > All humans must have faces covered (Helmet Mandate) with medieval + WWI aesthetic
 ```
-full body sprite of a [DESCRIPTION], a different character and headgear or helmet than the reference image, game character asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, wearing military gear with medieval armor elements, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+full body sprite of a [DESCRIPTION], a different character and headgear or helmet than the reference image but similar body proportions, game character asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, wearing military gear with medieval armor elements, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 **Face covering options** (VARY - avoid overusing gas mask):
@@ -242,7 +242,7 @@ When generating enemies, match their uniforms, armor, and equipment to their ass
 
 ### NPCs/Merchants
 ```
-full body sprite of a [MERCHANT TYPE], a different character and headgear than the reference image, game character asset, stoneshard style, high fidelity pixel art, wearing WWI-era military gear, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+full body sprite of a [MERCHANT TYPE], a different character and headgear than the reference image but similar body proportions, game character asset, stoneshard style, high fidelity pixel art, wearing WWI-era military gear, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 **Zone-Themed Merchants:**
