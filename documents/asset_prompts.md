@@ -113,7 +113,7 @@ full body sprite of an anthropomorphic [SPECIES NAME], a different character tha
 ### Humans - from human.json
 > All humans must have faces covered (Helmet Mandate) with medieval + WWI aesthetic
 ```
-full body sprite of a [DESCRIPTION], a different character and headgear or helmet than the reference image but similar body proportions, game character asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, wearing military gear with medieval armor elements, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+full body sprite of a chibi [DESCRIPTION], a different character and headgear or helmet than the reference image but similar body proportions, game character asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, wearing military gear with medieval armor elements, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 **Face covering options** (VARY - avoid overusing gas mask):
@@ -242,7 +242,7 @@ When generating enemies, match their uniforms, armor, and equipment to their ass
 
 ### NPCs/Merchants
 ```
-full body sprite of a [MERCHANT TYPE], a different character and headgear than the reference image but similar body proportions, game character asset, stoneshard style, high fidelity pixel art, wearing WWI-era military gear, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+full body sprite of a chibi [MERCHANT TYPE], a different character and headgear or helmet than the reference image but similar body proportions, game character asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, wearing military gear with medieval armor elements, [SPECIFIC FACE COVERING], facing left, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 **Zone-Themed Merchants:**
@@ -329,17 +329,24 @@ sprite of [PROP DESCRIPTION], game world prop, stoneshard style, high fidelity p
 ---
 
 ### Architecture (Structures)
+
+**Linear Structures (fences, walls, bridges, roads):**
 ```
 sprite of [ARCHITECTURE DESCRIPTION], game world structure, stoneshard style, high fidelity pixel art, weathered, medieval/WWI aesthetic, horizontal side view, facing left to right, isolated on white background, no text, no letters
 ```
 
-> **IMPORTANT**: Architecture assets must be rendered in **horizontal side view** (left to right), NOT isometric diagonal. Think of viewing a fence or wall from the side.
+**Buildings & Towers:**
+```
+sprite of [BUILDING DESCRIPTION], game world structure, stoneshard style, high fidelity pixel art, weathered, medieval/WWI aesthetic, isometric perspective, isolated on white background, no text, no letters
+```
+
+> **IMPORTANT**: 
+> - **Linear structures** (fences, walls, gates, bridges, roads) use **horizontal side view** (left to right)
+> - **Buildings and towers** use **isometric perspective**
 
 **Examples:**
-- Fences, walls, gates, bridges
-- Roads, paths, trenches
-- Towers, posts, signposts
-- Barricades, rails, ladders
+- Linear: Fences, walls, gates, bridges, roads, paths, trenches, barricades, rails
+- Buildings: Towers, guard posts, outposts, bunkers, watchtowers
 
 ---
 

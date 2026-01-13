@@ -308,40 +308,15 @@ const GameRenderer = {
         }
         if (timing) { timing.vfxBg += performance.now() - t0; }
 
-        // Y-SORT: Collect all active world entities from EntityManager
+        // Y-SORT: Collect all active world entities via EntityRenderService
         if (timing) t0 = performance.now();
-        // GC Optimization: Reuse pre-allocated array
-        const sortableEntities = this._sortableEntities;
-        sortableEntities.length = 0; // Clear without deallocation
-
-        if (window.EntityManager) {
-            // Optimization: Query only visible entities (Quadtree)
-            const bounds = this.getVisibleBounds();
-            // Add padding to prevent culling objects partially on screen
-            bounds.x -= 200;
-            bounds.y -= 200;
-            bounds.width += 400;
-            bounds.height += 400;
-
-            const allEntities = EntityManager.queryRect(bounds);
-
-            // Shallow copy and filter active
-            for (const e of allEntities) {
-                if (e.active) sortableEntities.push(e);
-            }
-        }
-
-        // Sort by Y position (bottom of sprite = y + height/2 for accurate depth)
-        sortableEntities.sort((a, b) => {
-            const ay = a.y + (a.height ? a.height / 2 : 0);
-            const by = b.y + (b.height ? b.height / 2 : 0);
-            return ay - by;
-        });
+        const sortableEntities = window.EntityRenderService
+            ? EntityRenderService.collectAndSort(this.getVisibleBounds())
+            : [];
         if (timing) { timing.entitySort += performance.now() - t0; }
 
         // --- SHADOW PASS ---
         if (timing) t0 = performance.now();
-        // Render all shadows to offscreen buffer and composite ONCE
         this.renderShadowPass(sortableEntities);
         if (timing) { timing.shadows += performance.now() - t0; }
 
@@ -350,7 +325,7 @@ const GameRenderer = {
         this.ctx.save();
         this.ctx.translate(-this.viewport.x, -this.viewport.y);
 
-        // Render HomeBase (Trees + Outpost Building) ON TOP of rest area overlay (Use cached ref)
+        // Render HomeBase first (Use cached ref)
         let tSub;
         if (timing) tSub = performance.now();
         const homeBase = this._homeBase;
@@ -359,82 +334,17 @@ const GameRenderer = {
         }
         if (timing) { timing.entHomeBase = (timing.entHomeBase || 0) + performance.now() - tSub; }
 
-        // Use cached renderer refs
-        const heroRenderer = this._heroRenderer;
-        const dinosaurRenderer = this._dinosaurRenderer;
-        const resourceRenderer = this._resourceRenderer;
-
-        // Track entity counts and sub-times
-        if (timing) {
-            timing.entHeroTime = timing.entHeroTime || 0;
-            timing.entDinoTime = timing.entDinoTime || 0;
-            timing.entResTime = timing.entResTime || 0;
-            timing.entOtherTime = timing.entOtherTime || 0;
-            timing.entCount = timing.entCount || 0;
+        // Delegate entity rendering to EntityRenderService
+        if (window.EntityRenderService) {
+            const renderers = {
+                hero: this.hero,
+                heroRenderer: this._heroRenderer,
+                dinosaurRenderer: this._dinosaurRenderer,
+                resourceRenderer: this._resourceRenderer
+            };
+            EntityRenderService.renderAll(this.ctx, sortableEntities, renderers, timing);
+            EntityRenderService.renderUIOverlays(this.ctx, sortableEntities, timing);
         }
-
-        for (const entity of sortableEntities) {
-            if (timing) tSub = performance.now();
-            // Type-based Rendering Dispatch using entityType (faster than constructor.name)
-            const type = entity.entityType;
-
-            // Pass 'false' for includeShadow to prevent double rendering
-            if (entity === this.hero) {
-                if (heroRenderer) {
-                    heroRenderer.render(this.ctx, this.hero, false);
-                } else {
-                    if (typeof entity.render === 'function') entity.render(this.ctx);
-                }
-                if (timing) { timing.entHeroTime += performance.now() - tSub; }
-            }
-            else if (type === EntityTypes.DINOSAUR && dinosaurRenderer) {
-                dinosaurRenderer.render(this.ctx, entity, false);
-                if (timing) { timing.entDinoTime += performance.now() - tSub; }
-            }
-            else if (type === EntityTypes.RESOURCE && resourceRenderer) {
-                resourceRenderer.render(this.ctx, entity, false);
-                if (timing) { timing.entResTime += performance.now() - tSub; }
-            }
-            else if (type === EntityTypes.MERCHANT) {
-                // Merchant handles its own rendering
-                if (typeof entity.render === 'function') entity.render(this.ctx);
-                if (timing) {
-                    timing.entMerchantTime = (timing.entMerchantTime || 0) + performance.now() - tSub;
-                    timing.entMerchantCount = (timing.entMerchantCount || 0) + 1;
-                }
-            }
-            else if (type === EntityTypes.DROPPED_ITEM) {
-                // Dropped item rendering
-                if (typeof entity.render === 'function') entity.render(this.ctx);
-                if (timing) {
-                    timing.entDroppedTime = (timing.entDroppedTime || 0) + performance.now() - tSub;
-                    timing.entDroppedCount = (timing.entDroppedCount || 0) + 1;
-                }
-            }
-            else {
-                // Unknown entity type - track it
-                if (typeof entity.render === 'function') {
-                    entity.render(this.ctx);
-                }
-                if (timing) {
-                    timing.entOtherTime += performance.now() - tSub;
-                    // Track unknown types
-                    const typeName = type || entity.constructor?.name || 'unknown';
-                    timing.entOtherTypes = timing.entOtherTypes || {};
-                    timing.entOtherTypes[typeName] = (timing.entOtherTypes[typeName] || 0) + 1;
-                }
-            }
-            if (timing) timing.entCount++;
-        }
-
-        // Render UI Overlays (Health Bars) on top of EVERYTHING
-        if (timing) tSub = performance.now();
-        for (const entity of sortableEntities) {
-            if (typeof entity.renderUI === 'function') {
-                entity.renderUI(this.ctx);
-            }
-        }
-        if (timing) { timing.entUITime = (timing.entUITime || 0) + performance.now() - tSub; }
 
         this.ctx.restore();
         if (timing) { timing.entities += performance.now() - t0; }

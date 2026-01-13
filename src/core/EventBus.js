@@ -40,7 +40,13 @@ class EventBusHub {
      */
     emit(eventName, data) {
         if (!this.listeners[eventName]) return;
-        this.listeners[eventName].forEach(callback => callback(data));
+        this.listeners[eventName].forEach(callback => {
+            try {
+                callback(data);
+            } catch (err) {
+                console.error(`[EventBus] Error in listener for '${eventName}':`, err);
+            }
+        });
     }
 }
 

@@ -214,92 +214,9 @@ class HeroSystem {
     }
 
     updateCombat(dt, hero) {
-        // Update attack timer
-        if (hero.attackTimer > 0) {
-            hero.attackTimer -= (dt / 1000);
-        }
-
-        // Components update
-        if (hero.components.combat) hero.components.combat.update(dt);
-
-        // --- Auto-Targeting Logic ---
-        // Find nearest valid target within range
-        let target = null;
-        let minDistSq = Infinity; // Use squared distance to avoid Math.sqrt
-        const scanRange = hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE;
-
-        // Check Enemies (HIGHEST Priority - hostile entities)
-        // Note: EntityManager.getByType uses constructor.name ('Enemy'), not entityType
-        if (window.EntityManager) {
-            // Check both Enemy and Boss types (Boss extends Enemy but has different constructor name)
-            const enemyTypes = ['Enemy', 'Boss'];
-            for (const enemyType of enemyTypes) {
-                const candidates = EntityManager.getByType(enemyType);
-                for (const candidate of candidates) {
-                    if (!candidate.active || candidate.isDead) continue;
-
-                    const dx = candidate.x - hero.x;
-                    const dy = candidate.y - hero.y;
-                    const distSq = dx * dx + dy * dy;
-                    const rangeSq = scanRange * scanRange;
-
-                    if (distSq <= rangeSq && distSq < minDistSq) {
-                        minDistSq = distSq;
-                        target = candidate;
-                    }
-                }
-            }
-        }
-
-        // Check Dinosaurs (Second Priority)
-        if (!target && window.EntityManager) {
-            const candidates = EntityManager.getInRadius(hero.x, hero.y, scanRange, 'Dinosaur');
-
-            for (const candidate of candidates) {
-                if (!candidate.active || candidate.state === 'dead') continue;
-
-                // Use squared distance (avoid Math.sqrt)
-                const dx = candidate.x - hero.x;
-                const dy = candidate.y - hero.y;
-                const distSq = dx * dx + dy * dy;
-                if (distSq < minDistSq) {
-                    minDistSq = distSq;
-                    target = candidate;
-                }
-            }
-        }
-
-        // Check Resources (Lowest Priority, mining)
-        if (!target && window.EntityManager) {
-            const miningRange = hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE;
-            const candidates = EntityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
-            for (const candidate of candidates) {
-                if (!candidate.active || candidate.state === 'depleted') continue;
-
-                // Use squared distance (avoid Math.sqrt)
-                const dx = candidate.x - hero.x;
-                const dy = candidate.y - hero.y;
-                const distSq = dx * dx + dy * dy;
-                if (distSq < minDistSq) {
-                    minDistSq = distSq;
-                    target = candidate;
-                }
-            }
-        }
-
-        // Auto-Attack
-        if (target) {
-            this.tryAttack(hero, target);
-        } else {
-            hero.isAttacking = false;
-        }
-
-        // --- Manual Interaction (Shops, Npcs) ---
-        // 'E' Key
-        if (window.InputSystem && typeof InputSystem.hasIntent === 'function' && InputSystem.hasIntent('INTERACT')) {
-            // Interaction logic (usually handled by Game.js triggers currently)
-            // We can emit an event or check triggers here.
-            // For now, let's just ensure we capture the intent if needed for future.
+        // Delegate to HeroCombatService for auto-targeting and attack execution
+        if (window.HeroCombatService) {
+            HeroCombatService.update(dt, hero);
         }
     }
 
@@ -340,90 +257,15 @@ class HeroSystem {
 
     // --- Public Actions (Callable by Game/Input) ---
 
-    tryAttack(hero, resource) {
-        // Migrated from Hero.js
-        if (!resource || !resource.active) return false;
-
-        // Check entity type - enemies and dinos use ranged combat
-        // Use constructor.name as primary check (more reliable than entityType)
-        const isEnemy = resource.constructor.name === 'Enemy' ||
-            resource.constructor.name === 'Boss' ||
-            resource.isBoss === true;
-        const isDino = resource.constructor.name === 'Dinosaur' ||
-            resource.entityType === EntityTypes?.DINOSAUR;
-        const isRangedTarget = isDino || isEnemy;
-
-        // Skip if resource is depleted (but not for enemies/dinos)
-        if (!isRangedTarget && resource.state === 'depleted') return false;
-        // Skip if enemy is dead
-        if (isEnemy && resource.isDead) return false;
-
-        // Use squared distance comparison (avoid Math.sqrt)
-        const dx = hero.x - resource.x;
-        const dy = hero.y - resource.y;
-        const distSq = dx * dx + dy * dy;
-
-        const combat = hero.components.combat;
-        const effectiveRange = isRangedTarget ? (hero.gunRange || GameConstants.Combat.DEFAULT_GUN_RANGE) : (hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE);
-        const rangeSq = effectiveRange * effectiveRange;
-
-        if (distSq > rangeSq) return false;
-
-        // Update Hero State for Renderer
-        hero.targetResource = resource;
-        hero.isAttacking = true;
-
-        // Combat Component Cooldown Check
-        if (combat) {
-            if (!combat.attack()) return false;
-            hero.attackTimer = 1 / combat.rate;
-        } else {
-            if (hero.attackTimer > 0) return false;
-            hero.attackTimer = 0.5;
+    /**
+     * Attack a target - delegated to HeroCombatService
+     * Kept for backward compatibility with external callers
+     */
+    tryAttack(hero, target) {
+        if (window.HeroCombatService) {
+            return HeroCombatService.tryAttack(hero, target);
         }
-
-        // SFX
-        if (window.AudioManager) {
-            AudioManager.playSFX(isRangedTarget ? 'sfx_hero_shoot' : 'sfx_hero_swing');
-        }
-
-        // VFX: Muzzle Flash
-        const vfxController = this.game.getSystem('VFXController');
-        if (isRangedTarget && vfxController && window.VFXConfig) {
-            const cfg = VFXConfig.HERO.MUZZLE_FLASH;
-            const dx = resource.x - hero.x;
-            const dy = resource.y - hero.y;
-            const angle = Math.atan2(dy, dx);
-            const tipX = hero.x + Math.cos(angle) * cfg.DISTANCE;
-            const tipY = hero.y + Math.sin(angle) * cfg.DISTANCE;
-
-
-
-            // New Pixelated Flash
-            if (VFXConfig.TEMPLATES.MUZZLE_FLASH_FX) {
-                // Pass Angle for directional burst if we wanted, but for now 360 burst is fine.
-                // We'll use playForeground directly to mix template with local overrides if needed.
-                const fx = { ...VFXConfig.TEMPLATES.MUZZLE_FLASH_FX, angle: angle, spread: 1.0 }; // Slight directional bias?
-                vfxController.playForeground(tipX, tipY, fx);
-            }
-        }
-
-        // Damage Logic
-        let justKilled = false;
-        const dmg = combat ? combat.damage : GameConstants.Combat.DEFAULT_DAMAGE;
-
-        Logger.info(`[HeroSystem] Attacking ${resource.constructor.name}, damage: ${dmg}`);
-
-        // For Enemy entities, prefer their own takeDamage method (it handles aggro/death)
-        if (isEnemy && resource.takeDamage) {
-            justKilled = resource.takeDamage(dmg, hero);
-        } else if (resource.components && resource.components.health) {
-            justKilled = resource.components.health.takeDamage(dmg);
-        } else if (resource.takeDamage) {
-            justKilled = resource.takeDamage(dmg);
-        }
-
-        return justKilled;
+        return false;
     }
 }
 

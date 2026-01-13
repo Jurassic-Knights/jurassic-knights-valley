@@ -84,47 +84,51 @@
         "name": "Watchtower",
         "category": "military",
         "biome": "grasslands",
-        "status": "pending",
+        "status": "declined",
         "sourceDescription": "wooden watchtower, platform with railing, ladder access, thatched roof",
         "groupId": "building_watchtower_grasslands",
         "files": {
             "original": "assets/images/buildings/building_watchtower_grasslands_original.png"
-        }
+        },
+        "declineNote": "Regenerate with isometric perspective instead of horizontal side view"
     },
     {
         "id": "building_outpost_tower_tundra",
         "name": "Outpost Tower",
         "category": "military",
         "biome": "tundra",
-        "status": "pending",
+        "status": "declined",
         "sourceDescription": "fortified stone tower, snow-covered roof, arrow slits, signal fire platform",
         "groupId": "building_outpost_tower_tundra",
         "files": {
             "original": "assets/images/buildings/building_outpost_tower_tundra_original.png"
-        }
+        },
+        "declineNote": "Regenerate with isometric perspective instead of horizontal side view"
     },
     {
         "id": "building_minaret_tower_desert",
         "name": "Minaret Tower",
         "category": "military",
         "biome": "desert",
-        "status": "pending",
+        "status": "declined",
         "sourceDescription": "tall sandstone tower, domed top, weathered surface, ancient construction",
         "groupId": "building_minaret_tower_desert",
         "files": {
             "original": "assets/images/buildings/building_minaret_tower_desert_original.png"
-        }
+        },
+        "declineNote": "Regenerate with isometric perspective instead of horizontal side view"
     },
     {
         "id": "building_guard_tower_badlands",
         "name": "Guard Tower",
         "category": "military",
         "biome": "badlands",
-        "status": "pending",
+        "status": "declined",
         "sourceDescription": "concrete guard tower, searchlight mount, machine gun nest, military bunker",
         "groupId": "building_guard_tower_badlands",
         "files": {
             "original": "assets/images/buildings/building_guard_tower_badlands_original.png"
-        }
+        },
+        "declineNote": "Regenerate with isometric perspective instead of horizontal side view"
     }
 ]

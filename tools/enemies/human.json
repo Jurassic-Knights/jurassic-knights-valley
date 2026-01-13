@@ -582,7 +582,7 @@
         "type": "enemy",
         "enemyType": "human",
         "biome": "tundra",
-        "status": "pending",
+        "status": "declined",
         "stats": {
             "health": 55,
             "damage": 18,
