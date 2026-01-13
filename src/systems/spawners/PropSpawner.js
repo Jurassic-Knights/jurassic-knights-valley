@@ -56,8 +56,8 @@ class PropSpawner {
         for (const island of islandManager.islands) {
             if (island.type === 'home') continue;
 
-            const foliageMap = (window.BiomeConfig && BiomeConfig.FOLIAGE_MAP) ? BiomeConfig.FOLIAGE_MAP : {};
-            const itemMap = (window.BiomeConfig && BiomeConfig.ITEM_MAP) ? BiomeConfig.ITEM_MAP : {};
+            const foliageMap = (window.PropConfig && PropConfig.FOLIAGE_MAP) ? PropConfig.FOLIAGE_MAP : {};
+            const itemMap = (window.PropConfig && PropConfig.ITEM_MAP) ? PropConfig.ITEM_MAP : {};
             const foliageList = foliageMap[island.name];
             const itemList = itemMap[island.name];
 

@@ -141,9 +141,9 @@ class SpawnManagerService {
 
             const entryBridge = bridges.find(b => b.to.col === island.gridX && b.to.row === island.gridY);
 
-            let merchantX = bounds.x + (window.BiomeConfig ? BiomeConfig.MERCHANT.DEFAULT_OFFSET : 60);
-            let merchantY = bounds.y + (window.BiomeConfig ? BiomeConfig.MERCHANT.DEFAULT_OFFSET : 60);
-            const padding = (window.BiomeConfig ? BiomeConfig.MERCHANT.PADDING : 70);
+            let merchantX = bounds.x + (window.PropConfig ? PropConfig.MERCHANT.DEFAULT_OFFSET : 60);
+            let merchantY = bounds.y + (window.PropConfig ? PropConfig.MERCHANT.DEFAULT_OFFSET : 60);
+            const padding = (window.PropConfig ? PropConfig.MERCHANT.PADDING : 70);
 
             if (entryBridge) {
                 if (entryBridge.type === 'horizontal') {
