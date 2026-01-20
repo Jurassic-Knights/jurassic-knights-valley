@@ -1,6 +1,6 @@
-/**
+﻿/**
  * AmbientSystem - Manages ambient creatures and environmental effects
- * 
+ *
  * Handles spawning decorative entities like birds (Pteranodon) that fly
  * across the screen to add life to the world.
  */
@@ -22,7 +22,7 @@ class AmbientCreature {
         if (window.AssetLoader) {
             this.image = AssetLoader.getImage(this.type);
             if (!this.image) {
-                AssetLoader.preloadImage(this.type).then(img => this.image = img);
+                AssetLoader.preloadImage(this.type).then((img) => (this.image = img));
             }
         }
 
@@ -47,7 +47,9 @@ class AmbientCreature {
         this.y += this.vy * dtSec;
 
         // Bobbing motion (simulate flying)
-        this.y += Math.sin(Date.now() / 1000 * this.bobSpeed + this.bobOffset) * (this.bobHeight * dtSec);
+        this.y +=
+            Math.sin((Date.now() / 1000) * this.bobSpeed + this.bobOffset) *
+            (this.bobHeight * dtSec);
 
         // Update Trail
         this.trailTimer += dtSec;
@@ -76,9 +78,9 @@ class AmbientCreature {
             // Draws expanding circles to simulate turbulence/clouds
             for (const p of this.trail) {
                 // Age 0 = size 8, Age Max = size 28 (grows)
-                const size = 8 + (p.age * 40);
+                const size = 8 + p.age * 40;
                 // Fades out linearly
-                const alpha = Math.max(0, 0.2 - (p.age * 0.3));
+                const alpha = Math.max(0, 0.2 - p.age * 0.3);
 
                 if (alpha > 0) {
                     ctx.fillStyle = `rgba(200, 220, 255, ${alpha})`;
@@ -153,8 +155,10 @@ const AmbientSystem = {
                 const margin = 300; // Allow full fly-out
 
                 // If moved way past left or way past right
-                if ((c.vx > 0 && c.x > vp.x + vp.width + margin) ||
-                    (c.vx < 0 && c.x < vp.x - margin)) {
+                if (
+                    (c.vx > 0 && c.x > vp.x + vp.width + margin) ||
+                    (c.vx < 0 && c.x < vp.x - margin)
+                ) {
                     c.active = false;
                 }
             }
@@ -196,7 +200,7 @@ const AmbientSystem = {
         const startX = fromLeft ? vp.x - 100 : vp.x + vp.width + 100;
 
         // Y Position: Top 40% of screen (Sky)
-        const startY = vp.y + (Math.random() * vp.height * 0.4);
+        const startY = vp.y + Math.random() * vp.height * 0.4;
 
         // Speed: 200-400 px/sec
         const speed = 200 + Math.random() * 200;
@@ -232,3 +236,4 @@ const AmbientSystem = {
 
 window.AmbientSystem = AmbientSystem;
 if (window.Registry) Registry.register('AmbientSystem', AmbientSystem);
+

@@ -11,10 +11,23 @@
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/components-buttons.css">
+    <link rel="stylesheet" href="css/components-cards.css">
+    <link rel="stylesheet" href="css/components-utilities.css">
+    <link rel="stylesheet" href="css/components-forge.css">
     <link rel="stylesheet" href="css/vfx.css">
-    <link rel="stylesheet" href="css/ui-hud.css">
+    <link rel="stylesheet" href="css/ui-hud-core.css">
+    <link rel="stylesheet" href="css/ui-hud-resources.css">
+    <link rel="stylesheet" href="css/ui-hud-quest.css">
+    <link rel="stylesheet" href="css/ui-hud-gauges.css">
+    <link rel="stylesheet" href="css/ui-hud-footer.css">
+    <link rel="stylesheet" href="css/ui-hud-loading.css">
+    <link rel="stylesheet" href="css/ui-hud-modals.css">
+    <link rel="stylesheet" href="css/ui-hud-inventory.css">
+    <link rel="stylesheet" href="css/ui-hud-unlock.css">
+    <link rel="stylesheet" href="css/ui-hud-merchant.css">
     <link rel="stylesheet" href="css/ui-capture.css"> <!-- Debug: UI Capture Mode -->
+    <link rel="stylesheet" href="src/css/equipment-screen.css">
     <link rel="stylesheet" href="css/debug.css">
 
     <!-- Utilities -->
@@ -184,9 +197,9 @@
                             <div class="btn-icon" data-icon-id="ui_icon_inventory"></div>
                             <span class="btn-label">KIT</span>
                         </button>
-                        <button class="action-btn" id="btn-forge" title="Field Forge">
-                            <div class="btn-icon" data-icon-id="ui_icon_forge"></div>
-                            <span class="btn-label">FORGE</span>
+                        <button class="action-btn" id="btn-equip" title="Equipment">
+                            <div class="btn-icon" data-icon-id="ui_icon_armor"></div>
+                            <span class="btn-label">EQUIP</span>
                         </button>
                     </div>
 
@@ -212,6 +225,7 @@
                     </div>
                 </div>
             </div>
+
 
             <!-- MODALS -->
             <div id="modal-layer">
@@ -308,6 +322,11 @@
         <!-- Cinematic Overlay -->
         <div id="fade-overlay"></div>
 
+        <!-- Weapon Set Swap Button (floating, outside ui-overlay) -->
+        <button class="floating-swap-btn" id="btn-weapon-swap" title="Swap Weapon Set">
+            <div class="btn-icon-mini" data-icon-id="ui_icon_swap"></div>
+        </button>
+
         <!-- Loading Screen -->
         <div id="loading">
             <p>DEPLOYING TO SECTOR...</p>
@@ -322,12 +341,10 @@
     <script src="src/data/GameConstants.js"></script>
     <script src="src/config/Events.js"></script>
 
-    <script src="src/data/entities.js"></script>
-    <script src="src/data/items.js"></script>
-    <script src="src/data/progression.js"></script>
     <script src="src/data/VFX_Templates.js"></script>
     <script src="src/data/VFX_Sequences.js"></script>
     <script src="src/data/VFX_Categories.js"></script>
+    <script src="src/data/VFXConfig.js"></script>
     <script src="src/data/WorldData.js"></script>
     <script src="src/data/PropConfig.js"></script>
     <script src="src/data/BiomeConfig.js"></script>
@@ -335,43 +352,26 @@
 
     <!-- Core Architecture -->
     <script src="src/core/Registry.js"></script>
+    <!-- GameAnalytics SDK (free game analytics) -->
+    <script src="https://cdn.gameanalytics.com/js/GameAnalytics.min.js"></script>
+    <script src="src/core/AnalyticsManager.js"></script>
+    <script src="src/core/Profiler.js"></script>
     <script src="src/config/RenderConfig.js"></script>
     <script src="src/config/EnemyConfig.js"></script>
-    <script src="src/config/LootTableConfig.js"></script>
     <script src="src/config/BossConfig.js"></script>
     <script src="src/config/EntityConfig.js"></script>
+    <script src="src/config/SpeciesScaleConfig.js"></script>
     <script src="src/config/EntityTypes.js"></script>
+    <script src="src/config/EquipmentStatsConfig.js"></script>
+    <script src="src/config/EquipmentSlotsConfig.js"></script>
+    <script src="src/config/SetBonusesConfig.js"></script>
+    <script src="src/config/HeroDefaults.js"></script>
+    <script src="src/config/ColorPalette.js"></script>
 
-    <!-- Entity System (v2 Architecture) -->
-    <script src="src/entities/_bases/BaseCreature.js"></script>
-    <script src="src/entities/_bases/BaseEnemy.js"></script>
-    <script src="src/entities/_bases/BaseBoss.js"></script>
-    <script src="src/entities/_bases/BaseNPC.js"></script>
-    <script src="src/entities/_bases/BaseResource.js"></script>
-    <script src="src/entities/_bases/BaseItem.js"></script>
-    <script src="src/entities/_bases/BaseEquipment.js"></script>
-    <script src="src/entities/_bases/BaseHero.js"></script>
+    <!-- Entity System (Modern v2 Architecture - JSON-based via EntityLoader) -->
     <script src="src/entities/EntityLoader.js"></script>
-    <script src="src/entities/hero/hero.js"></script>
-    <script src="src/entities/creatures/hostile/velociraptor.js"></script>
-    <script src="src/entities/creatures/hostile/tyrannosaurus.js"></script>
-    <script src="src/entities/creatures/passive/triceratops.js"></script>
-    <script src="src/entities/creatures/passive/ankylosaurus.js"></script>
-    <script src="src/entities/enemies/feral_raptor.js"></script>
-    <script src="src/entities/enemies/feral_soldier.js"></script>
-    <script src="src/entities/bosses/grasslands_alpha.js"></script>
-    <!-- merchant.js entity deferred - conflicts with gameplay/Merchant.js class -->
-    <script src="src/entities/resources/iron_ore.js"></script>
-    <script src="src/entities/resources/scrap_metal.js"></script>
-    <script src="src/entities/resources/fossil_fuel.js"></script>
-    <script src="src/entities/resources/wood.js"></script>
-    <script src="src/entities/items/primal_meat.js"></script>
-    <script src="src/entities/items/raptor_claw.js"></script>
-    <script src="src/entities/equipment/iron_sword.js"></script>
-    <script src="src/entities/props/props_dead_woods.js"></script>
-    <script src="src/entities/props/props_industrial.js"></script>
-    <script src="src/entities/props/props_ruins.js"></script>
 
+    <script src="src/core/Quadtree.js"></script>
     <script src="src/core/EntityManager.js"></script>
     <script src="src/config/SystemConfig.js"></script>
     <script src="src/core/Component.js"></script>
@@ -399,7 +399,9 @@
 
     <!-- World System -->
     <script src="src/world/BiomeManager.js"></script>
-    <script src="src/world/IslandManager.js"></script>
+    <script src="src/world/IslandManagerCore.js"></script>
+    <script src="src/world/IslandManagerCollision.js"></script>
+    <script src="src/world/IslandManagerGrid.js"></script>
     <script src="src/world/HomeBase.js"></script>
     <script src="src/world/AmbientSystem.js"></script>
     <script src="src/world/Prop.js"></script>
@@ -413,21 +415,34 @@
     <script src="src/rendering/HomeOutpostRenderer.js"></script>
     <script src="src/rendering/EntityRenderService.js"></script>
     <script src="src/core/GameRenderer.js"></script>
-    <script src="src/systems/WorldRenderer.js"></script>
-    <script src="src/systems/RoadRenderer.js"></script>
+    <script src="src/rendering/WorldRenderer.js"></script>
+    <script src="src/rendering/RoadRenderer.js"></script>
     <script src="src/systems/VFXTriggerService.js"></script>
     <script src="src/vfx/weather/RainVFX.js"></script>
     <script src="src/vfx/weather/SnowVFX.js"></script>
+    <script src="src/vfx/ParticleRenderer.js"></script>
+    <script src="src/vfx/ParticleSystem.js"></script>
+    <script src="src/vfx/VFXController.js"></script>
+    <script src="src/vfx/LightingSystem.js"></script>
+    <script src="src/vfx/ProjectileVFX.js"></script>
+    <script src="src/vfx/MeleeTrailVFX.js"></script>
+    <script src="src/vfx/FloatingText.js"></script>
+    <script src="src/vfx/HealthBarRenderer.js"></script>
+    <script src="src/vfx/ProgressBarRenderer.js"></script>
+    <script src="src/vfx/FogOfWarSystem.js"></script>
+    <script src="src/vfx/MaterialLibrary.js"></script>
 
-    <script src="src/systems/EnvironmentRenderer.js"></script>
-    <script src="src/systems/HeroRenderer.js"></script>
-    <script src="src/systems/DinosaurRenderer.js"></script>
-    <script src="src/systems/ResourceRenderer.js"></script>
+    <script src="src/rendering/EnvironmentRenderer.js"></script>
+    <script src="src/rendering/WeaponRenderer.js"></script>
+    <script src="src/rendering/HeroRenderer.js"></script>
+    <script src="src/rendering/DinosaurRenderer.js"></script>
+    <script src="src/rendering/ResourceRenderer.js"></script>
     <script src="src/core/Game.js"></script>
 
     <!-- Core Systems (Time/Weather) -->
     <script src="src/systems/TimeSystem.js"></script>
     <script src="src/systems/WeatherSystem.js"></script>
+    <script src="src/systems/EnemySystem.js"></script>
 
     <!-- UI System -->
     <script src="src/ui/Components.js"></script>
@@ -441,10 +456,14 @@
     <script src="src/ui/DebugUI.js"></script>
     <script src="src/ui/InventoryUI.js"></script>
     <script src="src/ui/MerchantUI.js"></script>
+    <script src="src/ui/EquipmentUIRenderer.js"></script>
+    <script src="src/ui/EquipmentSlotManager.js"></script>
+    <script src="src/ui/EquipmentUI.js"></script>
     <script src="src/ui/MinimapSystem.js"></script>
 
 
     <!-- Gameplay Systems -->
+    <script src="src/systems/EquipmentManager.js"></script>
     <script src="src/gameplay/Hero.js"></script>
     <script src="src/gameplay/DroppedItem.js?v=4"></script>
     <script src="src/gameplay/Resource.js"></script>
@@ -461,7 +480,9 @@
     <script src="src/ai/behaviors/bosses/BossAI.js"></script>
     <script src="src/ai/behaviors/npcs/NPCAI.js"></script>
     <script src="src/ai/AISystem.js"></script>
-    <script src="src/gameplay/Enemy.js"></script>
+    <script src="src/gameplay/EnemyCore.js"></script>
+    <script src="src/gameplay/EnemyBehavior.js"></script>
+    <script src="src/gameplay/EnemyRender.js"></script>
     <script src="src/gameplay/Boss.js"></script>
 
 
@@ -483,22 +504,65 @@
     <script src="src/systems/BossSystem.js"></script>
 
     <!-- Audio System -->
-    <script src="src/audio/SoundRegistry.js"></script>
+    <!-- Core must load first to define window.SFX -->
+    <script src="src/audio/SFX_Core.js"></script>
+    <!-- Shared utilities -->
+    <script src="src/audio/SFX_Shared.js"></script>
+    <!-- Category sounds -->
+    <script src="src/audio/SFX_UI.js"></script>
+    <script src="src/audio/SFX_Resources.js"></script>
+    <script src="src/audio/SFX_Enemies.js"></script>
+    <script src="src/audio/SFX_Herbivores.js"></script>
+    <!-- Dinosaur entity sounds (by tier) -->
+    <script src="src/audio/SFX_Dino_T1_01.js"></script>
+    <script src="src/audio/SFX_Dino_T1_02.js"></script>
+    <script src="src/audio/SFX_Dino_T1_03.js"></script>
+    <script src="src/audio/SFX_Dino_T1_04.js"></script>
+    <script src="src/audio/SFX_Dino_T2_01.js"></script>
+    <script src="src/audio/SFX_Dino_T2_02.js"></script>
+    <script src="src/audio/SFX_Dino_T2_03.js"></script>
+    <script src="src/audio/SFX_Dino_T2_04.js"></script>
+    <script src="src/audio/SFX_Dino_T2_05.js"></script>
+    <script src="src/audio/SFX_Dino_T3_01.js"></script>
+    <script src="src/audio/SFX_Dino_T3_02.js"></script>
+    <script src="src/audio/SFX_Dino_T3_03.js"></script>
+    <script src="src/audio/SFX_Dino_T3_04.js"></script>
+    <script src="src/audio/SFX_Dino_T4_01.js"></script>
+    <script src="src/audio/SFX_Dino_T4_02.js"></script>
+    <script src="src/audio/SFX_Dino_T4_03.js"></script>
+    <!-- Human entity sounds (by tier) -->
+    <script src="src/audio/SFX_Human_T1_01.js"></script>
+    <script src="src/audio/SFX_Human_T1_02.js"></script>
+    <script src="src/audio/SFX_Human_T1_03.js"></script>
+    <script src="src/audio/SFX_Human_T2_01.js"></script>
+    <script src="src/audio/SFX_Human_T2_02.js"></script>
+    <script src="src/audio/SFX_Human_T2_03.js"></script>
+    <script src="src/audio/SFX_Human_T3_01.js"></script>
+    <script src="src/audio/SFX_Human_T3_02.js"></script>
+    <script src="src/audio/SFX_Human_T3_03.js"></script>
+    <script src="src/audio/SFX_Human_T4_01.js"></script>
+    <script src="src/audio/SFX_Human_T4_02.js"></script>
+    <script src="src/audio/SFX_Human_T4_03.js"></script>
+    <!-- Saurian entity sounds (by tier) -->
+    <script src="src/audio/SFX_Saurian_T1_01.js"></script>
+    <script src="src/audio/SFX_Saurian_T1_02.js"></script>
+    <script src="src/audio/SFX_Saurian_T1_03.js"></script>
+    <script src="src/audio/SFX_Saurian_T2_01.js"></script>
+    <script src="src/audio/SFX_Saurian_T2_02.js"></script>
+    <script src="src/audio/SFX_Saurian_T2_03.js"></script>
+    <script src="src/audio/SFX_Saurian_T3_01.js"></script>
+    <script src="src/audio/SFX_Saurian_T3_02.js"></script>
+    <script src="src/audio/SFX_Saurian_T3_03.js"></script>
+    <script src="src/audio/SFX_Saurian_T3_04.js"></script>
+    <script src="src/audio/SFX_Saurian_T4_01.js"></script>
+    <script src="src/audio/SFX_Saurian_T4_02.js"></script>
+    <!-- Backward compatibility alias (must be after all category files) -->
     <script src="src/audio/ProceduralSFX.js"></script>
+    <script src="src/audio/SoundRegistry.js"></script>
     <script src="src/audio/AudioManager.js"></script>
 
     <!-- Animation System -->
     <script src="src/animation/Tween.js"></script>
-
-    <!-- VFX System -->
-    <script src="src/vfx/ParticleSystem.js"></script>
-    <script src="src/vfx/ProgressBarRenderer.js"></script>
-    <script src="src/vfx/HealthBarRenderer.js"></script>
-    <script src="src/vfx/Animations.js"></script>
-    <script src="src/vfx/FloatingText.js"></script>
-    <script src="src/vfx/MaterialLibrary.js"></script>
-    <script src="src/vfx/VFXController.js"></script>
-    <script src="src/vfx/FogOfWarSystem.js"></script>
 
 
     <script src="assets/ui/ui_manifest.js"></script> <!-- Asset Manifest -->

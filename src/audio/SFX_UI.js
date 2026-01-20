@@ -1,10 +1,10 @@
-/**
+﻿/**
  * SFX_UI - User Interface Sounds
  */
 
 (function () {
     const handlers = {
-        'sfx_ui_click': function () {
+        sfx_ui_click: function () {
             const osc = SFX.ctx.createOscillator();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(600, SFX.ctx.currentTime);
@@ -20,7 +20,7 @@
             osc.stop(SFX.ctx.currentTime + 0.04);
         },
 
-        'sfx_ui_unlock': function () {
+        sfx_ui_unlock: function () {
             SFX.playNoise(0.4, 0.05, 0.3, 0.2, 400);
             setTimeout(() => {
                 const osc = SFX.ctx.createOscillator();
@@ -45,13 +45,18 @@
             }, 100);
         },
 
-        'sfx_ui_buy': function () {
+        sfx_ui_buy: function () {
             SFX.playNoise(0.05, 0.001, 0.05, 0.3, 1000);
             setTimeout(() => SFX.playTone(880, 0.15, 'triangle', 0.15), 10);
             setTimeout(() => SFX.playTone(1100, 0.1, 'sine', 0.1), 40);
         },
 
-        'sfx_ui_error': function () {
+        // Alias for legacy AssetLoader references
+        sfx_ui_purchase: function () {
+            this.sfx_ui_buy();
+        },
+
+        sfx_ui_error: function () {
             const osc = SFX.ctx.createOscillator();
             osc.type = 'square';
             osc.frequency.value = 55;
@@ -66,7 +71,7 @@
             osc.stop(SFX.ctx.currentTime + 0.1);
         },
 
-        'sfx_ui_magnet': function () {
+        sfx_ui_magnet: function () {
             const osc = SFX.ctx.createOscillator();
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(60, SFX.ctx.currentTime);
@@ -91,6 +96,7 @@
 
     if (window.SFX) {
         SFX.register(handlers);
-        Logger.info('[SFX_UI] Registered 5 sounds');
+        Logger.info('[SFX_UI] Registered 6 sounds');
     }
 })();
+

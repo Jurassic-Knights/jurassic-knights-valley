@@ -1,9 +1,9 @@
-/**
+﻿/**
  * CombatController - Manages combat targeting, attacks, and loot drops
- * 
+ *
  * Extracted from Game.js to separate combat logic from the core game loop.
  * Handles auto-targeting, attack execution, and item spawning.
- * 
+ *
  * Owner: Gameplay Engineer
  */
 
@@ -76,11 +76,8 @@ class CombatController {
             i++;
         }
 
-        // Check dinosaurs (Gun Range)
-        const gunDist = (hero.gunRange && hero.gunRange > (combat ? combat.range : 0))
-            ? hero.gunRange
-            : (combat ? combat.range : 500);
-
+        // Check dinosaurs (Gun Range) - use stats component for equipped weapon range
+        const gunDist = hero.stats?.getAttackRange?.() || (combat ? combat.range : 500);
 
         for (const dino of dinosaurs) {
             if (dino.active) {
@@ -96,15 +93,15 @@ class CombatController {
 
         // Check enemies (highest priority - hostile entities)
         // Note: Use constructor.name ('Enemy', 'Boss') since entityType varies
-        const enemies = window.EntityManager ? [
-            ...EntityManager.getByType('Enemy'),
-            ...EntityManager.getByType('Boss')
-        ] : [];
+        const enemies = window.EntityManager
+            ? [...EntityManager.getByType('Enemy'), ...EntityManager.getByType('Boss')]
+            : [];
 
         for (const enemy of enemies) {
             if (enemy.active && !enemy.isDead) {
-                const dist = enemy.distanceTo ? enemy.distanceTo(hero) :
-                    Math.sqrt((enemy.x - hero.x) ** 2 + (enemy.y - hero.y) ** 2);
+                const dist = enemy.distanceTo
+                    ? enemy.distanceTo(hero)
+                    : Math.sqrt((enemy.x - hero.x) ** 2 + (enemy.y - hero.y) ** 2);
                 // Enemies are valid targets within gun range
                 if (dist <= gunDist && dist < closestDist) {
                     closestDist = dist;
@@ -150,3 +147,4 @@ class CombatController {
 }
 
 window.CombatController = new CombatController();
+

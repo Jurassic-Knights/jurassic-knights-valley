@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InteractionSystem
  * Handles entity interactions, specifically item pickups and magnetism.
  * Decouples logic from Game.js.
@@ -65,7 +65,8 @@ class InteractionSystem {
         if (window.IslandManager) {
             const lockedIsland = IslandManager.getUnlockTrigger(hero.x, hero.y);
             if (lockedIsland) {
-                if (window.EventBus) EventBus.emit(GameConstants.Events.UI_UNLOCK_PROMPT, lockedIsland);
+                if (window.EventBus)
+                    EventBus.emit(GameConstants.Events.UI_UNLOCK_PROMPT, lockedIsland);
             } else {
                 if (window.EventBus) EventBus.emit(GameConstants.Events.UI_HIDE_UNLOCK_PROMPT);
             }
@@ -81,8 +82,10 @@ class InteractionSystem {
         const type = item.resourceType;
         const amount = item.amount || 1;
 
-        // SFX
-        if (window.AudioManager) AudioManager.playSFX('sfx_resource_collect');
+        // SFX - play for EVERY item pickup (no debounce)
+        if (window.AudioManager) {
+            AudioManager.playSFX('sfx_resource_collect');
+        }
 
         // Add to Inventory
         if (hero.components.inventory) {
@@ -110,7 +113,7 @@ class InteractionSystem {
             EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
         }
 
-        // SFX is handled by Hero.collect or specific item logic usually, 
+        // SFX is handled by Hero.collect or specific item logic usually,
         // but if not, we can do it here. Hero.collect() usually plays 'sfx_pickup'.
     }
 
@@ -150,3 +153,4 @@ class InteractionSystem {
 
 window.InteractionSystem = new InteractionSystem();
 if (window.Registry) Registry.register('InteractionSystem', window.InteractionSystem);
+

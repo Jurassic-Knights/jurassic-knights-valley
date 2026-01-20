@@ -1,6 +1,6 @@
-/**
+﻿/**
  * InputManager - Unified input handler for keyboard and touch
- * 
+ *
  * Owner: Director
  */
 
@@ -10,8 +10,14 @@ const InputManager = {
 
     // Keyboard state
     keys: {
-        w: false, a: false, s: false, d: false,
-        ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false
+        w: false,
+        a: false,
+        s: false,
+        d: false,
+        ArrowUp: false,
+        ArrowLeft: false,
+        ArrowDown: false,
+        ArrowRight: false
     },
 
     // Touch joystick state
@@ -62,60 +68,68 @@ const InputManager = {
         // Show joystick on mobile
         joystickArea.style.display = 'block';
 
-        joystickArea.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const rect = joystickArea.getBoundingClientRect();
+        joystickArea.addEventListener(
+            'touchstart',
+            (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = joystickArea.getBoundingClientRect();
 
-            this.joystick.active = true;
-            this.joystick.startX = touch.clientX - rect.left;
-            this.joystick.startY = touch.clientY - rect.top;
-            this.joystick.currentX = this.joystick.startX;
-            this.joystick.currentY = this.joystick.startY;
+                this.joystick.active = true;
+                this.joystick.startX = touch.clientX - rect.left;
+                this.joystick.startY = touch.clientY - rect.top;
+                this.joystick.currentX = this.joystick.startX;
+                this.joystick.currentY = this.joystick.startY;
 
-            // Position base at touch point
-            if (joystickBase) {
-                joystickBase.style.left = `${this.joystick.startX}px`;
-                joystickBase.style.top = `${this.joystick.startY}px`;
-                joystickBase.style.opacity = '1';
-            }
-            if (joystickKnob) {
-                joystickKnob.style.left = `${this.joystick.startX}px`;
-                joystickKnob.style.top = `${this.joystick.startY}px`;
-                joystickKnob.style.opacity = '1';
-            }
-        }, { passive: false });
+                // Position base at touch point
+                if (joystickBase) {
+                    joystickBase.style.left = `${this.joystick.startX}px`;
+                    joystickBase.style.top = `${this.joystick.startY}px`;
+                    joystickBase.style.opacity = '1';
+                }
+                if (joystickKnob) {
+                    joystickKnob.style.left = `${this.joystick.startX}px`;
+                    joystickKnob.style.top = `${this.joystick.startY}px`;
+                    joystickKnob.style.opacity = '1';
+                }
+            },
+            { passive: false }
+        );
 
-        joystickArea.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!this.joystick.active) return;
+        joystickArea.addEventListener(
+            'touchmove',
+            (e) => {
+                e.preventDefault();
+                if (!this.joystick.active) return;
 
-            const touch = e.touches[0];
-            const rect = joystickArea.getBoundingClientRect();
+                const touch = e.touches[0];
+                const rect = joystickArea.getBoundingClientRect();
 
-            this.joystick.currentX = touch.clientX - rect.left;
-            this.joystick.currentY = touch.clientY - rect.top;
+                this.joystick.currentX = touch.clientX - rect.left;
+                this.joystick.currentY = touch.clientY - rect.top;
 
-            // Calculate delta and clamp to max radius
-            let dx = this.joystick.currentX - this.joystick.startX;
-            let dy = this.joystick.currentY - this.joystick.startY;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+                // Calculate delta and clamp to max radius
+                let dx = this.joystick.currentX - this.joystick.startX;
+                let dy = this.joystick.currentY - this.joystick.startY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist > this.joystick.maxRadius) {
-                dx = (dx / dist) * this.joystick.maxRadius;
-                dy = (dy / dist) * this.joystick.maxRadius;
-            }
+                if (dist > this.joystick.maxRadius) {
+                    dx = (dx / dist) * this.joystick.maxRadius;
+                    dy = (dy / dist) * this.joystick.maxRadius;
+                }
 
-            // Update knob position
-            if (joystickKnob) {
-                joystickKnob.style.left = `${this.joystick.startX + dx}px`;
-                joystickKnob.style.top = `${this.joystick.startY + dy}px`;
-            }
+                // Update knob position
+                if (joystickKnob) {
+                    joystickKnob.style.left = `${this.joystick.startX + dx}px`;
+                    joystickKnob.style.top = `${this.joystick.startY + dy}px`;
+                }
 
-            // Update movement vector
-            this.movement.x = dx / this.joystick.maxRadius;
-            this.movement.y = dy / this.joystick.maxRadius;
-        }, { passive: false });
+                // Update movement vector
+                this.movement.x = dx / this.joystick.maxRadius;
+                this.movement.y = dy / this.joystick.maxRadius;
+            },
+            { passive: false }
+        );
 
         const endTouch = () => {
             this.joystick.active = false;
@@ -163,7 +177,8 @@ const InputManager = {
         // Only update from keyboard if joystick not active
         if (this.joystick.active) return;
 
-        let x = 0, y = 0;
+        let x = 0,
+            y = 0;
 
         if (this.keys.a || this.keys.ArrowLeft) x -= 1;
         if (this.keys.d || this.keys.ArrowRight) x += 1;
@@ -192,3 +207,4 @@ const InputManager = {
 
 window.InputManager = InputManager;
 if (window.Registry) Registry.register('InputManager', InputManager);
+

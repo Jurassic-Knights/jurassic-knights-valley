@@ -1,0 +1,219 @@
+/* Forge UI Components */
+
+/* ========================================
+   FORGE UI
+   ======================================== */
+.forge-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.forge-item {
+    display: flex;
+    align-items: center;
+    background: rgba(20, 20, 25, 0.8);
+    border: 1px solid var(--color-accent-iron);
+    padding: var(--space-md);
+    border-radius: var(--border-radius-sm);
+    gap: var(--space-md);
+}
+
+.forge-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--bg-deepest);
+    border: 1px solid var(--bg-light);
+    border-radius: var(--border-radius-sm);
+    background-size: cover;
+    background-position: center;
+}
+
+.forge-details {
+    flex: 1;
+}
+
+.forge-name {
+    font-family: var(--font-display);
+    font-weight: bold;
+    color: var(--color-accent-gold);
+    text-transform: uppercase;
+    font-size: var(--font-size-base);
+    margin-bottom: 4px;
+}
+
+.forge-desc {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-bottom: 4px;
+}
+
+.forge-cost {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    display: flex;
+    gap: 8px;
+}
+
+.cost-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cost-item.affordable {
+    color: var(--status-success);
+}
+
+.cost-item.expensive {
+    color: var(--status-danger);
+}
+
+.forge-btn {
+    padding: 6px 16px;
+    background: var(--gradient-brass);
+    color: var(--bg-dark);
+    font-weight: bold;
+    border: 1px solid var(--color-accent-gold);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+}
+
+.forge-btn:hover {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.forge-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--bg-light);
+    border-color: var(--text-muted);
+    color: var(--text-disabled);
+    box-shadow: none;
+}
+
+.forge-dashboard-compact {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 8px;
+}
+
+.forge-slot {
+    /* Fixed height for row consistency */
+    height: 110px;
+    width: 100%;
+    /* remove aspect-ratio to allow rectangular compaction */
+    aspect-ratio: auto;
+    background: var(--bg-dark);
+    border: 2px solid var(--bg-light);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    font-size: 10px;
+    padding: 2px;
+}
+
+.forge-slot:hover {
+    border-color: var(--color-accent-iron);
+}
+
+.forge-slot.locked {
+    background: repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 10px, #222 10px, #222 20px);
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.forge-slot.active {
+    border-color: var(--color-accent-gold);
+    background: #332200;
+}
+
+.slot-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.slot-status {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--text-disabled);
+}
+
+/* Batch Control */
+.batch-control {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    align-items: center;
+}
+
+.batch-slider-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.batch-slider {
+    flex: 1;
+    height: 10px;
+    background: var(--bg-light);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.batch-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--color-accent-gold);
+    cursor: pointer;
+}
+
+.batch-amount {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--color-accent-gold);
+}
+
+.nav-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--bg-light);
+    padding-bottom: 10px;
+}
+
+.back-btn {
+    background: none;
+    border: 1px solid var(--text-muted);
+    color: var(--text-secondary);
+    padding: 2px 8px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.locked-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--text-muted);
+    font-size: 0.8em;
+}

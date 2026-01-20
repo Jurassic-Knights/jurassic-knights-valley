@@ -1,5 +1,161 @@
 {
-    "queue": [],
-    "lastUpdated": null,
-    "note": "This file tracks SFX marked for regeneration from the dashboard. Use /sound-regenerate workflow to process."
+  "queue": [
+    {
+      "sfxId": "sfx_spawn_dinosaur_t3_01",
+      "assetId": "dinosaur_t3_01",
+      "markedAt": "2026-01-12T09:23:18.477Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t3_01",
+      "assetId": "dinosaur_t3_01",
+      "markedAt": "2026-01-12T09:23:18.477Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t3_01",
+      "assetId": "dinosaur_t3_01",
+      "markedAt": "2026-01-12T09:23:18.477Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t3_01",
+      "assetId": "dinosaur_t3_01",
+      "markedAt": "2026-01-12T09:23:18.477Z"
+    },
+    {
+      "sfxId": "sfx_spawn_dinosaur_t3_02",
+      "assetId": "dinosaur_t3_02",
+      "markedAt": "2026-01-12T09:26:19.079Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t3_02",
+      "assetId": "dinosaur_t3_02",
+      "markedAt": "2026-01-12T09:26:19.079Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t3_02",
+      "assetId": "dinosaur_t3_02",
+      "markedAt": "2026-01-12T09:26:19.079Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t3_02",
+      "assetId": "dinosaur_t3_02",
+      "markedAt": "2026-01-12T09:26:19.079Z"
+    },
+    {
+      "sfxId": "sfx_spawn_dinosaur_t2_02",
+      "assetId": "dinosaur_t2_02",
+      "markedAt": "2026-01-12T09:27:54.652Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t2_02",
+      "assetId": "dinosaur_t2_02",
+      "markedAt": "2026-01-12T09:27:54.652Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t2_02",
+      "assetId": "dinosaur_t2_02",
+      "markedAt": "2026-01-12T09:27:54.652Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t2_02",
+      "assetId": "dinosaur_t2_02",
+      "markedAt": "2026-01-12T09:27:54.652Z"
+    },
+    {
+      "sfxId": "sfx_spawn_dinosaur_t2_01",
+      "assetId": "dinosaur_t2_01",
+      "markedAt": "2026-01-13T08:11:18.696Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t2_01",
+      "assetId": "dinosaur_t2_01",
+      "markedAt": "2026-01-13T08:11:18.696Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t2_01",
+      "assetId": "dinosaur_t2_01",
+      "markedAt": "2026-01-13T08:11:18.696Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t2_01",
+      "assetId": "dinosaur_t2_01",
+      "markedAt": "2026-01-13T08:11:18.696Z"
+    },
+    {
+      "sfxId": "sfx_spawn_dinosaur_t2_03",
+      "assetId": "dinosaur_t2_03",
+      "markedAt": "2026-01-13T08:14:58.711Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t2_03",
+      "assetId": "dinosaur_t2_03",
+      "markedAt": "2026-01-13T08:14:58.711Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t2_03",
+      "assetId": "dinosaur_t2_03",
+      "markedAt": "2026-01-13T08:14:58.711Z"
+    },
+    {
+      "sfxId": "sfx_flee_dinosaur_t2_03",
+      "assetId": "dinosaur_t2_03",
+      "markedAt": "2026-01-13T08:14:58.711Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t2_03",
+      "assetId": "dinosaur_t2_03",
+      "markedAt": "2026-01-13T08:14:58.711Z"
+    },
+    {
+      "sfxId": "sfx_spawn_dinosaur_t2_05",
+      "assetId": "dinosaur_t2_05",
+      "markedAt": "2026-01-13T08:18:19.621Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t2_05",
+      "assetId": "dinosaur_t2_05",
+      "markedAt": "2026-01-13T08:18:19.621Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t2_05",
+      "assetId": "dinosaur_t2_05",
+      "markedAt": "2026-01-13T08:18:19.621Z"
+    },
+    {
+      "sfxId": "sfx_flee_dinosaur_t2_05",
+      "assetId": "dinosaur_t2_05",
+      "markedAt": "2026-01-13T08:18:19.621Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t2_05",
+      "assetId": "dinosaur_t2_05",
+      "markedAt": "2026-01-13T08:18:19.621Z"
+    },
+    {
+      "sfxId": "sfx_spawn_dinosaur_t3_04",
+      "assetId": "dinosaur_t3_04",
+      "markedAt": "2026-01-13T08:19:59.746Z"
+    },
+    {
+      "sfxId": "sfx_death_dinosaur_t3_04",
+      "assetId": "dinosaur_t3_04",
+      "markedAt": "2026-01-13T08:19:59.746Z"
+    },
+    {
+      "sfxId": "sfx_hurt_dinosaur_t3_04",
+      "assetId": "dinosaur_t3_04",
+      "markedAt": "2026-01-13T08:19:59.746Z"
+    },
+    {
+      "sfxId": "sfx_flee_dinosaur_t3_04",
+      "assetId": "dinosaur_t3_04",
+      "markedAt": "2026-01-13T08:19:59.746Z"
+    },
+    {
+      "sfxId": "sfx_aggro_dinosaur_t3_04",
+      "assetId": "dinosaur_t3_04",
+      "markedAt": "2026-01-13T08:19:59.746Z"
+    }
+  ],
+  "lastUpdated": "2026-01-14T01:05:13.864808",
+  "note": "SFX marked for regeneration"
 }

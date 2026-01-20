@@ -1,0 +1,87 @@
+/* UI Cards & Panels - "Mud, Steel, and Scales" Theme */
+
+/* ========================================
+   CARDS - Military Document Style
+   ======================================== */
+.card {
+    background: rgba(22, 33, 62, 0.9);
+    /* Slight transparency */
+    border: var(--border-width) solid var(--color-accent-iron);
+    border-radius: var(--border-radius-md);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+    position: relative;
+    backdrop-filter: blur(4px);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 4px;
+    height: 4px;
+    background: var(--color-accent-gold);
+    /* Gold rivets */
+    border-radius: 50%;
+    box-shadow:
+        calc(100% - 8px) 0 0 0 var(--color-accent-gold),
+        0 calc(100% - 8px) 0 0 var(--color-accent-gold),
+        calc(100% - 8px) calc(100% - 8px) 0 0 var(--color-accent-gold);
+    opacity: 0.5;
+}
+
+.card:hover {
+    border-color: var(--color-accent-gold);
+    box-shadow: var(--shadow-md), 0 0 15px rgba(212, 175, 55, 0.15);
+}
+
+.card-header {
+    font-family: var(--font-display);
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-accent-gold);
+    padding-bottom: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-accent-iron);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   PANELS - Field Equipment Style
+   ======================================== */
+.panel {
+    background: rgba(13, 13, 18, 0.85);
+    /* Glass effect */
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-lg), inset 0 0 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+/* Corner brackets aesthetic */
+.panel::before,
+.panel::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: var(--color-accent-gold);
+    border-style: solid;
+}
+
+.panel::before {
+    top: 6px;
+    left: 6px;
+    border-width: 2px 0 0 2px;
+}
+
+.panel::after {
+    bottom: 6px;
+    right: 6px;
+    border-width: 0 2px 2px 0;
+}

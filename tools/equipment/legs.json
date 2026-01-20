@@ -30,7 +30,7 @@
         }
     },
     {
-        "id": "legs_t2_03",
+        "id": "legs_t2_01",
         "name": "Iron Greaves",
         "slot": "legs",
         "tier": 2,
@@ -41,11 +41,11 @@
         "fuelCost": 2,
         "sourceDescription": "iron greaves, medieval style leg armor plates, iron shin guards, weathered",
         "files": {
-            "original": "assets/images/equipment/legs_t2_03_original.png"
+            "original": "assets/images/equipment/legs_t2_01_original.png"
         }
     },
     {
-        "id": "legs_t2_04",
+        "id": "legs_t2_02",
         "name": "Wool Trousers",
         "slot": "legs",
         "tier": 2,
@@ -56,11 +56,11 @@
         "fuelCost": 2,
         "sourceDescription": "wool trousers, WWI era military winter pants, thick wool pants, weathered",
         "files": {
-            "original": "assets/images/equipment/legs_t2_04_original.png"
+            "original": "assets/images/equipment/legs_t2_02_original.png"
         }
     },
     {
-        "id": "legs_t2_05",
+        "id": "legs_t2_03",
         "name": "Desert Trousers",
         "slot": "legs",
         "tier": 2,
@@ -71,11 +71,11 @@
         "fuelCost": 2,
         "sourceDescription": "desert trousers, WWI era desert pants, light tan pants, weathered",
         "files": {
-            "original": "assets/images/equipment/legs_t2_05_original.png"
+            "original": "assets/images/equipment/legs_t2_03_original.png"
         }
     },
     {
-        "id": "legs_t3_06",
+        "id": "legs_t3_01",
         "name": "Steel Greaves",
         "slot": "legs",
         "tier": 3,
@@ -86,7 +86,7 @@
         "fuelCost": 4,
         "sourceDescription": "steel greaves, medieval style heavy leg armor plates, polished steel shin guards, weathered",
         "files": {
-            "original": "assets/images/equipment/legs_t3_06_original.png"
+            "original": "assets/images/equipment/legs_t3_01_original.png"
         }
     }
 ]

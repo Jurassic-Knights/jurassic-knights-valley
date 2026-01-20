@@ -1,32 +1,51 @@
-/**
+﻿/**
  * Dinosaur - AI-controlled entity that wanders and drops loot
- * 
+ *
  * Spawns on dinosaur islands, moves randomly, freezes when attacked.
- * 
+ *
  * Owner: Director (engine), Gameplay Designer (stats)
  */
 
 class Dinosaur extends Entity {
     constructor(config = {}) {
-        // 1. Load Config from BaseCreature (v2 architecture)
+        // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
         const defaults = window.BaseCreature || {};
-        const variantConfig = window.EntityRegistry?.creatures?.hostile?.[config.species] ||
-            window.EntityRegistry?.creatures?.passive?.[config.species] || {};
 
-        // Merge: Defaults < Variant < Constructor
-        const finalConfig = { ...defaults, ...variantConfig, ...config };
+        // Look up entity config from EntityRegistry using dinoType (e.g., 'enemy_herbivore_t1_01')
+        const entityConfig = config.dinoType
+            ? window.EntityRegistry?.enemies?.[config.dinoType] || {}
+            : {};
 
+        // Merge: Defaults < Entity JSON < Constructor
+        const finalConfig = { ...defaults, ...entityConfig, ...config };
+
+        // Get size from SpeciesScaleConfig (runtime lookup by species)
+        const sizeInfo = window.SpeciesScaleConfig?.getSize(entityConfig, false) || { width: 150, height: 150 };
+
+        // Debug
+        if (sizeInfo.scale !== 1.0) {
+            Logger.info(`[Dinosaur] ${config.dinoType}: species=${entityConfig.species}, scale=${sizeInfo.scale}, size=${sizeInfo.width}x${sizeInfo.height}`);
+        }
+
+        // IMPORTANT: Apply ...config first, then override with species sizing
         super({
+            ...config,
             entityType: EntityTypes.DINOSAUR,
-            width: finalConfig.width || 100,
-            height: finalConfig.height || 100,
             color: '#2ECC71',
-            ...config
+            width: sizeInfo.width,
+            height: sizeInfo.height
         });
 
+        // Modern: Store entity type for sprite loading
+        this.dinoType = config.dinoType || 'enemy_herbivore_t1_01';
+
+        // Loot: prioritize config.lootTable (from ResourceSpawner) > entityConfig.lootTable (from EntityLoader)
+        this.lootTable = config.lootTable || entityConfig.lootTable || null;
+        this.xpReward = entityConfig.xpReward || 10;
+
         // Gameplay Props
-        this.resourceType = config.resourceType || 'fossil_fuel';
-        this.amount = finalConfig.amount || 1; // Cascades from EntityConfig.dinosaur.defaults
+        this.resourceType = config.resourceType || 'food_t1_01';
+        this.amount = finalConfig.amount || 1;
 
         // Components
         this.components = {};
@@ -56,7 +75,7 @@ class Dinosaur extends Entity {
         // Components (Game Logic)
         if (window.StatsComponent) {
             // Convert legacy moveSpeed (px/frame @ 60fps) to px/sec
-            // Logic was: moveSpeed * 60 (essentially). 
+            // Logic was: moveSpeed * 60 (essentially).
             // Default speed config is typically 30 (px/sec).
             // finalConfig.speed is usually 30.
             const speed = finalConfig.speed || 30;
@@ -87,56 +106,46 @@ class Dinosaur extends Entity {
         this.frameIndex = 0;
         this.frameTimer = 0;
         this.frameInterval = finalConfig.frameInterval || 200;
-        this.walkFrames = []; // Disabled walk animation, using static base sprite
+        this.walkFrames = [];
 
-        // Species Setup
-        this.species = this.getSpeciesFromResource(this.resourceType);
-        this.spriteId = `dino_${this.species}_base`;
+        // Sprite Setup - Use dinoType directly as asset key (matches AssetLoader keys)
+        this.spriteId = this.dinoType; // e.g., 'enemy_herbivore_t1_01'
 
-        this._sprites = {};
-        this._spritesLoaded = false;
-        this._loadSprites();
-    }
-
-    getSpeciesFromResource(type) {
-        // Static mapping - no longer in EntityConfig
-        const speciesMap = {
-            'primal_meat': 'velociraptor',
-            'iron_ore': 'tyrannosaurus',
-            'scrap_metal': 'ankylosaurus',
-            'fossil_fuel': 'triceratops',
-            'default': 'velociraptor'
-        };
-        return speciesMap[type] || speciesMap.default;
+        // Single sprite loading (modern approach)
+        this._sprite = null;
+        this._spriteLoaded = false;
+        this._loadSprite();
     }
 
     /**
-     * Preload all dinosaur sprites
+     * Load sprite using dinoType as asset key (matches Enemy class pattern)
      */
-    _loadSprites() {
-        if (!window.AssetLoader) return;
-
-        // Static sprite keys - no longer from EntityConfig
-        const keys = [
-            'dino_base', 'dino_velociraptor_base', 'dino_tyrannosaurus_base',
-            'dino_triceratops_base', 'dino_ankylosaurus_base'
-        ];
-
-        let loaded = 0;
-
-        for (const key of keys) {
-            const path = AssetLoader.getImagePath(key);
-            if (path) {
-                this._sprites[key] = new Image();
-                this._sprites[key].onload = () => {
-                    loaded++;
-                    if (loaded === keys.length) {
-                        this._spritesLoaded = true;
-                    }
-                };
-                this._sprites[key].src = path;
-            }
+    _loadSprite() {
+        if (!window.AssetLoader) {
+            Logger.warn(`[Dinosaur] AssetLoader not available for: ${this.dinoType}`);
+            return;
         }
+
+        // Use dinoType directly as asset key (e.g., 'enemy_herbivore_t1_01')
+        const path = AssetLoader.getImagePath(this.dinoType);
+
+        if (!path || path.includes('PH.png')) {
+            Logger.warn(`[Dinosaur] No sprite found for: ${this.dinoType}, path: ${path}`);
+            return;
+        }
+
+        Logger.info(`[Dinosaur] Loading sprite: ${this.dinoType} -> ${path}`);
+
+        this._sprite = new Image();
+        this._sprite.onload = () => {
+            this._spriteLoaded = true;
+            Logger.info(`[Dinosaur] Sprite loaded: ${this.dinoType}`);
+        };
+        this._sprite.onerror = (e) => {
+            Logger.error(`[Dinosaur] Failed to load sprite: ${this.dinoType}, path: ${path}`, e);
+            this._spriteLoaded = false;
+        };
+        this._sprite.src = path;
     }
 
     /**
@@ -145,7 +154,11 @@ class Dinosaur extends Entity {
     recalculateRespawnTimer() {
         if (window.IslandUpgrades && this.islandGridX !== undefined) {
             // Base 20s for Dinos (faster than resources?)
-            this.maxRespawnTime = IslandUpgrades.getRespawnTime(this.islandGridX, this.islandGridY, 20);
+            this.maxRespawnTime = IslandUpgrades.getRespawnTime(
+                this.islandGridX,
+                this.islandGridY,
+                20
+            );
         }
     }
 
@@ -165,8 +178,6 @@ class Dinosaur extends Entity {
     changeDirection() {
         // Handled by DinosaurSystem
     }
-
-
 
     /**
      * Check if in range for interaction (e.g. gun range checked by Hero/Game)
@@ -198,15 +209,24 @@ class Dinosaur extends Entity {
     get moveSpeed() {
         // Old: speed / 60
         // New: stats.speed (px/sec) / 60
-        return this.components.stats ? (this.components.stats.speed / 60) : 0.5;
+        return this.components.stats ? this.components.stats.speed / 60 : 0.5;
     }
 
     // --- Accessors for AIComponent ---
-    get wanderDirection() { return this.components.ai ? this.components.ai.wanderDirection : { x: 0, y: 0 }; }
-    set wanderDirection(val) { if (this.components.ai) this.components.ai.wanderDirection = val; }
+    get wanderDirection() {
+        return this.components.ai ? this.components.ai.wanderDirection : { x: 0, y: 0 };
+    }
+    set wanderDirection(val) {
+        if (this.components.ai) this.components.ai.wanderDirection = val;
+    }
 
-    get wanderTimer() { return this.components.ai ? this.components.ai.wanderTimer : 0; }
-    set wanderTimer(val) { if (this.components.ai) this.components.ai.wanderTimer = val; }
+    get wanderTimer() {
+        return this.components.ai ? this.components.ai.wanderTimer : 0;
+    }
+    set wanderTimer(val) {
+        if (this.components.ai) this.components.ai.wanderTimer = val;
+    }
 }
 
 window.Dinosaur = Dinosaur;
+

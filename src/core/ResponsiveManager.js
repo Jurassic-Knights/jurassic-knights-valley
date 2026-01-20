@@ -1,7 +1,7 @@
-/**
+﻿/**
  * ResponsiveManager - Handles responsive breakpoints for mobile and PC
  * Detects format and emits events for UI adaptation
- * 
+ *
  * Owner: Director
  */
 
@@ -27,7 +27,9 @@ const ResponsiveManager = {
         this.detect();
         window.addEventListener('resize', () => this.onResize());
         window.addEventListener('orientationchange', () => this.onResize());
-        Logger.info(`[ResponsiveManager] Initialized: ${this.currentFormat} (${this.currentOrientation})`);
+        Logger.info(
+            `[ResponsiveManager] Initialized: ${this.currentFormat} (${this.currentOrientation})`
+        );
     },
 
     /**
@@ -51,7 +53,8 @@ const ResponsiveManager = {
         const newOrientation = width > height ? 'landscape' : 'portrait';
 
         // Check if changed
-        const changed = newFormat !== this.currentFormat || newOrientation !== this.currentOrientation;
+        const changed =
+            newFormat !== this.currentFormat || newOrientation !== this.currentOrientation;
 
         this.currentFormat = newFormat;
         this.currentOrientation = newOrientation;
@@ -88,9 +91,7 @@ const ResponsiveManager = {
      * Emit event to all listeners
      */
     emit(event, data) {
-        this.listeners
-            .filter(l => l.event === event)
-            .forEach(l => l.callback(data));
+        this.listeners.filter((l) => l.event === event).forEach((l) => l.callback(data));
     },
 
     /**
@@ -118,3 +119,4 @@ const ResponsiveManager = {
 
 // Export for global access
 window.ResponsiveManager = ResponsiveManager;
+

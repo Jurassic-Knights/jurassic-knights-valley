@@ -1,7 +1,7 @@
-/**
+﻿/**
  * ProgressionSystem
  * Handles XP gain, leveling, and stat increases.
- * 
+ *
  * Owner: Gameplay Designer
  */
 const ProgressionSystem = {
@@ -98,12 +98,16 @@ const ProgressionSystem = {
 
         // VFX
         if (window.VFXController && window.VFXConfig) {
-            VFXController.playForeground(hero.x, hero.y, VFXConfig.TEMPLATES?.LEVEL_UP_FX || {
-                type: 'burst',
-                color: '#FFD700',
-                count: 30,
-                lifetime: 1000
-            });
+            VFXController.playForeground(
+                hero.x,
+                hero.y,
+                VFXConfig.TEMPLATES?.LEVEL_UP_FX || {
+                    type: 'burst',
+                    color: '#FFD700',
+                    count: 30,
+                    lifetime: 1000
+                }
+            );
         }
 
         // SFX
@@ -151,3 +155,4 @@ const ProgressionSystem = {
 
 window.ProgressionSystem = ProgressionSystem;
 if (window.Registry) Registry.register('ProgressionSystem', ProgressionSystem);
+

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * ContextActionUI - Context-Sensitive Action Button Manager
- * 
+ *
  * Separated from UIManager for single responsibility.
  * Handles the floating context action button (REST, FORGE, UNLOCK, SHOP).
  */
@@ -129,3 +129,4 @@ class ContextActionService {
 }
 
 window.ContextActionUI = new ContextActionService();
+

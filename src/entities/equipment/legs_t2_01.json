@@ -1,0 +1,15 @@
+{
+    "id":  "legs_t2_01",
+    "name":  "Iron Greaves",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "legs",
+    "sprite":  "legs_t2_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/legs/legs_t2_01_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "legs",
+    "stats":  "+8 Armor",
+    "recipe":  "3x Iron Ingot + 1x Leather"
+}

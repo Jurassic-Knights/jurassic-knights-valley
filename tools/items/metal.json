@@ -15,7 +15,7 @@
         }
     },
     {
-        "id": "metal_t2_02",
+        "id": "metal_t2_01",
         "name": "Iron Ingot",
         "tier": 2,
         "category": "metal",
@@ -26,11 +26,11 @@
         "status": "approved",
         "sourceDescription": "refined cast iron ingot bar, dark grey iron color, gritty, weathered, heavy industrial metal bar",
         "files": {
-            "original": "assets/images/items/metal_t2_02_original.png"
+            "original": "assets/images/items/metal_t2_01_original.png"
         }
     },
     {
-        "id": "metal_t3_03",
+        "id": "metal_t3_01",
         "name": "Steel Ingot",
         "tier": 3,
         "category": "metal",
@@ -41,11 +41,11 @@
         "status": "approved",
         "sourceDescription": "refined steel ingot bar, silvery grey polished steel color, gritty, weathered, high quality forged metal bar",
         "files": {
-            "original": "assets/images/items/metal_t3_03_original.png"
+            "original": "assets/images/items/metal_t3_01_original.png"
         }
     },
     {
-        "id": "metal_t4_04",
+        "id": "metal_t4_01",
         "name": "Hardened Steel",
         "tier": 4,
         "category": "metal",
@@ -56,7 +56,7 @@
         "status": "pending",
         "sourceDescription": "hardened steel alloy ingot bar, dark bluish-grey hardened steel with tempered finish, gritty, weathered, premium military-grade forged metal bar",
         "files": {
-            "original": "assets/images/items/metal_t4_04_original.png"
+            "original": "assets/images/items/metal_t4_01_original.png"
         }
     }
 ]

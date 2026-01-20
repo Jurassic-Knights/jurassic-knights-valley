@@ -30,7 +30,7 @@
         }
     },
     {
-        "id": "head_t2_03",
+        "id": "head_t2_01",
         "name": "Brodie Helmet",
         "slot": "head",
         "tier": 2,
@@ -41,11 +41,11 @@
         "fuelCost": 2,
         "sourceDescription": "brodie helmet, WWI British steel helmet",
         "files": {
-            "original": "assets/images/equipment/head_t2_03_original.png"
+            "original": "assets/images/equipment/head_t2_01_original.png"
         }
     },
     {
-        "id": "head_t2_04",
+        "id": "head_t2_02",
         "name": "Stahlhelm",
         "slot": "head",
         "tier": 2,
@@ -56,11 +56,11 @@
         "fuelCost": 2,
         "sourceDescription": "stahlhelm, WWI German steel helmet",
         "files": {
-            "original": "assets/images/equipment/head_t2_04_original.png"
+            "original": "assets/images/equipment/head_t2_02_original.png"
         }
     },
     {
-        "id": "head_t2_05",
+        "id": "head_t2_03",
         "name": "Gas Mask",
         "slot": "head",
         "tier": 2,
@@ -71,11 +71,11 @@
         "fuelCost": 2,
         "sourceDescription": "gas mask, WWI era protective mask, rubber and metal",
         "files": {
-            "original": "assets/images/equipment/head_t2_05_original.png"
+            "original": "assets/images/equipment/head_t2_03_original.png"
         }
     },
     {
-        "id": "head_t2_06",
+        "id": "head_t2_04",
         "name": "Desert Headwrap",
         "slot": "head",
         "tier": 2,
@@ -86,11 +86,11 @@
         "fuelCost": 2,
         "sourceDescription": "desert headwrap, WWI era desert head covering, tan cloth wrap, weathered",
         "files": {
-            "original": "assets/images/equipment/head_t2_06_original.png"
+            "original": "assets/images/equipment/head_t2_04_original.png"
         }
     },
     {
-        "id": "head_t3_07",
+        "id": "head_t3_01",
         "name": "Officer's Cap",
         "slot": "head",
         "tier": 3,
@@ -101,7 +101,7 @@
         "fuelCost": 4,
         "sourceDescription": "officer's cap, WWI era military officer peaked cap, brass insignia",
         "files": {
-            "original": "assets/images/equipment/head_t3_07_original.png"
+            "original": "assets/images/equipment/head_t3_01_original.png"
         }
     }
 ]

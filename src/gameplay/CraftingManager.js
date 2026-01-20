@@ -1,6 +1,6 @@
-/**
+﻿/**
  * CraftingManager - Manages recipes, slots, and production logic
- * 
+ *
  * Logic:
  * - 12 Slots total (only #1 unlocked initially)
  * - Crafting consumes resources immediately
@@ -16,40 +16,40 @@ const CraftingManager = {
     // State
     slots: [], // Array of slot objects { id, status: 'idle'|'crafting'|'complete', recipeId, quantity, startTime, duration }
 
-    // Recipe Registry (Hardcoded for now based on GDD)
+    // Recipe Registry (Using entity IDs from src/entities/)
     recipes: [
         {
-            id: 'scrap_plate',
+            id: 'metal_t1_01',
             name: 'Scrap Plate',
             description: 'Basic armor plating salvaged from debris.',
             type: 'trade_good',
-            fuelCost: 1, // Wood
-            ingredients: { 'scrap_metal': 2 },
-            duration: 5, // seconds
+            fuelCost: 1,
+            ingredients: { scraps_t1_01: 2 },
+            duration: 5,
             sellPrice: 4,
-            outputIcon: 'item_scrap_plate'
+            outputIcon: 'metal_t1_01'
         },
         {
-            id: 'iron_ingot',
+            id: 'metal_t2_01',
             name: 'Iron Ingot',
             description: 'Refined iron, heavy and reliable.',
             type: 'trade_good',
             fuelCost: 3,
-            ingredients: { 'iron_ore': 2 },
+            ingredients: { minerals_t1_01: 2 },
             duration: 20,
             sellPrice: 15,
-            outputIcon: 'item_iron_ingot'
+            outputIcon: 'metal_t2_01'
         },
         {
-            id: 'trench_tool',
+            id: 'mechanical_t1_01',
             name: 'Trench Tool',
             description: 'Standard issue digging implement.',
             type: 'equipment',
             fuelCost: 5,
-            ingredients: { 'scrap_metal': 1, 'iron_ore': 3 },
+            ingredients: { scraps_t1_01: 1, minerals_t1_01: 3 },
             duration: 45,
             sellPrice: 40,
-            outputIcon: 'tool_shovel' // Reusing shovel icon
+            outputIcon: 'mechanical_t1_01'
         }
     ],
 
@@ -79,7 +79,7 @@ const CraftingManager = {
     },
 
     getRecipe(id) {
-        return this.recipes.find(r => r.id === id);
+        return this.recipes.find((r) => r.id === id);
     },
 
     /**
@@ -119,9 +119,9 @@ const CraftingManager = {
 
     /**
      * Start crafting process
-     * @param {number} slotId 
-     * @param {string} recipeId 
-     * @param {number} quantity 
+     * @param {number} slotId
+     * @param {string} recipeId
+     * @param {number} quantity
      */
     startCrafting(slotId, recipeId, quantity) {
         const slot = this.slots[slotId];
@@ -201,7 +201,8 @@ const CraftingManager = {
 
         // 2. Visuals: Spawn via SpawnManager
         if (window.SpawnManager) {
-            let spawnX = 0, spawnY = 0;
+            let spawnX = 0,
+                spawnY = 0;
 
             // Calculate Forge Building Position (Matched to HomeBase.js)
             if (window.IslandManager) {
@@ -249,7 +250,11 @@ const CraftingManager = {
 
     canAfford(recipe, quantity) {
         // Dependencies
-        if (!window.GameInstance || !window.GameInstance.hero || !window.GameInstance.hero.inventory) {
+        if (
+            !window.GameInstance ||
+            !window.GameInstance.hero ||
+            !window.GameInstance.hero.inventory
+        ) {
             // Fallback
             return false;
         }
@@ -257,7 +262,7 @@ const CraftingManager = {
         const inv = GameInstance.hero.inventory;
 
         const woodNeeded = recipe.fuelCost * quantity;
-        const woodHave = inv['wood'] || 0;
+        const woodHave = inv['wood_t1_01'] || 0;
         if (woodHave < woodNeeded) return false;
 
         for (const [ingId, count] of Object.entries(recipe.ingredients)) {
@@ -270,12 +275,17 @@ const CraftingManager = {
     },
 
     consumeResources(recipe, quantity) {
-        if (!window.GameInstance || !window.GameInstance.hero || !window.GameInstance.hero.inventory) return;
+        if (
+            !window.GameInstance ||
+            !window.GameInstance.hero ||
+            !window.GameInstance.hero.inventory
+        )
+            return;
 
         const inv = GameInstance.hero.inventory;
 
         // Remove Fuel
-        inv['wood'] -= recipe.fuelCost * quantity;
+        inv['wood_t1_01'] -= recipe.fuelCost * quantity;
 
         // Remove Ingredients
         for (const [ingId, count] of Object.entries(recipe.ingredients)) {
@@ -289,12 +299,17 @@ const CraftingManager = {
     },
 
     getMaxCraftable(recipe) {
-        if (!window.GameInstance || !window.GameInstance.hero || !window.GameInstance.hero.inventory) return 0;
+        if (
+            !window.GameInstance ||
+            !window.GameInstance.hero ||
+            !window.GameInstance.hero.inventory
+        )
+            return 0;
 
         const inv = GameInstance.hero.inventory;
 
         // Limit by wood
-        let max = Math.floor((inv['wood'] || 0) / recipe.fuelCost);
+        let max = Math.floor((inv['wood_t1_01'] || 0) / recipe.fuelCost);
 
         // Limit by ingredients
         for (const [ingId, count] of Object.entries(recipe.ingredients)) {
@@ -309,3 +324,4 @@ const CraftingManager = {
 // Export
 window.CraftingManager = CraftingManager;
 if (window.Registry) Registry.register('CraftingManager', CraftingManager);
+

@@ -15,8 +15,14 @@
             <button id="btnTemplates" class="secondary" onclick="showTemplatesView()">📝 Templates</button>
             <button id="btnSyncToGame" class="secondary" onclick="syncAssetsToGame()" style="background:#4caf50;">🔄
                 Sync to Game</button>
+            <button id="btnSyncEntities" class="secondary" onclick="syncEntitiesToJson()" style="background:#ff9800;">📦
+                Sync Entities</button>
+            <button id="btnHero" class="secondary" onclick="showCategoryView('hero')" style="background:#2196f3;">🛡️
+                Hero</button>
             <button id="btnEnemies" class="secondary" onclick="showCategoryView('enemies')"
                 style="background:#e91e63;">🦖 Enemies</button>
+            <button id="btnBosses" class="secondary" onclick="showCategoryView('bosses')" style="background:#9c27b0;">👑
+                Bosses</button>
             <button id="btnNpcs" class="secondary" onclick="showCategoryView('npcs')" style="background:#4caf50;">👤
                 NPCs</button>
             <button id="btnItems" class="secondary" onclick="showCategoryView('items')" style="background:#795548;">🧱
@@ -93,11 +99,51 @@
     <script src="/src/audio/SFX_UI.js"></script>
     <script src="/src/audio/SFX_Resources.js"></script>
     <script src="/src/audio/SFX_Enemies.js"></script>
-    <script src="/src/audio/SFX_Dinosaurs.js"></script>
+    <script src="/src/audio/SFX_Dino_T1_01.js"></script>
+    <script src="/src/audio/SFX_Dino_T1_02.js"></script>
+    <script src="/src/audio/SFX_Dino_T1_03.js"></script>
+    <script src="/src/audio/SFX_Dino_T1_04.js"></script>
+    <script src="/src/audio/SFX_Dino_T2_01.js"></script>
+    <script src="/src/audio/SFX_Dino_T2_02.js"></script>
+    <script src="/src/audio/SFX_Dino_T2_03.js"></script>
+    <script src="/src/audio/SFX_Dino_T2_04.js"></script>
+    <script src="/src/audio/SFX_Dino_T2_05.js"></script>
+    <script src="/src/audio/SFX_Dino_T3_01.js"></script>
+    <script src="/src/audio/SFX_Dino_T3_02.js"></script>
+    <script src="/src/audio/SFX_Dino_T3_03.js"></script>
+    <script src="/src/audio/SFX_Dino_T3_04.js"></script>
+    <script src="/src/audio/SFX_Dino_T4_01.js"></script>
+    <script src="/src/audio/SFX_Dino_T4_02.js"></script>
+    <script src="/src/audio/SFX_Dino_T4_03.js"></script>
     <script src="/src/audio/SFX_Herbivores.js"></script>
-    <script src="/src/audio/SFX_Saurians.js"></script>
-    <script src="/src/audio/SFX_Humans.js"></script>
+    <script src="/src/audio/SFX_Saurian_T1_01.js"></script>
+    <script src="/src/audio/SFX_Saurian_T1_02.js"></script>
+    <script src="/src/audio/SFX_Saurian_T1_03.js"></script>
+    <script src="/src/audio/SFX_Saurian_T2_01.js"></script>
+    <script src="/src/audio/SFX_Saurian_T2_02.js"></script>
+    <script src="/src/audio/SFX_Saurian_T2_03.js"></script>
+    <script src="/src/audio/SFX_Saurian_T3_01.js"></script>
+    <script src="/src/audio/SFX_Saurian_T3_02.js"></script>
+    <script src="/src/audio/SFX_Saurian_T3_03.js"></script>
+    <script src="/src/audio/SFX_Saurian_T3_04.js"></script>
+    <script src="/src/audio/SFX_Saurian_T4_01.js"></script>
+    <script src="/src/audio/SFX_Saurian_T4_02.js"></script>
+    <script src="/src/audio/SFX_Human_T1_01.js"></script>
+    <script src="/src/audio/SFX_Human_T1_02.js"></script>
+    <script src="/src/audio/SFX_Human_T1_03.js"></script>
+    <script src="/src/audio/SFX_Human_T2_01.js"></script>
+    <script src="/src/audio/SFX_Human_T2_02.js"></script>
+    <script src="/src/audio/SFX_Human_T2_03.js"></script>
+    <script src="/src/audio/SFX_Human_T3_01.js"></script>
+    <script src="/src/audio/SFX_Human_T3_02.js"></script>
+    <script src="/src/audio/SFX_Human_T3_03.js"></script>
+    <script src="/src/audio/SFX_Human_T4_01.js"></script>
+    <script src="/src/audio/SFX_Human_T4_02.js"></script>
+    <script src="/src/audio/SFX_Human_T4_03.js"></script>
     <script src="/src/audio/ProceduralSFX.js"></script>
+
+    <!-- Config -->
+    <script src="/src/config/EquipmentStatsConfig.js"></script>
 
     <!-- Dashboard Modules -->
     <script src="js/state.js"></script>

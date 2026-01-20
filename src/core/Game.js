@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Game - Main game loop and orchestration
- * 
+ *
  * Owner: Director
  */
 
@@ -31,7 +31,7 @@ class Game {
 
     /**
      * Get a registered system
-     * @param {string} name 
+     * @param {string} name
      */
     getSystem(name) {
         if (window.Registry) {
@@ -101,7 +101,7 @@ class Game {
 
         // IslandUpgrades (Requires IslandManager data, so init here or in start phase)
         if (window.IslandUpgrades && window.IslandManager) {
-            // Check if IslandUpgrades was already init in loop? 
+            // Check if IslandUpgrades was already init in loop?
             // Currently SystemConfig says init:false for it because it needs args.
             IslandUpgrades.init(IslandManager.islands);
             Logger.info('[Game] Initialized IslandUpgrades');
@@ -114,7 +114,8 @@ class Game {
         Logger.info('[Game] Starting systems...');
         for (const config of sortedSystems) {
             if (config.start) {
-                const sys = window[config.global] || (window.Registry && Registry.get(config.global));
+                const sys =
+                    window[config.global] || (window.Registry && Registry.get(config.global));
                 if (sys && typeof sys.start === 'function') {
                     sys.start();
                     Logger.info(`[Game] Started ${config.global}`);
@@ -140,7 +141,6 @@ class Game {
     /**
      * Create the player hero
      */
-
 
     /**
      * Initialize a newly unlocked island
@@ -311,14 +311,24 @@ class Game {
         const avgFps = p.frameCount / elapsed;
 
         Logger.info('=== FRAME PROFILE ===');
-        Logger.info(`Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`);
+        Logger.info(
+            `Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`
+        );
         Logger.info('--- Systems (ms total) ---');
         for (const [name, time] of Object.entries(p.systems).sort((a, b) => b[1] - a[1])) {
-            Logger.info(`  ${name}: ${time.toFixed(1)}ms (${(time / p.frameCount).toFixed(2)}ms/frame)`);
+            Logger.info(
+                `  ${name}: ${time.toFixed(1)}ms (${(time / p.frameCount).toFixed(2)}ms/frame)`
+            );
         }
-        Logger.info(`--- EntityManager: ${p.entityManager.toFixed(1)}ms (${(p.entityManager / p.frameCount).toFixed(2)}ms/frame)`);
-        Logger.info(`--- GameRenderer: ${p.gameRenderer.toFixed(1)}ms (${(p.gameRenderer / p.frameCount).toFixed(2)}ms/frame)`);
-        Logger.info(`--- VFX Foreground: ${p.vfxForeground.toFixed(1)}ms (${(p.vfxForeground / p.frameCount).toFixed(2)}ms/frame)`);
+        Logger.info(
+            `--- EntityManager: ${p.entityManager.toFixed(1)}ms (${(p.entityManager / p.frameCount).toFixed(2)}ms/frame)`
+        );
+        Logger.info(
+            `--- GameRenderer: ${p.gameRenderer.toFixed(1)}ms (${(p.gameRenderer / p.frameCount).toFixed(2)}ms/frame)`
+        );
+        Logger.info(
+            `--- VFX Foreground: ${p.vfxForeground.toFixed(1)}ms (${(p.vfxForeground / p.frameCount).toFixed(2)}ms/frame)`
+        );
         Logger.info('=====================');
 
         this._profile = null;
@@ -327,3 +337,4 @@ class Game {
 
 // Export singleton
 window.GameInstance = new Game();
+

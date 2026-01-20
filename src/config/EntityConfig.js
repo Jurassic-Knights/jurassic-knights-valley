@@ -1,19 +1,18 @@
-/**
+﻿/**
  * EntityConfig - Central Configuration for Game Entities
- * 
+ *
  * DEPRECATION NOTICE: Most configs have been migrated:
- * - hero, dinosaur, resource → src/entities/
- * - enemy → EnemyConfig.js
- * - lootTables → LootTableConfig.js
- * - boss → BossConfig.js
- * 
+ * - hero, dinosaur, resource â†’ src/entities/
+ * - enemy â†’ EnemyConfig.js
+ * - lootTables â†’ LootTableConfig.js
+ * - boss â†’ BossConfig.js
+ *
  * REMAINING SECTIONS:
  * - droppedItem: Dropped item defaults
  * - npc: NPC defaults
  */
 
 const EntityConfig = {
-
     // ============================================
     // DROPPED ITEMS
     // ============================================
@@ -47,3 +46,4 @@ window.EntityConfig = EntityConfig;
 if (window.Registry) {
     Registry.register('EntityConfig', EntityConfig);
 }
+

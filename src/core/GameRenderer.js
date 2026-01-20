@@ -1,8 +1,8 @@
-/**
+﻿/**
  * GameRenderer - Canvas rendering system with viewport
- * 
+ *
  * Mobile shows a cropped view, PC shows more of the world
- * 
+ *
  * Owner: Director
  */
 
@@ -23,7 +23,11 @@ const GameRenderer = {
         // Fallback: Ironhaven-only (old formula)
         const defaults = { MAP_PADDING: 2048, GRID_COLS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
         const cfg = gc || defaults;
-        return cfg.MAP_PADDING * 2 + cfg.GRID_COLS * cfg.ISLAND_SIZE + (cfg.GRID_COLS - 1) * cfg.WATER_GAP;
+        return (
+            cfg.MAP_PADDING * 2 +
+            cfg.GRID_COLS * cfg.ISLAND_SIZE +
+            (cfg.GRID_COLS - 1) * cfg.WATER_GAP
+        );
     },
     get worldHeight() {
         const gc = window.GameConstants?.World;
@@ -34,20 +38,23 @@ const GameRenderer = {
         // Fallback: Ironhaven-only (old formula)
         const defaults = { MAP_PADDING: 2048, GRID_ROWS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
         const cfg = gc || defaults;
-        return cfg.MAP_PADDING * 2 + cfg.GRID_ROWS * cfg.ISLAND_SIZE + (cfg.GRID_ROWS - 1) * cfg.WATER_GAP;
+        return (
+            cfg.MAP_PADDING * 2 +
+            cfg.GRID_ROWS * cfg.ISLAND_SIZE +
+            (cfg.GRID_ROWS - 1) * cfg.WATER_GAP
+        );
     },
 
     // Viewport (what portion of the world is visible)
     viewport: {
         x: 0,
         y: 0,
-        width: 450,   // Mobile default (9:16 aspect)
+        width: 450, // Mobile default (9:16 aspect)
         height: 800
     },
 
     // GC Optimization: Pre-allocated array for Y-sorting
     _sortableEntities: [],
-
 
     /**
      * Initialize the renderer
@@ -97,6 +104,7 @@ const GameRenderer = {
         this._ambientSystem = this.game.getSystem('AmbientSystem');
         this._fogSystem = this.game.getSystem('FogOfWarSystem');
         this._envRenderer = this.game.getSystem('EnvironmentRenderer');
+        this._lightingSystem = this.game.getSystem('LightingSystem');
 
         Logger.info('[GameRenderer] Initialized');
         return true;
@@ -138,7 +146,9 @@ const GameRenderer = {
         this.resize();
         // Force re-render to clear artifacts immediately
         if (this.ctx) this.render();
-        Logger.info(`[GameRenderer] Viewport Updated: ${Math.floor(this.viewport.width)}x${Math.floor(this.viewport.height)} (Container: ${containerWidth}x${containerHeight})`);
+        Logger.info(
+            `[GameRenderer] Viewport Updated: ${Math.floor(this.viewport.width)}x${Math.floor(this.viewport.height)} (Container: ${containerWidth}x${containerHeight})`
+        );
     },
 
     /**
@@ -152,8 +162,14 @@ const GameRenderer = {
         this.viewport.y = this.hero.y - this.viewport.height / 2;
 
         // Clamp viewport to world bounds
-        this.viewport.x = Math.max(0, Math.min(this.worldWidth - this.viewport.width, this.viewport.x));
-        this.viewport.y = Math.max(0, Math.min(this.worldHeight - this.viewport.height, this.viewport.y));
+        this.viewport.x = Math.max(
+            0,
+            Math.min(this.worldWidth - this.viewport.width, this.viewport.x)
+        );
+        this.viewport.y = Math.max(
+            0,
+            Math.min(this.worldHeight - this.viewport.height, this.viewport.y)
+        );
     },
 
     /**
@@ -283,7 +299,9 @@ const GameRenderer = {
             this.ctx.fillStyle = '#000';
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         }
-        if (timing) { timing.world += performance.now() - t0; }
+        if (timing) {
+            timing.world += performance.now() - t0;
+        }
 
         // --- ROAD LAYER --- (After world, before entities)
         if (timing) t0 = performance.now();
@@ -294,7 +312,9 @@ const GameRenderer = {
             roadRenderer.render(this.ctx, this.viewport);
             this.ctx.restore();
         }
-        if (timing) { timing.roads = (timing.roads || 0) + performance.now() - t0; }
+        if (timing) {
+            timing.roads = (timing.roads || 0) + performance.now() - t0;
+        }
 
         // --- VFX LAYER (Background) --- (Use cached ref)
         if (timing) t0 = performance.now();
@@ -306,19 +326,25 @@ const GameRenderer = {
             vfxController.bgParticles.render(this.ctx);
             this.ctx.restore();
         }
-        if (timing) { timing.vfxBg += performance.now() - t0; }
+        if (timing) {
+            timing.vfxBg += performance.now() - t0;
+        }
 
         // Y-SORT: Collect all active world entities via EntityRenderService
         if (timing) t0 = performance.now();
         const sortableEntities = window.EntityRenderService
             ? EntityRenderService.collectAndSort(this.getVisibleBounds())
             : [];
-        if (timing) { timing.entitySort += performance.now() - t0; }
+        if (timing) {
+            timing.entitySort += performance.now() - t0;
+        }
 
         // --- SHADOW PASS ---
         if (timing) t0 = performance.now();
         this.renderShadowPass(sortableEntities);
-        if (timing) { timing.shadows += performance.now() - t0; }
+        if (timing) {
+            timing.shadows += performance.now() - t0;
+        }
 
         // Render all entities (with viewport offset)
         if (timing) t0 = performance.now();
@@ -332,7 +358,9 @@ const GameRenderer = {
         if (homeBase) {
             homeBase.render(this.ctx);
         }
-        if (timing) { timing.entHomeBase = (timing.entHomeBase || 0) + performance.now() - tSub; }
+        if (timing) {
+            timing.entHomeBase = (timing.entHomeBase || 0) + performance.now() - tSub;
+        }
 
         // Delegate entity rendering to EntityRenderService
         if (window.EntityRenderService) {
@@ -347,9 +375,9 @@ const GameRenderer = {
         }
 
         this.ctx.restore();
-        if (timing) { timing.entities += performance.now() - t0; }
-
-
+        if (timing) {
+            timing.entities += performance.now() - t0;
+        }
 
         // Render Ambient Layer (Sky/Cloud level) - Use cached ref
         if (timing) t0 = performance.now();
@@ -360,7 +388,9 @@ const GameRenderer = {
             ambientSystem.render(this.ctx);
             this.ctx.restore();
         }
-        if (timing) { timing.ambient += performance.now() - t0; }
+        if (timing) {
+            timing.ambient += performance.now() - t0;
+        }
 
         // Render Fog of War - Use cached ref
         if (timing) t0 = performance.now();
@@ -368,7 +398,9 @@ const GameRenderer = {
         if (fogSystem) {
             fogSystem.render(this.ctx, this.viewport);
         }
-        if (timing) { timing.fog += performance.now() - t0; }
+        if (timing) {
+            timing.fog += performance.now() - t0;
+        }
 
         // Render Foreground VFX (e.g. Explosions) ON TOP of everything
         if (timing) t0 = performance.now();
@@ -389,7 +421,9 @@ const GameRenderer = {
 
             this.ctx.restore();
         }
-        if (timing) { timing.vfxFg += performance.now() - t0; }
+        if (timing) {
+            timing.vfxFg += performance.now() - t0;
+        }
 
         // --- AMBIENT OVERLAY (Day/Night Cycle) --- Use cached ref
         if (timing) t0 = performance.now();
@@ -397,7 +431,27 @@ const GameRenderer = {
         if (envRenderer) {
             envRenderer.render(this.ctx, this.viewport);
         }
-        if (timing) { timing.envOverlay += performance.now() - t0; }
+        if (timing) {
+            timing.envOverlay += performance.now() - t0;
+        }
+
+        // --- DYNAMIC LIGHTS ---
+        if (timing) t0 = performance.now();
+        const lightingSystem = this._lightingSystem;
+        if (lightingSystem && typeof lightingSystem.render === 'function') {
+            try {
+                this.ctx.save();
+                this.ctx.translate(-this.viewport.x, -this.viewport.y);
+                lightingSystem.render(this.ctx);
+                this.ctx.restore();
+            } catch (e) {
+                this.ctx.restore();
+                Logger.warn('[GameRenderer] LightingSystem render error:', e.message);
+            }
+        }
+        if (timing) {
+            timing.lighting = (timing.lighting || 0) + performance.now() - t0;
+        }
 
         // --- DEBUG OVERLAY ---
         if (this.debugMode) {
@@ -467,8 +521,8 @@ const GameRenderer = {
             DebugOverlays.drawWorldBoundary(
                 this.ctx,
                 this.viewport,
-                this.worldWidth(),
-                this.worldHeight(),
+                this.worldWidth,
+                this.worldHeight,
                 this.game
             );
         }

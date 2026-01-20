@@ -1,0 +1,27 @@
+{
+    "id":  "weapon_ranged_submachine_gun_t2_01",
+    "name":  "Trench SMG",
+    "description":  "A reliable submachine gun for trenches.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "ranged",
+    "weaponSubtype":  "submachine_gun",
+    "tier":  2,
+    "rarity":  "uncommon",
+    "stats":  {
+                  "damage":  11,
+                  "attackSpeed":  5.5,
+                  "range":  300,
+                  "ammoCapacity":  32
+              },
+    "recipe":  {
+                   "scraps_t2_01":  10,
+                   "minerals_t1_01":  7
+               },
+    "sprite":  "weapon_ranged_submachine_gun_t2_01",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/submachine_gun/weapon_submachine_gun_t2_01_original.png"
+              },
+    "gripType":  "1-hand"
+}

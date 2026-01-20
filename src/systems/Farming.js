@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Farming System
  * Handles crop growth, soil states, and harvesting
- * 
+ *
  * Owner: Gameplay Designer
  */
 
@@ -25,7 +25,8 @@ const Farming = {
 
         this.crops.set(key, {
             id: cropId,
-            x, y,
+            x,
+            y,
             stage: 0,
             growthProgress: 0,
             watered: false,
@@ -108,3 +109,4 @@ const Farming = {
 };
 
 window.Farming = Farming;
+

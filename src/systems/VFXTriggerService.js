@@ -1,9 +1,9 @@
-/**
+﻿/**
  * VFXTriggerService - Orchestrates complex visual effect sequences
- * 
+ *
  * Extracted from Game.js to separate cinematic visuals from core logic.
  * Uses VFXController for low-level particle management.
- * 
+ *
  * Owner: VFX Artist
  */
 
@@ -51,7 +51,7 @@ const VFXTriggerService = {
             VFXController.playForeground(x, y, VFXConfig.UNLOCK.DIVINE_GLINT);
 
             // 5. Heavy Debris
-            VFXConfig.UNLOCK.DEBRIS_COLORS.forEach(col => {
+            VFXConfig.UNLOCK.DEBRIS_COLORS.forEach((col) => {
                 VFXController.playForeground(x, y, { ...VFXConfig.UNLOCK.DEBRIS_BASE, color: col });
             });
         }
@@ -63,35 +63,41 @@ const VFXTriggerService = {
 
     /**
      * Trigger completion VFX when all magnet items arrive
-     * "The Magnetic Singularity" - AAA Sequence
+     * "Electromagnetic Field Collapse" - Realistic Sequence
      * @param {object} hero - Hero entity for position reference
      */
     triggerMagnetCompletionVFX(hero) {
         if (!hero || !window.VFXController) return;
 
-        Logger.info('[VFXTriggerService] Magnetic Singularity Triggered');
+        Logger.info('[VFXTriggerService] Electromagnetic Collapse Triggered');
 
         const x = hero.x;
         const y = hero.y;
 
         if (window.VFXConfig) {
-            // --- PHASE 1: THE GATHER ---
-            VFXController.playForeground(x, y, VFXConfig.MAGNET.GATHER_STREAK);
-            VFXController.playForeground(x, y, VFXConfig.MAGNET.GATHER_GLOW);
+            // --- PHASE 1: FIELD BUILDUP ---
+            // Electric arcs converging toward hero
+            VFXController.playForeground(x, y, VFXConfig.MAGNET.ELECTRIC_ARCS);
+            // Static flash at center
+            VFXController.playForeground(x, y, VFXConfig.MAGNET.STATIC_FLASH);
 
-            // Trigger the burst after the gather (200ms delay)
+            // Trigger the collapse after buildup (150ms delay)
             setTimeout(() => {
-                // --- PHASE 2: THE DISCHARGE ---
-                VFXController.playBackground(x, y, VFXConfig.MAGNET.IMPACT_SHOCKWAVE);
-                VFXController.playForeground(x, y, VFXConfig.MAGNET.GOD_RAYS);
-                VFXController.playForeground(x, y, VFXConfig.MAGNET.STREAK_SPARKS);
-                VFXController.playForeground(x, y, VFXConfig.MAGNET.COOLING_DEBRIS);
+                // --- PHASE 2: FIELD COLLAPSE ---
+                // Magnetic pulse wave
+                VFXController.playBackground(x, y, VFXConfig.MAGNET.FIELD_PULSE);
+                // Metal debris pulled in
+                VFXController.playForeground(x, y, VFXConfig.MAGNET.METAL_DEBRIS);
+                // Impact sparks
+                VFXController.playForeground(x, y, VFXConfig.MAGNET.IMPACT_SPARKS);
 
-                // --- PHASE 3: THE AFTERMATH ---
-                VFXController.playForeground(x, y, VFXConfig.MAGNET.SMOKE);
-            }, 200);
+                // --- PHASE 3: SETTLING ---
+                // Dust cloud from the disturbance
+                VFXController.playBackground(x, y, VFXConfig.MAGNET.DUST_CLOUD);
+            }, 150);
         }
     }
 };
 
 window.VFXTriggerService = VFXTriggerService;
+

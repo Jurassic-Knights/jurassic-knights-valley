@@ -1,7 +1,7 @@
-/**
+﻿/**
  * EconomySystem
  * Manages game currency, transactions, and resource validation.
- * 
+ *
  * Replaces the legacy Economy.js object literal.
  */
 class EconomySystem {
@@ -26,7 +26,9 @@ class EconomySystem {
         EventBus.on(GameConstants.Events.ADD_GOLD, (amount) => this.addGold(amount));
 
         // Listen for upgrade requests
-        EventBus.on(GameConstants.Events.REQUEST_UPGRADE, (data) => this.handleUpgradeRequest(data));
+        EventBus.on(GameConstants.Events.REQUEST_UPGRADE, (data) =>
+            this.handleUpgradeRequest(data)
+        );
     }
 
     update(dt) {
@@ -41,12 +43,12 @@ class EconomySystem {
         if (hero && hero.inventory) {
             return hero.inventory.gold || 0;
         }
-        return window.GameState ? (window.GameState.get('gold') || 0) : 0;
+        return window.GameState ? window.GameState.get('gold') || 0 : 0;
     }
 
     /**
      * Internal method to deduct gold
-     * @param {number} amount 
+     * @param {number} amount
      */
     spendGold(amount) {
         const currentGold = this.getGold();
@@ -76,7 +78,7 @@ class EconomySystem {
 
     /**
      * Internal method to add gold
-     * @param {number} amount 
+     * @param {number} amount
      */
     addGold(amount) {
         const currentGold = this.getGold();
@@ -115,7 +117,7 @@ class EconomySystem {
                 if (success) {
                     // Trigger Unlock VFX at center of new zone
                     // Note: IslandManager already emits 'ISLAND_UNLOCKED' which UIManager listens to
-                    // But triggering VFX via GameInstance logic? 
+                    // But triggering VFX via GameInstance logic?
                     // Let's keep it simple: IslandManager handles the "Logic" of unlocking
                     if (window.AudioManager) AudioManager.playSFX('sfx_ui_unlock');
 
@@ -163,7 +165,11 @@ class EconomySystem {
 
                     // Emit Success for UI to re-render
                     if (window.EventBus) {
-                        EventBus.emit(GameConstants.Events.UPGRADE_PURCHASED, { gridX, gridY, type });
+                        EventBus.emit(GameConstants.Events.UPGRADE_PURCHASED, {
+                            gridX,
+                            gridY,
+                            type
+                        });
                     }
                 }
             }
@@ -177,3 +183,4 @@ class EconomySystem {
 // Global & Register
 window.EconomySystem = new EconomySystem();
 if (window.Registry) Registry.register('EconomySystem', window.EconomySystem);
+

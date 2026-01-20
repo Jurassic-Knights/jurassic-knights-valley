@@ -1,0 +1,15 @@
+{
+    "id":  "node_harvesting_t4_01",
+    "name":  "Field Kitchen",
+    "sourceCategory":  "nodes",
+    "sourceFile":  "nodes",
+    "sprite":  "node_harvesting_t4_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "assets/images/nodes/node_harvesting_t4_01_original.png"
+              },
+    "type":  "ore",
+    "biome":  "all",
+    "nodeSubtype":  "harvesting",
+    "tier":  4
+}

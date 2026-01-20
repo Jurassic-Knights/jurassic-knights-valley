@@ -1,6 +1,6 @@
-/**
+﻿/**
  * DebugUI - Debug cheat bar controls
- * 
+ *
  * Owner: Director
  */
 
@@ -271,3 +271,4 @@ const DebugUI = {
 };
 
 window.DebugUI = DebugUI;
+

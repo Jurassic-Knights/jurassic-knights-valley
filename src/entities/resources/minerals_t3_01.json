@@ -1,0 +1,14 @@
+﻿{
+  "id": "minerals_t3_01",
+  "name": "Gold Dust",
+  "sourceCategory": "resources",
+  "sourceFile": "minerals",
+  "sprite": "minerals_t3_01",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/resources/minerals_t3_01_original.png"
+  },
+  "tier": 3,
+  "stackable": true,
+  "type": "material"
+}

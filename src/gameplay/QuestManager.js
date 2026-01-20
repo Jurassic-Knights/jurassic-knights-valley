@@ -1,4 +1,4 @@
-/**
+﻿/**
  * QuestManagerService
  * Handles active quests, progress tracking, and completion events.
  * Refactored to Class pattern for consistency.
@@ -8,11 +8,29 @@ class QuestManagerService {
     constructor() {
         this.activeQuest = null;
 
-        // Configurable quest line
+        // Configurable quest line (using entity IDs)
         this.quests = [
-            { id: 'q1', type: 'collect', resource: 'wood', target: 5, description: 'Gather 5 Wood' },
-            { id: 'q2', type: 'collect', resource: 'scrap_metal', target: 3, description: 'Gather 3 Scrap Metal' },
-            { id: 'q3', type: 'collect', resource: 'iron_ore', target: 2, description: 'Gather 2 Iron Ore' }
+            {
+                id: 'q1',
+                type: 'collect',
+                resource: 'wood_t1_01',
+                target: 5,
+                description: 'Gather 5 Wood'
+            },
+            {
+                id: 'q2',
+                type: 'collect',
+                resource: 'scraps_t1_01',
+                target: 3,
+                description: 'Gather 3 Scrap Metal'
+            },
+            {
+                id: 'q3',
+                type: 'collect',
+                resource: 'minerals_t1_01',
+                target: 2,
+                description: 'Gather 2 Iron Ore'
+            }
         ];
         this.questIndex = 0;
 
@@ -67,11 +85,16 @@ class QuestManagerService {
                 this.activeQuest.current = this.activeQuest.target;
             }
 
-            Logger.info(`[QuestManager] Progress: ${this.activeQuest.current}/${this.activeQuest.target}`);
+            Logger.info(
+                `[QuestManager] Progress: ${this.activeQuest.current}/${this.activeQuest.target}`
+            );
             this.updateUI(true); // true = animate
 
             // Check completion
-            if (this.activeQuest.current >= this.activeQuest.target && oldCurrent < this.activeQuest.target) {
+            if (
+                this.activeQuest.current >= this.activeQuest.target &&
+                oldCurrent < this.activeQuest.target
+            ) {
                 this.completeQuest();
             }
         }
@@ -115,3 +138,4 @@ class QuestManagerService {
 
 window.QuestManager = new QuestManagerService();
 if (window.Registry) Registry.register('QuestManager', window.QuestManager);
+

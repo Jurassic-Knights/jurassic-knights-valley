@@ -30,7 +30,7 @@
         }
     },
     {
-        "id": "feet_t2_03",
+        "id": "feet_t2_01",
         "name": "Iron Boots",
         "slot": "feet",
         "tier": 2,
@@ -41,11 +41,11 @@
         "fuelCost": 2,
         "sourceDescription": "iron boots, medieval style armored boots, iron plated boots, weathered",
         "files": {
-            "original": "assets/images/equipment/feet_t2_03_original.png"
+            "original": "assets/images/equipment/feet_t2_01_original.png"
         }
     },
     {
-        "id": "feet_t2_04",
+        "id": "feet_t2_02",
         "name": "Wool Boots",
         "slot": "feet",
         "tier": 2,
@@ -56,11 +56,11 @@
         "fuelCost": 2,
         "sourceDescription": "wool boots, WWI era military winter boots, fur-lined boots, weathered",
         "files": {
-            "original": "assets/images/equipment/feet_t2_04_original.png"
+            "original": "assets/images/equipment/feet_t2_02_original.png"
         }
     },
     {
-        "id": "feet_t2_05",
+        "id": "feet_t2_03",
         "name": "Sand Striders",
         "slot": "feet",
         "tier": 2,
@@ -71,11 +71,11 @@
         "fuelCost": 2,
         "sourceDescription": "sand striders, WWI era desert boots, light tan desert boots, weathered",
         "files": {
-            "original": "assets/images/equipment/feet_t2_05_original.png"
+            "original": "assets/images/equipment/feet_t2_03_original.png"
         }
     },
     {
-        "id": "feet_t3_06",
+        "id": "feet_t3_01",
         "name": "Steel Boots",
         "slot": "feet",
         "tier": 3,
@@ -86,7 +86,7 @@
         "fuelCost": 4,
         "sourceDescription": "steel boots, medieval style heavy armored boots, polished steel boots, weathered",
         "files": {
-            "original": "assets/images/equipment/feet_t3_06_original.png"
+            "original": "assets/images/equipment/feet_t3_01_original.png"
         }
     }
 ]

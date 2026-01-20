@@ -1,0 +1,66 @@
+{
+  "id": "enemy_herbivore_t3_03",
+  "name": "Charging Bull",
+  "sourceCategory": "enemies",
+  "sourceFile": "herbivore",
+  "sprite": "herbivore_t3_03",
+  "status": "pending",
+  "tier": 3,
+  "biome": "desert",
+  "stats": {
+    "health": 120,
+    "damage": 12,
+    "speed": 75,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_herbivore_t3_03",
+    "death": "sfx_death_herbivore_t3_03",
+    "hurt": "sfx_hurt_herbivore_t3_03",
+    "aggro": "sfx_aggro_herbivore_t3_03"
+  },
+  "spawning": {
+    "biomes": [
+      "desert"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t3_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t3_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 45,
+  "species": "Styracosaurus",
+  "sourceDescription": "Styracosaurus, dusty tan hide, horned frill, bulky natural build",
+  "description": "The Charging Bull Styracosaurus carries scars across its spectacular frill from territorial battles that shaped its aggressive temperament. Every one of those frill spikes has drawn blood, and the central horn shows chips from impacts against bone and stone alike. Its eyes burn with perpetual challenge.\n\nSandy coloring helps this creature vanish against desert rock formations, tan hide striped with faded cream patterns. The frill shows sun-bleached bone where scales have worn thin from years of combat. This is pure wild dinosaur, untamed and untamable, surviving through aggression alone.\n\nPowerful legs have driven this creature through countless charges, muscles like coiled springs beneath sand-colored hide. The short tail twitches constantly, broadcasting its state of agitation to any observant creature. Approaching this particular individual triggers immediate charge response - it learned long ago that offense is the best defense.",
+  "files": {
+    "original": "images/enemies/herbivore_t3_03_original.png"
+  },
+  "weaponType": "charge"
+}

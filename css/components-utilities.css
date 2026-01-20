@@ -1,0 +1,183 @@
+/* UI Utilities - Icons, Text, Spacing, Badges, Dividers */
+
+/* ========================================
+   ICONS - Placeholder & Image Containers
+   ======================================== */
+.icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: var(--border-radius-sm);
+}
+
+.icon-sm {
+    width: 16px;
+    height: 16px;
+}
+
+.icon-lg {
+    width: 32px;
+    height: 32px;
+}
+
+.icon-xl {
+    width: 48px;
+    height: 48px;
+}
+
+/* Icon frame (for bordered icons) */
+.icon-framed {
+    padding: 2px;
+    background: var(--gradient-iron);
+    border: 1px solid var(--color-accent-iron);
+    box-shadow: var(--shadow-emboss);
+}
+
+/* ========================================
+   DIVIDERS & SEPARATORS
+   ======================================== */
+.divider {
+    height: 2px;
+    background: var(--gradient-iron);
+    margin: var(--space-md) 0;
+    border-radius: 1px;
+    box-shadow: var(--shadow-inset);
+}
+
+.divider-brass {
+    background: var(--gradient-brass);
+    height: 3px;
+}
+
+/* ========================================
+   TEXT UTILITIES
+   ======================================== */
+.text-gold {
+    color: var(--color-text-gold);
+}
+
+.text-muted {
+    color: var(--color-text-secondary);
+}
+
+.text-danger {
+    color: var(--color-text-danger);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-xs {
+    font-size: var(--font-size-xs);
+}
+
+.text-sm {
+    font-size: var(--font-size-sm);
+}
+
+.text-lg {
+    font-size: var(--font-size-lg);
+}
+
+.text-xl {
+    font-size: var(--font-size-xl);
+}
+
+.text-display {
+    font-family: var(--font-display);
+}
+
+.text-mono {
+    font-family: var(--font-body);
+}
+
+.text-uppercase {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========================================
+   SPACING UTILITIES
+   ======================================== */
+.p-xs {
+    padding: var(--space-xs);
+}
+
+.p-sm {
+    padding: var(--space-sm);
+}
+
+.p-md {
+    padding: var(--space-md);
+}
+
+.p-lg {
+    padding: var(--space-lg);
+}
+
+.m-xs {
+    margin: var(--space-xs);
+}
+
+.m-sm {
+    margin: var(--space-sm);
+}
+
+.m-md {
+    margin: var(--space-md);
+}
+
+.m-lg {
+    margin: var(--space-lg);
+}
+
+.mb-sm {
+    margin-bottom: var(--space-sm);
+}
+
+.mb-md {
+    margin-bottom: var(--space-md);
+}
+
+.mt-sm {
+    margin-top: var(--space-sm);
+}
+
+.mt-md {
+    margin-top: var(--space-md);
+}
+
+/* ========================================
+   BADGE - Rank/Status Indicators
+   ======================================== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: var(--border-radius-sm);
+    background: var(--gradient-iron);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-accent-iron);
+}
+
+.badge-gold {
+    background: var(--gradient-brass);
+    color: var(--color-primary-dark);
+    border-color: var(--color-accent-gold);
+}
+
+.badge-danger {
+    background: var(--color-danger);
+    border-color: var(--color-danger);
+}

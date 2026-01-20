@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Logger - Centralized logging utility with configurable levels
- * 
+ *
  * Levels:
  * - DEBUG (0): Verbose debugging info
  * - INFO (1): General information
  * - WARN (2): Warnings
  * - ERROR (3): Errors
  * - NONE (4): Disable all logging
- * 
+ *
  * Usage:
  *   Logger.debug('[System]', 'message');
  *   Logger.info('[System]', 'message');
@@ -42,7 +42,7 @@ const Logger = {
     },
 
     _getLevelName(level) {
-        return Object.keys(this.LEVELS).find(key => this.LEVELS[key] === level) || 'UNKNOWN';
+        return Object.keys(this.LEVELS).find((key) => this.LEVELS[key] === level) || 'UNKNOWN';
     },
 
     _format(level, tag, ...args) {
@@ -109,3 +109,4 @@ if (window.location.hostname !== 'localhost' && !window.location.hostname.includ
 }
 
 window.Logger = Logger;
+

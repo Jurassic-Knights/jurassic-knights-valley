@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Texture Aligner Tool
  * Helper to alignment GenAI 1:1 textures within rectangular UI containers.
  * Allows live editing of background-position and background-size.
@@ -83,8 +83,12 @@ class TextureAlignerService {
             border-radius: 8px;
         `;
 
-        let options = this.targets.map((t, i) => `<option value="${i}">${t.name}</option>`).join('');
-        let imgOptions = (this.availableImages || []).map(img => `<option value="${img}">${img}</option>`).join('');
+        let options = this.targets
+            .map((t, i) => `<option value="${i}">${t.name}</option>`)
+            .join('');
+        let imgOptions = (this.availableImages || [])
+            .map((img) => `<option value="${img}">${img}</option>`)
+            .join('');
 
         div.innerHTML = `
             <div style="font-weight:bold; margin-bottom:10px; color:#FFB347;">TEXTURE ALIGNER</div>
@@ -156,7 +160,7 @@ class TextureAlignerService {
             
             <div style="margin-top:10px; padding-top:10px; border-top:1px solid #444;">
                 <button id="btn-connect" style="width:100%; margin-bottom:5px; padding:8px; background:#FF9800; color:white; border:none; cursor:pointer;">CONNECT TO ui_theme.js</button>
-                <div id="status-connected" style="display:none; color:#4CAF50; font-size:11px; text-align:center; margin-bottom:5px;">✓ AUTO-SAVE ENABLED</div>
+                <div id="status-connected" style="display:none; color:#4CAF50; font-size:11px; text-align:center; margin-bottom:5px;">âœ“ AUTO-SAVE ENABLED</div>
                 
                 <button id="btn-save" style="width:100%; padding:8px; background:#4CAF50; color:white; border:none; cursor:pointer;">DOWNLOAD (Manual)</button>
             </div>
@@ -167,7 +171,9 @@ class TextureAlignerService {
         this.container = div;
 
         // Bind Events
-        div.querySelector('#ta-target').addEventListener('change', (e) => this.selectTarget(e.target.value));
+        div.querySelector('#ta-target').addEventListener('change', (e) =>
+            this.selectTarget(e.target.value)
+        );
         div.querySelector('#btn-load').addEventListener('click', () => this.loadImage());
 
         // Sync Sliders and Number Inputs
@@ -202,14 +208,17 @@ class TextureAlignerService {
     // ... (connectFileHandle, saveToDisk, loadImage same as before) ...
 
     async connectFileHandle() {
-        if (!window.showOpenFilePicker) return alert('Your browser does not support File System Access API.');
+        if (!window.showOpenFilePicker)
+            return alert('Your browser does not support File System Access API.');
 
         try {
             const [handle] = await window.showOpenFilePicker({
-                types: [{
-                    description: 'Javascript Config',
-                    accept: { 'text/javascript': ['.js'] }
-                }],
+                types: [
+                    {
+                        description: 'Javascript Config',
+                        accept: { 'text/javascript': ['.js'] }
+                    }
+                ],
                 multiple: false
             });
             this.fileHandle = handle;
@@ -278,8 +287,8 @@ class TextureAlignerService {
         // Multipliers to convert "Virtual Slider %" (Image Scale) -> "CSS %" (Container Relative)
         // Slider 100% = Image Natural Size
         // Formula: (ImagePixels / ContainerPixels)
-        this.multX = (img.naturalWidth / this.target.clientWidth);
-        this.multY = (img.naturalHeight / this.target.clientHeight);
+        this.multX = img.naturalWidth / this.target.clientWidth;
+        this.multY = img.naturalHeight / this.target.clientHeight;
 
         if (!isFinite(this.multX)) this.multX = 1;
         if (!isFinite(this.multY)) this.multY = 1;
@@ -308,7 +317,6 @@ class TextureAlignerService {
         this.container.querySelector('#inp-img').value = this.state.img || '';
     }
 
-
     selectTarget(index) {
         this.currentTargetDef = this.targets[index];
         this.targetId = this.currentTargetDef.id;
@@ -327,8 +335,8 @@ class TextureAlignerService {
             x: current.x !== undefined ? current.x : 50,
             y: current.y !== undefined ? current.y : 50,
             scale: current.scale !== undefined ? current.scale : 100,
-            scaleX: current.scaleX !== undefined ? current.scaleX : (current.scale || 100),
-            scaleY: current.scaleY !== undefined ? current.scaleY : (current.scale || 100),
+            scaleX: current.scaleX !== undefined ? current.scaleX : current.scale || 100,
+            scaleY: current.scaleY !== undefined ? current.scaleY : current.scale || 100,
             img: current.img || ''
         };
 
@@ -338,7 +346,7 @@ class TextureAlignerService {
             img.onload = () => {
                 this.recalculateAspect(img);
                 this.applyStyle(); // Re-apply to ensure sync
-            }
+            };
             img.src = `assets/ui/${this.state.img}`;
         }
 
@@ -392,7 +400,7 @@ class TextureAlignerService {
 
         let bgSize = `${finalX}% ${finalY}%`;
 
-        this.targetsList.forEach(el => {
+        this.targetsList.forEach((el) => {
             el.style.backgroundPosition = bgPos;
             el.style.backgroundSize = bgSize;
 
@@ -428,3 +436,4 @@ class TextureAlignerService {
 }
 
 window.TextureAligner = new TextureAlignerService();
+

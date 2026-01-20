@@ -1,6 +1,6 @@
-/**
+﻿/**
  * VFX_Categories - Domain-Specific VFX Configurations
- * 
+ *
  * Organized by game system (Hero, Dino, Resource, Purchase, etc).
  * These are tied to specific gameplay contexts.
  */
@@ -90,70 +90,73 @@ const VFX_Categories = {
         }
     },
 
-    // Magnet Completion (The Singularity)
+    // Magnet Completion (Electromagnetic Field Collapse)
     MAGNET: {
-        GATHER_STREAK: {
-            type: 'streak',
-            color: '#FFD700',
-            count: 30,
-            speed: 8,
-            lifetime: 250,
-            bias: 'inward'
-        },
-        GATHER_GLOW: {
-            type: 'glow',
-            colorOverLifetime: ['#000000', '#FFD700'],
-            sizeOverLifetime: [60, 5],
-            lifetime: 200,
-            count: 1,
+        // Electric arc sparks converging toward center
+        ELECTRIC_ARCS: {
+            type: 'spark',
+            color: '#88CCFF',
+            count: 100,
+            speed: 30,
+            lifetime: 300,
+            size: 8,
+            bias: 'inward',
+            drag: 0.85,
             blendMode: 'lighter'
         },
-        IMPACT_SHOCKWAVE: {
+        // Brief magnetic field pulse
+        FIELD_PULSE: {
             type: 'ring',
-            color: '#FFD700',
-            sizeOverLifetime: [10, 150],
-            lifetime: 400,
-            alpha: 0.5,
-            blendMode: 'lighter'
-        },
-        GOD_RAYS: {
-            type: 'ray',
-            color: '#FFEC8B',
-            count: 5,
-            sizeOverLifetime: [5, 40],
-            lifetime: 600,
-            rotationSpeed: 0.2,
-            blendMode: 'lighter'
-        },
-        STREAK_SPARKS: {
-            type: 'streak',
-            count: 40,
-            speed: 12,
-            drag: 0.9,
+            color: '#4488CC',
+            sizeOverLifetime: [80, 480],
             lifetime: 500,
-            size: 3,
-            colorOverLifetime: ['#FFFFFF', '#FFD700'],
+            alpha: 0.6,
+            width: 12,
             blendMode: 'lighter'
         },
-        COOLING_DEBRIS: {
-            type: 'debris',
-            count: 15,
-            speed: 6,
-            gravity: 0.4,
-            bias: 'up',
-            lifetime: 800,
-            size: 5,
-            colorOverLifetime: ['#FFD700', '#8B0000']
-        },
-        SMOKE: {
+        // Static discharge flash
+        STATIC_FLASH: {
             type: 'glow',
-            count: 8,
-            speed: 1.5,
-            lifetime: 1200,
-            drag: 0.95,
-            colorOverLifetime: ['#FFA500', '#696969'],
-            sizeOverLifetime: [10, 30],
-            alpha: 0.4
+            color: '#AADDFF',
+            count: 1,
+            size: 240,
+            lifetime: 200,
+            alpha: 0.8,
+            blendMode: 'lighter'
+        },
+        // Metal debris pulled inward
+        METAL_DEBRIS: {
+            type: 'debris',
+            count: 48,
+            speed: 10,
+            gravity: 0,
+            bias: 'inward',
+            lifetime: 600,
+            size: 12,
+            color: '#888888',
+            drag: 0.92
+        },
+        // Secondary sparks on impact
+        IMPACT_SPARKS: {
+            type: 'spark',
+            count: 80,
+            speed: 18,
+            drag: 0.88,
+            lifetime: 500,
+            size: 8,
+            colorOverLifetime: ['#FFFFFF', '#88CCFF'],
+            blendMode: 'lighter'
+        },
+        // Dust kicked up by magnetic force
+        DUST_CLOUD: {
+            type: 'glow',
+            count: 24,
+            speed: 5,
+            lifetime: 1000,
+            drag: 0.96,
+            color: '#8B7355',
+            sizeOverLifetime: [32, 100],
+            alpha: 0.5
         }
     },
 
@@ -176,46 +179,193 @@ const VFX_Categories = {
 
     // Dinosaur Effects
     DINO: {
+        // Primary blood spray - directional splatter from impact
         BLOOD_SPLATTER: {
-            type: 'circle',
+            type: 'debris',
             color: '#8B0000',
-            count: 5,
-            speed: 3,
-            gravity: 0.2,
-            lifetime: 500,
-            size: 4
+            count: 20,
+            speed: 12,
+            gravity: 0.6,
+            lifetime: 400,
+            size: 6,
+            drag: 0.92,
+            spread: 0.8
         },
+        // Secondary blood mist - fine particles
+        BLOOD_MIST: {
+            type: 'glow',
+            color: '#660000',
+            count: 8,
+            speed: 4,
+            lifetime: 300,
+            size: 15,
+            alpha: 0.4,
+            drag: 0.95
+        },
+        // Blood droplets - larger falling drops
+        BLOOD_DROPS: {
+            type: 'circle',
+            color: '#990000',
+            count: 12,
+            speed: 8,
+            gravity: 0.8,
+            lifetime: 600,
+            size: 4,
+            drag: 0.88
+        },
+        // Meat/gore chunks
         MEAT_CHUNKS: {
             type: 'debris',
-            color: '#A52A2A',
-            count: 3,
-            speed: 4,
-            gravity: 0.3,
-            lifetime: 600,
-            size: 5
+            color: '#8B4513',
+            count: 6,
+            speed: 8,
+            gravity: 0.5,
+            lifetime: 700,
+            size: 10,
+            drag: 0.85
         },
+        // Bone fragments (for death)
+        BONE_FRAGMENTS: {
+            type: 'debris',
+            color: '#E8DCC8',
+            count: 4,
+            speed: 10,
+            gravity: 0.4,
+            lifetime: 800,
+            size: 5,
+            drag: 0.9
+        },
+        // Death effects
         DEATH_GLOW: {
-            type: 'glow', color: '#FFFFFF', size: 150, lifetime: 700, blendMode: 'lighter'
+            type: 'glow',
+            color: '#FFFFFF',
+            size: 150,
+            lifetime: 700,
+            blendMode: 'lighter'
         },
         DEATH_RING: {
-            type: 'ring', color: '#2ECC71', size: 30, lifetime: 600, blendMode: 'lighter'
+            type: 'ring',
+            color: '#2ECC71',
+            size: 30,
+            lifetime: 600,
+            blendMode: 'lighter'
         },
         DEATH_SPARKS: {
-            type: 'spark', color: '#2ECC71', count: 30, speed: 12, size: 5, lifetime: 900
+            type: 'spark',
+            color: '#2ECC71',
+            count: 30,
+            speed: 12,
+            size: 5,
+            lifetime: 900
         },
         RESPAWN: {
-            type: 'circle', color: '#A2F2B4', count: 15, speed: 5, bias: 'up', gravity: -0.03
+            type: 'circle',
+            color: '#A2F2B4',
+            count: 15,
+            speed: 5,
+            bias: 'up',
+            gravity: -0.03
         }
     },
 
     // Resource Effects
     RESOURCE: {
         RESPAWN: {
-            FLASH: { type: 'glow', color: '#FFFFFF', size: 120, lifetime: 600, alpha: 0.6, blendMode: 'lighter' },
-            RING: { type: 'ring', color: '#FFFFFF', size: 20, lifetime: 600, alpha: 0.8, blendMode: 'lighter' },
-            SPARKS: { type: 'spark', color: '#FFFFFF', count: 25, speed: 10, size: 4, lifetime: 800, gravity: 0.2 }
+            FLASH: {
+                type: 'glow',
+                color: '#FFFFFF',
+                size: 120,
+                lifetime: 600,
+                alpha: 0.6,
+                blendMode: 'lighter'
+            },
+            RING: {
+                type: 'ring',
+                color: '#FFFFFF',
+                size: 20,
+                lifetime: 600,
+                alpha: 0.8,
+                blendMode: 'lighter'
+            },
+            SPARKS: {
+                type: 'spark',
+                color: '#FFFFFF',
+                count: 25,
+                speed: 10,
+                size: 4,
+                lifetime: 800,
+                gravity: 0.2
+            }
+        }
+    },
+
+    // === PROJECTILES ===
+    // Maps weapon types to their projectile VFX template keys
+    PROJECTILES: {
+        // Weapon type to template mapping (matches WEAPON_TYPES from dashboard state.js)
+        WEAPON_MAP: {
+            // Ranged subtypes
+            'pistol': 'PROJECTILE_PISTOL',
+            'rifle': 'PROJECTILE_RIFLE',
+            'sniper_rifle': 'PROJECTILE_MARKSMAN',
+            'sniperrifle': 'PROJECTILE_MARKSMAN',
+            'shotgun': 'PROJECTILE_SHOTGUN',
+            'machine_gun': 'PROJECTILE_MACHINEGUN',
+            'submachine_gun': 'PROJECTILE_MACHINEGUN',
+            'flamethrower': 'PROJECTILE_RIFLE', // TODO: Add flame VFX
+            'bazooka': 'PROJECTILE_MARKSMAN', // TODO: Add explosion VFX
+            // Melee subtypes (no projectile, but can be mapped for future swing VFX)
+            'sword': null,
+            'longsword': null,
+            'greatsword': null,
+            'axe': null,
+            'war_axe': null,
+            'mace': null,
+            'war_hammer': null,
+            'lance': null,
+            'halberd': null,
+            'spear': null,
+            'flail': null,
+            'knife': null,
+            // Legacy/fallback naming
+            'revolver': 'PROJECTILE_PISTOL',
+            'marksman': 'PROJECTILE_MARKSMAN',
+            'sniper': 'PROJECTILE_MARKSMAN',
+            'machinegun': 'PROJECTILE_MACHINEGUN',
+            'smg': 'PROJECTILE_MACHINEGUN',
+            'default': 'PROJECTILE_PISTOL'
+        },
+
+        // Get template key for a weapon type
+        getTemplateForWeapon(weaponType) {
+            return this.WEAPON_MAP[weaponType?.toLowerCase()] || this.WEAPON_MAP.default;
+        },
+
+        // Muzzle flash configs by weapon type (uses underscore naming from dashboard)
+        MUZZLE_FLASH: {
+            // Ranged
+            'pistol': { distance: 140, size: 40, spread: 0.3 },
+            'rifle': { distance: 190, size: 60, spread: 0.2 },
+            'sniper_rifle': { distance: 250, size: 80, spread: 0.1 },
+            'sniperrifle': { distance: 250, size: 80, spread: 0.1 },
+            'shotgun': { distance: 160, size: 80, spread: 0.6 },
+            'machine_gun': { distance: 180, size: 50, spread: 0.25 },
+            'submachine_gun': { distance: 160, size: 45, spread: 0.3 },
+            'flamethrower': { distance: 100, size: 100, spread: 0.5 },
+            'bazooka': { distance: 200, size: 120, spread: 0.2 },
+            // Legacy/fallback
+            'revolver': { distance: 150, size: 50, spread: 0.4 },
+            'marksman': { distance: 220, size: 70, spread: 0.15 },
+            'sniper': { distance: 250, size: 80, spread: 0.1 },
+            'machinegun': { distance: 180, size: 50, spread: 0.25 },
+            'default': { distance: 150, size: 50, spread: 0.3 }
+        },
+
+        getMuzzleFlash(weaponType) {
+            return this.MUZZLE_FLASH[weaponType?.toLowerCase()] || this.MUZZLE_FLASH.default;
         }
     }
 };
 
 window.VFX_Categories = VFX_Categories;
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CombatComponent - Manages Attack Stats and Cooldowns
  */
 class CombatComponent extends Component {
@@ -34,7 +34,11 @@ class CombatComponent extends Component {
         if (this.staminaCost > 0 && this.parent.stamina !== undefined) {
             if (this.parent.stamina < this.staminaCost) return false;
             this.parent.stamina -= this.staminaCost;
-            if (window.EventBus) EventBus.emit('HERO_STAMINA_CHANGE', { current: this.parent.stamina, max: this.parent.maxStamina });
+            if (window.EventBus)
+                EventBus.emit('HERO_STAMINA_CHANGE', {
+                    current: this.parent.stamina,
+                    max: this.parent.maxStamina
+                });
         }
 
         // Start Cooldown
@@ -47,3 +51,4 @@ class CombatComponent extends Component {
 
 window.CombatComponent = CombatComponent;
 if (window.Registry) Registry.register('CombatComponent', CombatComponent);
+

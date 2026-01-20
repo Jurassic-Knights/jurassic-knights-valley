@@ -1,4 +1,4 @@
-/**
+﻿/**
  * MerchantPanel - Controller for merchant purchase modal
  */
 class MerchantPanel extends UIPanel {
@@ -35,7 +35,6 @@ class MerchantPanel extends UIPanel {
                 this.close();
             });
         }
-
 
         const upgradeTypes = ['resourceSlots', 'autoChance', 'respawnTime'];
         for (const type of upgradeTypes) {
@@ -77,7 +76,10 @@ class MerchantPanel extends UIPanel {
      * Override Open logic
      */
     onOpen() {
-        Logger.info('[MerchantPanel] Opening for:', this.currentMerchant ? this.currentMerchant.islandName : 'None');
+        Logger.info(
+            '[MerchantPanel] Opening for:',
+            this.currentMerchant ? this.currentMerchant.islandName : 'None'
+        );
         if (!this.currentMerchant) {
             // If opened manually or without target, maybe close?
             // Or just render empty?
@@ -124,10 +126,22 @@ class MerchantPanel extends UIPanel {
         this.renderUpgradeRow('resourceSlots', island.resourceSlots, 'Resource Slots', 'nodes');
         this.renderUpgradeRow('autoChance', island.autoChance, 'Auto Collect', '%');
 
-        const currentRespawn = IslandUpgrades.calculateRespawnTime(island.respawnTime.level, 30).toFixed(1);
-        const nextRespawn = IslandUpgrades.calculateRespawnTime(island.respawnTime.level + 1, 30).toFixed(1);
+        const currentRespawn = IslandUpgrades.calculateRespawnTime(
+            island.respawnTime.level,
+            30
+        ).toFixed(1);
+        const nextRespawn = IslandUpgrades.calculateRespawnTime(
+            island.respawnTime.level + 1,
+            30
+        ).toFixed(1);
         const respawnText = `${island.respawnTime.level}/${island.respawnTime.max} lvl (${currentRespawn}s -> ${nextRespawn}s)`;
-        this.renderUpgradeRow('respawnTime', island.respawnTime, 'Production Speed', 'lvl', respawnText);
+        this.renderUpgradeRow(
+            'respawnTime',
+            island.respawnTime,
+            'Production Speed',
+            'lvl',
+            respawnText
+        );
     }
 
     renderUpgradeRow(type, data, label, unit, customDisplay = null) {
@@ -136,7 +150,9 @@ class MerchantPanel extends UIPanel {
         const btn = document.getElementById(`btn-upgrade-${type}`);
 
         if (levelEl) {
-            levelEl.textContent = customDisplay ? customDisplay : `${data.level}/${data.max} ${unit}`;
+            levelEl.textContent = customDisplay
+                ? customDisplay
+                : `${data.level}/${data.max} ${unit}`;
         }
 
         if (costEl) {
@@ -174,3 +190,4 @@ class MerchantPanel extends UIPanel {
 
 window.MerchantUI = new MerchantPanel();
 if (window.Registry) Registry.register('MerchantUI', window.MerchantUI);
+

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SFX_Enemies - Generic Enemy Sounds (Fallback)
  * Used for unmapped enemy IDs and generic enemy sound triggers
  */
@@ -6,7 +6,7 @@
 (function () {
     const handlers = {
         // Generic dino sounds
-        'sfx_dino_hurt': function () {
+        sfx_dino_hurt: function () {
             const t = SFX.ctx.currentTime;
             const osc = SFX.ctx.createOscillator();
             osc.type = 'sawtooth';
@@ -23,7 +23,7 @@
             osc.stop(t + 0.35);
         },
 
-        'sfx_dino_death': function () {
+        sfx_dino_death: function () {
             const t = SFX.ctx.currentTime;
             SFX.playNoise(0.6, 0.1, 0.5, 0.25, 400);
 
@@ -43,12 +43,12 @@
             osc.stop(t + 0.9);
         },
 
-        'sfx_dino_respawn': function () {
+        sfx_dino_respawn: function () {
             SFX.playNoise(0.3, 0.05, 0.25, 0.2, 1000);
             SFX.playTone(150, 0.4, 'triangle', 0.3, 0.05);
         },
 
-        'sfx_enemy_aggro': function () {
+        sfx_enemy_aggro: function () {
             const t = SFX.ctx.currentTime;
             const osc = SFX.ctx.createOscillator();
             osc.type = 'sawtooth';
@@ -69,12 +69,12 @@
             SFX.playNoise(0.25, 0.05, 0.2, 0.15, 600);
         },
 
-        'sfx_enemy_attack': function () {
+        sfx_enemy_attack: function () {
             SFX.playNoise(0.15, 0.01, 0.12, 0.25, 800);
             SFX.playTone(200, 0.15, 'sawtooth', 0.3, 0.01);
         },
 
-        'sfx_enemy_hurt': function () {
+        sfx_enemy_hurt: function () {
             // Alias to dino_hurt
             const t = SFX.ctx.currentTime;
             const osc = SFX.ctx.createOscillator();
@@ -92,7 +92,7 @@
             osc.stop(t + 0.35);
         },
 
-        'sfx_enemy_death': function () {
+        sfx_enemy_death: function () {
             const t = SFX.ctx.currentTime;
             SFX.playNoise(0.6, 0.1, 0.5, 0.25, 400);
 
@@ -112,12 +112,12 @@
             osc.stop(t + 0.9);
         },
 
-        'sfx_loot_drop': function () {
+        sfx_loot_drop: function () {
             SFX.playTone(200, 0.15, 'triangle', 0.2, 0.02, 0.12);
             setTimeout(() => SFX.playTone(300, 0.1, 'triangle', 0.15, 0.02), 80);
         },
 
-        'sfx_pack_aggro': function () {
+        sfx_pack_aggro: function () {
             // Multiple overlapping growls
             for (let i = 0; i < 3; i++) {
                 setTimeout(() => {
@@ -140,7 +140,7 @@
             }
         },
 
-        'sfx_pterodactyl_swoop': function () {
+        sfx_pterodactyl_swoop: function () {
             const t = SFX.ctx.currentTime;
             // Whooshing wind
             const { filter } = SFX.playNoise(0.5, 0.05, 0.4, 0.3, 2000);
@@ -171,3 +171,4 @@
         Logger.info('[SFX_Enemies] Registered 11 sounds');
     }
 })();
+

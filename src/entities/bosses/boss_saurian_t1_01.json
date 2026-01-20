@@ -1,0 +1,68 @@
+{
+  "id": "boss_saurian_t1_01",
+  "name": "Scout Captain",
+  "sourceCategory": "bosses",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t1_01",
+  "status": "pending",
+  "tier": 1,
+  "biome": "grasslands",
+  "stats": {
+    "health": 90,
+    "damage": 8,
+    "speed": 110,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 280,
+    "packAggro": true,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t1_01",
+    "death": "sfx_death_saurian_t1_01",
+    "hurt": "sfx_hurt_saurian_t1_01",
+    "aggro": "sfx_aggro_saurian_t1_01"
+  },
+  "spawning": {
+    "biomes": [
+      "grasslands"
+    ],
+    "groupSize": [
+      1,
+      1
+    ],
+    "weight": 25,
+    "respawnTime": 60
+  },
+  "loot": [
+    {
+      "item": "minerals_t1_01",
+      "chance": 1.0,
+      "amount": [
+        2,
+        4
+      ]
+    },
+    {
+      "item": "leather_t1_01",
+      "chance": 0.8,
+      "amount": [
+        1,
+        2
+      ]
+    }
+  ],
+  "xpReward": 30,
+  "isBoss": true,
+  "species": "Gallimimus",
+  "sourceDescription": "anthropomorphic Gallimimus, brown uniform, brass-trimmed shoulder guards, stahlhelm, mace",
+  "weaponType": "mace",
+  "role": "light",
+  "description": "The Scout Captain's Gallimimus head rises tall on an elongated neck, those keen eyes scanning far beyond normal saurian range. This creature has led reconnaissance operations across grassland territories, learning patrol patterns and response times through years of observation. The small head tilts with constant calculation.\n\nOrnate leather armor marks command status among the saurian ranks, gilded brass studs decorating a harness designed for the creature's unusual proportions. Olive drab cloth falls from the shoulders, approximating the capes that human officers favor. Tool pouches contain maps and communication equipment.\n\nThose impossibly long legs carry this officer across terrain faster than cavalry pursuit. The exposed clawed feet spread naturally for balance during high-speed direction changes. Despite being armed with only a flanged mace, this Scout Captain's true weapon is information - coordinating strikes based on intelligence no human scout could gather.",
+  "files": {
+    "original": "images/bosses/boss_saurian_t1_01_original.png"
+  }
+}

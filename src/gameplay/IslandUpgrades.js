@@ -1,8 +1,8 @@
-/**
+﻿/**
  * IslandUpgrades - Data structure for per-island upgrades
- * 
+ *
  * Manages resource slots, auto-production chance, and respawn time.
- * 
+ *
  * Owner: Gameplay Designer
  */
 
@@ -22,9 +22,9 @@ const IslandUpgrades = {
 
     // Caps
     caps: {
-        resourceSlots: 15,  // Max 15 resource nodes
-        autoChance: 80,     // Max 80% auto-collect
-        respawnTime: 100    // Max level 100
+        resourceSlots: 15, // Max 15 resource nodes
+        autoChance: 80, // Max 80% auto-collect
+        respawnTime: 100 // Max level 100
     },
 
     /**
@@ -37,9 +37,9 @@ const IslandUpgrades = {
                 gridX: island.gridX,
                 gridY: island.gridY,
                 name: island.name,
-                resourceSlots: { level: 1, max: this.caps.resourceSlots },   // Start with 1
+                resourceSlots: { level: 1, max: this.caps.resourceSlots }, // Start with 1
                 autoChance: { level: 0, max: this.caps.autoChance },
-                respawnTime: { level: 1, max: this.caps.respawnTime }        // Start with 1
+                respawnTime: { level: 1, max: this.caps.respawnTime } // Start with 1
             };
         }
         Logger.info(`[IslandUpgrades] Initialized ${Object.keys(this.islands).length} islands`);
@@ -99,7 +99,9 @@ const IslandUpgrades = {
         if (!upgrade || upgrade.level >= upgrade.max) return false;
 
         upgrade.level++;
-        Logger.info(`[IslandUpgrades] ${island.name} ${type} upgraded to level ${upgrade.level} (Max: ${upgrade.max})`);
+        Logger.info(
+            `[IslandUpgrades] ${island.name} ${type} upgraded to level ${upgrade.level} (Max: ${upgrade.max})`
+        );
         Logger.info(`[IslandUpgrades] New state:`, JSON.stringify(upgrade));
         return true;
     },
@@ -139,7 +141,7 @@ const IslandUpgrades = {
     calculateRespawnTime(level, baseTime) {
         // Base time, speed increased by 10% per level
         // Formula: Time = Base / (1 + (Level * 0.10))
-        const speedMultiplier = 1 + (level * 0.10);
+        const speedMultiplier = 1 + level * 0.1;
         return Math.max(2, baseTime / speedMultiplier);
     },
 
@@ -157,3 +159,4 @@ const IslandUpgrades = {
 };
 
 window.IslandUpgrades = IslandUpgrades;
+

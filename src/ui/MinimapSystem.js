@@ -1,12 +1,12 @@
-/**
+﻿/**
  * MinimapSystem
  * Renders a miniature world map centered on the player with zoom controls.
- * 
+ *
  * Features:
- * - Player-centered view for large 30k×30k world
+ * - Player-centered view for large 30kÃ—30k world
  * - Zoom in/out with +/- buttons
  * - Shows biome colors, roads, islands, enemies
- * 
+ *
  * Owner: UI Engineer
  */
 
@@ -19,8 +19,8 @@ class MinimapSystem {
 
         // Zoom settings
         this.zoomLevel = 1;
-        this.minZoom = 0.25;  // Show 4x area
-        this.maxZoom = 4;     // Show 1/4 area
+        this.minZoom = 0.25; // Show 4x area
+        this.maxZoom = 4; // Show 1/4 area
         this.zoomStep = 0.5;
 
         // View radius at zoom 1 (how much world to show)
@@ -42,7 +42,11 @@ class MinimapSystem {
         const btnClose = document.getElementById('btn-close-map');
 
         if (btnMap) {
-            btnMap.addEventListener('click', () => this.toggle());
+            btnMap.addEventListener('click', () => {
+                // Skip if footer is in override mode (equipment/inventory screen has taken over)
+                if (btnMap.dataset.footerOverride) return;
+                this.toggle();
+            });
         }
         if (btnClose) {
             btnClose.addEventListener('click', () => this.close());
@@ -57,6 +61,11 @@ class MinimapSystem {
 
         // Create zoom controls
         this.createZoomControls();
+
+        // Register with UIManager for fullscreen exclusivity
+        if (window.UIManager && UIManager.registerFullscreenUI) {
+            UIManager.registerFullscreenUI(this);
+        }
 
         Logger.info('[MinimapSystem] Initialized');
     }
@@ -102,15 +111,27 @@ class MinimapSystem {
         btnZoomIn.textContent = '+';
         btnZoomIn.style.cssText = btnStyle;
         btnZoomIn.addEventListener('click', () => this.zoomIn());
-        btnZoomIn.addEventListener('mouseenter', () => btnZoomIn.style.background = 'rgba(255, 255, 255, 0.4)');
-        btnZoomIn.addEventListener('mouseleave', () => btnZoomIn.style.background = 'rgba(255, 255, 255, 0.2)');
+        btnZoomIn.addEventListener(
+            'mouseenter',
+            () => (btnZoomIn.style.background = 'rgba(255, 255, 255, 0.4)')
+        );
+        btnZoomIn.addEventListener(
+            'mouseleave',
+            () => (btnZoomIn.style.background = 'rgba(255, 255, 255, 0.2)')
+        );
 
         const btnZoomOut = document.createElement('button');
-        btnZoomOut.textContent = '−';
+        btnZoomOut.textContent = 'âˆ’';
         btnZoomOut.style.cssText = btnStyle;
         btnZoomOut.addEventListener('click', () => this.zoomOut());
-        btnZoomOut.addEventListener('mouseenter', () => btnZoomOut.style.background = 'rgba(255, 255, 255, 0.4)');
-        btnZoomOut.addEventListener('mouseleave', () => btnZoomOut.style.background = 'rgba(255, 255, 255, 0.2)');
+        btnZoomOut.addEventListener(
+            'mouseenter',
+            () => (btnZoomOut.style.background = 'rgba(255, 255, 255, 0.4)')
+        );
+        btnZoomOut.addEventListener(
+            'mouseleave',
+            () => (btnZoomOut.style.background = 'rgba(255, 255, 255, 0.2)')
+        );
 
         controls.appendChild(btnZoomIn);
         controls.appendChild(btnZoomOut);
@@ -142,6 +163,16 @@ class MinimapSystem {
 
     open() {
         if (!this.modal) return;
+
+        // Close other fullscreen UIs first
+        if (window.UIManager && UIManager.closeOtherFullscreenUIs) {
+            UIManager.closeOtherFullscreenUIs(this);
+        }
+
+        // Hide weapon swap button
+        const btnSwap = document.getElementById('btn-weapon-swap');
+        if (btnSwap) btnSwap.style.display = 'none';
+
         this.modal.style.display = 'flex';
         this.isOpen = true;
         this.render();
@@ -151,6 +182,10 @@ class MinimapSystem {
         if (!this.modal) return;
         this.modal.style.display = 'none';
         this.isOpen = false;
+
+        // Show weapon swap button again
+        const btnSwap = document.getElementById('btn-weapon-swap');
+        if (btnSwap) btnSwap.style.display = '';
     }
 
     /**
@@ -192,7 +227,7 @@ class MinimapSystem {
                 if (!polygon || polygon.length < 3) continue;
 
                 // Convert polygon points to canvas coords
-                const points = polygon.map(p => toCanvas(p.x, p.y));
+                const points = polygon.map((p) => toCanvas(p.x, p.y));
 
                 // Draw filled polygon
                 ctx.fillStyle = biome.color + '60'; // Semi-transparent
@@ -210,7 +245,8 @@ class MinimapSystem {
                 ctx.stroke();
 
                 // Calculate centroid for label
-                let cx = 0, cy = 0;
+                let cx = 0,
+                    cy = 0;
                 for (const p of points) {
                     cx += p.x;
                     cy += p.y;
@@ -260,7 +296,8 @@ class MinimapSystem {
                 const h = island.height * this.scale;
 
                 // Skip if not visible
-                if (pos.x + w < 0 || pos.x > canvasSize || pos.y + h < 0 || pos.y > canvasSize) continue;
+                if (pos.x + w < 0 || pos.x > canvasSize || pos.y + h < 0 || pos.y > canvasSize)
+                    continue;
 
                 // Island color based on state
                 if (island.type === 'home') {
@@ -315,7 +352,7 @@ class MinimapSystem {
                 ctx.font = 'bold 10px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('☠', pos.x, pos.y);
+                ctx.fillText('â˜ ', pos.x, pos.y);
             }
         }
 
@@ -375,3 +412,4 @@ class MinimapSystem {
 
 window.MinimapSystem = new MinimapSystem();
 if (window.Registry) Registry.register('MinimapSystem', window.MinimapSystem);
+

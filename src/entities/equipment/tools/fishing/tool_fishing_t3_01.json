@@ -1,0 +1,19 @@
+{
+    "sprite":  "tool_fishing_t3_01",
+    "id":  "tool_fishing_t3_01",
+    "sourceFile":  "tool",
+    "category":  "equipment",
+    "description":  "For catching fish at water nodes.",
+    "tier":  3,
+    "name":  "Steel Fishing Rod",
+    "files":  {
+                  "original":  "images/equipment/tools/fishing/tool_fishing_t3_01_original.png"
+              },
+    "stats":  {
+                  "gatherSpeed":  1.6,
+                  "efficiency":  3
+              },
+    "equipSlot":  "tool",
+    "rarity":  "rare",
+    "toolType":  "fishing"
+}

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Entity - Base class for all game objects
- * 
+ *
  * Owner: Director
  */
 
@@ -48,7 +48,15 @@ class Entity {
             }
 
             ctx.beginPath();
-            ctx.ellipse(this.x, this.y + this.height / 2 + yOffset, shadowWidth / 2, shadowHeight / 2, 0, 0, Math.PI * 2);
+            ctx.ellipse(
+                this.x,
+                this.y + this.height / 2 + yOffset,
+                shadowWidth / 2,
+                shadowHeight / 2,
+                0,
+                0,
+                Math.PI * 2
+            );
             ctx.fill();
             ctx.restore();
             return;
@@ -89,7 +97,6 @@ class Entity {
         ctx.fill();
         ctx.restore();
 
-
         // 2. Dynamic Projected Shadow
         ctx.save();
 
@@ -97,7 +104,7 @@ class Entity {
         ctx.translate(this.x, this.y + this.height / 2 - 6); // Nudge up
 
         // Apply Skew (Sun Direction)
-        const skew = env ? (env.shadowSkew || 0) : 0;
+        const skew = env ? env.shadowSkew || 0 : 0;
         // Skew X: transform(1, 0, skew, 1, 0, 0)
         // We apply skew before flip, so positive skew leans right (West?), negative leans left (East?)
         // EnvironmentRenderer calculation: (0.5 - time) * 3.
@@ -160,7 +167,13 @@ class Entity {
         if (this.sprite && window.AssetLoader) {
             const img = AssetLoader.getImage(this.sprite);
             if (img) {
-                ctx.drawImage(img, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
+                ctx.drawImage(
+                    img,
+                    this.x - this.width / 2,
+                    this.y - this.height / 2,
+                    this.width,
+                    this.height
+                );
                 return;
             }
         }
@@ -192,10 +205,12 @@ class Entity {
         const a = this.getBounds();
         const b = other.getBounds();
 
-        return a.x < b.x + b.width &&
+        return (
+            a.x < b.x + b.width &&
             a.x + a.width > b.x &&
             a.y < b.y + b.height &&
-            a.y + a.height > b.y;
+            a.y + a.height > b.y
+        );
     }
 
     /**
@@ -211,3 +226,4 @@ class Entity {
 }
 
 window.Entity = Entity;
+

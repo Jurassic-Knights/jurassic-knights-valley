@@ -1,0 +1,19 @@
+{
+    "sprite":  "tool_fishing_t2_01",
+    "id":  "tool_fishing_t2_01",
+    "sourceFile":  "tool",
+    "category":  "equipment",
+    "description":  "For catching fish at water nodes.",
+    "tier":  2,
+    "name":  "Pine Fishing Pole",
+    "files":  {
+                  "original":  "images/equipment/tools/fishing/tool_fishing_t2_01_original.png"
+              },
+    "stats":  {
+                  "gatherSpeed":  1.4,
+                  "efficiency":  2
+              },
+    "equipSlot":  "tool",
+    "rarity":  "uncommon",
+    "toolType":  "fishing"
+}

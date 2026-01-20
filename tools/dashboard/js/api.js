@@ -173,6 +173,74 @@ async function updateItemStat(category, fileName, itemId, statKey, newValue) {
     }
 }
 
+// Update any top-level item field (e.g., gender, bodyType)
+async function updateItemField(category, fileName, itemId, field, value) {
+    console.log(`updateItemField called: ${category}/${fileName}/${itemId}.${field} = ${value}`);
+    try {
+        const resp = await fetch('/api/update_item_field', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category, file: fileName, id: itemId, field, value })
+        });
+        const result = await resp.json();
+        if (result.success) {
+            if (categoryData && categoryData.files && categoryData.files[fileName]) {
+                const item = categoryData.files[fileName].find(i => i.id === itemId);
+                if (item) {
+                    item[field] = value;
+                    const safeId = itemId.replace(/[^a-zA-Z0-9]/g, '_');
+                    const oldCard = document.querySelector(`[data-item-id="${safeId}"]`);
+                    if (oldCard) {
+                        const newCard = createCategoryCard(item, fileName);
+                        newCard.dataset.itemId = safeId;
+                        oldCard.replaceWith(newCard);
+                    }
+                }
+            }
+            console.log(`Updated ${itemId}.${field} = ${value}`);
+        } else {
+            alert('Failed to save: ' + result.error);
+        }
+    } catch (err) {
+        console.error('Error saving field:', err);
+        alert('Error saving field: ' + err.message);
+    }
+}
+
+// Update weapon metadata (weaponType, gripType)
+async function updateWeaponMeta(category, fileName, itemId, field, value) {
+    console.log(`updateWeaponMeta called: ${category}/${fileName}/${itemId}.${field} = ${value}`);
+    try {
+        const resp = await fetch('/api/update_item_field', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category, file: fileName, id: itemId, field, value })
+        });
+        const result = await resp.json();
+        if (result.success) {
+            if (categoryData && categoryData.files && categoryData.files[fileName]) {
+                const item = categoryData.files[fileName].find(i => i.id === itemId);
+                if (item) {
+                    item[field] = value;
+                    const safeId = itemId.replace(/[^a-zA-Z0-9]/g, '_');
+                    const oldCard = document.querySelector(`[data-item-id="${safeId}"]`);
+                    if (oldCard) {
+                        const newCard = createCategoryCard(item, fileName);
+                        newCard.dataset.itemId = safeId;
+                        oldCard.replaceWith(newCard);
+                    }
+                }
+            }
+            console.log(`Updated ${itemId}.${field} = ${value}`);
+        } else {
+            alert('Failed to save: ' + result.error);
+        }
+    } catch (err) {
+        console.error('Error saving weapon meta:', err);
+        alert('Error saving weapon meta: ' + err.message);
+    }
+}
+
 // Remake asset
 async function remakeAsset(path, name, safeId) {
     const notesInput = document.getElementById('notes_' + safeId);
@@ -225,6 +293,43 @@ async function syncAssetsToGame() {
         setTimeout(() => {
             btn.textContent = originalText;
             btn.style.background = '#4caf50';
+            btn.disabled = false;
+        }, 3000);
+    }
+}
+
+// Sync entities to individual JSON files
+async function syncEntitiesToJson() {
+    const btn = document.getElementById('btnSyncEntities');
+    const originalText = btn.textContent;
+    btn.textContent = '⏳ Syncing...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/sync_entities', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            btn.textContent = `✅ Synced ${result.synced} entities!`;
+            btn.style.background = '#4caf50';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#ff9800';
+                btn.disabled = false;
+            }, 3000);
+        } else {
+            throw new Error(result.error || 'Sync failed');
+        }
+    } catch (error) {
+        console.error('Entity sync error:', error);
+        btn.textContent = '❌ Sync Failed';
+        btn.style.background = '#f44336';
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = '#ff9800';
             btn.disabled = false;
         }, 3000);
     }
@@ -313,7 +418,7 @@ async function saveRegenerationQueueToFile() {
 function markSfxForRegeneration(sfxId, assetId) {
     const existing = sfxRegenerationQueue.find(item => item.sfxId === sfxId);
     if (existing) {
-        alert(`${sfxId} is already marked for regeneration.`);
+        console.log(`${sfxId} is already marked for regeneration.`);
         return;
     }
     sfxRegenerationQueue.push({
@@ -323,10 +428,10 @@ function markSfxForRegeneration(sfxId, assetId) {
     });
     localStorage.setItem('sfxRegenerationQueue', JSON.stringify(sfxRegenerationQueue));
     saveRegenerationQueueToFile();
-    alert(`✅ Marked ${sfxId} for regeneration.\n\nUse /sound-regenerate workflow to regenerate all marked sounds.`);
+    console.log(`✅ Marked ${sfxId} for regeneration.`);
 }
 
-function markAllSfxForRegeneration(assetId, sfxIds) {
+function markAllSfxForRegeneration(assetId, sfxIds, btnElement) {
     let addedCount = 0;
     for (const sfxId of sfxIds) {
         const existing = sfxRegenerationQueue.find(item => item.sfxId === sfxId);
@@ -340,12 +445,17 @@ function markAllSfxForRegeneration(assetId, sfxIds) {
         }
     }
     if (addedCount === 0) {
-        alert(`All sounds for ${assetId} are already marked for regeneration.`);
+        console.log(`All sounds for ${assetId} are already marked for regeneration.`);
         return;
     }
     localStorage.setItem('sfxRegenerationQueue', JSON.stringify(sfxRegenerationQueue));
     saveRegenerationQueueToFile();
-    alert(`✅ Marked ${addedCount} sounds for ${assetId} for regeneration.\n\nQueue now has ${sfxRegenerationQueue.length} total sounds.\n\nUse /sound-regenerate workflow to regenerate.`);
+    console.log(`✅ Marked ${addedCount} sounds for ${assetId} for regeneration. Queue now has ${sfxRegenerationQueue.length} total sounds.`);
+
+    // Update button to show queued state
+    if (btnElement) {
+        btnElement.outerHTML = `<span style="padding:3px 6px; font-size:0.65rem; background:#666; border:none; border-radius:4px; color:#aaa;" title="Already marked for regeneration">✓ Queued</span>`;
+    }
 }
 
 function getSfxRegenerationQueue() {

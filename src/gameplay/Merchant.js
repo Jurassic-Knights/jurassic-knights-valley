@@ -1,13 +1,14 @@
-/**
+﻿/**
  * Merchant - NPC entity on each island for purchasing upgrades
- * 
+ *
  * Owner: Director (engine), Gameplay Designer (values)
  */
 
 class Merchant extends Entity {
     constructor(config = {}) {
         // 1. Load Config
-        const defaults = (window.EntityConfig && EntityConfig.npc) ? EntityConfig.npc.merchant.defaults : {};
+        const defaults =
+            window.EntityConfig && EntityConfig.npc ? EntityConfig.npc.merchant.defaults : {};
         const finalConfig = { ...defaults, ...config };
 
         super({
@@ -53,7 +54,8 @@ class Merchant extends Entity {
         const name = this.islandName.toLowerCase();
 
         // Biome to numbered ID mapping
-        if (name.includes('home')) return 'npc_merchant_04'; // No home merchant, use crossroads
+        if (name.includes('home'))
+            return 'npc_merchant_04'; // No home merchant, use crossroads
         else if (name.includes('quarry')) return 'npc_merchant_01';
         else if (name.includes('iron')) return 'npc_merchant_02';
         else if (name.includes('dead')) return 'npc_merchant_03';
@@ -107,7 +109,7 @@ class Merchant extends Entity {
         ctx.save();
         ctx.translate(this.x, this.y + size / 2 - 6);
 
-        const skew = env ? (env.shadowSkew || 0) : 0;
+        const skew = env ? env.shadowSkew || 0 : 0;
         ctx.transform(1, 0, skew, 1, 0, 0);
 
         ctx.scale(1, -scaleY);
@@ -130,14 +132,8 @@ class Merchant extends Entity {
 
         if (this._shadowImg) {
             ctx.drawImage(this._shadowImg, -size / 2, -size, size, size);
-        } else {
-            // Fallback Oval
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            if (forceOpaque) ctx.fillStyle = 'black';
-            ctx.beginPath();
-            ctx.ellipse(0, -size / 5, size / 2, size / 4, 0, 0, Math.PI * 2);
-            ctx.fill();
         }
+        // No fallback - skip rendering until shadow loads
 
         ctx.restore();
     }
@@ -196,63 +192,9 @@ class Merchant extends Entity {
             }
         }
 
-        // Fallback: Procedural Rendering
-        ctx.save();
-
-        // Shadow
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.beginPath();
-        ctx.ellipse(this.x, this.y + this.height / 2 + 5, this.width / 2, 8, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Body (robe shape)
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.moveTo(this.x - this.width / 2, this.y + this.height / 2 + bob);
-        ctx.lineTo(this.x - this.width / 4, this.y - this.height / 3 + bob);
-        ctx.lineTo(this.x + this.width / 4, this.y - this.height / 3 + bob);
-        ctx.lineTo(this.x + this.width / 2, this.y + this.height / 2 + bob);
-        ctx.closePath();
-        ctx.fill();
-
-        // Head
-        ctx.fillStyle = '#F5CBA7';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y - this.height / 3 + bob, 12, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Hood
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y - this.height / 3 - 5 + bob, 14, Math.PI, 0);
-        ctx.fill();
-
-        // Border
-        ctx.strokeStyle = '#1A1A2E';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.restore();
-
-        // Speech Bubble Icon (Fallback path)
-        if (window.AssetLoader) {
-            const iconPath = AssetLoader.getImagePath('ui_icon_speech_bubble');
-            if (iconPath) {
-                if (!this._iconImg) {
-                    this._iconImg = AssetLoader.createImage(iconPath);
-                }
-
-                if (this._iconImg.complete && this._iconImg.naturalWidth) {
-                    const iconSize = 64;
-                    const hoverOffset = Math.sin(this.bobTime * 3) * 5;
-                    // Adjust base position for procedural height
-                    const headY = this.y - this.height / 3 - 20;
-
-                    ctx.drawImage(this._iconImg, this.x - iconSize / 2, headY - iconSize + hoverOffset, iconSize, iconSize);
-                }
-            }
-        }
+        // No fallback - skip rendering until sprite loads
     }
 }
 
 window.Merchant = Merchant;
+

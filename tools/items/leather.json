@@ -15,7 +15,7 @@
         }
     },
     {
-        "id": "leather_t2_02",
+        "id": "leather_t2_01",
         "name": "Reinforced Leather",
         "tier": 2,
         "category": "leather",
@@ -26,11 +26,11 @@
         "status": "pending",
         "sourceDescription": "piece of reinforced thick leather hide, dark brown studded leather texture, gritty, weathered, heavy-duty armor leather",
         "files": {
-            "original": "assets/images/items/leather_t2_02_original.png"
+            "original": "assets/images/items/leather_t2_01_original.png"
         }
     },
     {
-        "id": "leather_t3_03",
+        "id": "leather_t3_01",
         "name": "Hardened Leather",
         "tier": 3,
         "category": "leather",
@@ -41,11 +41,11 @@
         "status": "approved",
         "sourceDescription": "piece of hardened boiled leather hide, rigid dark reddish-brown leather texture, gritty, weathered, premium armor-grade leather",
         "files": {
-            "original": "assets/images/items/leather_t3_03_original.png"
+            "original": "assets/images/items/leather_t3_01_original.png"
         }
     },
     {
-        "id": "leather_t4_04",
+        "id": "leather_t4_01",
         "name": "Scaled Leather",
         "tier": 4,
         "category": "leather",
@@ -56,7 +56,7 @@
         "status": "pending",
         "sourceDescription": "piece of dinosaur scale-reinforced leather hide, dark leather with embedded reptilian scales pattern, gritty, weathered, exotic premium armor material",
         "files": {
-            "original": "assets/images/items/leather_t4_04_original.png"
+            "original": "assets/images/items/leather_t4_01_original.png"
         }
     }
 ]

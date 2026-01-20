@@ -1,9 +1,9 @@
-/**
+﻿/**
  * ResourceSpawner - Handles resource and dinosaur spawning on islands
- * 
+ *
  * Extracted from SpawnManager.js for modularity.
  * Manages resources, dinosaurs, and home island trees.
- * 
+ *
  * Owner: Level Architect
  */
 
@@ -42,8 +42,9 @@ class ResourceSpawner {
         }
 
         // Get all unlocked islands (excluding home)
-        const islands = islandManager ?
-            islandManager.islands.filter(i => i.type !== 'home' && i.unlocked) : [];
+        const islands = islandManager
+            ? islandManager.islands.filter((i) => i.type !== 'home' && i.unlocked)
+            : [];
 
         if (islands.length === 0) {
             Logger.info('[ResourceSpawner] No other unlocked islands for spawning');
@@ -52,7 +53,9 @@ class ResourceSpawner {
 
         // Spawn based on island category
         for (const island of islands) {
-            const count = window.IslandUpgrades ? IslandUpgrades.getResourceSlots(island.gridX, island.gridY) : 1;
+            const count = window.IslandUpgrades
+                ? IslandUpgrades.getResourceSlots(island.gridX, island.gridY)
+                : 1;
 
             if (island.category === 'resource') {
                 this.spawnResourcesGridOnIsland(island, count);
@@ -68,7 +71,7 @@ class ResourceSpawner {
     spawnResourcesGridOnIsland(island, count, startIndex = 0) {
         if (!this.spawnManager.game || island.type === 'home') return;
 
-        const type = island.resourceType || 'scrap_metal';
+        const type = island.resourceType || 'node_mining_t1_02'; // Default to Stone Pile
         const cols = GameConstants.Spawning.RESOURCE_GRID.COLS;
         const spacing = GameConstants.Grid.CELL_SIZE;
 
@@ -107,7 +110,9 @@ class ResourceSpawner {
             if (window.EntityManager) EntityManager.add(resource);
         }
 
-        Logger.info(`[ResourceSpawner] Spawned ${count - startIndex} ${type} in ${island.name} (grid-aligned)`);
+        Logger.info(
+            `[ResourceSpawner] Spawned ${count - startIndex} ${type} in ${island.name} (grid-aligned)`
+        );
     }
 
     /**
@@ -121,19 +126,66 @@ class ResourceSpawner {
         const bounds = islandManager ? islandManager.getPlayableBounds(island) : null;
         if (!bounds) return;
 
+        // Herbivore entity IDs by tier (based on zone difficulty)
+        const herbivoreTiers = {
+            1: ['enemy_herbivore_t1_01', 'enemy_herbivore_t1_02', 'enemy_herbivore_t1_03'],
+            2: ['enemy_herbivore_t2_01', 'enemy_herbivore_t2_02', 'enemy_herbivore_t2_03'],
+            3: ['enemy_herbivore_t3_01', 'enemy_herbivore_t3_02']
+        };
+
+        // Inline loot definitions matching entity JSON files (bypasses EntityLoader fetch)
+        const herbivoreLoot = {
+            enemy_herbivore_t1_01: [
+                { item: 'food_t1_02', chance: 1.0, amount: [1, 2] },
+                { item: 'leather_t1_01', chance: 0.3, amount: [1, 1] }
+            ],
+            enemy_herbivore_t1_02: [
+                { item: 'food_t1_02', chance: 1.0, amount: [1, 1] },
+                { item: 'leather_t1_01', chance: 0.2, amount: [1, 1] }
+            ],
+            enemy_herbivore_t1_03: [
+                { item: 'food_t1_02', chance: 1.0, amount: [1, 2] },
+                { item: 'leather_t1_01', chance: 0.25, amount: [1, 1] }
+            ],
+            enemy_herbivore_t2_01: [
+                { item: 'food_t2_01', chance: 1.0, amount: [1, 2] },
+                { item: 'leather_t2_01', chance: 0.35, amount: [1, 1] }
+            ],
+            enemy_herbivore_t2_02: [
+                { item: 'food_t2_01', chance: 1.0, amount: [1, 2] },
+                { item: 'leather_t2_01', chance: 0.3, amount: [1, 1] }
+            ],
+            enemy_herbivore_t2_03: [
+                { item: 'food_t2_01', chance: 1.0, amount: [1, 2] },
+                { item: 'leather_t2_01', chance: 0.3, amount: [1, 1] }
+            ],
+            enemy_herbivore_t3_01: [
+                { item: 'food_t3_01', chance: 1.0, amount: [1, 3] },
+                { item: 'leather_t3_01', chance: 0.4, amount: [1, 2] }
+            ],
+            enemy_herbivore_t3_02: [
+                { item: 'food_t3_01', chance: 1.0, amount: [1, 3] },
+                { item: 'leather_t3_01', chance: 0.35, amount: [1, 1] }
+            ]
+        };
+
+        // Determine tier based on island position (row 1 = T1, row 2 = T2/T3)
+        const tier = Math.min(3, Math.max(1, island.gridY));
+
         for (let i = 0; i < count; i++) {
             const x = bounds.x + padding + Math.random() * (bounds.width - padding * 2);
             const y = bounds.y + padding + Math.random() * (bounds.height - padding * 2);
 
-            let dropType = 'fossil_fuel';
-            if (window.WorldData && WorldData.DinoDrops) {
-                dropType = WorldData.DinoDrops[island.gridY][island.gridX] || 'fossil_fuel';
-            }
+            // Select herbivore deterministically based on zone position (same herbivore per zone)
+            const tierPool = herbivoreTiers[tier] || herbivoreTiers[1];
+            const zoneIndex = (island.gridX + island.gridY) % tierPool.length;
+            const dinoType = tierPool[zoneIndex];
 
             const dino = new Dinosaur({
                 x: x,
                 y: y,
-                resourceType: dropType,
+                dinoType: dinoType,
+                lootTable: herbivoreLoot[dinoType] || herbivoreLoot['enemy_herbivore_t1_01'],
                 islandBounds: bounds,
                 islandGridX: island.gridX,
                 islandGridY: island.gridY
@@ -190,7 +242,7 @@ class ResourceSpawner {
 
         const spawnTree = (x, y) => {
             const tree = new Resource({
-                resourceType: 'wood',
+                resourceType: 'node_woodcutting_t1_01', // Dead Tree (has image)
                 x: x,
                 y: y,
                 islandGridX: home.gridX,
@@ -258,3 +310,4 @@ class ResourceSpawner {
 }
 
 window.ResourceSpawner = ResourceSpawner;
+

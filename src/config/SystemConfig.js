@@ -1,7 +1,7 @@
-/**
+﻿/**
  * SystemConfig
  * Defines the load order and initialization requirements for all game systems.
- * 
+ *
  * priority: Lower numbers load/update first.
  * init: If true, Game.js will call .init(game) on the system.
  * global: The window object key (e.g. 'HeroSystem' -> window.HeroSystem)
@@ -10,6 +10,7 @@ const SystemConfig = [
     // --- 0. Infrastructure (Pre-Boot) ---
     { global: 'ResponsiveManager', priority: -10, init: true },
     { global: 'AssetLoader', priority: -5, init: true, isAsync: true }, // Await this
+    { global: 'EntityLoader', priority: -4, init: true, isAsync: true }, // Load entities.json
     { global: 'PlatformManager', priority: -1, init: true },
 
     // --- 0.5 Time & Environment ---
@@ -27,11 +28,11 @@ const SystemConfig = [
     { global: 'QuestManager', priority: 3, init: true },
 
     // --- 3. World Logic ---
-    { global: 'BiomeManager', priority: 9, init: true },  // Biome boundaries & roads
+    { global: 'BiomeManager', priority: 9, init: true }, // Biome boundaries & roads
     { global: 'IslandManager', priority: 10, init: true },
     { global: 'SpawnManager', priority: 11, init: true, start: true },
-    { global: 'DinosaurSystem', priority: 12, init: false }, // Logic only? Check init
-    { global: 'EnemySystem', priority: 12, init: true },      // Enemy AI
+    { global: 'DinosaurSystem', priority: 12, init: true }, // Herbivore AI & loot
+    { global: 'EnemySystem', priority: 12, init: true }, // Enemy AI
     { global: 'ResourceSystem', priority: 13, init: false }, // Logic only
     { global: 'AmbientSystem', priority: 14, init: false }, // Logic only
     { global: 'InteractionSystem', priority: 15, init: true }, // Pickups/Magnet
@@ -39,7 +40,6 @@ const SystemConfig = [
     { global: 'IslandUpgrades', priority: 17, init: false }, // Logic helper (init manually or via valid method?) Check usages.
     // IslandUpgrades.init takes (islands), not (game). We might need a wrapper or handle in start().
     { global: 'DamageSystem', priority: 19, init: true }, // (06-damage-system)
-    { global: 'LootSystem', priority: 19, init: true },   // (07-loot-system)
     { global: 'ProgressionSystem', priority: 19, init: true }, // XP/Leveling (08-leveling-system)
 
     // --- 4. Controllers ---
@@ -54,8 +54,9 @@ const SystemConfig = [
     { global: 'ProgressBarRenderer', priority: 32, init: false }, // Helper
     { global: 'ProgressBarRenderer', priority: 32, init: false }, // Helper
     { global: 'WorldRenderer', priority: 32, init: true }, // Static World
-    { global: 'RoadRenderer', priority: 32, init: true },  // Spline roads
+    { global: 'RoadRenderer', priority: 32, init: true }, // Spline roads
     { global: 'EnvironmentRenderer', priority: 32, init: true }, // Ambient Overlay
+    { global: 'LightingSystem', priority: 32, init: true }, // Dynamic Lights
     { global: 'GameRenderer', priority: 33, init: true },
     { global: 'UIManager', priority: 40, init: true },
     { global: 'InventoryUI', priority: 41, init: true },
@@ -70,3 +71,4 @@ const SystemConfig = [
 
 // Verify standard export for pure JS environment or attach to window
 window.SystemConfig = SystemConfig;
+

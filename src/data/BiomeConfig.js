@@ -1,9 +1,9 @@
-/**
+﻿/**
  * BiomeConfig - Biome Type Definitions
- * 
+ *
  * Contains open world biome definitions, difficulty multipliers,
  * and enemy spawning rules.
- * 
+ *
  * @see PropConfig.js for prop spawning and decoration config
  */
 
@@ -25,10 +25,12 @@ const BiomeConfig = {
                 fogDensity: 0.1
             },
             enemySpawnTable: [
-                { enemyId: 'feral_raptor', weight: 60, groupSize: { min: 2, max: 4 } },
-                { enemyId: 'feral_soldier', weight: 40, groupSize: { min: 1, max: 2 } }
+                { enemyId: 'enemy_herbivore_t1_01', weight: 40, groupSize: { min: 2, max: 4 } },
+                { enemyId: 'enemy_herbivore_t1_02', weight: 30, groupSize: { min: 2, max: 3 } },
+                { enemyId: 'enemy_dinosaur_t1_01', weight: 20, groupSize: { min: 1, max: 2 } },
+                { enemyId: 'enemy_human_t1_01', weight: 10, groupSize: { min: 1, max: 2 } }
             ],
-            bossId: 'grasslands_alpha',
+            bossId: 'boss_herbivore_t4_01',
             bossRespawnTime: 300
         },
         tundra: {
@@ -43,11 +45,12 @@ const BiomeConfig = {
                 fogDensity: 0.25
             },
             enemySpawnTable: [
-                { enemyId: 'frost_raptor', weight: 40, groupSize: { min: 2, max: 3 } },
-                { enemyId: 'frost_trooper', weight: 35, groupSize: { min: 2, max: 4 } },
-                { enemyId: 'mammoth_rider', weight: 25, groupSize: { min: 1, max: 1 } }
+                { enemyId: 'enemy_dinosaur_t2_01', weight: 35, groupSize: { min: 2, max: 3 } },
+                { enemyId: 'enemy_human_t2_01', weight: 30, groupSize: { min: 2, max: 4 } },
+                { enemyId: 'enemy_saurian_t2_01', weight: 20, groupSize: { min: 1, max: 2 } },
+                { enemyId: 'enemy_herbivore_t2_01', weight: 15, groupSize: { min: 2, max: 3 } }
             ],
-            bossId: 'tundra_warlord',
+            bossId: 'boss_dinosaur_t4_01',
             bossRespawnTime: 360
         },
         desert: {
@@ -62,11 +65,12 @@ const BiomeConfig = {
                 fogDensity: 0.05
             },
             enemySpawnTable: [
-                { enemyId: 'sand_stalker', weight: 35, groupSize: { min: 1, max: 3 } },
-                { enemyId: 'dune_marauder', weight: 40, groupSize: { min: 2, max: 5 } },
-                { enemyId: 'sand_wyrm', weight: 25, groupSize: { min: 1, max: 1 } }
+                { enemyId: 'enemy_saurian_t3_01', weight: 30, groupSize: { min: 1, max: 3 } },
+                { enemyId: 'enemy_dinosaur_t3_01', weight: 25, groupSize: { min: 2, max: 4 } },
+                { enemyId: 'enemy_human_t3_01', weight: 25, groupSize: { min: 2, max: 3 } },
+                { enemyId: 'enemy_herbivore_t3_01', weight: 20, groupSize: { min: 1, max: 2 } }
             ],
-            bossId: 'desert_overlord',
+            bossId: 'boss_saurian_t4_01',
             bossRespawnTime: 420
         },
         lava_crags: {
@@ -81,12 +85,13 @@ const BiomeConfig = {
                 fogDensity: 0.3
             },
             enemySpawnTable: [
-                { enemyId: 'fire_raptor', weight: 30, groupSize: { min: 2, max: 4 } },
-                { enemyId: 'magma_knight', weight: 35, groupSize: { min: 1, max: 3 } },
-                { enemyId: 'volcanic_titan', weight: 20, groupSize: { min: 1, max: 1 } },
-                { enemyId: 'ember_hound', weight: 15, groupSize: { min: 3, max: 6 } }
+                { enemyId: 'enemy_saurian_t3_04', weight: 25, groupSize: { min: 2, max: 4 } },
+                { enemyId: 'enemy_human_t3_03', weight: 20, groupSize: { min: 1, max: 3 } },
+                { enemyId: 'enemy_dinosaur_t3_04', weight: 30, groupSize: { min: 1, max: 2 } },
+                { enemyId: 'enemy_herbivore_t3_02', weight: 15, groupSize: { min: 2, max: 3 } },
+                { enemyId: 'enemy_saurian_t3_03', weight: 10, groupSize: { min: 1, max: 2 } }
             ],
-            bossId: 'lava_tyrant',
+            bossId: 'boss_human_t4_03',
             bossRespawnTime: 480
         }
     },
@@ -118,3 +123,4 @@ const BiomeConfig = {
 };
 
 window.BiomeConfig = BiomeConfig;
+

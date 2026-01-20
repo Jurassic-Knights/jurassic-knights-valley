@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Boss - Powerful biome boss entity
- * 
+ *
  * Larger, stronger, and has special abilities.
  * Respawns on a timer after death.
- * 
+ *
  * Work Package: 09-boss-system.md
  */
 
@@ -15,8 +15,9 @@ class Boss extends Enemy {
     constructor(config = {}) {
         // Get boss config hierarchy: defaults -> type config -> instance config
         const defaults = window.EntityConfig?.boss?.defaults || {};
-        const typeConfig = config.bossType ?
-            (window.EntityConfig?.boss?.types?.[config.bossType] || {}) : {};
+        const typeConfig = config.bossType
+            ? window.EntityConfig?.boss?.types?.[config.bossType] || {}
+            : {};
 
         // Merge configs (instance overrides type overrides defaults)
         const finalConfig = { ...defaults, ...typeConfig, ...config };
@@ -39,8 +40,8 @@ class Boss extends Enemy {
         this.entityType = window.EntityTypes?.ENEMY || 'enemy';
 
         // Boss-specific respawn time (longer than regular enemies)
-        this.respawnTime = finalConfig.respawnTime ||
-            (window.GameConstants?.Biome?.BOSS_RESPAWN_DEFAULT || 300);
+        this.respawnTime =
+            finalConfig.respawnTime || window.GameConstants?.Biome?.BOSS_RESPAWN_DEFAULT || 300;
 
         // Visual enhancements
         this.glowColor = finalConfig.glowColor || '#FF4500'; // Boss glow
@@ -122,3 +123,4 @@ class Boss extends Enemy {
 
 // Global registration
 window.Boss = Boss;
+

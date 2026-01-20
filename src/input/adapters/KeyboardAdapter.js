@@ -1,4 +1,4 @@
-/**
+﻿/**
  * KeyboardAdapter - Maps keys to Input State
  * Refactored to generic key tracking.
  */
@@ -45,7 +45,7 @@ class KeyboardAdapter {
     }
 
     isAnyDown(keys) {
-        return keys.some(k => this.heldKeys.has(k));
+        return keys.some((k) => this.heldKeys.has(k));
     }
 }
 
@@ -60,3 +60,4 @@ if (window.InputSystem) {
         }
     });
 }
+

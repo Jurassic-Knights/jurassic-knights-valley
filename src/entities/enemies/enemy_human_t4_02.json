@@ -1,0 +1,69 @@
+{
+  "id": "enemy_human_t4_02",
+  "name": "Stormbreaker",
+  "sourceCategory": "enemies",
+  "sourceFile": "human",
+  "sprite": "human_t4_02",
+  "status": "pending",
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 120,
+    "damage": 22,
+    "speed": 85,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 400,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "ranged"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_human_t4_02",
+    "death": "sfx_death_human_t4_02",
+    "hurt": "sfx_hurt_human_t4_02",
+    "aggro": "sfx_aggro_human_t4_02"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t4_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t4_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 60,
+  "gender": "female",
+  "bodyType": "medium",
+  "sourceDescription": "female soldier, medium build, rust orange field jacket, iron pauldrons, gas mask, machine gun",
+  "weaponType": "machine_gun",
+  "role": "special",
+  "description": "Stormbreaker earned her name through actions that shattered enemy offensives across badlands fronts. Her studded iron face mask bears scratch marks from shrapnel that failed to penetrate. The steel helmet sits slightly askew with confident swagger - the mark of a soldier who fears nothing.\n\nThis female soldier of medium build wears brass pauldrons and chainmail over a charcoal grey battle coat, the armor practical rather than ornate. Blackened leather ammunition belts cross her chest, feeding the weapon that defines her reputation. Every piece of kit is positioned for the demands of sustained suppressive fire.\n\nHeavy boots are braced against the constant weight of her machine gun, legs steady beneath the burden they carry. That heavy machine gun with its ammunition belt has broken more charges than any artillery battery. Stormbreaker doesn't defend positions - she renders enemy advance impossible.",
+  "files": {
+    "original": "images/enemies/human_t4_02_original.png"
+  },
+  "species": "General"
+}

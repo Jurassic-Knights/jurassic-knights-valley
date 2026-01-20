@@ -30,7 +30,7 @@
         }
     },
     {
-        "id": "hands_t2_03",
+        "id": "hands_t2_01",
         "name": "Iron Gauntlets",
         "slot": "hands",
         "tier": 2,
@@ -41,11 +41,11 @@
         "fuelCost": 2,
         "sourceDescription": "iron gauntlets, medieval style armored gloves, iron plate gauntlets, weathered",
         "files": {
-            "original": "assets/images/equipment/hands_t2_03_original.png"
+            "original": "assets/images/equipment/hands_t2_01_original.png"
         }
     },
     {
-        "id": "hands_t2_04",
+        "id": "hands_t2_02",
         "name": "Wool Gloves",
         "slot": "hands",
         "tier": 2,
@@ -56,11 +56,11 @@
         "fuelCost": 2,
         "sourceDescription": "wool gloves, WWI era military winter gloves, thick wool mittens, weathered",
         "files": {
-            "original": "assets/images/equipment/hands_t2_04_original.png"
+            "original": "assets/images/equipment/hands_t2_02_original.png"
         }
     },
     {
-        "id": "hands_t2_05",
+        "id": "hands_t2_03",
         "name": "Desert Wraps",
         "slot": "hands",
         "tier": 2,
@@ -71,11 +71,11 @@
         "fuelCost": 2,
         "sourceDescription": "desert hand wraps, WWI era desert hand covering, tan cloth hand wraps, weathered",
         "files": {
-            "original": "assets/images/equipment/hands_t2_05_original.png"
+            "original": "assets/images/equipment/hands_t2_03_original.png"
         }
     },
     {
-        "id": "hands_t3_06",
+        "id": "hands_t3_01",
         "name": "Steel Gauntlets",
         "slot": "hands",
         "tier": 3,
@@ -86,7 +86,7 @@
         "fuelCost": 4,
         "sourceDescription": "steel gauntlets, medieval style heavy armored gloves, polished steel gauntlets, weathered",
         "files": {
-            "original": "assets/images/equipment/hands_t3_06_original.png"
+            "original": "assets/images/equipment/hands_t3_01_original.png"
         }
     }
 ]

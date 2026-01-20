@@ -1,8 +1,8 @@
-/**
+﻿/**
  * Resource - Collectible resource entity with health
- * 
+ *
  * Per GDD: Player spends stamina to damage resource, depleting health to collect.
- * 
+ *
  * Owner: Director (engine), Gameplay Designer (values), Lore Writer (names)
  */
 
@@ -12,9 +12,12 @@ class Resource extends Entity {
      * @param {object} config
      */
     constructor(config = {}) {
-        // 1. Load Config from EntityRegistry (v2) or BaseResource fallback
+        // 1. Load Config from EntityRegistry (nodes or resources) or BaseResource fallback
         const defaults = window.BaseResource || {};
-        const typeConfig = (window.EntityRegistry?.resources?.[config.resourceType]) || {};
+        const typeConfig =
+            window.EntityRegistry?.nodes?.[config.resourceType] ||
+            window.EntityRegistry?.resources?.[config.resourceType] ||
+            {};
 
         // Merge
         const finalConfig = { ...defaults, ...typeConfig, ...config };
@@ -26,8 +29,20 @@ class Resource extends Entity {
             ...config
         });
 
-        this.resourceType = config.resourceType || 'scrap_metal';
-        this.amount = finalConfig.amount || 1; // Cascades from EntityConfig.resource.defaults
+        this.resourceType = config.resourceType || 'scraps_t1_01';
+
+        // Extract nodeSubtype from config or parse from resourceType (node_mining_t1_01 → mining)
+        if (finalConfig.nodeSubtype) {
+            this.nodeSubtype = finalConfig.nodeSubtype;
+        } else if (this.resourceType.startsWith('node_')) {
+            // Parse from ID like node_mining_t1_01 → mining
+            const match = this.resourceType.match(/^node_([a-z]+)_t\d/);
+            this.nodeSubtype = match ? match[1] : 'mining';
+        } else {
+            this.nodeSubtype = null;
+        }
+
+        this.amount = finalConfig.amount || 1;
         this.interactRadius = finalConfig.interactRadius || 145;
 
         // Health system
@@ -54,7 +69,10 @@ class Resource extends Entity {
             }
         }
 
-        if (onHome && this.resourceType !== 'wood') {
+        // Home island allows T1 nodes (trees in starter area)
+        // Check for _t1_ pattern in ID (works with both old node_t1_xx and new node_subtype_t1_xx naming)
+        const isT1Node = this.resourceType.includes('_t1_');
+        if (onHome && !isT1Node) {
             this.active = false;
             // Logger.warn(`[Resource] Suppressed invalid ${this.resourceType} on Home Island`);
         }
@@ -106,21 +124,21 @@ class Resource extends Entity {
             VFXController.playForeground(this.x, this.y, {
                 type: 'spark',
                 color: '#FFFFFF',
-                count: 12,     // Increased from 5 to 12
-                speed: 12,     // Increased from 8 to 12
+                count: 12, // Increased from 5 to 12
+                speed: 12, // Increased from 8 to 12
                 lifetime: 300,
-                size: 10       // Increased from 5 to 10
+                size: 10 // Increased from 5 to 10
             });
 
             // 2. Small Debris Chips
             VFXController.playForeground(this.x, this.y, {
                 type: 'debris',
                 color: this.color,
-                count: 15,     // Increased from 8 to 15
-                speed: 10,     // Increased from 6 to 10
+                count: 15, // Increased from 8 to 15
+                speed: 10, // Increased from 6 to 10
                 lifetime: 600,
                 gravity: 0.3,
-                size: 8        // Increased from 5 to 8
+                size: 8 // Increased from 5 to 8
             });
         }
 
@@ -138,10 +156,16 @@ class Resource extends Entity {
 
             // Look up respawn time from upgrades if possible
             if (window.IslandUpgrades && this.islandGridX !== undefined) {
-                const baseTime = Resource.TYPES[this.resourceType] ? Resource.TYPES[this.resourceType].baseRespawnTime : 30;
-                this.maxRespawnTime = IslandUpgrades.getRespawnTime(this.islandGridX, this.islandGridY, baseTime);
-            } else if (this.resourceType === 'wood') {
-                this.maxRespawnTime = 15; // Fast respawn for trees
+                const baseTime = Resource.TYPES[this.resourceType]
+                    ? Resource.TYPES[this.resourceType].baseRespawnTime
+                    : 30;
+                this.maxRespawnTime = IslandUpgrades.getRespawnTime(
+                    this.islandGridX,
+                    this.islandGridY,
+                    baseTime
+                );
+            } else if (this.resourceType.includes('_t1_')) {
+                this.maxRespawnTime = 15; // Fast respawn for T1 nodes (trees)
             }
             this.respawnTimer = this.maxRespawnTime;
 
@@ -170,7 +194,11 @@ class Resource extends Entity {
         const baseTime = typeConfig.respawnTime || 30;
 
         if (this.islandGridX !== undefined) {
-            newDuration = IslandUpgrades.getRespawnTime(this.islandGridX, this.islandGridY, baseTime);
+            newDuration = IslandUpgrades.getRespawnTime(
+                this.islandGridX,
+                this.islandGridY,
+                baseTime
+            );
         }
 
         // If depleted/respawning, scale remaining time
@@ -179,7 +207,7 @@ class Resource extends Entity {
         const currentTotal = this.currentRespawnDuration || this.maxRespawnTime;
 
         if (this.state === 'depleted' && currentTotal > 0) {
-            const completionPct = 1 - (this.respawnTimer / currentTotal);
+            const completionPct = 1 - this.respawnTimer / currentTotal;
             this.respawnTimer = newDuration * (1 - completionPct);
         }
 
@@ -247,14 +275,14 @@ class Resource extends Entity {
     }
 }
 
-// Resource type colors (lore-compliant: industrial, military)
+// Resource type colors (mapped by prefix for entity IDs)
 Resource.COLORS = {
-    scrap_metal: '#7A7A7A',    // Grey steel
-    iron_ore: '#8B4513',       // Rusty brown
-    fossil_fuel: '#2F2F2F',    // Coal black
-    gold: '#FFD700',           // Gold coin
-    wood: '#5D4037',           // Wood brown
-    primal_meat: '#8B0000'     // Dark red meat
+    scraps: '#7A7A7A', // Grey steel
+    minerals: '#8B4513', // Rusty brown
+    food: '#8B0000', // Dark red meat
+    wood: '#5D4037', // Wood brown
+    gold: '#FFD700', // Gold coin
+    salvage: '#2F2F2F' // Coal black
 };
 
 Resource.RARITY = {
@@ -265,17 +293,18 @@ Resource.RARITY = {
 };
 
 Resource.RARITY_COLORS = {
-    common: '#BDC3C7',      // Silver/Grey
-    uncommon: '#2ECC71',    // Emerald Green
-    rare: '#3498DB',        // Bright Blue
-    legendary: '#F1C40F'    // Gold
+    common: '#BDC3C7', // Silver/Grey
+    uncommon: '#2ECC71', // Emerald Green
+    rare: '#3498DB', // Bright Blue
+    legendary: '#F1C40F' // Gold
 };
 
 // Resource definitions with health values (Gameplay Designer)
 // Resource definitions
-// Now centralized in EntityConfig.js. 
+// Now centralized in EntityConfig.js.
 // Kept as alias for backward compatibility only if strictly needed, otherwise remove.
 // Resource.TYPES = EntityConfig.resource.types; // (Requires EntityConfig to be loaded)
 Resource.TYPES = {}; // Safety placeholder implies lookup elsewhere
 
 window.Resource = Resource;
+

@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Audio Manager
  * Handles all audio playback using Web Audio API
- * 
+ *
  * Owner: SFX Engineer
  */
 
@@ -101,9 +101,14 @@ const AudioManager = {
      * Set volume for a category
      */
     setVolume(category, value) {
-        const gain = category === 'master' ? this.masterGain :
-            category === 'sfx' ? this.sfxGain :
-                category === 'music' ? this.musicGain : null;
+        const gain =
+            category === 'master'
+                ? this.masterGain
+                : category === 'sfx'
+                  ? this.sfxGain
+                  : category === 'music'
+                    ? this.musicGain
+                    : null;
 
         if (gain) {
             gain.gain.value = Math.max(0, Math.min(1, value));
@@ -113,3 +118,4 @@ const AudioManager = {
 
 window.AudioManager = AudioManager;
 if (window.Registry) Registry.register('AudioManager', AudioManager);
+

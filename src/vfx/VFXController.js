@@ -1,7 +1,7 @@
-/**
+﻿/**
  * VFX Controller (System 2.0)
  * Orchestrates all visual effects using a Data-Driven Sequencer.
- * 
+ *
  * Owner: VFX Specialist
  */
 
@@ -72,6 +72,21 @@ class VFXSystem {
             if (seq.cues.length === 0) {
                 this.activeSequences.splice(i, 1);
             }
+        }
+
+        // Update traveling projectiles
+        if (window.ProjectileVFX) {
+            ProjectileVFX.update(dt);
+        }
+
+        // Update melee trails
+        if (window.MeleeTrailVFX) {
+            MeleeTrailVFX.update(dt);
+        }
+
+        // Update floating text (damage numbers, etc.)
+        if (window.FloatingTextManager) {
+            FloatingTextManager.update(dt);
         }
     }
 
@@ -174,6 +189,28 @@ class VFXSystem {
         for (const text of this.texts) {
             text.render(ctx);
         }
+
+        // Render traveling projectiles (no camera offset needed - ctx is already translated)
+        if (window.ProjectileVFX) {
+            ProjectileVFX.render(ctx);
+        }
+
+        // Render melee trails (needs viewport for world-to-screen conversion)
+        if (window.MeleeTrailVFX && window.GameRenderer) {
+            const viewport = {
+                x: GameRenderer.viewport.x,
+                y: GameRenderer.viewport.y,
+                scale: GameRenderer.viewport.scale,
+                screenX: 0,
+                screenY: 0
+            };
+            MeleeTrailVFX.render(ctx, viewport);
+        }
+
+        // Render floating text (damage numbers, etc.)
+        if (window.FloatingTextManager) {
+            FloatingTextManager.render(ctx);
+        }
     }
 
     /**
@@ -221,74 +258,27 @@ class VFXSystem {
      */
     spawnFloatingText(text, worldX, worldY, color = '#FFD700', duration = 2000) {
         if (window.FloatingText) {
-            const ft = new FloatingText(text, worldX, worldY, color, duration);
+            // FloatingText expects a config object, not separate color/duration params
+            const config = {
+                color: color,
+                floatDuration: duration / 2000, // Convert ms to seconds
+                holdDuration: 0.2
+            };
+            const ft = new FloatingText(text, worldX, worldY, config, 0);
             this.texts.push(ft);
         }
     }
 
     // -------------------------------------------------------------------------
-    // Legacy Methods (To be deprecated/migrated to Config)
+    // Utility Methods
     // -------------------------------------------------------------------------
 
-    // triggerUIProgressSparks, triggerUIExplosion, createExplosion, bombardZone 
-    // are TEMPORARILY kept or re-routed to use new system if possible
-    // For now, let's keep them but wrap them to use the new playEffect or playSequence if applicable
-    // or just leave as is for "Phase 24.3 Migration"
-
-    bombardZone(zone) {
-        // ... (Keep existing logic or migrate?)
-        // Migration Plan says to Migrate. Let's redirect to a sequence if it exists, else use old logic?
-        // For now, I'll keep the old logic but add a TODO to migrate it fully.
-        // Actually, the user asked to "update how we handle vfx", so we should try to use the new system.
-        // But Bombardment has complex logic (random targeting in a zone).
-        // A static sequence cannot handle "random point in zone".
-        // SO: Complex logic remains in Controller/System, but the *Visuals* should use Templates.
-
-        if (!zone) return;
-
-        const shellCount = 15;
-        const duration = 2500;
-
-        for (let i = 0; i < shellCount; i++) {
-            const delay = Math.random() * duration;
-            setTimeout(() => {
-                const tx = zone.worldX + 50 + Math.random() * (zone.width - 100);
-                const ty = zone.worldY + 50 + Math.random() * (zone.height - 100);
-                const sx = tx - 100 + Math.random() * 200;
-                const sy = ty - 1000;
-
-                // Use new playEffect with raw config or template
-                // Ideally we define 'ARTILLERY_SHELL' in templates.
-                // But it needs custom velocity vx/vy.
-                // So we stick to direct emit but maybe pull colors from constants?
-
-                const flightTime = 600;
-                const frames = flightTime / 16.666;
-                const vx = (tx - sx) / frames;
-                const vy = (ty - sy) / frames;
-
-                this.playForeground(sx, sy, {
-                    type: 'streak', color: '#FFCC00', size: 40, lifetime: flightTime + 100,
-                    vx: vx, vy: vy, stretch: true,
-                    trail: { color: '#FF0000', size: 20, interval: 5, lifetime: 1000 }
-                });
-
-                setTimeout(() => {
-                    // Start generic explosion sequence at impact
-                    this.playSequence('EXPLOSION_GENERIC', tx, ty);
-                    // Camera Shake
-                    if (this.game && typeof this.game.shake === 'function') this.game.shake(5, 200);
-                }, flightTime);
-
-            }, delay);
-        }
-    }
-
     createExplosion(x, y) {
-        // Redirect to new Sequence
+        // Redirect to sequence system
         this.playSequence('EXPLOSION_GENERIC', x, y);
     }
 }
 
 // Export Singleton
 window.VFXController = new VFXSystem();
+

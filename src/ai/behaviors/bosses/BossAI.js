@@ -1,11 +1,11 @@
-/**
+﻿/**
  * BossAI - Phase-based boss behavior
- * 
+ *
  * Extends basic enemy AI with:
  * - Health-based phase transitions
  * - Special abilities
  * - Enrage mechanics
- * 
+ *
  * Owner: AI System
  */
 
@@ -154,8 +154,9 @@ const BossAI = {
 
         // Check for ability usage
         if (boss.abilityCooldown <= 0 && boss.abilities?.length > 0) {
-            const dist = boss.distanceTo ? boss.distanceTo(hero) :
-                Math.sqrt((hero.x - boss.x) ** 2 + (hero.y - boss.y) ** 2);
+            const dist = boss.distanceTo
+                ? boss.distanceTo(hero)
+                : Math.sqrt((hero.x - boss.x) ** 2 + (hero.y - boss.y) ** 2);
 
             // Random ability at medium range
             if (dist > boss.attackRange * 1.5 && dist < boss.aggroRange) {
@@ -207,3 +208,4 @@ const BossAI = {
 };
 
 window.BossAI = BossAI;
+

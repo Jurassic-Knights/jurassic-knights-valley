@@ -1,0 +1,15 @@
+{
+    "id":  "node_harvesting_t1_03",
+    "name":  "Wild Wheat",
+    "sourceCategory":  "nodes",
+    "sourceFile":  "nodes",
+    "sprite":  "node_harvesting_t1_03",
+    "status":  "pending",
+    "files":  {
+                  "original":  "assets/images/nodes/node_harvesting_t1_03_original.png"
+              },
+    "type":  "ore",
+    "biome":  "grasslands",
+    "nodeSubtype":  "harvesting",
+    "tier":  1
+}

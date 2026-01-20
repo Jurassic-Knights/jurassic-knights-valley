@@ -1,9 +1,9 @@
-/**
+﻿/**
  * PropSpawner - Handles decorative prop spawning on islands
- * 
+ *
  * Extracted from SpawnManager.js for modularity.
  * Spawns foliage clusters and scattered items in water gaps.
- * 
+ *
  * Owner: Level Architect
  */
 
@@ -56,8 +56,9 @@ class PropSpawner {
         for (const island of islandManager.islands) {
             if (island.type === 'home') continue;
 
-            const foliageMap = (window.PropConfig && PropConfig.FOLIAGE_MAP) ? PropConfig.FOLIAGE_MAP : {};
-            const itemMap = (window.PropConfig && PropConfig.ITEM_MAP) ? PropConfig.ITEM_MAP : {};
+            const foliageMap =
+                window.PropConfig && PropConfig.FOLIAGE_MAP ? PropConfig.FOLIAGE_MAP : {};
+            const itemMap = window.PropConfig && PropConfig.ITEM_MAP ? PropConfig.ITEM_MAP : {};
             const foliageList = foliageMap[island.name];
             const itemList = itemMap[island.name];
 
@@ -80,10 +81,18 @@ class PropSpawner {
         const clusterCount = C.CLUSTER_COUNT_MIN + Math.floor(Math.random() * C.CLUSTER_COUNT_RND);
 
         for (let c = 0; c < clusterCount; c++) {
-            const clusterPos = this.findValidPosition(island, gap, GameConstants.UI.BRIDGE_VISUAL_PADDING, spawnedProps, C.MIN_DIST, 15);
+            const clusterPos = this.findValidPosition(
+                island,
+                gap,
+                GameConstants.UI.BRIDGE_VISUAL_PADDING,
+                spawnedProps,
+                C.MIN_DIST,
+                15
+            );
             if (!clusterPos) continue;
 
-            const propsPerCluster = C.PROPS_PER_CLUSTER_MIN + Math.floor(Math.random() * C.PROPS_PER_CLUSTER_RND);
+            const propsPerCluster =
+                C.PROPS_PER_CLUSTER_MIN + Math.floor(Math.random() * C.PROPS_PER_CLUSTER_RND);
 
             for (let i = 0; i < propsPerCluster; i++) {
                 const propId = foliageList[Math.floor(Math.random() * foliageList.length)];
@@ -94,7 +103,16 @@ class PropSpawner {
                     const px = clusterPos.x + Math.cos(angle) * dist;
                     const py = clusterPos.y + Math.sin(angle) * dist;
 
-                    if (this.isValidPropPosition(px, py, island, GameConstants.UI.BRIDGE_VISUAL_PADDING, spawnedProps, C.MIN_DIST)) {
+                    if (
+                        this.isValidPropPosition(
+                            px,
+                            py,
+                            island,
+                            GameConstants.UI.BRIDGE_VISUAL_PADDING,
+                            spawnedProps,
+                            C.MIN_DIST
+                        )
+                    ) {
                         this.createProp(px, py, propId, island);
                         spawnedProps.push({ x: px, y: py });
                         break;
@@ -113,7 +131,14 @@ class PropSpawner {
 
         for (let i = 0; i < itemCount; i++) {
             const propId = itemList[Math.floor(Math.random() * itemList.length)];
-            const pos = this.findValidPosition(island, gap, 120, spawnedProps, C.MIN_DIST * 1.5, 15);
+            const pos = this.findValidPosition(
+                island,
+                gap,
+                120,
+                spawnedProps,
+                C.MIN_DIST * 1.5,
+                15
+            );
 
             if (pos) {
                 this.createProp(pos.x, pos.y, propId, island);
@@ -141,8 +166,13 @@ class PropSpawner {
 
     isValidPropPosition(x, y, island, bridgePadding, existingProps, minSpacing) {
         // Inside Island Bounds (invalid - props go in water gap)
-        if (x > island.worldX && x < island.worldX + island.width &&
-            y > island.worldY && y < island.worldY + island.height) return false;
+        if (
+            x > island.worldX &&
+            x < island.worldX + island.width &&
+            y > island.worldY &&
+            y < island.worldY + island.height
+        )
+            return false;
 
         // Bridge Clearance
         if (this.isOnBridgeVisual(x, y, bridgePadding)) return false;
@@ -158,12 +188,17 @@ class PropSpawner {
 
     createProp(x, y, sprite, island) {
         const prop = new Prop({
-            x: x, y: y, sprite: sprite,
-            width: 160, height: 160,
-            islandGridX: island.gridX, islandGridY: island.gridY
+            x: x,
+            y: y,
+            sprite: sprite,
+            width: 160,
+            height: 160,
+            islandGridX: island.gridX,
+            islandGridY: island.gridY
         });
         if (window.EntityManager) EntityManager.add(prop);
     }
 }
 
 window.PropSpawner = PropSpawner;
+

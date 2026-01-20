@@ -1,4 +1,4 @@
-/**
+﻿/**
  * FogOfWarSystem
  * Hybrid fog system: Combines texture-based clouds with procedural pixel overlay.
  * - Base layer: Your fog_of_war.png texture (tiled/repeated)
@@ -16,13 +16,22 @@ const FogOfWarSystem = {
         this.game = game;
         Logger.info('[FogOfWarSystem] Initialized');
 
-        // Load the fog texture
-        this.fogTexture = new Image();
-        this.fogTexture.onload = () => {
-            this.textureLoaded = true;
-            Logger.info('[FogOfWarSystem] Fog texture loaded');
-        };
-        this.fogTexture.src = 'assets/images/vfx/fog_of_war.png';
+        // Load the fog texture via AssetLoader (fallback chain enabled)
+        if (window.AssetLoader) {
+            const fogPath = AssetLoader.getImagePath('vfx_fog_of_war');
+            this.fogTexture = AssetLoader.createImage(fogPath, () => {
+                this.textureLoaded = true;
+                Logger.info('[FogOfWarSystem] Fog texture loaded');
+            });
+        } else {
+            // Fallback for initialization order
+            this.fogTexture = new Image();
+            this.fogTexture.onload = () => {
+                this.textureLoaded = true;
+                Logger.info('[FogOfWarSystem] Fog texture loaded (fallback)');
+            };
+            this.fogTexture.src = 'assets/images/vfx/fog_of_war.png';
+        }
 
         if (window.EventBus && window.GameConstants) {
             EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data) => {
@@ -134,7 +143,7 @@ const FogOfWarSystem = {
 
             for (let i = 0; i < data.clouds.length; i++) {
                 const cloud = data.clouds[i];
-                const angle = (Math.PI * 2 / data.clouds.length) * i + Math.random() * 0.5;
+                const angle = ((Math.PI * 2) / data.clouds.length) * i + Math.random() * 0.5;
                 const speed = 3 + Math.random() * 4;
                 cloud.disperseVel.x = Math.cos(angle) * speed;
                 cloud.disperseVel.y = Math.sin(angle) * speed;
@@ -166,8 +175,12 @@ const FogOfWarSystem = {
             if (data.alpha <= 0) continue;
 
             // Viewport culling
-            if (data.x + data.width < vpLeft || data.x > vpRight ||
-                data.y + data.height < vpTop || data.y > vpBottom) {
+            if (
+                data.x + data.width < vpLeft ||
+                data.x > vpRight ||
+                data.y + data.height < vpTop ||
+                data.y > vpBottom
+            ) {
                 continue;
             }
 
@@ -178,8 +191,10 @@ const FogOfWarSystem = {
             // Render each cloud instance
             for (const cloud of data.clouds) {
                 // Animated drift
-                const driftX = Math.sin(time * cloud.driftSpeedX + cloud.driftPhaseX) * cloud.driftAmplitudeX;
-                const driftY = Math.cos(time * cloud.driftSpeedY + cloud.driftPhaseY) * cloud.driftAmplitudeY;
+                const driftX =
+                    Math.sin(time * cloud.driftSpeedX + cloud.driftPhaseX) * cloud.driftAmplitudeX;
+                const driftY =
+                    Math.cos(time * cloud.driftSpeedY + cloud.driftPhaseY) * cloud.driftAmplitudeY;
 
                 // Breathing alpha
                 const breathe = 0.85 + Math.sin(time * 0.4 + cloud.alphaPhase) * 0.15;
@@ -193,17 +208,14 @@ const FogOfWarSystem = {
                 ctx.translate(drawX, drawY);
                 ctx.rotate(cloud.rotation);
                 // Animated scale
-                const scalePulse = 1 + Math.sin(time * cloud.scaleSpeed + cloud.scalePhase) * cloud.scaleAmount;
+                const scalePulse =
+                    1 + Math.sin(time * cloud.scaleSpeed + cloud.scalePhase) * cloud.scaleAmount;
                 const finalScale = cloud.scale * scalePulse;
 
                 ctx.scale(finalScale, finalScale);
 
                 // Draw the texture centered
-                ctx.drawImage(
-                    this.fogTexture,
-                    -texW / 2,
-                    -texH / 2
-                );
+                ctx.drawImage(this.fogTexture, -texW / 2, -texH / 2);
 
                 ctx.restore();
             }
@@ -265,3 +277,4 @@ const FogOfWarSystem = {
 
 window.FogOfWarSystem = FogOfWarSystem;
 if (window.Registry) Registry.register('FogOfWarSystem', FogOfWarSystem);
+

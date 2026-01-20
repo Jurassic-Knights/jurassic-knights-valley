@@ -1,7 +1,7 @@
-/**
+﻿/**
  * WeatherSystem
  * Manages weather states based on the current season and RNG.
- * 
+ *
  * Responsibilities:
  * - Listens for Season changes to update weather probabilities
  * - Periodically rolls for weather changes
@@ -57,7 +57,7 @@ class WeatherSystem {
 
         // We use TimeSystem's time, but we can also track our own interval
         // Simple Real-time check is fine
-        this.nextChangeCheck -= (dt / 1000);
+        this.nextChangeCheck -= dt / 1000;
 
         if (this.nextChangeCheck <= 0) {
             this.tryChangeWeather();
@@ -67,7 +67,9 @@ class WeatherSystem {
 
     handleSeasonChange(data) {
         this.currentSeason = data.season;
-        Logger.info(`[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`);
+        Logger.info(
+            `[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`
+        );
         // Force a weather change on season start (if not overridden)
         if (!this.overrideEnabled) {
             this.tryChangeWeather(true);
@@ -117,3 +119,4 @@ class WeatherSystem {
 }
 
 window.WeatherSystem = new WeatherSystem();
+

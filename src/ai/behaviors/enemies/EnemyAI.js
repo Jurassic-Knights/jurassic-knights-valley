@@ -1,11 +1,11 @@
-/**
+﻿/**
  * EnemyAI - Enemy behavior state machine
- * 
+ *
  * Extracted from Enemy.js for modularity.
  * Handles wander, chase, attack, and returning behaviors.
- * 
+ *
  * Usage: EnemyAI.updateState(enemy, dt)
- * 
+ *
  * Owner: Combat System
  */
 
@@ -81,9 +81,7 @@ const EnemyAI = {
         const dist = enemy.distanceTo(enemy.target);
 
         // Check leash distance
-        const spawnDist = Math.sqrt(
-            (enemy.x - enemy.spawnX) ** 2 + (enemy.y - enemy.spawnY) ** 2
-        );
+        const spawnDist = Math.sqrt((enemy.x - enemy.spawnX) ** 2 + (enemy.y - enemy.spawnY) ** 2);
         if (spawnDist > enemy.leashDistance) {
             enemy.state = 'returning';
             enemy.target = null;
@@ -128,9 +126,7 @@ const EnemyAI = {
      * Return to spawn behavior
      */
     updateReturning(enemy, dt) {
-        const dist = Math.sqrt(
-            (enemy.spawnX - enemy.x) ** 2 + (enemy.spawnY - enemy.y) ** 2
-        );
+        const dist = Math.sqrt((enemy.spawnX - enemy.x) ** 2 + (enemy.spawnY - enemy.y) ** 2);
 
         if (dist < 20) {
             enemy.state = 'wander';
@@ -174,11 +170,14 @@ const EnemyAI = {
     triggerPackAggro(enemy, target) {
         if (!window.EntityManager || !enemy.groupId) return;
 
-        const packRadius = window.BiomeConfig?.patrolDefaults?.packAggroRadius ||
-            window.GameConstants?.Biome?.PACK_AGGRO_RADIUS || 150;
+        const packRadius =
+            window.BiomeConfig?.patrolDefaults?.packAggroRadius ||
+            window.GameConstants?.Biome?.PACK_AGGRO_RADIUS ||
+            150;
 
-        const enemies = EntityManager.getByType(EntityTypes.ENEMY_DINOSAUR)
-            .concat(EntityManager.getByType(EntityTypes.ENEMY_SOLDIER));
+        const enemies = EntityManager.getByType(EntityTypes.ENEMY_DINOSAUR).concat(
+            EntityManager.getByType(EntityTypes.ENEMY_SOLDIER)
+        );
 
         for (const other of enemies) {
             if (other === enemy || other.groupId !== enemy.groupId) continue;
@@ -206,3 +205,4 @@ const EnemyAI = {
 };
 
 window.EnemyAI = EnemyAI;
+

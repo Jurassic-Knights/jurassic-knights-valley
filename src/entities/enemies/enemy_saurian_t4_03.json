@@ -1,0 +1,68 @@
+{
+  "id": "enemy_saurian_t4_03",
+  "name": "Spino Warlord",
+  "sourceCategory": "enemies",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t4_03",
+  "status": "pending",
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 180,
+    "damage": 22,
+    "speed": 75,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t4_03",
+    "death": "sfx_death_saurian_t4_03",
+    "hurt": "sfx_hurt_saurian_t4_03",
+    "aggro": "sfx_aggro_saurian_t4_03"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t4_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t4_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 60,
+  "species": "Spinosaurus",
+  "sourceDescription": "anthropomorphic Spinosaurus, charred brown uniform with red trim, partial plate armor, hooded mask, massive greatsword",
+  "weaponType": "greatsword",
+  "role": "special",
+  "description": "The Spino Warlord combines the most dangerous aspects of apex predator and seasoned commander. That crocodilian snout stretches impossibly far, teeth designed for gripping prey that never escapes. The sail rising from its back has been decorated with campaign honors and kill markers painted in charcoal and rust.\n\nBrass-detailed chainmail covers the elongated torso beneath a charcoal battle coat, the armor adapted for the Spinosaurus's unusual proportions. Blackened leather straps cross beneath the belly where the coat cannot cover. Medium-role armor provides protection while allowing this commander's signature devastating lunge attacks.\n\nThe powerful tail is fitted with iron bands, transforming the swimming appendage into a siege weapon. Those exposed clawed feet spread wide on volcanic terrain, each footstep calculated for combat positioning. A massive war hammer serves as weapon and status symbol alike. This medium-role commander earned every honor through personal kill count.",
+  "files": {
+    "original": "images/enemies/saurian_t4_03_original.png"
+  },
+  "declineNote": ""
+}

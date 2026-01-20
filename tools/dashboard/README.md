@@ -8,8 +8,8 @@ The original `asset_dashboard.html` has been refactored into modular components.
 
 ## How to Access
 
-- **Original Dashboard**: `http://localhost:8765/` (default)
-- **Modular Dashboard**: `http://localhost:8765/dashboard/`
+- **Original Dashboard**: `http://localhost:5173/` (default)
+- **Modular Dashboard**: `http://localhost:5173/dashboard/`
 
 ## File Structure
 

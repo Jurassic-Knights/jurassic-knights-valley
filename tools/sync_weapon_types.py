@@ -14,8 +14,6 @@ enemies_dir = os.path.join(base_dir, "tools", "enemies")
 weapon_keywords = {
     'greatsword': 'greatsword',
     'sword': 'sword',
-    'dual blades': 'dual_blades',
-    'dual swords': 'dual_blades',
     'axe': 'axe',
     'mace': 'mace',
     'lance': 'lance',
@@ -32,7 +30,7 @@ weapon_keywords = {
     'pistol': 'pistol',
     'submachine gun': 'submachine_gun',
     'machine gun': 'machine_gun',
-    'crossbow': 'crossbow',
+    'rifle': 'rifle',
     'war horn': 'war_horn',
 }
 

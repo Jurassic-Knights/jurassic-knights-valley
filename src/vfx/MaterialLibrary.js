@@ -1,18 +1,18 @@
-/**
+﻿/**
  * MaterialLibrary - Procedural Texture Processor & Cache
- * 
+ *
  * Generates and caches dynamic variations of existing assets (Materials).
  * Used for:
  * - Outlines (Selection)
  * - Silhouettes (Rarity Glows, Locked State)
  * - Tints (Hit Flashes, Status Effects)
  * - Grayscale (Disabled UI)
- * 
+ *
  * Architecture:
  * - Singleton
  * - Uses Offscreen Canvas for processing
  * - Caches results by a unique signature key
- * 
+ *
  * Owner: VFX Specialist
  */
 
@@ -93,7 +93,7 @@ const MaterialLibrary = {
 
     /**
      * Outline Effect
-     * @param {HTMLImageElement} source 
+     * @param {HTMLImageElement} source
      * @param {object} params { color: '#FFF', thickness: 2 }
      */
     outline(source, params) {
@@ -125,16 +125,21 @@ const MaterialLibrary = {
         // Draw the silhouette in directions
         // Corners + Cardinal (8-way) for smooth thick lines
         const offsets = [
-            [-1, -1], [0, -1], [1, -1],
-            [-1, 0], [1, 0],
-            [-1, 1], [0, 1], [1, 1]
+            [-1, -1],
+            [0, -1],
+            [1, -1],
+            [-1, 0],
+            [1, 0],
+            [-1, 1],
+            [0, 1],
+            [1, 1]
         ];
 
         for (const [ox, oy] of offsets) {
             ctx.drawImage(sCanvas, dx + ox * thickness, dy + oy * thickness);
         }
 
-        // Fill gaps/smooth edges for larger thickness? 
+        // Fill gaps/smooth edges for larger thickness?
         // For pixel art, integer offsets usually suffice.
 
         ctx.restore();
@@ -147,7 +152,7 @@ const MaterialLibrary = {
 
     /**
      * Solid Silhouette (e.g. for rarity glows behind item)
-     * @param {HTMLImageElement} source 
+     * @param {HTMLImageElement} source
      * @param {object} params { color: '#F00' }
      */
     silhouette(source, params) {
@@ -170,7 +175,7 @@ const MaterialLibrary = {
     /**
      * Color Tint (Overlay)
      * Use for Hit Flash (white), Status Effects (Green poison)
-     * @param {HTMLImageElement} source 
+     * @param {HTMLImageElement} source
      * @param {object} params { color: '#FFF', opacity: 0.5, mode: 'source-atop' }
      */
     tint(source, params) {
@@ -195,7 +200,7 @@ const MaterialLibrary = {
 
     /**
      * Grayscale (Desaturation)
-     * @param {HTMLImageElement} source 
+     * @param {HTMLImageElement} source
      */
     grayscale(source) {
         const canvas = this._createCanvas(source.width, source.height);
@@ -208,7 +213,7 @@ const MaterialLibrary = {
 
         // NOTE: 'filter' property might not be supported in some very old browsers/contexts,
         // but broadly supported in modern canvas.
-        // Fallback: loop pixels (slow) or composite mode 'saturation'? 
+        // Fallback: loop pixels (slow) or composite mode 'saturation'?
         // 'saturation' composite mode works if supported:
         // ctx.globalCompositeOperation = 'saturation';
         // ctx.fillStyle = '#000'; // black = no saturation
@@ -220,7 +225,7 @@ const MaterialLibrary = {
     /**
      * Shadow Silhouette (Optimized for performance)
      * Hard blacks out the image for use as a projected shadow.
-     * @param {HTMLImageElement} source 
+     * @param {HTMLImageElement} source
      */
     shadow(source) {
         // Reuse silhouette logic with black color, explicit naming for clarity
@@ -231,3 +236,4 @@ const MaterialLibrary = {
 // Export
 window.MaterialLibrary = MaterialLibrary;
 if (window.Registry) Registry.register('MaterialLibrary', MaterialLibrary);
+

@@ -1,4 +1,4 @@
-[
+﻿[
     {
         "id": "tool_t1_01",
         "name": "Trench Shovel",
@@ -9,13 +9,13 @@
         "biome": "grasslands",
         "status": "pending",
         "fuelCost": 1,
-        "sourceDescription": "trench shovel, WWI era entrenching tool, straight horizontal angle, side view",
+        "sourceDescription": "trench shovel, WWI era entrenching tool, diagonal view",
         "files": {
             "original": "assets/images/equipment/tool_t1_01_original.png"
         }
     },
     {
-        "id": "tool_t2_02",
+        "id": "tool_t2_01",
         "name": "Iron Pickaxe",
         "slot": "tool",
         "tier": 2,
@@ -24,13 +24,13 @@
         "biome": "tundra",
         "status": "pending",
         "fuelCost": 2,
-        "sourceDescription": "iron pickaxe, medieval mining tool, straight horizontal angle, side view",
+        "sourceDescription": "iron pickaxe, medieval mining tool, diagonal view",
         "files": {
-            "original": "assets/images/equipment/tool_t2_02_original.png"
+            "original": "assets/images/equipment/tool_t2_01_original.png"
         }
     },
     {
-        "id": "tool_t3_03",
+        "id": "tool_t3_01",
         "name": "Steel Pickaxe",
         "slot": "tool",
         "tier": 3,
@@ -39,13 +39,13 @@
         "biome": "desert",
         "status": "pending",
         "fuelCost": 4,
-        "sourceDescription": "steel pickaxe, heavy-duty mining tool, straight horizontal angle, side view",
+        "sourceDescription": "steel pickaxe, heavy-duty mining tool, diagonal view",
         "files": {
-            "original": "assets/images/equipment/tool_t3_03_original.png"
+            "original": "assets/images/equipment/tool_t3_01_original.png"
         }
     },
     {
-        "id": "tool_t4_04",
+        "id": "tool_t4_01",
         "name": "Hardened Pickaxe",
         "slot": "tool",
         "tier": 4,
@@ -54,9 +54,9 @@
         "biome": "badlands",
         "status": "pending",
         "fuelCost": 8,
-        "sourceDescription": "hardened steel pickaxe, premium mining tool, straight horizontal angle, side view",
+        "sourceDescription": "hardened steel pickaxe, premium mining tool, diagonal view",
         "files": {
-            "original": "assets/images/equipment/tool_t4_04_original.png"
+            "original": "assets/images/equipment/tool_t4_01_original.png"
         }
     }
 ]

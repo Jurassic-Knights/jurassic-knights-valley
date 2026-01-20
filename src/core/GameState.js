@@ -1,6 +1,6 @@
-/**
+﻿/**
  * GameState - Global Reactive Store
- * 
+ *
  * Centralizes transient game data (Inventory, Gold, Unlocks).
  * Decouples UI from Entities.
  */
@@ -9,7 +9,7 @@ class GameState {
         this.data = {
             gold: 0,
             inventory: {}, // itemId: qty
-            unlocks: [],   // List of unlocked IDs
+            unlocks: [], // List of unlocked IDs
             questId: null,
             questProgress: 0
         };
@@ -33,7 +33,8 @@ class GameState {
         }
 
         // Load defaults from GameConstants if not provided
-        const defaultGold = (window.GameConstants && GameConstants.Core) ? GameConstants.Core.INITIAL_GOLD : 0;
+        const defaultGold =
+            window.GameConstants && GameConstants.Core ? GameConstants.Core.INITIAL_GOLD : 0;
 
         const defaults = {
             gold: defaultGold,
@@ -49,7 +50,7 @@ class GameState {
 
     /**
      * Get a value
-     * @param {string} key 
+     * @param {string} key
      */
     get(key) {
         return this.data[key];
@@ -57,8 +58,8 @@ class GameState {
 
     /**
      * Set a value and emit change
-     * @param {string} key 
-     * @param {any} value 
+     * @param {string} key
+     * @param {any} value
      */
     set(key, value) {
         this.data[key] = value;
@@ -67,8 +68,8 @@ class GameState {
 
     /**
      * Update inventory and emit specific inventory event
-     * @param {string} itemId 
-     * @param {number} qty 
+     * @param {string} itemId
+     * @param {number} qty
      */
     updateInventory(itemId, qty) {
         this.data.inventory[itemId] = qty;
@@ -90,3 +91,4 @@ class GameState {
 
 // Singleton
 new GameState();
+

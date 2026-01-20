@@ -1,9 +1,9 @@
-/**
+﻿/**
  * RenderProfiler - Performance profiling for render phases
- * 
+ *
  * Extracted from GameRenderer.js for modularity.
  * Tracks timing for each render phase and outputs detailed breakdowns.
- * 
+ *
  * Owner: Performance Tools
  */
 
@@ -15,8 +15,15 @@ const RenderProfiler = {
      */
     start() {
         this.timing = {
-            world: 0, vfxBg: 0, entitySort: 0, shadows: 0,
-            entities: 0, ambient: 0, fog: 0, vfxFg: 0, envOverlay: 0,
+            world: 0,
+            vfxBg: 0,
+            entitySort: 0,
+            shadows: 0,
+            entities: 0,
+            ambient: 0,
+            fog: 0,
+            vfxFg: 0,
+            envOverlay: 0,
             frames: 0
         };
         Logger.info('[RenderProfiler] Profiling started...');
@@ -33,12 +40,20 @@ const RenderProfiler = {
         Logger.info('=== RENDER PHASE BREAKDOWN ===');
         Logger.info(`Frames: ${t.frames}`);
         const phases = [
-            ['World', t.world], ['VFX BG', t.vfxBg], ['Entity Sort', t.entitySort],
-            ['Shadows', t.shadows], ['Entities', t.entities], ['Ambient', t.ambient],
-            ['Fog', t.fog], ['VFX FG', t.vfxFg], ['Env Overlay', t.envOverlay]
+            ['World', t.world],
+            ['VFX BG', t.vfxBg],
+            ['Entity Sort', t.entitySort],
+            ['Shadows', t.shadows],
+            ['Entities', t.entities],
+            ['Ambient', t.ambient],
+            ['Fog', t.fog],
+            ['VFX FG', t.vfxFg],
+            ['Env Overlay', t.envOverlay]
         ];
         for (const [name, time] of phases.sort((a, b) => b[1] - a[1])) {
-            Logger.info(`  ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`);
+            Logger.info(
+                `  ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`
+            );
         }
 
         // World sub-phase breakdown
@@ -49,7 +64,9 @@ const RenderProfiler = {
             ['Debug', t.worldDebug || 0]
         ];
         for (const [name, time] of worldPhases.sort((a, b) => b[1] - a[1])) {
-            Logger.info(`    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`);
+            Logger.info(
+                `    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`
+            );
         }
 
         // Shadow sub-phase breakdown
@@ -64,12 +81,16 @@ const RenderProfiler = {
             ['Other', t.shadowOther || 0]
         ];
         for (const [name, time] of shadowPhases.sort((a, b) => b[1] - a[1])) {
-            Logger.info(`    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`);
+            Logger.info(
+                `    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)`
+            );
         }
 
         // Entity sub-phase breakdown
         Logger.info('--- Entity Sub-Phases ---');
-        Logger.info(`  Total Entities Rendered: ${t.entCount || 0} (${((t.entCount || 0) / t.frames).toFixed(1)}/frame)`);
+        Logger.info(
+            `  Total Entities Rendered: ${t.entCount || 0} (${((t.entCount || 0) / t.frames).toFixed(1)}/frame)`
+        );
         const entPhases = [
             ['HomeBase', t.entHomeBase || 0],
             ['Hero', t.entHeroTime || 0],
@@ -82,7 +103,9 @@ const RenderProfiler = {
         ];
         for (const [name, time, count] of entPhases.sort((a, b) => b[1] - a[1])) {
             const countStr = count ? ` [${count} total]` : '';
-            Logger.info(`    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)${countStr}`);
+            Logger.info(
+                `    ${name}: ${time.toFixed(1)}ms (${(time / t.frames).toFixed(2)}ms/frame)${countStr}`
+            );
         }
 
         // Log unknown entity types
@@ -106,3 +129,4 @@ const RenderProfiler = {
 };
 
 window.RenderProfiler = RenderProfiler;
+

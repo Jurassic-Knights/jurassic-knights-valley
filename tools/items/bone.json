@@ -15,7 +15,7 @@
         }
     },
     {
-        "id": "bone_t2_02",
+        "id": "bone_t2_01",
         "name": "Bone Plate",
         "tier": 2,
         "category": "bone",
@@ -26,11 +26,11 @@
         "status": "approved",
         "sourceDescription": "reinforced bone plate armor piece, cream-white layered bone structure, gritty, weathered, primitive armor material",
         "files": {
-            "original": "assets/images/items/bone_t2_02_original.png"
+            "original": "assets/images/items/bone_t2_01_original.png"
         }
     },
     {
-        "id": "bone_t3_03",
+        "id": "bone_t3_01",
         "name": "Bleached Bone Plate",
         "tier": 3,
         "category": "bone",
@@ -41,11 +41,11 @@
         "status": "pending",
         "sourceDescription": "sun-bleached white bone plate armor piece, pure white desert-baked bone, gritty, weathered, refined primitive armor material",
         "files": {
-            "original": "assets/images/items/bone_t3_03_original.png"
+            "original": "assets/images/items/bone_t3_01_original.png"
         }
     },
     {
-        "id": "bone_t4_04",
+        "id": "bone_t4_01",
         "name": "Fossilized Plate",
         "tier": 4,
         "category": "bone",
@@ -56,7 +56,7 @@
         "status": "pending",
         "sourceDescription": "fossilized stone-hard bone plate armor piece, dark grey-brown mineralized ancient bone, gritty, weathered, premium prehistoric armor material",
         "files": {
-            "original": "assets/images/items/bone_t4_04_original.png"
+            "original": "assets/images/items/bone_t4_01_original.png"
         }
     }
 ]

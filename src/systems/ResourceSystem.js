@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ResourceSystem
  * Handles state updates and respawning for all resources.
  */
@@ -53,7 +53,7 @@ class ResourceSystem {
             const baseTemplate = VFXConfig.TEMPLATES.RESOURCE_RESPAWN_FX;
             const fx = { ...baseTemplate };
 
-            // If resource has a color, maybe tint the debris? 
+            // If resource has a color, maybe tint the debris?
             // For now, keep the "Digital Materialization" (Cyan/White) as distinct from the resource itself.
             // It implies the world is reconstructing it.
 
@@ -64,3 +64,4 @@ class ResourceSystem {
 
 window.ResourceSystem = new ResourceSystem();
 if (window.Registry) Registry.register('ResourceSystem', window.ResourceSystem);
+

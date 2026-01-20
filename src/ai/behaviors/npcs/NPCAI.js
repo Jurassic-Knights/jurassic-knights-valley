@@ -1,11 +1,11 @@
-/**
+﻿/**
  * NPCAI - NPC behavior for merchants, quest givers, and patrol NPCs
- * 
+ *
  * Supports:
  * - Static (merchants)
  * - Patrol routes
  * - Dialogue triggers
- * 
+ *
  * Owner: AI System
  */
 
@@ -35,8 +35,9 @@ const NPCAI = {
     updateIdle(npc, hero, dt) {
         if (!hero) return;
 
-        const dist = npc.distanceTo ? npc.distanceTo(hero) :
-            Math.sqrt((hero.x - npc.x) ** 2 + (hero.y - npc.y) ** 2);
+        const dist = npc.distanceTo
+            ? npc.distanceTo(hero)
+            : Math.sqrt((hero.x - npc.x) ** 2 + (hero.y - npc.y) ** 2);
 
         // Show interaction prompt when player is close
         const interactRange = npc.interactRadius || 140;
@@ -142,3 +143,4 @@ const NPCAI = {
 };
 
 window.NPCAI = NPCAI;
+

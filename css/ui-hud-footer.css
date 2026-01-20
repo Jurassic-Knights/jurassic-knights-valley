@@ -1,0 +1,654 @@
+/* ui-hud-footer.css - Footer Bar and Action Buttons */
+/* Split from ui-hud.css for 500-line limit compliance */
+
+/* ========================================
+   HAND-DRAWN EARTHY DASHBOARD
+   ======================================== */
+#ui-footer-zone {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 0;
+    pointer-events: none;
+    z-index: 600;
+    /* Higher than equipment-screen (500) to stay on top */
+}
+
+/* The Main Console Plate - Organic & Worn */
+.footer-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 85px;
+    background-color: var(--color-metal-mid);
+    background-image:
+        var(--bg-noise),
+        radial-gradient(circle at 50% -20%, var(--color-metal-light) 0%, transparent 60%),
+        var(--gradient-plate);
+    background-blend-mode: overlay, screen, normal;
+    border-radius: 0;
+    /* Full edge-to-edge */
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.15),
+        inset 0 -10px 30px rgba(0, 0, 0, 0.8),
+        0 -4px 20px rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* Align to top of bar */
+    padding-top: 5px;
+    /* Push buttons down from top edge */
+    pointer-events: auto;
+    z-index: 1;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Rusted Bolts (Hand-Drawn Look) */
+.footer-bar::before,
+.footer-bar::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--earth-light) 0%, var(--bg-deepest) 80%);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    border: 1px solid #14100C;
+}
+
+.footer-bar::before {
+    left: 20px;
+    transform: rotate(15deg);
+}
+
+.footer-bar::after {
+    right: 20px;
+    transform: rotate(-25deg);
+}
+
+/* Hide old decorative wings/pedestal elements */
+.footer-wing,
+.footer-center,
+.center-pedestal {
+    display: none;
+}
+
+/* Button Container */
+.footer-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 10;
+    padding: 0 10px;
+    pointer-events: auto;
+    transform: translateY(-20px);
+    /* Move buttons up so they're not cut off */
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+/* ========================================
+   DOPAMINE BUTTONS (Hand-Drawn Earthy)
+   ======================================== */
+
+/* Center Context - "Ignition Switch" */
+.center-slot {
+    position: relative;
+    width: 95px;
+    height: 95px;
+    margin-top: -25px;
+    /* Move up for central feeling */
+    background: radial-gradient(circle, var(--earth-dark) 0%, var(--bg-deepest) 100%);
+    border-radius: 50%;
+    box-shadow:
+        inset 0 10px 20px rgba(0, 0, 0, 1),
+        0 2px 0 rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 0;
+    /* Behind the side buttons */
+}
+
+/* Round Context Button - Ornate Brass Ring */
+.action-btn.context-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 30% 30%, #5D4930 0%, #3E2F1E 50%, #4A3825 100%);
+    border: 5px solid;
+    border-color: #C9A227;
+    box-shadow:
+        /* Outer brass ring */
+        0 0 0 3px #8B6914,
+        0 5px 15px rgba(0, 0, 0, 0.8),
+        /* Inner leather inset */
+        inset 0 0 0 3px #2A1F15,
+        inset 0 0 20px rgba(0, 0, 0, 0.9),
+        /* Brass highlight */
+        inset 0 -2px 0 rgba(212, 175, 55, 0.3);
+    z-index: 1;
+    /* Behind side buttons */
+    transition: all 0.2s cubic-bezier(0.3, 1.5, 0.5, 1);
+    overflow: hidden;
+}
+
+/* Remove pseudo-element corners from round button */
+.action-btn.context-btn::before,
+.action-btn.context-btn::after {
+    display: none;
+}
+
+/* Inactive State - Cold Dead Metal */
+.action-btn.context-btn:not(.active) {
+    opacity: 0.5;
+    filter: grayscale(100%) contrast(1.1);
+    transform: scale(0.92);
+    border-color: #4A4545;
+    box-shadow:
+        0 0 0 3px #2A2828,
+        inset 0 8px 15px rgba(0, 0, 0, 0.95);
+    cursor: not-allowed;
+}
+
+/* Active State - Glowing Brass */
+.action-btn.context-btn.active {
+    background:
+        radial-gradient(circle at 40% 40%, #6A5030 0%, #4A3825 60%, #3E2F1E 100%);
+    border-color: #D4AF37;
+    box-shadow:
+        0 0 0 3px #C9A227,
+        0 0 25px rgba(212, 175, 55, 0.5),
+        0 5px 15px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 3px #3A2A18,
+        inset 0 0 15px rgba(0, 0, 0, 0.6);
+    transform: scale(1.02);
+    cursor: pointer;
+    animation: contextGlow 2s infinite ease-in-out;
+}
+
+@keyframes contextGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 3px #C9A227,
+            0 0 20px rgba(212, 175, 55, 0.4),
+            0 5px 15px rgba(0, 0, 0, 0.6),
+            inset 0 0 0 3px #3A2A18,
+            inset 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 3px #D4AF37,
+            0 0 35px rgba(212, 175, 55, 0.7),
+            0 5px 15px rgba(0, 0, 0, 0.6),
+            inset 0 0 0 3px #3A2A18,
+            inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Context Button Click Animation */
+.action-btn.context-btn.clicked {
+    animation: contextBurst 0.4s ease-out !important;
+    transform: scale(0.95);
+}
+
+.action-btn.context-btn.clicked .btn-icon {
+    animation: contextIconPop 0.3s ease-out;
+}
+
+@keyframes contextBurst {
+    0% {
+        transform: scale(1.02);
+        box-shadow:
+            0 0 0 3px #C9A227,
+            0 0 25px rgba(212, 175, 55, 0.5),
+            0 5px 15px rgba(0, 0, 0, 0.6),
+            inset 0 0 0 3px #3A2A18,
+            inset 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    20% {
+        transform: scale(0.9);
+        box-shadow:
+            0 0 0 8px #FFD700,
+            0 0 50px rgba(255, 215, 0, 0.9),
+            0 0 80px rgba(255, 165, 0, 0.6),
+            0 5px 15px rgba(0, 0, 0, 0.6),
+            inset 0 0 0 3px #5A4A28,
+            inset 0 0 30px rgba(255, 200, 100, 0.4);
+        border-color: #FFD700;
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow:
+            0 0 0 5px #D4AF37,
+            0 0 40px rgba(212, 175, 55, 0.7),
+            0 5px 15px rgba(0, 0, 0, 0.6),
+            inset 0 0 0 3px #3A2A18,
+            inset 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    100% {
+        transform: scale(1.02);
+        box-shadow:
+            0 0 0 3px #C9A227,
+            0 0 25px rgba(212, 175, 55, 0.5),
+            0 5px 15px rgba(0, 0, 0, 0.6),
+            inset 0 0 0 3px #3A2A18,
+            inset 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+}
+
+@keyframes contextIconPop {
+    0% {
+        transform: scale(1.05);
+    }
+
+    30% {
+        transform: scale(0.85) rotate(-5deg);
+    }
+
+    60% {
+        transform: scale(1.15) rotate(3deg);
+    }
+
+    100% {
+        transform: scale(1.05) rotate(0deg);
+    }
+}
+
+.action-btn.context-btn .btn-label {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    font-size: 11px;
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    font-weight: 900;
+    letter-spacing: 1px;
+    mix-blend-mode: overlay;
+}
+
+/* Standard Action Keys - Ornate Pixel-Art Frame */
+.action-btn {
+    width: 80px;
+    height: 80px;
+    background:
+        /* Brown leather center */
+        linear-gradient(135deg, #5D4930 0%, #3E2F1E 50%, #4A3825 100%);
+    border: 4px solid #4A4545;
+    /* Iron outer frame */
+    border-radius: 6px;
+    box-shadow:
+        /* Outer iron frame depth */
+        0 4px 0 #2A2828,
+        0 6px 8px rgba(0, 0, 0, 0.6),
+        /* Inner leather inset */
+        inset 0 0 0 3px #2A1F15,
+        inset 0 0 15px rgba(0, 0, 0, 0.8),
+        /* Subtle highlight */
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: transform 0.08s, box-shadow 0.08s, filter 0.1s;
+    position: relative;
+    overflow: visible;
+}
+
+/* Brass corner brackets - top-left */
+.action-btn::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #C9A227 0%, #8B6914 50%, #D4AF37 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 30%, 30% 30%, 30% 100%, 0 100%);
+    border-radius: 3px 0 0 0;
+    box-shadow:
+        1px 1px 0 #4A3C10,
+        inset 1px 1px 0 rgba(255, 255, 255, 0.4);
+    z-index: 10;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s;
+}
+
+/* Brass corner brackets - bottom-right */
+.action-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(315deg, #C9A227 0%, #8B6914 50%, #D4AF37 100%);
+    clip-path: polygon(100% 100%, 0 100%, 0 70%, 70% 70%, 70% 0, 100% 0);
+    border-radius: 0 0 3px 0;
+    box-shadow:
+        -1px -1px 0 #4A3C10,
+        inset -1px -1px 0 rgba(255, 255, 255, 0.4);
+    z-index: 10;
+    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s;
+}
+
+/* Hover - Lift & Glow + Corner brackets glow */
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 7px 0 #2A2828,
+        0 12px 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 3px #2A1F15,
+        inset 0 0 15px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 15px rgba(201, 162, 39, 0.3);
+    filter: brightness(1.15);
+}
+
+.action-btn:hover::before {
+    filter: brightness(1.3) drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+    transform: translate(-2px, -2px);
+}
+
+.action-btn:hover::after {
+    filter: brightness(1.3) drop-shadow(0 0 5px rgba(212, 175, 55, 0.8));
+    transform: translate(2px, 2px);
+}
+
+/* Active - Press with corner bracket animation */
+.action-btn:active,
+.action-btn.clicked {
+    transform: translateY(4px);
+    box-shadow:
+        0 0 0 #2A2828,
+        0 2px 5px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 3px #1A120A,
+        inset 0 5px 20px rgba(0, 0, 0, 0.9);
+    filter: brightness(0.9);
+}
+
+.action-btn.clicked {
+    animation: buttonPulse 0.3s ease-out;
+}
+
+/* Corner brackets burst outward on click */
+.action-btn.clicked::before {
+    transform: translate(-8px, -8px) scale(1.2);
+    filter: brightness(1.8) drop-shadow(0 0 12px rgba(255, 215, 0, 1));
+    animation: cornerFlashTL 0.3s ease-out;
+}
+
+.action-btn.clicked::after {
+    transform: translate(8px, 8px) scale(1.2);
+    filter: brightness(1.8) drop-shadow(0 0 12px rgba(255, 215, 0, 1));
+    animation: cornerFlashBR 0.3s ease-out;
+}
+
+/* Icon shake on click */
+.action-btn.clicked .btn-icon {
+    animation: iconShake 0.2s ease-out;
+}
+
+/* Button pulse animation */
+@keyframes buttonPulse {
+    0% {
+        box-shadow:
+            0 0 0 #2A2828,
+            0 2px 5px rgba(0, 0, 0, 0.4),
+            inset 0 0 0 3px #1A120A,
+            inset 0 5px 20px rgba(0, 0, 0, 0.9),
+            0 0 0 0 rgba(201, 162, 39, 0.8);
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 #2A2828,
+            0 2px 5px rgba(0, 0, 0, 0.4),
+            inset 0 0 0 3px #1A120A,
+            inset 0 5px 20px rgba(0, 0, 0, 0.9),
+            0 0 25px 8px rgba(201, 162, 39, 0.6);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 #2A2828,
+            0 2px 5px rgba(0, 0, 0, 0.4),
+            inset 0 0 0 3px #1A120A,
+            inset 0 5px 20px rgba(0, 0, 0, 0.9),
+            0 0 0 0 rgba(201, 162, 39, 0);
+    }
+}
+
+/* Top-left corner flash animation */
+@keyframes cornerFlashTL {
+    0% {
+        transform: translate(-6px, -6px) scale(1);
+        filter: brightness(1) drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+    }
+
+    30% {
+        transform: translate(-12px, -12px) scale(1.3);
+        filter: brightness(2) drop-shadow(0 0 15px rgba(255, 215, 0, 1));
+    }
+
+    100% {
+        transform: translate(-6px, -6px) scale(1);
+        filter: brightness(1) drop-shadow(0 0 5px rgba(212, 175, 55, 0.4));
+    }
+}
+
+/* Bottom-right corner flash animation */
+@keyframes cornerFlashBR {
+    0% {
+        transform: translate(-6px, -6px) scale(1);
+        filter: brightness(1) drop-shadow(0 0 0 rgba(255, 215, 0, 0));
+    }
+
+    30% {
+        transform: translate(12px, 12px) scale(1.3);
+        filter: brightness(2) drop-shadow(0 0 15px rgba(255, 215, 0, 1));
+    }
+
+    100% {
+        transform: translate(-6px, -6px) scale(1);
+        filter: brightness(1) drop-shadow(0 0 5px rgba(212, 175, 55, 0.4));
+    }
+}
+
+/* Icon shake on click */
+.action-btn:active .btn-icon {
+    animation: iconShake 0.2s ease-out;
+}
+
+@keyframes iconShake {
+
+    0%,
+    100% {
+        transform: scale(1.05) rotate(0deg);
+    }
+
+    25% {
+        transform: scale(1.05) rotate(-3deg);
+    }
+
+    75% {
+        transform: scale(1.05) rotate(3deg);
+    }
+}
+
+.action-btn .btn-icon {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    border-radius: inherit;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
+    opacity: 1;
+    transform: scale(1.05);
+    transition: transform 0.1s, filter 0.1s;
+}
+
+.action-btn:hover .btn-icon {
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.5)) brightness(1.1);
+}
+
+.btn-label {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 1),
+        0 0 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 8px 2px 2px 2px;
+    border-radius: 0 0 4px 4px;
+}
+
+/* Notification badge */
+.action-btn.has-notification::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 12px;
+    height: 12px;
+    background: var(--color-danger);
+    border-radius: 50%;
+    border: 2px solid var(--color-primary-dark);
+    box-shadow: 0 0 6px rgba(139, 32, 32, 0.6);
+    animation: pulse-notification 2s infinite;
+}
+
+@keyframes pulse-notification {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Mini Icon Button (Weapon Swap) */
+.icon-btn-mini {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4A3825 0%, #2A1F15 100%);
+    border: 2px solid #6A5A48;
+    box-shadow:
+        0 2px 0 #1A120A,
+        0 3px 6px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 0 10px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.icon-btn-mini:hover {
+    transform: translateY(-2px);
+    border-color: #C9A227;
+    box-shadow:
+        0 4px 0 #1A120A,
+        0 6px 10px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 10px rgba(201, 162, 39, 0.3);
+}
+
+.icon-btn-mini:active {
+    transform: translateY(2px);
+    box-shadow:
+        0 0 0 #1A120A,
+        0 1px 3px rgba(0, 0, 0, 0.6),
+        inset 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.btn-icon-mini {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+}
+
+/* Floating Weapon Swap Button (outside footer) */
+.floating-swap-btn {
+    position: absolute;
+    bottom: 120px;
+    /* Moved up to account for higher footer buttons */
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4A3825 0%, #2A1F15 100%);
+    border: 2px solid #6A5A48;
+    box-shadow:
+        0 2px 0 #1A120A,
+        0 4px 8px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        inset 0 0 10px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.floating-swap-btn:hover {
+    transform: translateY(-2px);
+    border-color: #C9A227;
+    box-shadow:
+        0 4px 0 #1A120A,
+        0 8px 12px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 0 12px rgba(201, 162, 39, 0.4);
+}
+
+.floating-swap-btn:active {
+    transform: translateY(2px);
+    box-shadow:
+        0 0 0 #1A120A,
+        0 1px 3px rgba(0, 0, 0, 0.6),
+        inset 0 2px 8px rgba(0, 0, 0, 0.9);
+}

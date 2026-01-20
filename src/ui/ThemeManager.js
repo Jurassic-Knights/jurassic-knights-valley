@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Theme Manager
  * Applies the persistence configuration from window.UI_THEME and LocalStorage
  * to the UI elements at runtime.
@@ -6,17 +6,17 @@
 class ThemeManagerService {
     constructor() {
         this.targets = {
-            "footer": '#ui-footer-zone .footer-bar',
-            "quest": '.quest-frame',
-            "resolve": '#ui-resolve-bar',
-            "resources": '.resource-counter',
-            "status": '#ui-hud-left',
-            "char_frame": '.character-frame',
-            "gauge_health": '.health-gauge',
-            "gauge_stamina": '.stamina-gauge',
-            "gauge_track": '.gauge-track',
-            "btn_main": '.action-btn',
-            "btn_center": '.center-slot'
+            footer: '#ui-footer-zone .footer-bar',
+            quest: '.quest-frame',
+            resolve: '#ui-resolve-bar',
+            resources: '.resource-counter',
+            status: '#ui-hud-left',
+            char_frame: '.character-frame',
+            gauge_health: '.health-gauge',
+            gauge_stamina: '.stamina-gauge',
+            gauge_track: '.gauge-track',
+            btn_main: '.action-btn',
+            btn_center: '.center-slot'
         };
 
         this.observer = null;
@@ -101,7 +101,7 @@ class ThemeManagerService {
         const specificSelector = def.useInner ? `${selector} .inner-frame` : selector; // potential logic extension
 
         const els = document.querySelectorAll(selector);
-        els.forEach(el => {
+        els.forEach((el) => {
             if (def.img) {
                 el.style.backgroundImage = `url("assets/ui/${def.img}")`;
                 el.style.backgroundRepeat = 'no-repeat';
@@ -131,3 +131,4 @@ class ThemeManagerService {
     }
 }
 window.ThemeManager = new ThemeManagerService();
+

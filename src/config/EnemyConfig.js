@@ -1,8 +1,8 @@
-/**
+﻿/**
  * EnemyConfig - Enemy Types and Combat Configuration
- * 
- * Separated from EntityConfig for single responsibility.
- * Contains enemy defaults, types, and attack configurations.
+ *
+ * Now pulls from EntityRegistry (entity files are single source of truth).
+ * This file provides lookup helpers and combat defaults only.
  */
 
 const EnemyConfig = {
@@ -33,86 +33,43 @@ const EnemyConfig = {
     },
     eliteSpawnChance: 0.05,
 
-    dinosaurs: {
-        'enemy_raptor': {
-            name: 'Feral Raptor',
-            species: 'velociraptor',
-            entityType: 'enemy_dinosaur',
-            health: 40,
-            damage: 8,
-            speed: 120,
-            attackType: 'melee',
-            xpReward: 15,
-            lootTableId: 'raptor_enemy',
-            packAggro: true,
-            threatLevel: 1
-        },
-        'enemy_rex': {
-            name: 'Feral Rex',
-            species: 'tyrannosaurus',
-            entityType: 'enemy_dinosaur',
-            gridSize: 2.5,
-            width: 320,
-            height: 320,
-            health: 200,
-            damage: 25,
-            speed: 60,
-            attackType: 'melee',
-            xpReward: 100,
-            lootTableId: 'rex_enemy',
-            packAggro: false,
-            threatLevel: 4
-        },
-        'enemy_spitter': {
-            name: 'Acid Spitter',
-            species: 'dilophosaurus',
-            entityType: 'enemy_dinosaur',
-            health: 30,
-            damage: 12,
-            speed: 70,
-            attackType: 'ranged',
-            attackRange: 300,
-            xpReward: 20,
-            lootTableId: 'spitter_enemy',
-            packAggro: true,
-            threatLevel: 2
-        }
+    /**
+     * Get enemy definition by ID from EntityRegistry
+     * @param {string} id - Entity ID (e.g., 'enemy_human_t1_01')
+     * @returns {object|null} Enemy definition
+     */
+    get(id) {
+        return window.EntityRegistry?.enemies?.[id] || null;
     },
 
-    soldiers: {
-        'enemy_soldier': {
-            name: 'Rogue Soldier',
-            entityType: 'enemy_soldier',
-            health: 60,
-            damage: 10,
-            speed: 90,
-            attackType: 'ranged',
-            attackRange: 350,
-            weaponType: 'rifle',
-            xpReward: 25,
-            lootTableId: 'soldier_common',
-            packAggro: true,
-            threatLevel: 2
-        },
-        'enemy_brute': {
-            name: 'Trench Brute',
-            entityType: 'enemy_soldier',
-            health: 150,
-            damage: 20,
-            speed: 50,
-            attackType: 'melee',
-            weaponType: 'club',
-            xpReward: 40,
-            lootTableId: 'soldier_brute',
-            packAggro: false,
-            threatLevel: 3
-        }
+    /**
+     * Get all enemies of a category
+     * @param {string} category - 'human', 'saurian', 'dinosaur', 'herbivore'
+     * @returns {object[]} Array of enemy definitions
+     */
+    getByCategory(category) {
+        const enemies = window.EntityRegistry?.enemies || {};
+        return Object.values(enemies).filter((e) => e.category === category);
     },
 
-    transitionZones: {
-        'grasslands_tundra': ['enemy_raptor', 'enemy_soldier'],
-        'tundra_desert': ['enemy_soldier', 'enemy_brute'],
-        'desert_lava': ['enemy_rex', 'enemy_spitter']
+    /**
+     * Get all enemies for a biome
+     * @param {string} biomeId - Biome ID
+     * @returns {object[]} Array of enemy definitions that spawn in this biome
+     */
+    getByBiome(biomeId) {
+        const enemies = window.EntityRegistry?.enemies || {};
+        return Object.values(enemies).filter((e) => e.spawnBiomes?.includes(biomeId));
+    },
+
+    /**
+     * Get all enemies of a tier
+     * @param {number} tier - 1, 2, 3, or 4
+     * @returns {object[]} Array of enemy definitions
+     */
+    getByTier(tier) {
+        const enemies = window.EntityRegistry?.enemies || {};
+        return Object.values(enemies).filter((e) => e.tier === tier);
     },
 
     attackTypes: {
@@ -122,3 +79,4 @@ const EnemyConfig = {
 };
 
 window.EnemyConfig = EnemyConfig;
+

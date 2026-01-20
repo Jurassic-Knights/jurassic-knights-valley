@@ -1,123 +1,158 @@
-/* CSS Custom Properties - Design Tokens */
-/* Theme: "Mud, Steel, and Scales" - Dino-Trench Military Aesthetic */
+/**
+ * CSS Custom Properties - Consolidated Design Tokens
+ * Theme: "Mud, Steel, and Scales" - Dino-Trench Military Aesthetic
+ * 
+ * SINGLE SOURCE OF TRUTH - 25 curated colors
+ * All CSS files should use var(--name) instead of hex values
+ */
 
 /* Google Fonts Import */
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Courier+Prime:wght@400;700&display=swap');
 
 :root {
-    /* === CORE COLORS - Stoneshard Theme === */
-    /* Primary Palette - Deep Earth & Charcoal */
-    --color-primary-dark: #1A1612;
-    /* Deep brown-black */
-    --color-primary-mid: #252018;
-    /* Dark earth */
-    --color-primary-light: #3A342C;
-    /* Weathered wood */
+    /* ================================
+       BACKGROUNDS (5 colors)
+       Deep earth tones for UI panels
+       ================================ */
+    --bg-deepest: #1A1612;
+    /* Darkest panels, overlays, modals */
+    --bg-dark: #252018;
+    /* Cards, secondary backgrounds */
+    --bg-medium: #3A342C;
+    /* Standard backgrounds */
+    --bg-light: #4A4238;
+    /* Borders, dividers, tertiary */
+    --bg-hover: #5A4D42;
+    /* Hover states, highlights */
 
-    /* Accent - Muted Metals (no bright golds) */
-    --color-accent-gold: #8B7355;
-    /* Tarnished brass */
-    --color-accent-bronze: #7A5C3E;
-    /* Aged bronze */
-    --color-accent-iron: #4A4238;
-    /* Dark iron */
+    /* ================================
+       GOLD/BRASS ACCENTS (4 colors)
+       Tarnished military brass theme
+       ================================ */
+    --gold-bright: #FFD480;
+    /* Bright highlights, special items, active */
+    --gold-primary: #C9A86C;
+    /* Standard gold accents, borders */
+    --gold-muted: #8B7355;
+    /* Tarnished brass, subtle accents */
+    --gold-dark: #7A5C3E;
+    /* Aged bronze, shadows */
 
-    /* Battlefield Tones */
-    --color-mud: #2E251E;
-    /* Dark mud */
-    --color-rust: #5C3D2C;
-    /* Old rust */
-    --color-canvas: #B8A88A;
-    /* Worn parchment */
+    /* ================================
+       EARTH/BROWN TONES (4 colors)
+       Mud, rust, and parchment
+       ================================ */
+    --earth-dark: #2E251E;
+    /* Dark mud, deep shadows */
+    --earth-medium: #5C3D2C;
+    /* Rust, weathered metal */
+    --earth-light: #6A5A48;
+    /* Tan, leather */
+    --earth-sand: #B8A88A;
+    /* Worn parchment, canvas */
 
-    /* Status Colors - Muted */
-    --color-health: #4A6848;
-    /* Muted forest green */
+    /* ================================
+       TEXT COLORS (4 colors)
+       Warm cream/bone tones
+       ================================ */
+    --text-primary: #E8DCC8;
+    /* Main text (cream/bone) */
+    --text-secondary: #8C7B65;
+    /* Secondary text (bronze) */
+    --text-muted: #6A5A48;
+    /* Muted/subtle text */
+    --text-disabled: #4A4238;
+    /* Disabled/inactive text */
+
+    /* ================================
+       STATUS COLORS (4 colors)
+       Muted, military-style indicators
+       ================================ */
+    --status-success: #4A6848;
+    /* Health, positive, confirm */
+    --status-info: #4A5868;
+    /* Stamina, info, neutral */
+    --status-warning: #8B7355;
+    /* Warning, caution */
+    --status-danger: #6A3838;
+    /* Error, damage, danger */
+
+    /* ================================
+       UTILITY (4 colors)
+       Special purpose colors
+       ================================ */
+    --ink: #2B221B;
+    /* Deep ink for text shadows */
+    --shadow: rgba(0, 0, 0, 0.7);
+    /* Standard shadow */
+    --highlight: rgba(230, 210, 180, 0.2);
+    /* Light bevels */
+    --glow: #FFB347;
+    /* Ember glow, fire effects */
+
+    /* ================================
+       LEGACY MAPPINGS
+       For backward compatibility
+       ================================ */
+    --color-primary-dark: var(--bg-deepest);
+    --color-primary-mid: var(--bg-medium);
+    --color-primary-light: var(--bg-hover);
+    --color-accent-gold: var(--gold-muted);
+    --color-accent-bronze: var(--gold-dark);
+    --color-accent-iron: var(--bg-light);
+    --color-mud: var(--earth-dark);
+    --color-rust: var(--earth-medium);
+    --color-canvas: var(--earth-sand);
+    --color-health: var(--status-success);
     --color-health-dark: #2A3828;
-    --color-stamina: #4A5868;
-    /* Muted slate blue */
+    --color-stamina: var(--status-info);
     --color-stamina-dark: #2A3848;
-    --color-danger: #6A3838;
-    /* Dark dried blood */
-    --color-warning: #8B7355;
-    --color-success: #4A6848;
-
-    /* Text - Warm Parchment Tones */
-    --color-text-primary: #E8DCC8;
-    /* Cream / bone */
-    --color-text-secondary: #8A8070;
-    /* Dust gray */
-    --color-text-gold: #C9A86C;
-    /* Warm gold */
+    --color-danger: var(--status-danger);
+    --color-warning: var(--status-warning);
+    --color-success: var(--status-success);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-gold: var(--gold-bright);
     --color-text-danger: #8A4A4A;
+    --color-metal-dark: var(--bg-deepest);
+    --color-metal-mid: var(--bg-medium);
+    --color-metal-light: var(--bg-hover);
+    --color-parchment: var(--earth-sand);
+    --color-parchment-dark: #9A8A75;
+    --color-ink: var(--ink);
+    --color-glow-gold: var(--glow);
 
-    /* === TEXTURE ASSETS === */
-    /* SVG Noise for organic texture */
-    /* DISABLED: --bg-noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.2'/%3E%3C/svg%3E"); */
+    /* ================================
+       TEXTURES & EFFECTS
+       ================================ */
     --bg-noise: none;
-
-    /* === CORE COLORS - Mud & Steel (Earthy RPG) === */
-    /* Metals & Peat */
-    --color-metal-dark: #1F1B16;
-    /* Deep Peat/Oil */
-    --color-metal-mid: #3E362E;
-    /* Oxidized Iron */
-    --color-metal-light: #5A4D42;
-    /* Worn Leather/Rust */
-
-    /* Highlights */
-    --bevel-light: rgba(230, 210, 180, 0.2);
-    /* Warm light */
-    --bevel-shadow: rgba(0, 0, 0, 0.7);
+    --bevel-light: var(--highlight);
+    --bevel-shadow: var(--shadow);
     --screw-dark: #120f0d;
     --screw-light: #4a3e35;
-
-    /* Parchment & Paper */
-    --color-parchment: #C2B299;
-    /* Desaturated cardboard/paper */
-    --color-parchment-dark: #9A8A75;
-    /* Wet edge */
-    --color-ink: #2B221B;
-    /* Organic ink */
-
-    /* Lighting & Effects */
-    --color-glow-gold: #FFB347;
-    /* Warm Ember */
     --color-glass-highlight: rgba(255, 230, 200, 0.15);
     --color-shadow-inset: rgba(10, 5, 0, 0.85);
 
-    /* Mappings to existing variables for compatibility */
-    --color-primary-dark: var(--color-metal-dark);
-    --color-primary-mid: var(--color-metal-mid);
-    --color-primary-light: var(--color-metal-light);
-    --color-text-primary: #E6DCC8;
-    /* Bone white */
-    --color-text-secondary: #8C7B65;
-    /* Bronze */
-    --color-text-gold: #FFD480;
+    /* ================================
+       GRADIENTS
+       ================================ */
+    --gradient-plate: linear-gradient(180deg, var(--bg-medium) 0%, var(--bg-dark) 100%);
+    --gradient-metal: radial-gradient(circle at 60% 0%, var(--bg-hover) 0%, var(--bg-deepest) 100%);
+    --gradient-gold: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+    --gradient-slot: radial-gradient(circle at 50% 50%, #0F0C0A 50%, var(--earth-dark) 100%);
 
-    /* === GRADIENTS (Organic & Worn) === */
-    /* Rusted Plate */
-    --gradient-plate: linear-gradient(180deg, #3E362E 0%, #252018 100%);
-    /* Worn Iron */
-    --gradient-metal: radial-gradient(circle at 60% 0%, #5A4D42 0%, #1F1B16 100%);
+    /* ================================
+       BORDERS
+       ================================ */
+    --border-brass: 2px solid var(--earth-light);
+    --border-iron: 2px solid var(--bg-light);
+    --border-rivet: 2px solid var(--bg-deepest);
 
-    /* Ancient Gold */
-    --gradient-gold: linear-gradient(135deg, #C9A86C 0%, #7A6235 100%);
-    /* Deep Mud Sinkhole */
-    --gradient-slot: radial-gradient(circle at 50% 50%, #0F0C0A 50%, #2C2620 100%);
-
-    /* Frame Borders - Simple */
-    --border-brass: 2px solid #6A5A48;
-    --border-iron: 2px solid #4A4238;
-    --border-rivet: 2px solid #1A1612;
-
-    /* === TYPOGRAPHY === */
+    /* ================================
+       TYPOGRAPHY
+       ================================ */
     --font-display: 'Cinzel', serif;
     --font-body: 'Courier Prime', monospace;
-    /* Typewriter style */
-
-
     --font-size-xs: 0.7rem;
     --font-size-sm: 0.8rem;
     --font-size-base: 0.9rem;
@@ -126,38 +161,45 @@
     --font-size-2xl: 1.6rem;
     --font-size-3xl: 2rem;
 
-    /* === SPACING === */
+    /* ================================
+       SPACING
+       ================================ */
     --space-xs: 0.25rem;
     --space-sm: 0.5rem;
     --space-md: 1rem;
     --space-lg: 1.5rem;
     --space-xl: 2rem;
 
-    /* === BORDERS === */
+    /* ================================
+       BORDERS
+       ================================ */
     --border-radius-sm: 2px;
     --border-radius-md: 4px;
     --border-radius-lg: 6px;
     --border-width: 2px;
     --border-width-thick: 3px;
 
-    /* === SHADOWS === */
-    /* Outer shadows */
+    /* ================================
+       SHADOWS
+       ================================ */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.6);
     --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.7);
     --shadow-glow-gold: 0 0 10px rgba(201, 162, 39, 0.3);
-
-    /* Inset shadows for depth */
     --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.6);
     --shadow-inset-deep: inset 0 4px 8px rgba(0, 0, 0, 0.8);
     --shadow-emboss: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3);
 
-    /* === TRANSITIONS === */
+    /* ================================
+       TRANSITIONS
+       ================================ */
     --transition-fast: 100ms ease-out;
     --transition-normal: 200ms ease-out;
     --transition-slow: 400ms ease-out;
 
-    /* === LAYOUT === */
+    /* ================================
+       LAYOUT
+       ================================ */
     --app-max-width: 480px;
     --header-height: 56px;
     --nav-height: 56px;

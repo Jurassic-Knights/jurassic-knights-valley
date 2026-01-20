@@ -1,9 +1,9 @@
-/**
+﻿/**
  * ProceduralSFX - Legacy compatibility wrapper
- * 
+ *
  * This file now just re-exports SFX for backward compatibility.
  * The actual sounds are in the modular SFX_*.js files.
- * 
+ *
  * Load order:
  * 1. SFX_Core.js (required first)
  * 2. SFX_UI.js, SFX_Resources.js, SFX_Enemies.js
@@ -106,3 +106,4 @@ if (window.SFX) {
     window.SFX = SFX;
     window.ProceduralSFX = SFX;
 }
+

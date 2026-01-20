@@ -9,7 +9,7 @@ async function showLandingPage() {
     document.querySelector('.stats').style.display = 'none';
 
     const container = document.getElementById('mainContent');
-    const categories = ['enemies', 'npcs', 'items', 'equipment', 'resources', 'environment', 'ui'];
+    const categories = ['hero', 'enemies', 'bosses', 'npcs', 'items', 'equipment', 'resources', 'nodes', 'environment', 'ui'];
 
     try {
         container.innerHTML = `
@@ -62,6 +62,12 @@ function showImagesView() {
 // Show category view (enemies, items, npcs, etc.)
 async function showCategoryView(categoryName) {
     currentCategoryName = categoryName;
+
+    // Set polling to watch this category for live updates
+    if (window.setPollingCategory) {
+        window.setPollingCategory(categoryName);
+    }
+
     const container = document.getElementById('mainContent');
     container.innerHTML = '<div class="loading">Loading ' + categoryName + ' data...</div>';
 

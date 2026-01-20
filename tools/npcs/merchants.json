@@ -4,7 +4,7 @@
         "name": "Quarry Merchant",
         "category": "merchant",
         "biome": "quarry",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "dusty grey-uniformed quartermaster with miner's helmet, WWI-era military gear, miner helmet with lamp",
         "groupId": "npc_merchant_01",
         "files": {
@@ -36,7 +36,7 @@
         "name": "Iron Ridge Merchant",
         "category": "merchant",
         "biome": "iron_ridge",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "rust-stained overalls wearing blacksmith with welding mask, WWI-era industrial worker",
         "groupId": "npc_merchant_02",
         "files": {
@@ -68,7 +68,7 @@
         "name": "Dead Woods Merchant",
         "category": "merchant",
         "biome": "dead_woods",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "tattered cloak wearing mysterious trader with plague doctor mask, WWI-era military gear, eerie presence",
         "groupId": "npc_merchant_03",
         "files": {
@@ -100,7 +100,7 @@
         "name": "Crossroads Merchant",
         "category": "merchant",
         "biome": "crossroads",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "travel-worn coat wearing wandering trader with wide-brimmed hat and visor, WWI-era military gear",
         "groupId": "npc_merchant_04",
         "files": {
@@ -132,7 +132,7 @@
         "name": "Scrap Yard Merchant",
         "category": "merchant",
         "biome": "scrap_yard",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "salvaged armor patchwork wearing scrapper with riveted faceplate, WWI-era scavenger",
         "groupId": "npc_merchant_05",
         "files": {
@@ -164,7 +164,7 @@
         "name": "Mud Flats Merchant",
         "category": "merchant",
         "biome": "mud_flats",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "waterproof poncho wearing swamp trader with diving helmet, WWI-era amphibious gear",
         "groupId": "npc_merchant_06",
         "files": {
@@ -196,7 +196,7 @@
         "name": "Bone Valley Merchant",
         "category": "merchant",
         "biome": "bone_valley",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "bone-decorated armor wearing fossil trader with skull visor, WWI-era tribal warrior aesthetic",
         "groupId": "npc_merchant_07",
         "files": {
@@ -228,7 +228,7 @@
         "name": "Ruins Merchant",
         "category": "merchant",
         "biome": "ruins",
-        "status": "declined",
+        "status": "pending",
         "sourceDescription": "ancient-styled armor wearing mysterious antiquarian with full-face helm, WWI-era meets ancient artifact dealer",
         "groupId": "npc_merchant_08",
         "files": {

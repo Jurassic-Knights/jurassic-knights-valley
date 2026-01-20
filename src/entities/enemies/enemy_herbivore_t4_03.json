@@ -1,0 +1,66 @@
+{
+  "id": "enemy_herbivore_t4_03",
+  "name": "Horn Lord",
+  "sourceCategory": "enemies",
+  "sourceFile": "herbivore",
+  "sprite": "herbivore_t4_03",
+  "status": "pending",
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 220,
+    "damage": 20,
+    "speed": 60,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_herbivore_t4_03",
+    "death": "sfx_death_herbivore_t4_03",
+    "hurt": "sfx_hurt_herbivore_t4_03",
+    "aggro": "sfx_aggro_herbivore_t4_03"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t4_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t4_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 60,
+  "species": "Triceratops",
+  "sourceDescription": "Triceratops, ash grey body with darker stripes, three horns and bony frill",
+  "description": "The Horn Lord is a Triceratops of such size and age that even apex predators give it wide berth. Its three horns have shattered countless challengers, the brow horns worn to wicked points through years of combat. The frill is scarred and chipped, each mark a story of survival against impossible odds.\n\nDeep grey hide shows the smoky coloring of a lifetime in volcanic territory, rust-brown patches where mineral springs have stained its scales. The eyes hold something approaching wisdom, patience learned through watching predators rise and fall while it endures. Its skull alone weighs more than an armored soldier.\n\nThose legs have carried this creature through volcanic eruptions, predator attacks, and natural disasters beyond counting. The short tail twitches with eternal readiness, the body tensed for charges that still occur despite its advanced age. This is what evolution produces when given millions of years - perfected defense.",
+  "files": {
+    "original": "images/enemies/herbivore_t4_03_original.png"
+  },
+  "weaponType": "charge"
+}

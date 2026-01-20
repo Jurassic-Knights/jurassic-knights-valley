@@ -1,0 +1,65 @@
+{
+  "id": "enemy_saurian_t3_04",
+  "name": "Carnotaurus Striker",
+  "sourceCategory": "enemies",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t3_04",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/enemies/saurian_t3_04_original.png"
+  },
+  "tier": 3,
+  "biome": "badlands",
+  "stats": {
+    "health": 130,
+    "damage": 28,
+    "speed": 95,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.0,
+    "aggroRange": 250,
+    "packAggro": true,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t3_04",
+    "death": "sfx_death_saurian_t3_04",
+    "hurt": "sfx_hurt_saurian_t3_04",
+    "aggro": "sfx_aggro_saurian_t3_04"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "leather_t3_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "bone_t2_03",
+      "chance": 0.5,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 50,
+  "species": "Carnotaurus",
+  "weaponType": "mace",
+  "role": "heavy"
+}

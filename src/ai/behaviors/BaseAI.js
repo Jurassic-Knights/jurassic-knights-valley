@@ -1,11 +1,11 @@
-/**
+﻿/**
  * BaseAI - Shared AI utility functions
- * 
+ *
  * Provides common methods used by all AI behavior modules:
  * - Distance calculations
  * - Line of sight checks
  * - Movement helpers
- * 
+ *
  * Owner: AI System
  */
 
@@ -87,3 +87,4 @@ const BaseAI = {
 };
 
 window.BaseAI = BaseAI;
+

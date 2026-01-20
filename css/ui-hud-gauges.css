@@ -1,0 +1,136 @@
+/* ui-hud-gauges.css - Character HUD and Status Gauges */
+
+/* ========================================
+   CHARACTER HUD (LEFT SIDE) - "Field Gauges"
+   ======================================== */
+#ui-hud-left {
+    /* Removed absolute positioning */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+    z-index: 51;
+}
+
+.character-frame {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
+
+.character-avatar {
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-panel);
+    border: var(--border-brass);
+    border-radius: var(--border-radius-md);
+    box-shadow:
+        var(--shadow-md),
+        var(--shadow-inset),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.character-rank {
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--font-body);
+    font-size: 7px;
+    font-weight: bold;
+    color: var(--color-primary-dark);
+    background: var(--gradient-brass);
+    padding: 1px 4px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    box-shadow: var(--shadow-sm);
+}
+
+.status-gauges {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gauge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-primary-mid);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: var(--border-radius-sm);
+    padding: 2px 4px;
+    box-shadow: var(--shadow-sm), var(--shadow-inset);
+}
+
+.gauge-label {
+    font-family: var(--font-body);
+    font-size: 7px;
+    font-weight: bold;
+    color: var(--color-text-secondary);
+    width: 18px;
+    letter-spacing: 1px;
+}
+
+.gauge-track {
+    flex: 1;
+    height: 8px;
+    background: var(--color-primary-dark);
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: var(--shadow-inset-deep);
+    min-width: 40px;
+}
+
+.gauge-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width var(--transition-normal);
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.health-gauge .gauge-fill {
+    background: linear-gradient(180deg, var(--color-health) 0%, var(--color-health-dark) 100%);
+}
+
+.stamina-gauge .gauge-fill {
+    background: linear-gradient(180deg, var(--color-stamina) 0%, var(--color-stamina-dark) 100%);
+}
+
+.gauge-value {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--color-text-primary);
+    min-width: 20px;
+    text-align: right;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================
+   ACTION BUTTONS (RIGHT SIDE) - "Equipment Console"
+   ======================================== */
+#ui-hud-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: auto;
+    z-index: 950;
+    max-height: 100%;
+    /* Limit height to viewport */
+    overflow-y: auto;
+    /* Enable scrolling if content overflows */
+    padding-right: 4px;
+    /* Space for scrollbar */
+}
+
+/* Scrollbar styling for HUD */
+#ui-hud-right::-webkit-scrollbar {
+    width: 4px;
+}
+
+#ui-hud-right::-webkit-scrollbar-thumb {
+    background: var(--color-accent-iron);
+    border-radius: 2px;
+}

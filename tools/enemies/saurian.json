@@ -106,7 +106,7 @@
         },
         "drops": [
             {
-                "id": "leather_t2_02",
+                "id": "leather_t2_01",
                 "chance": 80,
                 "min": 1,
                 "max": 2
@@ -190,7 +190,7 @@
         },
         "drops": [
             {
-                "id": "salvage_t1_03",
+                "id": "salvage_t1_02",
                 "chance": 80,
                 "min": 2,
                 "max": 4
@@ -275,13 +275,13 @@
         },
         "drops": [
             {
-                "id": "leather_t3_03",
+                "id": "leather_t3_01",
                 "chance": 60,
                 "min": 1,
                 "max": 2
             },
             {
-                "id": "salvage_t2_02",
+                "id": "salvage_t2_01",
                 "chance": 40,
                 "min": 1,
                 "max": 1
@@ -406,7 +406,7 @@
         "files": {
             "original": "assets/images/enemies/saurian_t1_02_original.png"
         },
-        "weaponType": "dual_blades"
+        "weaponType": "knife"
     },
     {
         "id": "saurian_t1_03",
@@ -588,7 +588,7 @@
         },
         "drops": [
             {
-                "id": "bone_t2_02",
+                "id": "bone_t2_01",
                 "chance": 80,
                 "min": 1,
                 "max": 2
@@ -744,7 +744,7 @@
         },
         "drops": [
             {
-                "id": "salvage_t2_02",
+                "id": "salvage_t2_01",
                 "chance": 80,
                 "min": 2,
                 "max": 3
@@ -875,7 +875,7 @@
         "files": {
             "original": "assets/images/enemies/saurian_t3_04_original.png"
         },
-        "weaponType": "dual_blades"
+        "weaponType": "knife"
     },
     {
         "id": "saurian_t4_02",

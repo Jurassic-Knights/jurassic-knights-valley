@@ -1,9 +1,9 @@
-/**
+﻿/**
  * DropSpawner - Handles dropped item spawning
- * 
+ *
  * Extracted from SpawnManager.js for modularity.
  * Manages resource drops and crafted item spawning.
- * 
+ *
  * Owner: Loot System
  */
 
@@ -81,3 +81,4 @@ class DropSpawner {
 }
 
 window.DropSpawner = DropSpawner;
+

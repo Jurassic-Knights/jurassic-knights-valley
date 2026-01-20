@@ -1,7 +1,7 @@
-/**
+﻿/**
  * EnemySystem
  * Handles AI, Movement, and Combat updates for hostile enemies.
- * 
+ *
  * States: WANDER, CHASE, ATTACK, LEASH_RETURN
  */
 class EnemySystem {
@@ -214,15 +214,35 @@ class EnemySystem {
     }
 
     onEntityDamaged(data) {
-        const { entity } = data;
+        const { entity, amount } = data;
         if (!entity) return;
 
         // Check if entity is an enemy type
         const entityType = entity.entityType;
-        if (entityType !== EntityTypes?.ENEMY_DINOSAUR && entityType !== EntityTypes?.ENEMY_SOLDIER) return;
+        Logger.info(`[EnemySystem] Damage event: entityType="${entityType}", expected=[${EntityTypes?.ENEMY_DINOSAUR}, ${EntityTypes?.ENEMY_SOLDIER}, ${EntityTypes?.ENEMY_SAURIAN}]`);
+
+        if (entityType !== EntityTypes?.ENEMY_DINOSAUR &&
+            entityType !== EntityTypes?.ENEMY_SOLDIER &&
+            entityType !== EntityTypes?.ENEMY_SAURIAN)
+            return;
 
         // SFX
         if (window.AudioManager) AudioManager.playSFX('sfx_enemy_hurt');
+
+        // Blood VFX - Multi-layered realistic gore (uses DINO config for all creatures)
+        if (window.VFXController && window.VFXConfig) {
+            Logger.info(`[EnemySystem] Blood VFX for ${entity.enemyType} at (${Math.round(entity.x)}, ${Math.round(entity.y)})`);
+            // Primary blood spray
+            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
+            // Blood mist
+            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_MIST);
+            // Blood droplets
+            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_DROPS);
+            // Meat chunks on heavy hits
+            if (amount > 10) {
+                VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.MEAT_CHUNKS);
+            }
+        }
     }
 
     onEntityDied(data) {
@@ -231,7 +251,10 @@ class EnemySystem {
 
         // Check if entity is an enemy type
         const entityType = entity.entityType;
-        if (entityType !== EntityTypes?.ENEMY_DINOSAUR && entityType !== EntityTypes?.ENEMY_SOLDIER) return;
+        if (entityType !== EntityTypes?.ENEMY_DINOSAUR &&
+            entityType !== EntityTypes?.ENEMY_SOLDIER &&
+            entityType !== EntityTypes?.ENEMY_SAURIAN)
+            return;
 
         // Death handling
         entity.state = 'dead';
@@ -250,3 +273,4 @@ class EnemySystem {
 
 window.EnemySystem = new EnemySystem();
 if (window.Registry) Registry.register('EnemySystem', window.EnemySystem);
+

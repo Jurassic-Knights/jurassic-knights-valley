@@ -1,4 +1,4 @@
-/**
+﻿/**
  * LayoutStrategies.js
  * Defines behavior for Mobile vs Desktop layouts
  * Handles DOM reparenting and state management
@@ -18,7 +18,7 @@ class BaseLayout {
     }
 
     // Default implementation: do nothing
-    onGridUpdate() { }
+    onGridUpdate() {}
 }
 
 /**
@@ -34,7 +34,7 @@ class MobileLayout extends BaseLayout {
 
         // Apply Layout to all registered panels
         if (this.ui.panels) {
-            this.ui.panels.forEach(panel => panel.applyLayout('mobile'));
+            this.ui.panels.forEach((panel) => panel.applyLayout('mobile'));
         }
 
         // Update Inventory Grid (Specific Logic can remain or move to panel)
@@ -58,7 +58,7 @@ class DesktopLayout extends BaseLayout {
 
         // Apply Layout to all registered panels
         if (this.ui.panels) {
-            this.ui.panels.forEach(panel => panel.applyLayout('desktop'));
+            this.ui.panels.forEach((panel) => panel.applyLayout('desktop'));
         }
 
         // Update Inventory Grid
@@ -73,3 +73,4 @@ window.LayoutStrategies = {
     Mobile: MobileLayout,
     Desktop: DesktopLayout
 };
+

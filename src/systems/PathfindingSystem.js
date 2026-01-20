@@ -1,9 +1,9 @@
-/**
+﻿/**
  * PathfindingSystem - A* pathfinding for grid-based navigation
- * 
+ *
  * Uses the IslandManager's grid system to find paths around obstacles.
  * Enemies use this to intelligently navigate to destinations.
- * 
+ *
  * Owner: AI Systems
  */
 
@@ -12,7 +12,14 @@ class PathfindingSystem {
         this.game = null;
         this.gridSize = 64; // Pathfinding grid cell size (finer than zone grid)
         this.pathCache = new Map(); // Cache recent paths
-        this.cacheTimeout = 2000; // Clear cache after 2 seconds
+        this.cacheTimeout = GameConstants?.AI?.PATHFINDING_CACHE_TIMEOUT || 2000; // Clear cache after 2 seconds
+
+        // Pre-allocated A* data structures (GC optimization)
+        this._openSet = [];
+        this._closedSet = new Set();
+        this._cameFrom = new Map();
+        this._gScore = new Map();
+        this._fScore = new Map();
 
         Logger.info('[PathfindingSystem] Constructed');
     }
@@ -64,12 +71,19 @@ class PathfindingSystem {
             return [{ x: endX, y: endY }];
         }
 
-        // A* algorithm
-        const openSet = [];
-        const closedSet = new Set();
-        const cameFrom = new Map();
-        const gScore = new Map();
-        const fScore = new Map();
+        // A* algorithm - use pooled data structures (cleared for reuse)
+        const openSet = this._openSet;
+        const closedSet = this._closedSet;
+        const cameFrom = this._cameFrom;
+        const gScore = this._gScore;
+        const fScore = this._fScore;
+
+        // Clear pooled structures for reuse
+        openSet.length = 0;
+        closedSet.clear();
+        cameFrom.clear();
+        gScore.clear();
+        fScore.clear();
 
         const startKey = `${startNode.gx},${startNode.gy}`;
         const endKey = `${endNode.gx},${endNode.gy}`;
@@ -79,13 +93,15 @@ class PathfindingSystem {
         openSet.push({ ...startNode, key: startKey });
 
         let iterations = 0;
-        const maxIterations = 500; // Prevent infinite loops
+        const maxIterations = GameConstants?.AI?.PATHFINDING_MAX_ITERATIONS || 500; // Prevent infinite loops
 
         while (openSet.length > 0 && iterations < maxIterations) {
             iterations++;
 
             // Get node with lowest fScore
-            openSet.sort((a, b) => (fScore.get(a.key) || Infinity) - (fScore.get(b.key) || Infinity));
+            openSet.sort(
+                (a, b) => (fScore.get(a.key) || Infinity) - (fScore.get(b.key) || Infinity)
+            );
             const current = openSet.shift();
 
             // Reached goal?
@@ -117,7 +133,7 @@ class PathfindingSystem {
                     gScore.set(neighborKey, tentativeG);
                     fScore.set(neighborKey, tentativeG + this.heuristic(neighbor, endNode));
 
-                    if (!openSet.find(n => n.key === neighborKey)) {
+                    if (!openSet.find((n) => n.key === neighborKey)) {
                         openSet.push({ ...neighbor, key: neighborKey });
                     }
                 }
@@ -192,14 +208,14 @@ class PathfindingSystem {
     getNeighbors(gx, gy) {
         const neighbors = [];
         const dirs = [
-            { dx: 0, dy: -1 },  // N
-            { dx: 1, dy: -1 },  // NE
-            { dx: 1, dy: 0 },   // E
-            { dx: 1, dy: 1 },   // SE
-            { dx: 0, dy: 1 },   // S
-            { dx: -1, dy: 1 },  // SW
-            { dx: -1, dy: 0 },  // W
-            { dx: -1, dy: -1 }  // NW
+            { dx: 0, dy: -1 }, // N
+            { dx: 1, dy: -1 }, // NE
+            { dx: 1, dy: 0 }, // E
+            { dx: 1, dy: 1 }, // SE
+            { dx: 0, dy: 1 }, // S
+            { dx: -1, dy: 1 }, // SW
+            { dx: -1, dy: 0 }, // W
+            { dx: -1, dy: -1 } // NW
         ];
 
         for (const dir of dirs) {
@@ -208,8 +224,7 @@ class PathfindingSystem {
 
             // For diagonals, ensure both adjacent cells are passable
             if (dir.dx !== 0 && dir.dy !== 0) {
-                if (this.isGridBlocked(gx + dir.dx, gy) ||
-                    this.isGridBlocked(gx, gy + dir.dy)) {
+                if (this.isGridBlocked(gx + dir.dx, gy) || this.isGridBlocked(gx, gy + dir.dy)) {
                     continue; // Can't cut corners
                 }
             }
@@ -230,8 +245,7 @@ class PathfindingSystem {
         if (!im) return false;
 
         // Check if walkable AND not blocked
-        return !im.isWalkable(worldPos.x, worldPos.y) ||
-            im.isBlocked(worldPos.x, worldPos.y);
+        return !im.isWalkable(worldPos.x, worldPos.y) || im.isBlocked(worldPos.x, worldPos.y);
     }
 
     /**
@@ -286,3 +300,4 @@ class PathfindingSystem {
 // Singleton
 window.PathfindingSystem = new PathfindingSystem();
 if (window.Registry) Registry.register('PathfindingSystem', window.PathfindingSystem);
+

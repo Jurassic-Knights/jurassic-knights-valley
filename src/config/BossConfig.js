@@ -1,6 +1,6 @@
-/**
+﻿/**
  * BossConfig - Boss Enemy Configurations
- * 
+ *
  * Separated from EntityConfig for single responsibility.
  * Defines boss defaults and specific boss types.
  */
@@ -26,8 +26,9 @@ const BossConfig = {
     },
 
     types: {
-        'grasslands_alpha': {
+        grasslands_alpha: {
             name: 'Alpha Raptor',
+            spriteId: 'enemy_saurian_t4_01',
             species: 'velociraptor',
             biomeId: 'grasslands',
             health: 800,
@@ -43,3 +44,4 @@ const BossConfig = {
 };
 
 window.BossConfig = BossConfig;
+

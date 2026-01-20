@@ -1,9 +1,9 @@
-/**
+﻿/**
  * HealthBarRenderer - Utility for rendering health and respawn bars
- * 
+ *
  * Consolidates duplicated health bar rendering code from Resource.js and Dinosaur.js.
  * Falls back to simple bars when ProgressBarRenderer is unavailable.
- * 
+ *
  * Owner: VFX Specialist
  */
 
@@ -101,7 +101,7 @@ const HealthBarRenderer = {
     drawRespawnForEntity(ctx, entity, options = {}) {
         const barY = entity.y - entity.height / 2 - 18;
         const totalDuration = entity.currentRespawnDuration || entity.maxRespawnTime;
-        const percent = Math.max(0, 1 - (entity.respawnTimer / totalDuration));
+        const percent = Math.max(0, 1 - entity.respawnTimer / totalDuration);
 
         this.draw(ctx, {
             x: entity.x,
@@ -114,3 +114,4 @@ const HealthBarRenderer = {
 };
 
 window.HealthBarRenderer = HealthBarRenderer;
+

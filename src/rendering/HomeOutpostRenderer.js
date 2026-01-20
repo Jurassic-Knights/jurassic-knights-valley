@@ -1,9 +1,9 @@
-/**
+﻿/**
  * HomeOutpostRenderer - Home base / rest area visual
- * 
+ *
  * Extracted from GameRenderer.js for modularity.
  * Draws the animated safe zone indicator.
- * 
+ *
  * Owner: Rendering System
  */
 
@@ -62,3 +62,4 @@ const HomeOutpostRenderer = {
 };
 
 window.HomeOutpostRenderer = HomeOutpostRenderer;
+

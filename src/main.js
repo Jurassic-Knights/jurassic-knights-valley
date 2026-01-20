@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Main Entry Point
  * Initializes and starts the game
- * 
+ *
  * Owner: Director
  */
 
@@ -58,3 +58,4 @@
         }
     }
 })();
+

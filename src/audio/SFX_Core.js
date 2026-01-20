@@ -1,9 +1,9 @@
-/**
+﻿/**
  * SFX_Core - Core Sound System
- * 
+ *
  * Base module with init, play dispatcher, and helper functions.
  * Category-specific sounds are loaded from separate files.
- * 
+ *
  * ============================================================================
  * SOUND DESIGN RULES - ALL NEW SOUNDS MUST FOLLOW THESE
  * ============================================================================
@@ -11,6 +11,15 @@
  * 2. HELPERS: Use SFX.playNoise() and SFX.playTone() which auto-apply TARGET_VOLUME.
  * ============================================================================
  */
+
+// Logger fallback for dashboard context
+if (typeof Logger === 'undefined') {
+    window.Logger = {
+        info: (...args) => console.log('[INFO]', ...args),
+        warn: (...args) => console.warn('[WARN]', ...args),
+        error: (...args) => console.error('[ERROR]', ...args)
+    };
+}
 
 const SFX = {
     ctx: null,
@@ -103,9 +112,21 @@ const SFX = {
         osc.start();
         osc.stop(this.ctx.currentTime + duration);
         return { osc, gain };
+    },
+
+    // Weather ambience (stub - implement proper looping ambience later)
+    setWeather(type) {
+        Logger.info(`[SFX] Weather ambience: ${type}`);
+        // TODO: Implement looping rain/storm ambience
+    },
+
+    playThunder() {
+        // Low rumbling thunder
+        this.playNoise(1.5, 0.1, 1.2, 0.4, 200);
     }
 };
 
 // Backwards compatibility alias
 window.ProceduralSFX = SFX;
 window.SFX = SFX;
+

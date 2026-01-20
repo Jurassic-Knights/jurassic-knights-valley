@@ -30,7 +30,7 @@
         }
     },
     {
-        "id": "chest_t2_03",
+        "id": "chest_t2_01",
         "name": "Trench Coat",
         "slot": "chest",
         "tier": 2,
@@ -41,11 +41,11 @@
         "fuelCost": 2,
         "sourceDescription": "trench coat, WWI era military greatcoat, military trench coat with buckles, weathered",
         "files": {
-            "original": "assets/images/equipment/chest_t2_03_original.png"
+            "original": "assets/images/equipment/chest_t2_01_original.png"
         }
     },
     {
-        "id": "chest_t2_04",
+        "id": "chest_t2_02",
         "name": "Plate Carrier",
         "slot": "chest",
         "tier": 2,
@@ -56,11 +56,11 @@
         "fuelCost": 2,
         "sourceDescription": "plate carrier, WWI era body armor vest, metal plate armor with straps, weathered",
         "files": {
-            "original": "assets/images/equipment/chest_t2_04_original.png"
+            "original": "assets/images/equipment/chest_t2_02_original.png"
         }
     },
     {
-        "id": "chest_t2_05",
+        "id": "chest_t2_03",
         "name": "Greatcoat",
         "slot": "chest",
         "tier": 2,
@@ -71,11 +71,11 @@
         "fuelCost": 2,
         "sourceDescription": "greatcoat, WWI era military winter coat, heavy wool coat with buttons, weathered",
         "files": {
-            "original": "assets/images/equipment/chest_t2_05_original.png"
+            "original": "assets/images/equipment/chest_t2_03_original.png"
         }
     },
     {
-        "id": "chest_t2_06",
+        "id": "chest_t2_04",
         "name": "Desert Robe",
         "slot": "chest",
         "tier": 2,
@@ -86,11 +86,11 @@
         "fuelCost": 2,
         "sourceDescription": "desert robe, WWI era desert cloak, tan flowing robe, weathered",
         "files": {
-            "original": "assets/images/equipment/chest_t2_06_original.png"
+            "original": "assets/images/equipment/chest_t2_04_original.png"
         }
     },
     {
-        "id": "chest_t4_07",
+        "id": "chest_t4_01",
         "name": "Articulated Plate",
         "slot": "chest",
         "tier": 4,
@@ -101,7 +101,7 @@
         "fuelCost": 8,
         "sourceDescription": "articulated plate armor, medieval style full plate chest armor, heavy segmented steel plates, weathered",
         "files": {
-            "original": "assets/images/equipment/chest_t4_07_original.png"
+            "original": "assets/images/equipment/chest_t4_01_original.png"
         }
     }
 ]

@@ -1,0 +1,65 @@
+﻿{
+  "id": "enemy_saurian_t2_03",
+  "name": "Pachycephalosaurus Charger",
+  "sourceCategory": "enemies",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t2_03",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/enemies/saurian_t2_03_original.png"
+  },
+  "tier": 2,
+  "biome": "tundra",
+  "stats": {
+    "health": 100,
+    "damage": 25,
+    "speed": 110,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 0.6,
+    "aggroRange": 200,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t2_03",
+    "death": "sfx_death_saurian_t2_03",
+    "hurt": "sfx_hurt_saurian_t2_03",
+    "aggro": "sfx_aggro_saurian_t2_03"
+  },
+  "spawning": {
+    "biomes": [
+      "tundra"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "bone_t2_01",
+      "chance": 0.8,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "leather_t2_01",
+      "chance": 0.5,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 35,
+  "species": "Pachycephalosaurus",
+  "weaponType": "war_hammer",
+  "role": "medium"
+}

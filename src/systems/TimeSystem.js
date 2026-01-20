@@ -1,7 +1,7 @@
-/**
+﻿/**
  * TimeSystem
  * Manages the global game time, day/night cycles, and seasons.
- * 
+ *
  * Responsibilities:
  * - Tracks total game time and normalized day time (0.0 - 1.0)
  * - Determines the current day phase (Dawn, Day, Dusk, Night)
@@ -13,14 +13,14 @@ class TimeSystem {
         // Configuration reference
         this.config = GameConstants.Time;
 
-        this.totalTime = 0;          // Total seconds played
+        this.totalTime = 0; // Total seconds played
         this.dayTime = 0.5; // Start at midday (DAY phase)
-        this.dayCount = 1;           // Current day number
+        this.dayCount = 1; // Current day number
 
         // State
-        this.currentPhase = 'DAWN';   // DAWN, DAY, DUSK, NIGHT
-        this.currentSeasonIdx = 0;   // 0: Spring
-        this.seasonDayCount = 1;     // Day within current season
+        this.currentPhase = 'DAWN'; // DAWN, DAY, DUSK, NIGHT
+        this.currentSeasonIdx = 0; // 0: Spring
+        this.seasonDayCount = 1; // Day within current season
 
         this.isRunning = true;
 
@@ -50,11 +50,20 @@ class TimeSystem {
         this.overrideEnabled = true;
         // Map phase name to a fixed dayTime
         switch (phase.toLowerCase()) {
-            case 'dawn': this.overrideTime = 0.22; break;  // Early morning
-            case 'day': this.overrideTime = 0.50; break;   // Noon
-            case 'dusk': this.overrideTime = 0.77; break;  // Evening
-            case 'night': this.overrideTime = 0.05; break; // Midnight
-            default: this.overrideTime = 0.50;
+            case 'dawn':
+                this.overrideTime = 0.22;
+                break; // Early morning
+            case 'day':
+                this.overrideTime = 0.5;
+                break; // Noon
+            case 'dusk':
+                this.overrideTime = 0.77;
+                break; // Evening
+            case 'night':
+                this.overrideTime = 0.05;
+                break; // Midnight
+            default:
+                this.overrideTime = 0.5;
         }
         this.dayTime = this.overrideTime;
         Logger.info(`[TimeSystem] Override Enabled: ${phase} (dayTime=${this.overrideTime})`);
@@ -115,16 +124,26 @@ class TimeSystem {
         // Convert dt to seconds
         const dtSeconds = dt / 1000;
 
+        // Sanity check: clamp dt to prevent huge jumps (e.g., tab was inactive)
+        const clampedDt = Math.min(dtSeconds, 1.0); // Max 1 second per frame
+
         // Update game time
-        this.totalTime += dtSeconds;
+        this.totalTime += clampedDt;
 
         // Calculate day progression
         // Amount of day to advance this frame
-        const dayProgress = dtSeconds / this.config.REAL_SECONDS_PER_GAME_DAY;
+        const dayProgress = clampedDt / this.config.REAL_SECONDS_PER_GAME_DAY;
+        const prevDayTime = this.dayTime;
         this.dayTime = (this.dayTime + dayProgress) % 1.0;
 
-        // Check for new day
-        if (this.dayTime < dayProgress) { // Wrapped around
+        // Defensive: Ensure dayTime is always valid (0.0 - 1.0)
+        if (this.dayTime < 0 || this.dayTime >= 1.0 || isNaN(this.dayTime)) {
+            Logger.warn(`[TimeSystem] Invalid dayTime detected: ${this.dayTime}, resetting to 0.5`);
+            this.dayTime = 0.5;
+        }
+
+        // Check for new day (wrapped from ~1.0 to ~0.0)
+        if (this.dayTime < prevDayTime) {
             this.handleNewDay();
         }
 
@@ -149,20 +168,25 @@ class TimeSystem {
         let newPhase = this.currentPhase;
 
         // Determine phase based on dayTime
+        // NIGHT: 0.9 â†’ 1.0 â†’ 0.0 â†’ 0.05
+        // DAWN: 0.05 â†’ 0.15
+        // DAY: 0.15 â†’ 0.75
+        // DUSK: 0.75 â†’ 0.9
         if (this.dayTime >= phases.NIGHT || this.dayTime < phases.DAWN) {
             newPhase = 'NIGHT';
         } else if (this.dayTime >= phases.DUSK) {
             newPhase = 'DUSK';
         } else if (this.dayTime >= phases.DAY) {
             newPhase = 'DAY';
-        } else if (this.dayTime >= phases.DAWN) {
+        } else {
+            // Must be DAWN (dayTime >= phases.DAWN is implied by reaching here)
             newPhase = 'DAWN';
         }
 
         if (newPhase !== this.currentPhase) {
             const prevPhase = this.currentPhase;
             this.currentPhase = newPhase;
-            Logger.info(`[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase}`);
+            Logger.info(`[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase} (dayTime: ${this.dayTime.toFixed(3)})`);
             EventBus.emit(GameConstants.Events.DAY_PHASE_CHANGE, {
                 phase: newPhase,
                 prevPhase: prevPhase
@@ -205,3 +229,4 @@ class TimeSystem {
 }
 
 window.TimeSystem = new TimeSystem();
+

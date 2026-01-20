@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ForgePanel - Manages the Forge (Crafting) UI
  */
 class ForgePanel extends UIPanel {
@@ -50,14 +50,20 @@ class ForgePanel extends UIPanel {
         const grid = document.querySelector('.forge-grid');
         if (!grid) return;
 
-        CraftingManager.slots.forEach(slot => {
+        CraftingManager.slots.forEach((slot) => {
             if (slot.status === 'crafting') {
                 const el = grid.children[slot.id];
                 if (el) {
                     const recipe = CraftingManager.getRecipe(slot.recipeId);
-                    const percent = Math.floor((Date.now() - slot.startTime) / slot.duration * 100);
-                    const timeLeft = Math.ceil((slot.duration - (Date.now() - slot.startTime)) / 1000);
-                    const iconPath = window.AssetLoader ? AssetLoader.getImagePath(recipe.outputIcon) : '';
+                    const percent = Math.floor(
+                        ((Date.now() - slot.startTime) / slot.duration) * 100
+                    );
+                    const timeLeft = Math.ceil(
+                        (slot.duration - (Date.now() - slot.startTime)) / 1000
+                    );
+                    const iconPath = window.AssetLoader
+                        ? AssetLoader.getImagePath(recipe.outputIcon)
+                        : '';
 
                     el.innerHTML = `
                         <div style="display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: space-between; padding: 4px;">
@@ -90,7 +96,7 @@ class ForgePanel extends UIPanel {
 
         if (view === 'dashboard') {
             grid.classList.add('forge-dashboard-compact');
-            CraftingManager.slots.forEach(slot => {
+            CraftingManager.slots.forEach((slot) => {
                 const slotEl = document.createElement('div');
                 slotEl.className = `forge-slot ${slot.unlocked ? '' : 'locked'} ${slot.status === 'crafting' ? 'active' : ''}`;
 
@@ -113,13 +119,15 @@ class ForgePanel extends UIPanel {
                         } else {
                             if (window.AudioManager) AudioManager.playSFX('sfx_ui_error');
                             slotEl.style.borderColor = 'red';
-                            setTimeout(() => slotEl.style.borderColor = '', 200);
+                            setTimeout(() => (slotEl.style.borderColor = ''), 200);
                         }
                     };
                 } else if (slot.status === 'crafting') {
                     // Active Slot (Initial paint)
                     const recipe = CraftingManager.getRecipe(slot.recipeId);
-                    const iconPath = window.AssetLoader ? AssetLoader.getImagePath(recipe.outputIcon) : '';
+                    const iconPath = window.AssetLoader
+                        ? AssetLoader.getImagePath(recipe.outputIcon)
+                        : '';
                     slotEl.innerHTML = `
                         <div style="display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: space-between; padding: 4px;">
                             <div style="display: flex; align-items: center; width: 100%;">
@@ -151,8 +159,7 @@ class ForgePanel extends UIPanel {
                 }
                 grid.appendChild(slotEl);
             });
-        }
-        else if (view === 'recipes') {
+        } else if (view === 'recipes') {
             // ... Recipe View (Keep existing logic mostly as is, just method wrapper)
             const header = document.createElement('div');
             header.className = 'nav-header';
@@ -160,7 +167,7 @@ class ForgePanel extends UIPanel {
             header.querySelector('.back-btn').onclick = () => this.render('dashboard');
             grid.appendChild(header);
 
-            CraftingManager.recipes.forEach(recipe => {
+            CraftingManager.recipes.forEach((recipe) => {
                 const item = document.createElement('div');
                 item.className = 'forge-item';
                 const iconPath = AssetLoader.getImagePath(recipe.outputIcon);
@@ -170,7 +177,12 @@ class ForgePanel extends UIPanel {
                         <div class="forge-name">${recipe.name}</div>
                         <div class="forge-cost">
                             <span class="cost-item">Wood: ${recipe.fuelCost}</span>
-                           ${Object.entries(recipe.ingredients).map(([k, v]) => `<span class="cost-item">${k.replace('_', ' ')}: ${v}</span>`).join('')}
+                           ${Object.entries(recipe.ingredients)
+                        .map(
+                            ([k, v]) =>
+                                `<span class="cost-item">${k.replace('_', ' ')}: ${v}</span>`
+                        )
+                        .join('')}
                         </div>
                     </div>
                 `;
@@ -181,19 +193,20 @@ class ForgePanel extends UIPanel {
                     btn.disabled = true;
                     btn.textContent = 'LOCKED';
                 }
-                btn.onclick = () => this.render('batch', { slotId: context.slotId, recipeId: recipe.id });
+                btn.onclick = () =>
+                    this.render('batch', { slotId: context.slotId, recipeId: recipe.id });
                 item.appendChild(btn);
                 grid.appendChild(item);
             });
-        }
-        else if (view === 'batch') {
+        } else if (view === 'batch') {
             const recipe = CraftingManager.getRecipe(context.recipeId);
             const max = CraftingManager.getMaxCraftable(recipe);
 
             const header = document.createElement('div');
             header.className = 'nav-header';
             header.innerHTML = `<button class="back-btn">< Back</button> <span>Configuring ${recipe.name} (Slot ${context.slotId + 1})</span>`;
-            header.querySelector('.back-btn').onclick = () => this.render('recipes', { slotId: context.slotId });
+            header.querySelector('.back-btn').onclick = () =>
+                this.render('recipes', { slotId: context.slotId });
             grid.appendChild(header);
 
             const container = document.createElement('div');
@@ -235,7 +248,7 @@ class ForgePanel extends UIPanel {
                     this.render('dashboard');
                 } else {
                     confirmBtn.textContent = 'FAILED';
-                    setTimeout(() => confirmBtn.textContent = 'START FORGING', 1000);
+                    setTimeout(() => (confirmBtn.textContent = 'START FORGING'), 1000);
                 }
             };
         }
@@ -245,3 +258,4 @@ class ForgePanel extends UIPanel {
 // Global hook
 window.ForgeController = new ForgePanel();
 if (window.Registry) Registry.register('ForgeController', window.ForgeController);
+

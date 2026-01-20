@@ -1,6 +1,6 @@
-/**
+﻿/**
  * UICapture - Debug UI Screenshot Utilities
- * 
+ *
  * Separated from UIManager for single responsibility.
  * Only loaded in development/debug mode.
  */
@@ -45,7 +45,6 @@ const UICapture = {
             link.href = canvas.toDataURL('image/png');
             link.click();
             Logger.info('[UICapture]', `Saved ${filename}`);
-
         } catch (err) {
             Logger.error('[UICapture]', `Failed to capture ${selector}:`, err);
         }
@@ -60,7 +59,7 @@ const UICapture = {
         let wasActive = document.body.classList.contains('ui-capture-mode');
         if (!wasActive) this.toggleMode();
 
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 500));
 
         await this.captureElement('#ui-footer-zone', 'ui_plate_footer.png');
         await this.captureElement('#ui-quest-panel', 'ui_plate_quest.png');
@@ -79,3 +78,4 @@ const UICapture = {
 
 window.UICapture = UICapture;
 window.debugUICapture = () => UICapture.captureAllZones();
+

@@ -1,9 +1,9 @@
-/**
+﻿/**
  * EnemySpawner - Handles enemy spawning in open world biomes
- * 
+ *
  * Extracted from SpawnManager.js for modularity.
  * Manages enemy groups, biome population, and bosses.
- * 
+ *
  * Owner: Combat System
  */
 
@@ -30,7 +30,7 @@ class EnemySpawner {
         const testX = home.worldX + home.width / 2;
         const testY = home.worldY - 200;
 
-        this.spawnEnemyGroup('grasslands', testX, testY, 'enemy_raptor', 3);
+        this.spawnEnemyGroup('grasslands', testX, testY, 'enemy_dinosaur_t1_01', 3);
         Logger.info('[EnemySpawner] Spawned test enemies north of home island');
     }
 
@@ -43,8 +43,135 @@ class EnemySpawner {
             return [];
         }
 
-        const groupId = options.groupId ||
-            `group_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Inline loot definitions matching entity JSON files
+        const enemyLoot = {
+            // Dinosaurs - drop food and bone
+            enemy_dinosaur_t1_01: [
+                { item: 'food_t1_02', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.15, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t1_02: [
+                { item: 'food_t1_02', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.15, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t1_03: [
+                { item: 'food_t1_02', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.15, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t1_04: [
+                { item: 'food_t1_02', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.15, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t2_01: [
+                { item: 'food_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.2, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t2_03: [
+                { item: 'food_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.2, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t2_04: [
+                { item: 'food_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.2, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t2_05: [
+                { item: 'food_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.2, amount: [1, 1] }
+            ],
+            enemy_dinosaur_t3_01: [
+                { item: 'food_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.25, amount: [1, 2] }
+            ],
+            enemy_dinosaur_t3_03: [
+                { item: 'food_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.25, amount: [1, 2] }
+            ],
+            enemy_dinosaur_t3_04: [
+                { item: 'food_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.25, amount: [1, 2] }
+            ],
+            // Humans - drop salvage and food
+            enemy_human_t1_01: [
+                { item: 'salvage_t1_01', chance: 0.6, amount: [1, 1] },
+                { item: 'food_t1_03', chance: 0.4, amount: [1, 1] }
+            ],
+            enemy_human_t1_02: [
+                { item: 'salvage_t1_01', chance: 0.6, amount: [1, 1] },
+                { item: 'food_t1_03', chance: 0.4, amount: [1, 1] }
+            ],
+            enemy_human_t1_03: [
+                { item: 'salvage_t1_01', chance: 0.6, amount: [1, 1] },
+                { item: 'food_t1_03', chance: 0.4, amount: [1, 1] }
+            ],
+            enemy_human_t2_01: [
+                { item: 'salvage_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'food_t2_01', chance: 0.4, amount: [1, 1] }
+            ],
+            enemy_human_t2_02: [
+                { item: 'salvage_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'food_t2_01', chance: 0.4, amount: [1, 1] }
+            ],
+            enemy_human_t2_03: [
+                { item: 'salvage_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'food_t2_01', chance: 0.4, amount: [1, 1] }
+            ],
+            enemy_human_t3_01: [
+                { item: 'salvage_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'food_t3_01', chance: 0.5, amount: [1, 2] }
+            ],
+            enemy_human_t3_02: [
+                { item: 'salvage_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'food_t3_01', chance: 0.5, amount: [1, 2] }
+            ],
+            enemy_human_t3_03: [
+                { item: 'salvage_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'food_t3_01', chance: 0.5, amount: [1, 2] }
+            ],
+            // Saurians - drop metal and bone
+            enemy_saurian_t1_01: [
+                { item: 'metal_t1_01', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.3, amount: [1, 1] }
+            ],
+            enemy_saurian_t1_02: [
+                { item: 'metal_t1_01', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.3, amount: [1, 1] }
+            ],
+            enemy_saurian_t1_03: [
+                { item: 'metal_t1_01', chance: 0.6, amount: [1, 1] },
+                { item: 'bone_t1_01', chance: 0.3, amount: [1, 1] }
+            ],
+            enemy_saurian_t2_01: [
+                { item: 'metal_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.35, amount: [1, 1] }
+            ],
+            enemy_saurian_t2_02: [
+                { item: 'metal_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.35, amount: [1, 1] }
+            ],
+            enemy_saurian_t2_03: [
+                { item: 'metal_t2_01', chance: 0.7, amount: [1, 2] },
+                { item: 'bone_t2_01', chance: 0.35, amount: [1, 1] }
+            ],
+            enemy_saurian_t3_01: [
+                { item: 'metal_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.4, amount: [1, 2] }
+            ],
+            enemy_saurian_t3_02: [
+                { item: 'metal_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.4, amount: [1, 2] }
+            ],
+            enemy_saurian_t3_03: [
+                { item: 'metal_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.4, amount: [1, 2] }
+            ],
+            enemy_saurian_t3_04: [
+                { item: 'metal_t3_01', chance: 0.8, amount: [1, 2] },
+                { item: 'bone_t3_01', chance: 0.4, amount: [1, 2] }
+            ]
+        };
+
+        const groupId =
+            options.groupId || `group_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const waveId = options.waveId || groupId;
         const spacing = window.GameConstants?.Biome?.GROUP_SPACING || 50;
 
@@ -58,6 +185,7 @@ class EnemySpawner {
                 x: x + offsetX,
                 y: y + offsetY,
                 enemyType: enemyId,
+                lootTable: enemyLoot[enemyId] || enemyLoot['enemy_dinosaur_t1_01'],
                 biomeId: biomeId,
                 groupId: groupId,
                 waveId: waveId,
@@ -115,8 +243,8 @@ class EnemySpawner {
                 const y = bounds.y + padding + Math.random() * (bounds.height - padding * 2);
 
                 const sizeRange = spawn.groupSize || { min: 1, max: 1 };
-                const size = sizeRange.min +
-                    Math.floor(Math.random() * (sizeRange.max - sizeRange.min + 1));
+                const size =
+                    sizeRange.min + Math.floor(Math.random() * (sizeRange.max - sizeRange.min + 1));
 
                 const enemies = this.spawnEnemyGroup(biomeId, x, y, spawn.enemyId, size, {
                     waveId: options.waveId || `wave_${biomeId}_${g}`
@@ -149,8 +277,8 @@ class EnemySpawner {
         if (bosses.length > 0) {
             const boss = bosses[0];
             boss.isBoss = true;
-            boss.respawnTime = biome.bossRespawnTime ||
-                window.GameConstants?.Biome?.BOSS_RESPAWN_DEFAULT || 300;
+            boss.respawnTime =
+                biome.bossRespawnTime || window.GameConstants?.Biome?.BOSS_RESPAWN_DEFAULT || 300;
             Logger.info(`[EnemySpawner] Spawned boss ${biome.bossId} for ${biomeId}`);
             return boss;
         }
@@ -168,7 +296,7 @@ class EnemySpawner {
             ...EntityManager.getByType(EntityTypes.ENEMY_SOLDIER)
         ];
 
-        return enemies.filter(e => e.biomeId === biomeId && !e.isDead);
+        return enemies.filter((e) => e.biomeId === biomeId && !e.isDead);
     }
 
     /**
@@ -189,3 +317,4 @@ class EnemySpawner {
 }
 
 window.EnemySpawner = EnemySpawner;
+

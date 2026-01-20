@@ -42,7 +42,7 @@
         }
     },
     {
-        "id": "food_t2_04",
+        "id": "food_t2_01",
         "name": "Fatty Meat",
         "tier": 2,
         "source": "Large Herbivores",
@@ -52,11 +52,11 @@
         "status": "approved",
         "sourceDescription": "fatty meat cut with marbling, game pickup asset, thick red meat with white fat, quality meat",
         "files": {
-            "original": "assets/images/resources/food_t2_04_original.png"
+            "original": "assets/images/resources/food_t2_01_original.png"
         }
     },
     {
-        "id": "food_t2_05",
+        "id": "food_t2_02",
         "name": "Frozen Fish",
         "tier": 2,
         "source": "Ice Hole",
@@ -66,11 +66,11 @@
         "status": "approved",
         "sourceDescription": "frozen fish, game pickup asset, icy blue-silver fish, tundra food",
         "files": {
-            "original": "assets/images/resources/food_t2_05_original.png"
+            "original": "assets/images/resources/food_t2_02_original.png"
         }
     },
     {
-        "id": "food_t2_06",
+        "id": "food_t2_03",
         "name": "Root Vegetables",
         "tier": 2,
         "source": "Frozen Ground",
@@ -80,11 +80,11 @@
         "status": "approved",
         "sourceDescription": "root vegetables tubers, game pickup asset, brown potatoes and carrots, earthy food",
         "files": {
-            "original": "assets/images/resources/food_t2_06_original.png"
+            "original": "assets/images/resources/food_t2_03_original.png"
         }
     },
     {
-        "id": "food_t2_07",
+        "id": "food_t2_04",
         "name": "Cactus Fruit",
         "tier": 2,
         "source": "Desert Cactus",
@@ -94,11 +94,11 @@
         "status": "approved",
         "sourceDescription": "prickly pear cactus fruit, game pickup asset, pink-red desert fruit, thorny",
         "files": {
-            "original": "assets/images/resources/food_t2_07_original.png"
+            "original": "assets/images/resources/food_t2_04_original.png"
         }
     },
     {
-        "id": "food_t2_08",
+        "id": "food_t2_05",
         "name": "Sand Grub",
         "tier": 2,
         "source": "Burrow Nest",
@@ -108,11 +108,11 @@
         "status": "approved",
         "sourceDescription": "fat sand grub worm, game pickup asset, pale cream-colored larva, protein source",
         "files": {
-            "original": "assets/images/resources/food_t2_08_original.png"
+            "original": "assets/images/resources/food_t2_05_original.png"
         }
     },
     {
-        "id": "food_t3_09",
+        "id": "food_t3_01",
         "name": "Dried Jerky",
         "tier": 3,
         "source": "Desert Herbivores",
@@ -122,11 +122,11 @@
         "status": "approved",
         "sourceDescription": "dried meat jerky strips, game pickup asset, dark brown preserved meat, military rations",
         "files": {
-            "original": "assets/images/resources/food_t3_09_original.png"
+            "original": "assets/images/resources/food_t3_01_original.png"
         }
     },
     {
-        "id": "food_t3_10",
+        "id": "food_t3_02",
         "name": "Charred Meat",
         "tier": 3,
         "source": "Badlands Creatures",
@@ -136,11 +136,11 @@
         "status": "approved",
         "sourceDescription": "charred meat with char marks, game pickup asset, dark brown fire-cooked meat, volcanic terrain food",
         "files": {
-            "original": "assets/images/resources/food_t3_10_original.png"
+            "original": "assets/images/resources/food_t3_02_original.png"
         }
     },
     {
-        "id": "food_t3_11",
+        "id": "food_t3_03",
         "name": "Smoked Rations",
         "tier": 3,
         "source": "Badlands Nest",
@@ -150,11 +150,11 @@
         "status": "approved",
         "sourceDescription": "smoked military rations package, game pickup asset, preserved meat in wrapped bundle, long-lasting food",
         "files": {
-            "original": "assets/images/resources/food_t3_11_original.png"
+            "original": "assets/images/resources/food_t3_03_original.png"
         }
     },
     {
-        "id": "food_t4_12",
+        "id": "food_t4_01",
         "name": "Iron Rations",
         "tier": 4,
         "source": "Field Kitchen",
@@ -164,7 +164,7 @@
         "status": "approved",
         "sourceDescription": "military iron rations tin and contents, game pickup asset, metal tin with preserved food, premium military supplies",
         "files": {
-            "original": "assets/images/resources/food_t4_12_original.png"
+            "original": "assets/images/resources/food_t4_01_original.png"
         }
     }
 ]

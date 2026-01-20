@@ -1,0 +1,66 @@
+{
+  "id": "boss_dinosaur_t1_02",
+  "name": "Nest Guardian",
+  "sourceCategory": "bosses",
+  "sourceFile": "dinosaur",
+  "sprite": "dinosaur_t1_02",
+  "status": "pending",
+  "tier": 1,
+  "biome": "grasslands",
+  "stats": {
+    "health": 90,
+    "damage": 10,
+    "speed": 90,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 280,
+    "packAggro": true,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_dinosaur_t1_02",
+    "death": "sfx_death_dinosaur_t1_02",
+    "hurt": "sfx_hurt_dinosaur_t1_02",
+    "aggro": "sfx_aggro_dinosaur_t1_02"
+  },
+  "spawning": {
+    "biomes": [
+      "grasslands"
+    ],
+    "groupSize": [
+      1,
+      1
+    ],
+    "weight": 25,
+    "respawnTime": 60
+  },
+  "loot": [
+    {
+      "item": "minerals_t1_01",
+      "chance": 1.0,
+      "amount": [
+        2,
+        4
+      ]
+    },
+    {
+      "item": "leather_t1_01",
+      "chance": 0.8,
+      "amount": [
+        1,
+        2
+      ]
+    }
+  ],
+  "xpReward": 30,
+  "isBoss": true,
+  "species": "Dilophosaurus",
+  "sourceDescription": "Dilophosaurus, brown and tan scales, spiked iron barding with trench spikes, dual crests on head, massive build",
+  "description": "The Nest Guardian has protected its territory so long that its twin crests have grown massive, flushing bright with rage at any intrusion. This Dilophosaurus has killed more soldiers than most artillery batteries, the ground around its nesting site littered with sun-bleached bones. Those amber eyes hold ancient patience and sudden violence.\n\nMinimal leather strapping suggests past domestication attempts, but the creature now serves only instinct. Olive-tan hide shows lighter patches where old wounds healed, each scar a defeated challenger. The throat sac still carries venom glands that the creature deploys with terrifying accuracy against any who approach.\n\nHeavy-clawed feet have worn paths into the grassland soil from years of territorial patrol. The powerful tail sweeps constantly, knocking aside vegetation to maintain clear sight lines. This creature has established its domain and will accept no challengers - military or otherwise.",
+  "files": {
+    "original": "images/bosses/boss_dinosaur_t1_02_original.png"
+  }
+}

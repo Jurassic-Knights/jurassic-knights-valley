@@ -1,13 +1,13 @@
-/**
+﻿/**
  * RoadsData - World Road Network Configuration
- * 
+ *
  * Extracted from BiomeManager for better separation of concerns.
  * Contains all road definitions, intersections, and routing data.
- * 
+ *
  * Tiered System:
  * - Tier 0: Roundabouts (hub centers)
- * - Tier 1: Main Highways (Ironhaven → Biomes)
- * - Tier 2: Ring Roads (Biome ↔ Biome)
+ * - Tier 1: Main Highways (Ironhaven â†’ Biomes)
+ * - Tier 2: Ring Roads (Biome â†” Biome)
  * - Tier 3: Internal Roads (within biomes)
  */
 
@@ -243,3 +243,4 @@ const RoadsData = {
 };
 
 window.RoadsData = RoadsData;
+

@@ -1,21 +1,37 @@
-# Dependencies
+# Ignore node_modules (huge, reinstall via npm install)
 node_modules/
 
-# IDE
-.vscode/
-.idea/
+# Ignore build output (regenerate via npm run build)
+dist/
 
-# OS
+# Ignore IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Ignore OS files
 .DS_Store
 Thumbs.db
 
-# Build artifacts
-dist/
-build/
+# Ignore logs
+*.log
+npm-debug.log*
 
-# Environment
+# Ignore environment files with secrets
 .env
 .env.local
+.env.*.local
 
-# Gemini/Agent
-.gemini/
+# Ignore cache
+.cache/
+.parcel-cache/
+
+# Ignore generated asset files (regenerate via dashboard)
+assets/images/**/*_pending.png
+assets/images/**/*_declined.png
+
+# Keep approved and original assets
+!assets/images/**/*_approved.png
+!assets/images/**/*_original.png
+!assets/images/**/*_clean.png

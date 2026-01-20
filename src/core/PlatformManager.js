@@ -1,7 +1,7 @@
-/**
+﻿/**
  * PlatformManager - Central authority for platform mode (Mobile/PC)
  * Allows manual override independent of viewport detection
- * 
+ *
  * Owner: Director
  */
 
@@ -19,19 +19,19 @@ const PlatformManager = {
     // Platform-specific configurations
     configs: {
         mobile: {
-            aspectRatio: 9 / 16,        // Portrait
+            aspectRatio: 9 / 16, // Portrait
             orientation: 'portrait',
             maxWidth: '100%',
             maxHeight: '100vh',
             showJoystick: true,
-            uiScale: 1.2,               // Larger touch targets
+            uiScale: 1.2, // Larger touch targets
             containerClass: 'platform-mobile'
         },
         pc: {
-            aspectRatio: 16 / 9,        // Landscape
+            aspectRatio: 16 / 9, // Landscape
             orientation: 'landscape',
             maxWidth: '900px',
-            maxHeight: '506px',         // 900 * 9/16
+            maxHeight: '506px', // 900 * 9/16
             showJoystick: false,
             uiScale: 1.0,
             containerClass: 'platform-pc'
@@ -149,10 +149,9 @@ const PlatformManager = {
      * Emit event to all listeners
      */
     emit(event, data) {
-        this.listeners
-            .filter(l => l.event === event)
-            .forEach(l => l.callback(data));
+        this.listeners.filter((l) => l.event === event).forEach((l) => l.callback(data));
     }
 };
 
 window.PlatformManager = PlatformManager;
+

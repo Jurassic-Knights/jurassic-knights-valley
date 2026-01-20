@@ -1,12 +1,12 @@
-/**
+﻿/**
  * SpawnManagerService - Orchestrates entity spawning via specialized spawners
- * 
+ *
  * This is the main SpawnManager, now slimmed down to delegate to:
  * - PropSpawner: Decorative props in water gaps
  * - ResourceSpawner: Resources, dinosaurs, trees
  * - EnemySpawner: Enemies in biomes
  * - DropSpawner: Dropped items
- * 
+ *
  * Owner: Director / Level Architect
  */
 
@@ -42,7 +42,9 @@ class SpawnManagerService {
 
     initListeners() {
         if (window.EventBus) {
-            EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data) => this.initializeIsland(data.gridX, data.gridY));
+            EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data) =>
+                this.initializeIsland(data.gridX, data.gridY)
+            );
         }
     }
 
@@ -139,11 +141,15 @@ class SpawnManagerService {
             const bounds = islandManager.getPlayableBounds(island);
             if (!bounds) continue;
 
-            const entryBridge = bridges.find(b => b.to.col === island.gridX && b.to.row === island.gridY);
+            const entryBridge = bridges.find(
+                (b) => b.to.col === island.gridX && b.to.row === island.gridY
+            );
 
-            let merchantX = bounds.x + (window.PropConfig ? PropConfig.MERCHANT.DEFAULT_OFFSET : 60);
-            let merchantY = bounds.y + (window.PropConfig ? PropConfig.MERCHANT.DEFAULT_OFFSET : 60);
-            const padding = (window.PropConfig ? PropConfig.MERCHANT.PADDING : 70);
+            let merchantX =
+                bounds.x + (window.PropConfig ? PropConfig.MERCHANT.DEFAULT_OFFSET : 60);
+            let merchantY =
+                bounds.y + (window.PropConfig ? PropConfig.MERCHANT.DEFAULT_OFFSET : 60);
+            const padding = window.PropConfig ? PropConfig.MERCHANT.PADDING : 70;
 
             if (entryBridge) {
                 if (entryBridge.type === 'horizontal') {
@@ -198,7 +204,9 @@ class SpawnManagerService {
         if (!island) return;
 
         const count = window.IslandUpgrades ? IslandUpgrades.getResourceSlots(gridX, gridY) : 1;
-        Logger.info(`[SpawnManager] Initializing ${island.name} (${island.category}), count: ${count}`);
+        Logger.info(
+            `[SpawnManager] Initializing ${island.name} (${island.category}), count: ${count}`
+        );
 
         if (this.resourceSpawner) {
             if (island.category === 'resource') {
@@ -217,12 +225,14 @@ class SpawnManagerService {
         const island = IslandManager.getIslandByGrid(gridX, gridY);
         if (!island) return;
 
-        const targetCount = window.IslandUpgrades ? IslandUpgrades.getResourceSlots(gridX, gridY) : 1;
+        const targetCount = window.IslandUpgrades
+            ? IslandUpgrades.getResourceSlots(gridX, gridY)
+            : 1;
 
         if (island.category === 'dinosaur') {
             const allDinos = window.EntityManager ? EntityManager.getByType('Dinosaur') : [];
-            const currentCount = allDinos.filter(d =>
-                d.islandGridX === gridX && d.islandGridY === gridY
+            const currentCount = allDinos.filter(
+                (d) => d.islandGridX === gridX && d.islandGridY === gridY
             ).length;
             const needed = targetCount - currentCount;
 
@@ -233,8 +243,8 @@ class SpawnManagerService {
         }
 
         const allResources = window.EntityManager ? EntityManager.getByType('Resource') : [];
-        const currentResources = allResources.filter(res =>
-            res.islandGridX === gridX && res.islandGridY === gridY
+        const currentResources = allResources.filter(
+            (res) => res.islandGridX === gridX && res.islandGridY === gridY
         );
         const currentCount = currentResources.length;
 
@@ -341,3 +351,4 @@ class SpawnManagerService {
 
 window.SpawnManager = new SpawnManagerService();
 if (window.Registry) Registry.register('SpawnManager', window.SpawnManager);
+

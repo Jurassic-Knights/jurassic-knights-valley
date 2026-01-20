@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Quadtree
  * Spatial partitioning data structure for optimizing 2D range queries.
  * Used by EntityManager for rendering culling and collision detection.
@@ -36,33 +36,53 @@ class Quadtree {
         const x = this.bounds.x;
         const y = this.bounds.y;
 
-        this.nodes[0] = new Quadtree({
-            x: x + subWidth,
-            y: y,
-            width: subWidth,
-            height: subHeight
-        }, this.maxObjects, this.maxLevels, this.level + 1);
+        this.nodes[0] = new Quadtree(
+            {
+                x: x + subWidth,
+                y: y,
+                width: subWidth,
+                height: subHeight
+            },
+            this.maxObjects,
+            this.maxLevels,
+            this.level + 1
+        );
 
-        this.nodes[1] = new Quadtree({
-            x: x,
-            y: y,
-            width: subWidth,
-            height: subHeight
-        }, this.maxObjects, this.maxLevels, this.level + 1);
+        this.nodes[1] = new Quadtree(
+            {
+                x: x,
+                y: y,
+                width: subWidth,
+                height: subHeight
+            },
+            this.maxObjects,
+            this.maxLevels,
+            this.level + 1
+        );
 
-        this.nodes[2] = new Quadtree({
-            x: x,
-            y: y + subHeight,
-            width: subWidth,
-            height: subHeight
-        }, this.maxObjects, this.maxLevels, this.level + 1);
+        this.nodes[2] = new Quadtree(
+            {
+                x: x,
+                y: y + subHeight,
+                width: subWidth,
+                height: subHeight
+            },
+            this.maxObjects,
+            this.maxLevels,
+            this.level + 1
+        );
 
-        this.nodes[3] = new Quadtree({
-            x: x + subWidth,
-            y: y + subHeight,
-            width: subWidth,
-            height: subHeight
-        }, this.maxObjects, this.maxLevels, this.level + 1);
+        this.nodes[3] = new Quadtree(
+            {
+                x: x + subWidth,
+                y: y + subHeight,
+                width: subWidth,
+                height: subHeight
+            },
+            this.maxObjects,
+            this.maxLevels,
+            this.level + 1
+        );
     }
 
     /**
@@ -72,13 +92,14 @@ class Quadtree {
      */
     getIndex(pRect) {
         let index = -1;
-        const verticalMidpoint = this.bounds.x + (this.bounds.width / 2);
-        const horizontalMidpoint = this.bounds.y + (this.bounds.height / 2);
+        const verticalMidpoint = this.bounds.x + this.bounds.width / 2;
+        const horizontalMidpoint = this.bounds.y + this.bounds.height / 2;
 
         // Object can completely fit within the top quadrants
-        const topQuadrant = (pRect.y < horizontalMidpoint && pRect.y + pRect.height < horizontalMidpoint);
+        const topQuadrant =
+            pRect.y < horizontalMidpoint && pRect.y + pRect.height < horizontalMidpoint;
         // Object can completely fit within the bottom quadrants
-        const bottomQuadrant = (pRect.y > horizontalMidpoint);
+        const bottomQuadrant = pRect.y > horizontalMidpoint;
 
         // Object can completely fit within the left quadrants
         if (pRect.x < verticalMidpoint && pRect.x + pRect.width < verticalMidpoint) {
@@ -194,3 +215,4 @@ class Quadtree {
 }
 
 window.Quadtree = Quadtree;
+

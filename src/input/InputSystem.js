@@ -1,9 +1,9 @@
-/**
+﻿/**
  * InputSystem - Central Input Aggregator
- * 
+ *
  * Aggregates input from Keyboard, Touch, and Gamepad adapters.
  * Emits standardized events via EventBus.
- * 
+ *
  * Update: Supports Intent-based mapping (Keys -> Actions)
  */
 class InputSystem {
@@ -17,8 +17,8 @@ class InputSystem {
 
         // Default Bindings (Action Name -> Key/Input IDs)
         this.bindings = {
-            'INTERACT': ['e', 'E', 'Enter'],
-            'MENU': ['Escape', 'p', 'P']
+            INTERACT: ['e', 'E', 'Enter'],
+            MENU: ['Escape', 'p', 'P']
         };
 
         Logger.info('[InputSystem] Initialized');
@@ -90,7 +90,10 @@ class InputSystem {
             // Check for New Intents (Pressed this frame)
             for (const intent of currentFrameIntents) {
                 if (!this.inputState.intents.has(intent)) {
-                    EventBus.emit(GameConstants.Events.INPUT_INTENT, { intent: intent, phase: 'START' });
+                    EventBus.emit(GameConstants.Events.INPUT_INTENT, {
+                        intent: intent,
+                        phase: 'START'
+                    });
                     // Logger.info(`[Input] Intent START: ${intent}`);
                 }
             }
@@ -98,7 +101,10 @@ class InputSystem {
             // Check for Released Intents
             for (const intent of this.inputState.intents) {
                 if (!currentFrameIntents.has(intent)) {
-                    EventBus.emit(GameConstants.Events.INPUT_INTENT, { intent: intent, phase: 'END' });
+                    EventBus.emit(GameConstants.Events.INPUT_INTENT, {
+                        intent: intent,
+                        phase: 'END'
+                    });
                     // Logger.info(`[Input] Intent END: ${intent}`);
                 }
             }
@@ -115,7 +121,7 @@ class InputSystem {
 
     /**
      * Check if an intent is currently active (button held down)
-     * @param {string} intent 
+     * @param {string} intent
      */
     hasIntent(intent) {
         return this.inputState.intents.has(intent);
@@ -124,3 +130,4 @@ class InputSystem {
 
 window.InputSystem = new InputSystem();
 if (window.Registry) Registry.register('InputSystem', window.InputSystem);
+

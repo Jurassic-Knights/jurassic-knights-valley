@@ -1,9 +1,9 @@
-/**
+﻿/**
  * ShadowRenderer - Handles entity shadow rendering
- * 
+ *
  * Extracted from GameRenderer.js for modularity.
  * Renders shadows either as complex sprite shadows or simple ellipses.
- * 
+ *
  * Owner: Rendering System
  */
 
@@ -41,19 +41,29 @@ const ShadowRenderer = {
 
             if (entity === hero) {
                 if (heroRenderer) heroRenderer.drawShadow(ctx, entity, false);
-                if (timing) { timing.shadowHero = (timing.shadowHero || 0) + performance.now() - tSub; }
+                if (timing) {
+                    timing.shadowHero = (timing.shadowHero || 0) + performance.now() - tSub;
+                }
             } else if (entity.entityType === EntityTypes.DINOSAUR) {
                 if (dinosaurRenderer) dinosaurRenderer.renderShadow(ctx, entity, false);
-                if (timing) { timing.shadowDino = (timing.shadowDino || 0) + performance.now() - tSub; }
+                if (timing) {
+                    timing.shadowDino = (timing.shadowDino || 0) + performance.now() - tSub;
+                }
             } else if (entity.entityType === EntityTypes.RESOURCE) {
                 if (resourceRenderer) resourceRenderer.renderShadow(ctx, entity, false);
-                if (timing) { timing.shadowRes = (timing.shadowRes || 0) + performance.now() - tSub; }
+                if (timing) {
+                    timing.shadowRes = (timing.shadowRes || 0) + performance.now() - tSub;
+                }
             } else if (entity.entityType === EntityTypes.MERCHANT) {
                 if (typeof entity.drawShadow === 'function') entity.drawShadow(ctx, false);
-                if (timing) { timing.shadowMerch = (timing.shadowMerch || 0) + performance.now() - tSub; }
+                if (timing) {
+                    timing.shadowMerch = (timing.shadowMerch || 0) + performance.now() - tSub;
+                }
             } else {
                 if (typeof entity.drawShadow === 'function') entity.drawShadow(ctx, false);
-                if (timing) { timing.shadowOther = (timing.shadowOther || 0) + performance.now() - tSub; }
+                if (timing) {
+                    timing.shadowOther = (timing.shadowOther || 0) + performance.now() - tSub;
+                }
             }
         }
 
@@ -88,3 +98,4 @@ const ShadowRenderer = {
 };
 
 window.ShadowRenderer = ShadowRenderer;
+

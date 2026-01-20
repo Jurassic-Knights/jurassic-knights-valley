@@ -1,0 +1,231 @@
+/* ui-hud-quest.css - Quest Panel and Resolve Bar */
+
+/* ========================================
+   QUEST + RESOLVE CONTAINER
+   ======================================== */
+#quest-resolve-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin: 0 auto;
+    pointer-events: auto;
+}
+
+/* ========================================
+   QUEST PANEL - Fixed Size
+   ======================================== */
+#ui-quest-panel {
+    width: 280px;
+    pointer-events: auto;
+}
+
+#ui-quest-panel .quest-frame {
+    pointer-events: auto;
+}
+
+/* ========================================
+   RESOLVE BAR - Amber Liquid Gauge (Earthy)
+   ======================================== */
+#ui-resolve-bar {
+    width: 290px;
+    height: 28px;
+    background: var(--bg-deepest);
+    border: 1px solid var(--bg-medium);
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.9),
+        inset 0 2px 8px rgba(0, 0, 0, 1),
+        0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Dirty Glass Reflection */
+#ui-resolve-bar::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 12px 12px 50% 50%;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.resolve-fill {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    bottom: 3px;
+    width: calc(100% - 6px);
+    background: var(--glow);
+    /* Amber base */
+    background-image:
+        var(--bg-noise),
+        linear-gradient(90deg, #8B4513 0%, #CD853F 50%, #8B4513 100%);
+    border-radius: 10px;
+    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow:
+        0 0 15px rgba(205, 133, 63, 0.4),
+        /* Amber Glow */
+        inset 0 -4px 5px rgba(0, 0, 0, 0.5),
+        /* Volume */
+        inset 0 2px 2px rgba(255, 255, 255, 0.3);
+    /* Top Meniscus */
+}
+
+/* Bubbles in the Amber */
+.resolve-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 60%, rgba(255, 255, 255, 0.2) 0%, transparent 10%),
+        radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 8%),
+        radial-gradient(circle at 90% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 12%);
+    background-size: 80px 100%;
+    opacity: 0.8;
+    mix-blend-mode: overlay;
+    border-radius: 10px;
+}
+
+.resolve-text {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--gold-bright);
+    /* Moccasin */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+    z-index: 30;
+    letter-spacing: 2px;
+    opacity: 1;
+    mix-blend-mode: normal;
+    pointer-events: none;
+}
+
+.quest-frame {
+    /* Thick Dirty Paper Style */
+    background: var(--color-parchment);
+    background-image:
+        var(--bg-noise),
+        radial-gradient(circle at 50% 50%, transparent 40%, rgba(62, 54, 46, 0.3) 100%),
+        /* Vignette */
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0, 0, 0, 0.02) 10px, rgba(0, 0, 0, 0.02) 11px);
+    /* Texture lines */
+    border: 1px solid var(--bg-hover);
+    border-top: 1px solid var(--text-secondary);
+    /* Highlight edge */
+    border-radius: 4px;
+    /* Slightly worn corners */
+    position: relative;
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.8),
+        /* Deep shadow */
+        0 0 0 1px rgba(0, 0, 0, 0.5),
+        /* Outline */
+        inset 0 0 60px rgba(44, 38, 32, 0.2);
+    /* Inner grime */
+    color: var(--color-ink);
+    transform: rotate(-0.5deg);
+    /* Hand-placed imperfection */
+}
+
+/* Tape/Clip simulation at top? Optional, kept simple for now */
+.quest-frame::before {
+    display: none;
+}
+
+.quest-frame::after {
+    display: none;
+}
+
+/* Header - Worn Ink Stamp */
+.quest-header {
+    background: none;
+    border-bottom: 2px dashed rgba(43, 34, 27, 0.3);
+    padding: 14px 18px;
+}
+
+.header-label {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+    opacity: 0.9;
+}
+
+.header-id {
+    color: var(--bg-hover);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+.quest-content {
+    padding: 18px;
+}
+
+.quest-icon {
+    border: 2px solid var(--ink);
+    box-shadow: 2px 2px 0 rgba(43, 34, 27, 0.1);
+    background: rgba(0, 0, 0, 0.05);
+    mix-blend-mode: multiply;
+    border-radius: 2px;
+}
+
+.quest-objective {
+    font-family: var(--font-body);
+    /* Serif font */
+    font-weight: 600;
+    color: var(--color-ink);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.quest-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--color-primary-dark);
+    border: 1px solid var(--color-accent-iron);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: var(--shadow-inset);
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--gradient-brass);
+    transition: width var(--transition-normal);
+    border-radius: 3px;
+}
+
+.progress-text {
+    font-family: var(--font-body);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    min-width: 40px;
+    text-align: right;
+}

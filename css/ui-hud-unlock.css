@@ -1,0 +1,93 @@
+/* ui-hud-unlock.css - Island Unlock Prompt */
+/* Split from ui-hud.css for 500-line limit compliance */
+
+/* ========================================
+   ISLAND UNLOCK PROMPT
+   ======================================== */
+.unlock-prompt {
+    position: absolute;
+    bottom: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 80;
+    pointer-events: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.unlock-prompt.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    pointer-events: none;
+}
+
+.unlock-prompt-content {
+    background: linear-gradient(180deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.98) 100%);
+    border: 2px solid var(--color-accent-gold);
+    border-radius: var(--border-radius-lg);
+    padding: 16px 24px;
+    text-align: center;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.6),
+        0 0 20px rgba(255, 215, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    min-width: 200px;
+}
+
+.unlock-island-name {
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.unlock-cost {
+    font-family: var(--font-body);
+    font-size: var(--font-size-md);
+    color: var(--color-text-gold);
+    margin-bottom: 12px;
+}
+
+.unlock-cost .cost-amount {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.unlock-btn {
+    background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold-dark) 100%);
+    border: 2px solid var(--gold-bright);
+    border-radius: var(--border-radius-md);
+    padding: 10px 32px;
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm);
+    font-weight: bold;
+    color: var(--bg-deepest);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.unlock-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow:
+        0 6px 12px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(255, 215, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.unlock-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.unlock-btn:disabled {
+    background: linear-gradient(180deg, var(--text-muted) 0%, var(--bg-light) 100%);
+    border-color: var(--text-muted);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * HUDController - Manages the Heads-Up Display
- * 
+ *
  * Handles Stamina, Health, and Resource counters.
  * Listens to EventBus updates.
  */
@@ -16,7 +16,9 @@ class HUDController {
         EventBus.on(GameConstants.Events.HERO_STAMINA_CHANGE, (data) => this.updateStamina(data));
         EventBus.on(GameConstants.Events.HERO_HEALTH_CHANGE, (data) => this.updateHealth(data));
         EventBus.on(GameConstants.Events.INVENTORY_UPDATED, (data) => this.updateResources(data));
-        EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data) => this.updateRestButton(data));
+        EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data) =>
+            this.updateRestButton(data)
+        );
     }
 
     updateStamina(data) {
@@ -50,10 +52,10 @@ class HUDController {
         if (!inventory) return;
 
         const map = {
-            'scrap_metal': 'res-scrap',
-            'iron_ore': 'res-iron',
-            'fossil_fuel': 'res-fuel',
-            'gold': 'res-gold'
+            scraps_t1_01: 'res-scrap',
+            minerals_t1_01: 'res-iron',
+            minerals_t2_01: 'res-fuel',
+            gold: 'res-gold'
         };
 
         for (const [key, id] of Object.entries(map)) {
@@ -69,3 +71,4 @@ class HUDController {
 // Register
 window.HUDController = new HUDController();
 if (window.Registry) Registry.register('HUDController', window.HUDController);
+

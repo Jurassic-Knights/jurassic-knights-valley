@@ -1,8 +1,8 @@
-/**
+﻿/**
  * ProgressBarRenderer - VFX-Style Progress Bar Drawing Utility
- * 
+ *
  * Features: Segmented Bars, Inner Flow Particles, Damage Trail, Heartbeat Pulse
- * 
+ *
  * Owner: Director (VFX/UI)
  */
 
@@ -31,7 +31,10 @@ const ProgressBarRenderer = {
      */
     draw(ctx, options) {
         const {
-            x, y, width, height,
+            x,
+            y,
+            width,
+            height,
             percent,
             mode = 'health', // 'health' or 'respawn'
             entityId = null, // For damage trail tracking
@@ -74,7 +77,8 @@ const ProgressBarRenderer = {
                 baseColor = '#E74C3C'; // Red
                 darkColor = '#8B0000';
                 lightColor = '#FF6B6B';
-            } else { // respawn
+            } else {
+                // respawn
                 baseColor = '#3498DB'; // Blue
                 darkColor = '#1E5799';
                 lightColor = '#5DADE2';
@@ -121,7 +125,12 @@ const ProgressBarRenderer = {
             highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
             ctx.fillStyle = highlightGradient;
             ctx.beginPath();
-            ctx.roundRect(x + 1, y + 1, fillWidth - 2, height / 2 - 1, [cornerRadius - 1, cornerRadius - 1, 0, 0]);
+            ctx.roundRect(x + 1, y + 1, fillWidth - 2, height / 2 - 1, [
+                cornerRadius - 1,
+                cornerRadius - 1,
+                0,
+                0
+            ]);
             ctx.fill();
 
             // --- 7. Heartbeat Pulse (Low Health Warning) ---
@@ -164,3 +173,4 @@ const ProgressBarRenderer = {
 };
 
 window.ProgressBarRenderer = ProgressBarRenderer;
+

@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Dialogue System
  * Handles NPC conversations and branching dialogue
- * 
+ *
  * Owner: Lore Writer (dialogue content), UI Artist (display)
  */
 
@@ -96,3 +96,4 @@ const DialogueSystem = {
 };
 
 window.DialogueSystem = DialogueSystem;
+

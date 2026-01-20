@@ -1,17 +1,17 @@
-/**
+﻿/**
  * GamepadAdapter - Maps Gamepad inputs to Input State
  */
 class GamepadAdapter {
     constructor() {
         this.gamepadIndex = null;
 
-        window.addEventListener("gamepadconnected", (e) => {
-            Logger.info("[Gamepad] Connected:", e.gamepad.id);
+        window.addEventListener('gamepadconnected', (e) => {
+            Logger.info('[Gamepad] Connected:', e.gamepad.id);
             this.gamepadIndex = e.gamepad.index;
         });
 
-        window.addEventListener("gamepaddisconnected", (e) => {
-            Logger.info("[Gamepad] Disconnected");
+        window.addEventListener('gamepaddisconnected', (e) => {
+            Logger.info('[Gamepad] Disconnected');
             if (this.gamepadIndex === e.gamepad.index) {
                 this.gamepadIndex = null;
             }
@@ -58,3 +58,4 @@ if (window.InputSystem) {
         if (window.InputSystem) window.InputSystem.registerAdapter(new GamepadAdapter());
     });
 }
+

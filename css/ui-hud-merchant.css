@@ -1,0 +1,134 @@
+/* ui-hud-merchant.css - Purchase Button and Merchant Upgrades */
+/* Split from ui-hud.css for 500-line limit compliance */
+
+/* ========================================
+   PURCHASE BUTTON
+   ======================================== */
+.purchase-btn {
+    position: absolute;
+    bottom: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    background: linear-gradient(180deg, #8E44AD 0%, #6C3483 100%);
+    border: 3px solid #9B59B6;
+    border-radius: var(--border-radius-lg);
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.4),
+        0 0 20px rgba(155, 89, 182, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all var(--transition-fast);
+    z-index: 2000;
+    animation: purchase-pulse 2s ease-in-out infinite;
+}
+
+.purchase-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.5),
+        0 0 30px rgba(155, 89, 182, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.purchase-btn:active {
+    transform: translateX(-50%) scale(0.98);
+}
+
+.purchase-text {
+    font-family: var(--font-display);
+    font-size: var(--font-size-md);
+    font-weight: bold;
+    color: var(--text-primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes purchase-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 20px rgba(155, 89, 182, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    50% {
+        box-shadow:
+            0 4px 12px rgba(0, 0, 0, 0.4),
+            0 0 30px rgba(155, 89, 182, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+}
+
+/* ========================================
+   MERCHANT UPGRADE LIST
+   ======================================== */
+.upgrade-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.upgrade-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upgrade-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.upgrade-label {
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-primary);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.upgrade-level {
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-text-secondary);
+}
+
+.upgrade-btn {
+    background: linear-gradient(180deg, #8E44AD 0%, #6C3483 100%);
+    border: 2px solid #9B59B6;
+    border-radius: var(--border-radius-sm);
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upgrade-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(155, 89, 182, 0.5);
+}
+
+.upgrade-btn:disabled {
+    background: linear-gradient(180deg, var(--text-disabled) 0%, var(--bg-medium) 100%);
+    border-color: var(--text-disabled);
+    cursor: not-allowed;
+}
+
+.upgrade-cost {
+    font-family: var(--font-body);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+    font-weight: bold;
+}

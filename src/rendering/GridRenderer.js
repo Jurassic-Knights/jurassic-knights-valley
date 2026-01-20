@@ -1,9 +1,9 @@
-/**
+﻿/**
  * GridRenderer - Island and bridge rendering
- * 
+ *
  * Extracted from GameRenderer.js for modularity.
  * Handles drawing islands, bridges, and lock overlays.
- * 
+ *
  * Owner: Rendering System
  */
 
@@ -126,11 +126,19 @@ const GridRenderer = {
         ctx.font = 'bold 80px "Courier New", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText('🔒', island.worldX + island.width / 2, island.worldY + island.height / 2 - 40);
+        ctx.fillText(
+            '🔒',
+            island.worldX + island.width / 2,
+            island.worldY + island.height / 2 - 40
+        );
 
         ctx.fillStyle = '#FFD700';
         ctx.font = 'bold 32px "Courier New", sans-serif';
-        ctx.fillText(`${island.unlockCost} Gold`, island.worldX + island.width / 2, island.worldY + island.height / 2 + 60);
+        ctx.fillText(
+            `${island.unlockCost} Gold`,
+            island.worldX + island.width / 2,
+            island.worldY + island.height / 2 + 60
+        );
     },
 
     /**
@@ -155,9 +163,21 @@ const GridRenderer = {
 
                 if (bridge.type === 'horizontal') {
                     ctx.rotate(Math.PI / 2);
-                    ctx.drawImage(planksImg, -bridge.height / 2, -bridge.width / 2, bridge.height, bridge.width);
+                    ctx.drawImage(
+                        planksImg,
+                        -bridge.height / 2,
+                        -bridge.width / 2,
+                        bridge.height,
+                        bridge.width
+                    );
                 } else {
-                    ctx.drawImage(planksImg, -bridge.width / 2, -bridge.height / 2, bridge.width, bridge.height);
+                    ctx.drawImage(
+                        planksImg,
+                        -bridge.width / 2,
+                        -bridge.height / 2,
+                        bridge.width,
+                        bridge.height
+                    );
                 }
             } else {
                 // Fallback
@@ -189,3 +209,4 @@ const GridRenderer = {
 };
 
 window.GridRenderer = GridRenderer;
+

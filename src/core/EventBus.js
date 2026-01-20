@@ -1,6 +1,6 @@
-/**
+﻿/**
  * EventBus - Simple Publish/Sub Pattern for decoupling systems
- * 
+ *
  * Allows systems to communicate without direct dependencies.
  * usage: EventBus.emit('EVENT_NAME', data)
  *        EventBus.on('EVENT_NAME', (data) => { ... })
@@ -13,8 +13,8 @@ class EventBusHub {
 
     /**
      * Subscribe to an event
-     * @param {string} eventName 
-     * @param {function} callback 
+     * @param {string} eventName
+     * @param {function} callback
      */
     on(eventName, callback) {
         if (!this.listeners[eventName]) {
@@ -25,22 +25,22 @@ class EventBusHub {
 
     /**
      * Unsubscribe from an event
-     * @param {string} eventName 
-     * @param {function} callback 
+     * @param {string} eventName
+     * @param {function} callback
      */
     off(eventName, callback) {
         if (!this.listeners[eventName]) return;
-        this.listeners[eventName] = this.listeners[eventName].filter(cb => cb !== callback);
+        this.listeners[eventName] = this.listeners[eventName].filter((cb) => cb !== callback);
     }
 
     /**
      * Emit an event
-     * @param {string} eventName 
-     * @param {any} data 
+     * @param {string} eventName
+     * @param {any} data
      */
     emit(eventName, data) {
         if (!this.listeners[eventName]) return;
-        this.listeners[eventName].forEach(callback => {
+        this.listeners[eventName].forEach((callback) => {
             try {
                 callback(data);
             } catch (err) {
@@ -55,3 +55,4 @@ window.EventBus = new EventBusHub();
 if (window.Registry) Registry.register('EventBus', window.EventBus);
 
 // Event Constants moved to src/config/Events.js
+

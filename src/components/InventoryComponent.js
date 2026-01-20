@@ -1,4 +1,4 @@
-/**
+﻿/**
  * InventoryComponent - Manages Entity Inventory
  */
 class InventoryComponent extends Component {
@@ -17,8 +17,8 @@ class InventoryComponent extends Component {
 
     /**
      * Add item to inventory
-     * @param {string} itemId 
-     * @param {number} amount 
+     * @param {string} itemId
+     * @param {number} amount
      */
     add(itemId, amount) {
         if (!this.items[itemId]) this.items[itemId] = 0;
@@ -42,8 +42,8 @@ class InventoryComponent extends Component {
 
     /**
      * Remove item from inventory
-     * @param {string} itemId 
-     * @param {number} amount 
+     * @param {string} itemId
+     * @param {number} amount
      */
     remove(itemId, amount) {
         if (!this.items[itemId] || this.items[itemId] < amount) return false;
@@ -66,3 +66,4 @@ class InventoryComponent extends Component {
 
 window.InventoryComponent = InventoryComponent;
 if (window.Registry) Registry.register('InventoryComponent', InventoryComponent);
+

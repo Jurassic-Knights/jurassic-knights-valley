@@ -1,6 +1,6 @@
-/**
+﻿/**
  * WorldData - Static configuration for the game world
- * 
+ *
  * Contains island names, biomes, and resource distribution.
  * Decoupled from IslandManager logic.
  */
@@ -22,21 +22,24 @@ const WorldData = {
         ['dinosaur', 'dinosaur', 'dinosaur']
     ],
 
-    // Primary Resource Types per Zone
-    // Used by SpawnManager to determine what resources to spawn
+    // Primary Node Types per Zone
+    // Uses actual node entity IDs from src/entities/nodes/
+    // Only uses nodes with existing images in assets/images/nodes/
     Resources: [
-        ['wood', 'iron_ore', 'scrap_metal'],           // Row 0
-        ['fossil_fuel', 'scrap_metal', 'scrap_metal'], // Row 1
-        ['fossil_fuel', 'fossil_fuel', 'fossil_fuel']  // Row 2
+        ['node_woodcutting_t1_01', 'node_mining_t2_03', 'node_mining_t1_02'], // Row 0: Home=DeadTree, Quarry=Coal, IronRidge=Stone
+        ['node_woodcutting_t2_01', 'node_mining_t2_04', 'node_harvesting_t2_03'], // Row 1: DeadWoods=AshTree, Crossroads=SaltFlat, ScrapYard=Cactus
+        ['node_harvesting_t2_04', 'node_mining_t3_03', 'node_mining_t3_02'] // Row 2: MudFlats=DesertRemains, BoneValley=SandyDeposit, Ruins=BadlandsOutcrop
     ],
 
     // Default Drops for Dinosaurs in this Zone
+    // Uses entity IDs from src/entities/resources/
     DinoDrops: [
-        ['primal_meat', 'primal_meat', 'primal_meat'],     // Row 0 (Fallbacks)
-        ['primal_meat', 'fossil_fuel', 'fossil_fuel'],     // Row 1 (Dead Woods = Meat)
-        ['fossil_fuel', 'fossil_fuel', 'fossil_fuel']      // Row 2
+        ['food_t1_01', 'food_t1_01', 'food_t1_01'], // Row 0 (Fallbacks)
+        ['food_t1_01', 'minerals_t2_01', 'minerals_t2_01'], // Row 1 (Dead Woods = Food)
+        ['minerals_t2_01', 'minerals_t2_01', 'minerals_t2_01'] // Row 2
     ]
 };
 
 // Export
 window.WorldData = WorldData;
+

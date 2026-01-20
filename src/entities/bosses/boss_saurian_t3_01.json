@@ -1,0 +1,69 @@
+{
+  "id": "boss_saurian_t3_01",
+  "name": "Dune Warlord",
+  "sourceCategory": "bosses",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t3_01",
+  "status": "pending",
+  "tier": 3,
+  "biome": "desert",
+  "stats": {
+    "health": 160,
+    "damage": 18,
+    "speed": 80,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 280,
+    "packAggro": true,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t3_01",
+    "death": "sfx_death_saurian_t3_01",
+    "hurt": "sfx_hurt_saurian_t3_01",
+    "aggro": "sfx_aggro_saurian_t3_01"
+  },
+  "spawning": {
+    "biomes": [
+      "desert"
+    ],
+    "groupSize": [
+      1,
+      1
+    ],
+    "weight": 25,
+    "respawnTime": 60
+  },
+  "loot": [
+    {
+      "item": "minerals_t3_01",
+      "chance": 1.0,
+      "amount": [
+        2,
+        4
+      ]
+    },
+    {
+      "item": "leather_t3_01",
+      "chance": 0.8,
+      "amount": [
+        1,
+        2
+      ]
+    }
+  ],
+  "xpReward": 90,
+  "isBoss": true,
+  "species": "Carnotaurus",
+  "sourceDescription": "anthropomorphic Carnotaurus, sand tan uniform with cream trim, polished plate armor, dinosaur skull visor, massive war axe",
+  "weaponType": "war_axe",
+  "role": "heavy",
+  "description": "The Dune Warlord's Carnotaurus face radiates command presence, those distinctive horns filed to wicked points that have gored generals and war-beasts alike. The compact skull designed for ramming is also suited for inspiring terror. Those eyes have watched saurian forces conquer territory across the scorched dunes.\n\nElaborate bronze armor announces warlord status, layered plates bearing battle damage that only enhanced the reputation of the creature wearing them. A sand-colored cape flows from gilded shoulder guards, the fabric embroidered with unit honors and kill tallies. Every piece of armor tells a story of violence.\n\nThose powerful legs have charged through enemy formations, the exposed clawed feet tearing through sand and soldiers with equal ease. A massive war hammer swings from one clawed hand, the weapon sized for a creature that towers over human soldiers. The Dune Warlord leads by example - devastating example.",
+  "files": {
+    "original": "images/bosses/boss_saurian_t3_01_original.png"
+  },
+  "declineNote": ""
+}

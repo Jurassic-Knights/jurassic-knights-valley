@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Component - Base class for Entity Components
- * 
+ *
  * Enables modular logic composition.
  */
 class Component {
@@ -12,13 +12,13 @@ class Component {
     /**
      * Called when component is added to entity
      */
-    init() { }
+    init() {}
 
     /**
      * Update loop
-     * @param {number} dt 
+     * @param {number} dt
      */
-    update(dt) { }
+    update(dt) {}
 
     /**
      * Cleanup
@@ -29,3 +29,4 @@ class Component {
 }
 
 window.Component = Component;
+

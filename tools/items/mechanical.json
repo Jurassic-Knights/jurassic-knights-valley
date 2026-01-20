@@ -15,7 +15,7 @@
         }
     },
     {
-        "id": "mechanical_t2_02",
+        "id": "mechanical_t2_01",
         "name": "Rifle Stock",
         "tier": 2,
         "category": "mechanical",
@@ -26,11 +26,11 @@
         "status": "pending",
         "sourceDescription": "wooden rifle stock with leather grip, polished dark wood with brass fittings, gritty, weathered, WWI-era firearm component",
         "files": {
-            "original": "assets/images/items/mechanical_t2_02_original.png"
+            "original": "assets/images/items/mechanical_t2_01_original.png"
         }
     },
     {
-        "id": "mechanical_t2_03",
+        "id": "mechanical_t2_02",
         "name": "Gun Barrel",
         "tier": 2,
         "category": "mechanical",
@@ -41,11 +41,11 @@
         "status": "approved",
         "sourceDescription": "rifled gun barrel with muzzle, dark blued steel cylinder, gritty, weathered, WWI-era firearm component",
         "files": {
-            "original": "assets/images/items/mechanical_t2_03_original.png"
+            "original": "assets/images/items/mechanical_t2_02_original.png"
         }
     },
     {
-        "id": "mechanical_t3_04",
+        "id": "mechanical_t3_01",
         "name": "Precision Mechanism",
         "tier": 3,
         "category": "mechanical",
@@ -56,11 +56,11 @@
         "status": "approved",
         "sourceDescription": "precision clockwork mechanism with fine gears, polished steel and brass intricate mechanism, gritty, weathered, high-quality gear assembly",
         "files": {
-            "original": "assets/images/items/mechanical_t3_04_original.png"
+            "original": "assets/images/items/mechanical_t3_01_original.png"
         }
     },
     {
-        "id": "mechanical_t4_05",
+        "id": "mechanical_t4_01",
         "name": "Advanced Mechanism",
         "tier": 4,
         "category": "mechanical",
@@ -71,7 +71,7 @@
         "status": "approved",
         "sourceDescription": "advanced complex mechanism with multiple gear layers, hardened steel and tungsten precision mechanism, gritty, weathered, military-grade clockwork assembly",
         "files": {
-            "original": "assets/images/items/mechanical_t4_05_original.png"
+            "original": "assets/images/items/mechanical_t4_01_original.png"
         }
     }
 ]

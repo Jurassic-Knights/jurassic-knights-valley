@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RestSystem
  * Handles the "Rest" mechanic at the Home Outpost.
  * Logic:
@@ -57,21 +57,36 @@ class RestSystem {
 
         // Feature: Resilience Bonus
         // If resting with 0 Resolve (Stamina), gain permanent +1 Max Resolve
-        if (hero.stamina <= 0.1) { // 0.1 epsilon for float safety
+        if (hero.stamina <= 0.1) {
+            // 0.1 epsilon for float safety
             hero.maxStamina += 1;
-            Logger.info(`[RestSystem] Resilience Bonus! Max Stamina increased to ${hero.maxStamina}`);
+            Logger.info(
+                `[RestSystem] Resilience Bonus! Max Stamina increased to ${hero.maxStamina}`
+            );
 
             // Visual feedback for bonus?
             if (window.VFXController && hero) {
                 // Use spawnFloatingText if available
                 if (typeof VFXController.spawnFloatingText === 'function') {
-                    VFXController.spawnFloatingText('+1 MAX RES', hero.x, hero.y - 50, '#FFD700', 2000);
+                    VFXController.spawnFloatingText(
+                        '+1 MAX RES',
+                        hero.x,
+                        hero.y - 50,
+                        '#FFD700',
+                        2000
+                    );
                 }
             }
         } else {
             // Advisory Hint
             if (window.VFXController && typeof VFXController.spawnFloatingText === 'function') {
-                VFXController.spawnFloatingText('Hint: Rest at 0 Resolve for Bonus!', hero.x, hero.y - 50, '#CCCCCC', 2500);
+                VFXController.spawnFloatingText(
+                    'Hint: Rest at 0 Resolve for Bonus!',
+                    hero.x,
+                    hero.y - 50,
+                    '#CCCCCC',
+                    2500
+                );
             }
         }
 
@@ -103,3 +118,4 @@ class RestSystem {
 
 window.RestSystem = new RestSystem();
 if (window.Registry) Registry.register('RestSystem', window.RestSystem);
+

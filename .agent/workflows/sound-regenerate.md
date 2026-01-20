@@ -10,6 +10,8 @@ When the user calls `/sound-regenerate`, follow these steps:
 // turbo
 Read the file `C:\Users\Anthony\.gemini\antigravity\scratch\jurassic-knights-valley\tools\sfx_regeneration_queue.json` to get the list of SFX marked for regeneration.
 
+> **Note**: If the queue is empty but you expect items, ask the user to **refresh the dashboard page** first. This syncs localStorage queue data to the server file.
+
 ## 2. Load Reference Sound - Compsognathus (Gold Standard)
 The Compsognathus (dinosaur_t1_01) is the gold standard for sound quality. View `src/audio/SFX_Dinosaurs.js` and study the `sfx_aggro_dinosaur_t1_01` implementation which uses:
 - Multi-oscillator synthesis with frequency sweeps

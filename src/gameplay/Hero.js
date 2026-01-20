@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Hero - Player-controlled character
- * 
+ *
  * Owner: Director (engine), Gameplay Designer (stats)
  */
 
@@ -37,11 +37,11 @@ class Hero extends Entity {
                 capacity: 20,
                 items: {
                     gold: finalConfig.gold || 0,
-                    scrap_metal: 10,
-                    iron_ore: 10,
-                    fossil_fuel: 10,
-                    wood: 10,
-                    primal_meat: 10
+                    scraps_t1_01: 10,
+                    minerals_t1_01: 10,
+                    minerals_t2_01: 10,
+                    wood_t1_01: 10,
+                    food_t1_01: 10
                 }
             });
         }
@@ -52,7 +52,10 @@ class Hero extends Entity {
                 damage: finalConfig.attack ? finalConfig.attack.damage : 10,
                 rate: finalConfig.attack ? finalConfig.attack.rate : 2,
                 range: finalConfig.attack ? finalConfig.attack.range.default : 125,
-                staminaCost: finalConfig.attack && finalConfig.attack.staminaCost !== undefined ? finalConfig.attack.staminaCost : 1
+                staminaCost:
+                    finalConfig.attack && finalConfig.attack.staminaCost !== undefined
+                        ? finalConfig.attack.staminaCost
+                        : 1
             });
         }
 
@@ -75,9 +78,22 @@ class Hero extends Entity {
             });
         }
 
+        // Equipment Manager (Phase 18 - Equipment System)
+        if (window.EquipmentManager) {
+            this.equipment = new EquipmentManager(this);
+
+            // Equip default items from HeroDefaults config
+            if (window.HeroDefaults && window.EntityRegistry?.equipment) {
+                for (const [slot, entityId] of Object.entries(HeroDefaults.equipment)) {
+                    if (entityId && EntityRegistry.equipment[entityId]) {
+                        this.equipment.equip(slot, EntityRegistry.equipment[entityId]);
+                    }
+                }
+            }
+        }
+
         // Legacy/Sync Properties (Getters/Setters)
         // This ensures compatibility with HeroSystem/RestSystem without refactoring them yet
-
 
         // Legacy/Sync Properties (Getters/Setters)
         // We now rely on getters to fetch truth from components.
@@ -89,8 +105,10 @@ class Hero extends Entity {
         this.active = true;
 
         // Ranges
-        this.miningRange = finalConfig.attack && finalConfig.attack.range ? finalConfig.attack.range.default : 125;
-        this.gunRange = finalConfig.attack && finalConfig.attack.range ? finalConfig.attack.range.gun : 450;
+        this.miningRange =
+            finalConfig.attack && finalConfig.attack.range ? finalConfig.attack.range.default : 125;
+        this.gunRange =
+            finalConfig.attack && finalConfig.attack.range ? finalConfig.attack.range.gun : 450;
 
         // Visual State (Used by HeroRenderer/HeroSystem)
         this.prevX = this.x;
@@ -103,39 +121,78 @@ class Hero extends Entity {
     // --- Accessors for Components ---
 
     // Health
-    get health() { return this.components.health ? this.components.health.health : 0; }
-    set health(val) { if (this.components.health) this.components.health.health = val; }
+    get health() {
+        return this.components.health ? this.components.health.health : 0;
+    }
+    set health(val) {
+        if (this.components.health) this.components.health.health = val;
+    }
 
-    get maxHealth() { return this.components.health ? this.components.health.maxHealth : 100; }
-    set maxHealth(val) { if (this.components.health) this.components.health.maxHealth = val; }
+    get maxHealth() {
+        return this.components.health ? this.components.health.maxHealth : 100;
+    }
+    set maxHealth(val) {
+        if (this.components.health) this.components.health.maxHealth = val;
+    }
 
     // Inventory
-    get inventory() { return this.components.inventory ? this.components.inventory.items : {}; }
+    get inventory() {
+        return this.components.inventory ? this.components.inventory.items : {};
+    }
     set inventory(val) {
         // Warning: Setting inventory directly is discouraged, use component methods
         if (this.components.inventory) this.components.inventory.items = val;
     }
 
     // Stats
-    get speed() { return this.components.stats ? this.components.stats.speed : 700; }
-    set speed(val) { if (this.components.stats) this.components.stats.speed = val; }
+    get speed() {
+        return this.components.stats ? this.components.stats.speed : 700;
+    }
+    set speed(val) {
+        if (this.components.stats) this.components.stats.speed = val;
+    }
 
-    get stamina() { return this.components.stats ? this.components.stats.stamina : 0; }
-    set stamina(val) { if (this.components.stats) this.components.stats.stamina = val; }
+    get stamina() {
+        return this.components.stats ? this.components.stats.stamina : 0;
+    }
+    set stamina(val) {
+        if (this.components.stats) this.components.stats.stamina = val;
+    }
 
-    get maxStamina() { return this.components.stats ? this.components.stats.maxStamina : 100; }
-    set maxStamina(val) { if (this.components.stats) this.components.stats.maxStamina = val; }
+    get maxStamina() {
+        return this.components.stats ? this.components.stats.maxStamina : 100;
+    }
+    set maxStamina(val) {
+        if (this.components.stats) this.components.stats.maxStamina = val;
+    }
 
     // Level/XP (03-hero-stats)
-    get level() { return this.components.stats?.level || 1; }
-    set level(val) { if (this.components.stats) this.components.stats.level = val; }
+    get level() {
+        return this.components.stats?.level || 1;
+    }
+    set level(val) {
+        if (this.components.stats) this.components.stats.level = val;
+    }
 
-    get xp() { return this.components.stats?.xp || 0; }
-    set xp(val) { if (this.components.stats) this.components.stats.xp = val; }
+    get xp() {
+        return this.components.stats?.xp || 0;
+    }
+    set xp(val) {
+        if (this.components.stats) this.components.stats.xp = val;
+    }
 
     // Combat (03-hero-stats) - getters delegate to effective stat methods
-    get attack() { return this.components.stats?.getAttack() || 10; }
-    get defense() { return this.components.stats?.getDefense() || 0; }
+    get attack() {
+        return this.components.stats?.getAttack() || 10;
+    }
+    get defense() {
+        return this.components.stats?.getDefense() || 0;
+    }
+
+    // Stats component accessor (for HeroCombatService etc)
+    get stats() {
+        return this.components.stats;
+    }
 
     /**
      * Helper to restore stamina (used by RestSystem legacy calls)
@@ -145,8 +202,7 @@ class Hero extends Entity {
             this.components.stats.restoreStamina(this.maxStamina);
         }
     }
-
-
 }
 
 window.Hero = Hero;
+

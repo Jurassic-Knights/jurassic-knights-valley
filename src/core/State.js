@@ -1,6 +1,6 @@
-/**
+﻿/**
  * State - Centralized state management with reactivity
- * 
+ *
  * Owner: Director
  */
 
@@ -67,11 +67,11 @@ class State {
      */
     emit(key, newValue, oldValue) {
         if (this.listeners[key]) {
-            this.listeners[key].forEach(cb => cb(newValue, oldValue));
+            this.listeners[key].forEach((cb) => cb(newValue, oldValue));
         }
         // Global listener for any change
         if (this.listeners['*']) {
-            this.listeners['*'].forEach(cb => cb(key, newValue, oldValue));
+            this.listeners['*'].forEach((cb) => cb(key, newValue, oldValue));
         }
     }
 
@@ -110,3 +110,4 @@ class State {
 
 // Export singleton
 window.GameState = new State();
+

@@ -1,6 +1,6 @@
-/**
+﻿/**
  * UIPanel - Base Class for all UI Modules
- * 
+ *
  * Provides standard functionality for:
  * - Visibility (Open/Close)
  * - Docking (Mobile Modal vs Desktop Sidebar)
@@ -15,12 +15,15 @@ class UIPanel {
      */
     constructor(id, config = {}) {
         this.id = id;
-        this.config = Object.assign({
-            dockable: true,
-            defaultDock: 'ui-hud-right',
-            modalClass: 'modal-panel',
-            dockedClass: 'docked-panel'
-        }, config);
+        this.config = Object.assign(
+            {
+                dockable: true,
+                defaultDock: 'ui-hud-right',
+                modalClass: 'modal-panel',
+                dockedClass: 'docked-panel'
+            },
+            config
+        );
 
         this.el = document.getElementById(this.id);
         this.isOpen = false;
@@ -58,6 +61,11 @@ class UIPanel {
     open() {
         if (!this.el) this.el = document.getElementById(this.id);
         if (!this.el) return;
+
+        // Close other fullscreen UIs first
+        if (window.UIManager && UIManager.closeOtherFullscreenUIs) {
+            UIManager.closeOtherFullscreenUIs(this);
+        }
 
         // If docked, we might need to close other docked panels (Accordion)
         if (this.isDocked && window.UIManager) {
@@ -153,3 +161,4 @@ class UIPanel {
 }
 
 window.UIPanel = UIPanel;
+

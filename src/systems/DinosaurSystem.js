@@ -1,4 +1,4 @@
-/**
+﻿/**
  * DinosaurSystem
  * Handles AI, Movement, and Animation updates for all Dinosaurs.
  */
@@ -26,13 +26,18 @@ class DinosaurSystem {
         // SFX: Hurt
         if (window.AudioManager) AudioManager.playSFX('sfx_dino_hurt');
 
-        // Blood VFX
+        // Blood VFX - Multi-layered realistic gore
         if (window.VFXController && window.VFXConfig) {
-            // Blood Splatter (Red Circles)
+            // Primary blood spray (directional splatter)
             VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
-
-            // Meat Chunks (Debris)
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.MEAT_CHUNKS);
+            // Blood mist (fine particles lingering)
+            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_MIST);
+            // Blood droplets (falling drops)
+            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_DROPS);
+            // Meat chunks on heavy hits
+            if (amount > 10) {
+                VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.MEAT_CHUNKS);
+            }
         }
     }
 
@@ -72,17 +77,27 @@ class DinosaurSystem {
                     VFXController.playForeground(dino.x, dino.y, VFXConfig.TEMPLATES.DINO_DEATH_FX);
                 }
 
-                // Spawn Drop
-                // Note: We use the EntityConfig data for drops if available, or fallback to 'primal_meat'
-                if (window.SpawnManager) {
-                    // Logic: Determine drop type based on Dino Type
-                    // Default to 'primal_meat' if not specified in config
-                    let dropType = 'primal_meat';
-                    if (dino.config && dino.config.dropType) {
-                        dropType = dino.config.dropType;
-                    }
+                // Drop loot directly using SpawnManager (same pattern as Resource.js)
+                // This bypasses the complex LootSystem chain and works on file:// protocol
+                if (window.SpawnManager && dino.lootTable && Array.isArray(dino.lootTable)) {
+                    for (const entry of dino.lootTable) {
+                        // Roll chance (0-1 format)
+                        if (Math.random() > (entry.chance || 1)) continue;
 
-                    SpawnManager.spawnDrop(dino.x, dino.y, dropType, 1);
+                        // Calculate amount
+                        let amount = 1;
+                        if (Array.isArray(entry.amount)) {
+                            amount = Math.floor(
+                                entry.amount[0] +
+                                Math.random() * (entry.amount[1] - entry.amount[0] + 1)
+                            );
+                        } else if (entry.amount) {
+                            amount = entry.amount;
+                        }
+
+                        // Spawn the drop directly
+                        SpawnManager.spawnDrop(dino.x, dino.y, entry.item, amount);
+                    }
                 }
             }
         }
@@ -124,11 +139,17 @@ class DinosaurSystem {
         // Bounds Check - use config value for padding
         if (dino.islandBounds) {
             const padding = window.BaseCreature?.boundsPadding || 30;
-            if (nextX < dino.islandBounds.x + padding || nextX > dino.islandBounds.x + dino.islandBounds.width - padding) {
+            if (
+                nextX < dino.islandBounds.x + padding ||
+                nextX > dino.islandBounds.x + dino.islandBounds.width - padding
+            ) {
                 dino.wanderDirection.x *= -1;
                 nextX = dino.x + dino.wanderDirection.x * 5;
             }
-            if (nextY < dino.islandBounds.y + padding || nextY > dino.islandBounds.y + dino.islandBounds.height - padding) {
+            if (
+                nextY < dino.islandBounds.y + padding ||
+                nextY > dino.islandBounds.y + dino.islandBounds.height - padding
+            ) {
                 dino.wanderDirection.y *= -1;
                 nextY = dino.y + dino.wanderDirection.y * 5;
             }
@@ -159,10 +180,15 @@ class DinosaurSystem {
             }
             dino.wanderDirection.x = Math.cos(angle);
             dino.wanderDirection.y = Math.sin(angle);
-            dino.wanderTimer = 2000 + Math.random() * 3000;
+            dino.wanderTimer =
+                (GameConstants?.AI?.WANDER_TIMER_MIN || 2000) +
+                Math.random() *
+                ((GameConstants?.AI?.WANDER_TIMER_MAX || 5000) -
+                    (GameConstants?.AI?.WANDER_TIMER_MIN || 2000));
         }
     }
 }
 
 window.DinosaurSystem = new DinosaurSystem();
 if (window.Registry) Registry.register('DinosaurSystem', window.DinosaurSystem);
+

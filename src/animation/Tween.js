@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Tween System
  * Handles smooth property animations (position, scale, alpha, etc.)
- * 
+ *
  * Owner: Animator
  */
 
@@ -10,19 +10,22 @@ const Tween = {
 
     // Easing functions
     easing: {
-        linear: t => t,
-        easeIn: t => t * t,
-        easeOut: t => t * (2 - t),
-        easeInOut: t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t,
-        bounce: t => {
+        linear: (t) => t,
+        easeIn: (t) => t * t,
+        easeOut: (t) => t * (2 - t),
+        easeInOut: (t) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+        bounce: (t) => {
             if (t < 1 / 2.75) return 7.5625 * t * t;
             if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
             if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
             return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
         },
-        elastic: t => {
-            return t === 0 ? 0 : t === 1 ? 1 :
-                -Math.pow(2, 10 * (t - 1)) * Math.sin((t - 1.1) * 5 * Math.PI);
+        elastic: (t) => {
+            return t === 0
+                ? 0
+                : t === 1
+                  ? 1
+                  : -Math.pow(2, 10 * (t - 1)) * Math.sin((t - 1.1) * 5 * Math.PI);
         }
     },
 
@@ -62,7 +65,7 @@ const Tween = {
      * @param {number} dt - Delta time in ms
      */
     update(dt) {
-        this.activeTweens = this.activeTweens.filter(tween => {
+        this.activeTweens = this.activeTweens.filter((tween) => {
             // Handle delay
             if (tween.delay > 0) {
                 tween.delay -= dt;
@@ -103,7 +106,7 @@ const Tween = {
      * Cancel all tweens for a target
      */
     cancel(target) {
-        this.activeTweens = this.activeTweens.filter(t => t.target !== target);
+        this.activeTweens = this.activeTweens.filter((t) => t.target !== target);
     },
 
     /**
@@ -140,3 +143,4 @@ const Tween = {
 };
 
 window.Tween = Tween;
+

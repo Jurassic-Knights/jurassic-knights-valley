@@ -1,6 +1,6 @@
-/**
+﻿/**
  * EntityRenderService - Handles entity collection, Y-sorting, and render dispatch
- * 
+ *
  * Extracted from GameRenderer to reduce file size and improve maintainability.
  * Owner: EntityRenderService
  */
@@ -47,8 +47,8 @@ const EntityRenderService = {
 
     /**
      * Render a single entity using appropriate renderer
-     * @param {CanvasRenderingContext2D} ctx 
-     * @param {object} entity 
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {object} entity
      * @param {object} renderers - {hero, heroRenderer, dinosaurRenderer, resourceRenderer}
      * @param {object} timing - Optional timing object for profiling
      */
@@ -64,30 +64,25 @@ const EntityRenderService = {
                 entity.render(ctx);
             }
             if (timing) timing.entHeroTime = (timing.entHeroTime || 0) + performance.now() - tSub;
-        }
-        else if (type === EntityTypes.DINOSAUR && renderers.dinosaurRenderer) {
+        } else if (type === EntityTypes.DINOSAUR && renderers.dinosaurRenderer) {
             renderers.dinosaurRenderer.render(ctx, entity, false);
             if (timing) timing.entDinoTime = (timing.entDinoTime || 0) + performance.now() - tSub;
-        }
-        else if (type === EntityTypes.RESOURCE && renderers.resourceRenderer) {
+        } else if (type === EntityTypes.RESOURCE && renderers.resourceRenderer) {
             renderers.resourceRenderer.render(ctx, entity, false);
             if (timing) timing.entResTime = (timing.entResTime || 0) + performance.now() - tSub;
-        }
-        else if (type === EntityTypes.MERCHANT) {
+        } else if (type === EntityTypes.MERCHANT) {
             if (typeof entity.render === 'function') entity.render(ctx);
             if (timing) {
                 timing.entMerchantTime = (timing.entMerchantTime || 0) + performance.now() - tSub;
                 timing.entMerchantCount = (timing.entMerchantCount || 0) + 1;
             }
-        }
-        else if (type === EntityTypes.DROPPED_ITEM) {
+        } else if (type === EntityTypes.DROPPED_ITEM) {
             if (typeof entity.render === 'function') entity.render(ctx);
             if (timing) {
                 timing.entDroppedTime = (timing.entDroppedTime || 0) + performance.now() - tSub;
                 timing.entDroppedCount = (timing.entDroppedCount || 0) + 1;
             }
-        }
-        else {
+        } else {
             if (typeof entity.render === 'function') entity.render(ctx);
             if (timing) {
                 timing.entOtherTime = (timing.entOtherTime || 0) + performance.now() - tSub;
@@ -102,7 +97,7 @@ const EntityRenderService = {
 
     /**
      * Render all entities in the sorted collection
-     * @param {CanvasRenderingContext2D} ctx 
+     * @param {CanvasRenderingContext2D} ctx
      * @param {array} entities - Y-sorted entity array
      * @param {object} renderers - Renderer references
      * @param {object} timing - Optional profiling object
@@ -124,9 +119,9 @@ const EntityRenderService = {
 
     /**
      * Render UI overlays (health bars) for all entities
-     * @param {CanvasRenderingContext2D} ctx 
-     * @param {array} entities 
-     * @param {object} timing 
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {array} entities
+     * @param {object} timing
      */
     renderUIOverlays(ctx, entities, timing = null) {
         const tSub = timing ? performance.now() : 0;
@@ -144,3 +139,4 @@ const EntityRenderService = {
 // Export
 window.EntityRenderService = EntityRenderService;
 if (window.Registry) Registry.register('EntityRenderService', EntityRenderService);
+

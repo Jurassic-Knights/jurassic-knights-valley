@@ -1,136 +1,466 @@
-/**
- * InventoryPanel - Manages the Player Inventory
+﻿/**
+ * InventoryPanel - Fullscreen inventory management screen
+ * 
+ * Reuses equipment-screen CSS classes for consistency.
+ * Layout matches EquipmentUI: header, tabs (sub-filters), grid, footer (categories).
  */
-class InventoryPanel extends UIPanel {
+class InventoryPanel {
     constructor() {
-        super('modal-inventory', {
-            dockable: true,
-            defaultDock: 'ui-hud-right'
-        });
-        this.gridColumns = 3; // Default
-        this.init();
-    }
+        this.isOpen = false;
+        this.container = null;
 
-    init() {
-        Logger.info('[InventoryPanel] Initializing...');
+        // Filter state
+        this.activeCategory = 'all'; // 'all', 'items', 'resources'  
+        this.activeType = 'all';     // 'all', 'bone', 'leather', 'food', etc.
 
-        // Wait for DOM
+        // Original footer button configs (saved on open, restored on close)
+        this.originalFooterConfigs = null;
+
+        // Defer init until DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.bindEvents());
+            document.addEventListener('DOMContentLoaded', () => this._init());
         } else {
-            this.bindEvents();
+            this._init();
         }
     }
 
-    bindEvents() {
-        Logger.info('[InventoryPanel] Binding events...');
-
-        // Setup Binds
+    _init() {
+        // Bind to inventory button
         const btnInventory = document.getElementById('btn-inventory');
         if (btnInventory) {
-            const toggleFn = (e) => {
-                if (!e) return;
-                Logger.info(`[InventoryPanel] Button Triggered via ${e.type}. Current State: ${this.isOpen}`);
-
-                if (e.type === 'touchstart') {
-                    e.preventDefault();
-                    this.toggle();
-                } else if (e.type === 'click') {
-                    // Prevent double-fire if needed, though simple toggle is usually fine handled this way
-                    this.toggle();
-                }
-            };
-
-            // Remove old listeners to be safe
-            btnInventory.replaceWith(btnInventory.cloneNode(true));
-            const newBtn = document.getElementById('btn-inventory');
-
-            newBtn.addEventListener('click', toggleFn);
-            newBtn.addEventListener('touchstart', toggleFn, { passive: false });
-            Logger.info('[InventoryPanel] Button Listeners Attached');
-        } else {
-            Logger.error('[InventoryPanel] Button not found!');
+            btnInventory.addEventListener('click', () => {
+                // Skip if footer is in override mode (equipment/inventory screen has taken over)
+                if (btnInventory.dataset.footerOverride) return;
+                this.toggle();
+            });
+            btnInventory.addEventListener('touchstart', (e) => {
+                // Skip if footer is in override mode
+                if (btnInventory.dataset.footerOverride) return;
+                e.preventDefault();
+                this.toggle();
+            }, { passive: false });
         }
 
-        const btnClose = document.getElementById('btn-close-inventory');
-        if (btnClose) {
-            btnClose.addEventListener('click', () => this.close());
+        // Create container (reuses equipment-screen class for same positioning)
+        this._createContainer();
+
+        // Register with UIManager for fullscreen exclusivity
+        if (window.UIManager && UIManager.registerFullscreenUI) {
+            UIManager.registerFullscreenUI(this);
         }
 
+        // Listen for inventory updates
         if (window.EventBus) {
             EventBus.on('INVENTORY_UPDATED', () => {
-                if (this.isOpen) this.render();
+                if (this.isOpen) this._render();
             });
         }
+
+        Logger.info('[InventoryPanel] Initialized');
     }
 
-    /**
-     * Override Open to render
-     */
-    onOpen() {
-        this.render();
+    _createContainer() {
+        this.container = document.createElement('div');
+        this.container.id = 'inventory-screen';
+        // Reuse equipment-screen class for same game-view fullscreen behavior
+        this.container.className = 'equipment-screen';
+        this.container.style.display = 'none';
+
+        // Event delegation
+        this.container.addEventListener('click', (e) => this._handleClick(e));
+
+        // Append to #ui-overlay to constrain to game view
+        const uiOverlay = document.getElementById('ui-overlay');
+        (uiOverlay || document.body).appendChild(this.container);
     }
 
-    /**
-     * Set Grid Size for Layouts
-     */
-    setGridSize(cols) {
-        this.gridColumns = cols;
-        const grid = document.getElementById('inventory-grid');
-        if (grid) {
-            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-        }
-    }
+    _handleClick(e) {
+        const target = e.target;
 
-    /**
-     * Render items
-     */
-    render() {
-        const grid = document.getElementById('inventory-grid');
-        if (!grid) return;
-
-        grid.innerHTML = '';
-        const hero = window.GameInstance?.hero;
-        if (!hero || !hero.inventory) {
-            grid.innerHTML = '<div style="color:white; padding:10px;">No inventory data.</div>';
+        // Close or Back button
+        if (target.closest('.equip-close') || target.closest('#inv-back')) {
+            this.close();
             return;
         }
 
-        const items = Object.entries(hero.inventory);
-        if (items.length === 0) {
-            grid.innerHTML = '<div style="color:#aaa; grid-column: 1/-1; text-align:center; padding: 20px;">Inventory Empty</div>';
+        // Category buttons (footer)
+        const catBtn = target.closest('.action-btn[data-category]');
+        if (catBtn?.dataset.category) {
+            this.activeCategory = catBtn.dataset.category;
+            this.activeType = 'all';
+            this._render();
             return;
         }
 
-        for (const [key, amount] of items) {
-            if (amount <= 0) continue;
+        // Type filter buttons (tabs)
+        const typeBtn = target.closest('.equip-tab[data-type]');
+        if (typeBtn?.dataset.type) {
+            this.activeType = typeBtn.dataset.type;
+            this._render();
+            return;
+        }
+    }
 
-            const slot = document.createElement('div');
-            slot.className = 'inventory-slot';
+    toggle() {
+        this.isOpen ? this.close() : this.open();
+    }
 
-            let name = key;
-            if (window.EntityRegistry?.resources?.[key]) {
-                name = EntityRegistry.resources[key].name;
-            } else if (window.Resource && Resource.TYPES && Resource.TYPES[key]) {
-                name = Resource.TYPES[key].name;
+    open() {
+        // Close other fullscreen UIs first
+        if (window.UIManager && UIManager.closeOtherFullscreenUIs) {
+            UIManager.closeOtherFullscreenUIs(this);
+        }
+
+        // Swap footer buttons to inventory mode
+        this._swapFooterToInventoryMode();
+
+        this.isOpen = true;
+        this._render();
+        this.container.style.display = 'flex';
+        Logger.info('[InventoryPanel] Opened');
+    }
+
+    close() {
+        this.isOpen = false;
+        this.container.style.display = 'none';
+
+        // Restore original footer buttons
+        this._restoreFooterButtons();
+
+        Logger.info('[InventoryPanel] Closed');
+    }
+
+    /**
+     * Swap footer buttons to inventory mode
+     * ALL | ITEMS | (center disabled) | RESOURCES | BACK
+     */
+    _swapFooterToInventoryMode() {
+        const btnInventory = document.getElementById('btn-inventory');
+        const btnEquip = document.getElementById('btn-equip');
+        const btnMap = document.getElementById('btn-map');
+        const btnMagnet = document.getElementById('btn-magnet');
+        const btnContext = document.getElementById('btn-context-action');
+
+        // Save original configs if not already saved
+        if (!this.originalFooterConfigs) {
+            this.originalFooterConfigs = {
+                inventory: {
+                    label: btnInventory?.querySelector('.btn-label')?.textContent,
+                    iconId: btnInventory?.querySelector('.btn-icon')?.dataset.iconId
+                },
+                equip: {
+                    label: btnEquip?.querySelector('.btn-label')?.textContent,
+                    iconId: btnEquip?.querySelector('.btn-icon')?.dataset.iconId
+                },
+                map: {
+                    label: btnMap?.querySelector('.btn-label')?.textContent,
+                    iconId: btnMap?.querySelector('.btn-icon')?.dataset.iconId
+                },
+                magnet: {
+                    label: btnMagnet?.querySelector('.btn-label')?.textContent,
+                    iconId: btnMagnet?.querySelector('.btn-icon')?.dataset.iconId
+                }
+            };
+        }
+
+        // Swap to ALL button
+        if (btnInventory) {
+            btnInventory.dataset.footerOverride = 'inventory';
+            const label = btnInventory.querySelector('.btn-label');
+            const icon = btnInventory.querySelector('.btn-icon');
+            if (label) label.textContent = 'ALL';
+            if (icon) {
+                icon.dataset.iconId = 'ui_icon_inventory';
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath('ui_icon_inventory') || ''}')`;
             }
-
-            const iconId = `drop_${key}`;
-            const iconPath = window.AssetLoader ? AssetLoader.getImagePath(iconId) : null;
-            const bgStyle = iconPath
-                ? `background-image: url('${iconPath}'); background-size: contain; background-repeat: no-repeat; background-position: center;`
-                : `background-color: #333;`;
-
-            slot.innerHTML = `
-                <div class="inv-count">${amount}</div>
-                <div class="inv-icon" style="${bgStyle}"></div>
-                <div class="inv-name">${name}</div>
-            `;
-            grid.appendChild(slot);
+            btnInventory.classList.toggle('active', this.activeCategory === 'all');
+            btnInventory.onclick = () => { this.activeCategory = 'all'; this.activeType = 'all'; this._render(); this._updateFooterActiveStates(); };
         }
+
+        // Swap to ITEMS button
+        if (btnEquip) {
+            btnEquip.dataset.footerOverride = 'inventory';
+            const label = btnEquip.querySelector('.btn-label');
+            const icon = btnEquip.querySelector('.btn-icon');
+            if (label) label.textContent = 'ITEMS';
+            if (icon) {
+                icon.dataset.iconId = 'ui_icon_crafting';
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath('ui_icon_crafting') || ''}')`;
+            }
+            btnEquip.classList.toggle('active', this.activeCategory === 'items');
+            btnEquip.onclick = () => { this.activeCategory = 'items'; this.activeType = 'all'; this._render(); this._updateFooterActiveStates(); };
+        }
+
+        // Swap to RESOURCES button
+        if (btnMap) {
+            btnMap.dataset.footerOverride = 'inventory';
+            const label = btnMap.querySelector('.btn-label');
+            const icon = btnMap.querySelector('.btn-icon');
+            if (label) label.textContent = 'RES';
+            if (icon) {
+                icon.dataset.iconId = 'ui_icon_resources';
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath('ui_icon_resources') || ''}')`;
+            }
+            btnMap.classList.toggle('active', this.activeCategory === 'resources');
+            btnMap.onclick = () => { this.activeCategory = 'resources'; this.activeType = 'all'; this._render(); this._updateFooterActiveStates(); };
+        }
+
+        // Swap to BACK button
+        if (btnMagnet) {
+            btnMagnet.dataset.footerOverride = 'inventory';
+            const label = btnMagnet.querySelector('.btn-label');
+            const icon = btnMagnet.querySelector('.btn-icon');
+            if (label) label.textContent = 'BACK';
+            if (icon) {
+                icon.dataset.iconId = 'ui_icon_close';
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath('ui_icon_close') || ''}')`;
+            }
+            btnMagnet.classList.remove('active');
+            btnMagnet.onclick = () => this.close();
+        }
+
+        // Disable context button while in inventory mode
+        if (btnContext) {
+            btnContext.classList.remove('active');
+            btnContext.classList.add('inactive');
+        }
+
+        // Hide weapon swap button while in inventory mode
+        const btnSwap = document.getElementById('btn-weapon-swap');
+        if (btnSwap) btnSwap.style.display = 'none';
+    }
+
+    /**
+     * Update footer button active states based on selected category
+     */
+    _updateFooterActiveStates() {
+        const btnInventory = document.getElementById('btn-inventory');
+        const btnEquip = document.getElementById('btn-equip');
+        const btnMap = document.getElementById('btn-map');
+
+        btnInventory?.classList.toggle('active', this.activeCategory === 'all');
+        btnEquip?.classList.toggle('active', this.activeCategory === 'items');
+        btnMap?.classList.toggle('active', this.activeCategory === 'resources');
+    }
+
+    /**
+     * Restore footer buttons to original state
+     */
+    _restoreFooterButtons() {
+        if (!this.originalFooterConfigs) return;
+
+        const btnInventory = document.getElementById('btn-inventory');
+        const btnEquip = document.getElementById('btn-equip');
+        const btnMap = document.getElementById('btn-map');
+        const btnMagnet = document.getElementById('btn-magnet');
+        const btnContext = document.getElementById('btn-context-action');
+
+        // Restore all buttons
+        if (btnInventory && this.originalFooterConfigs.inventory) {
+            delete btnInventory.dataset.footerOverride;
+            const label = btnInventory.querySelector('.btn-label');
+            const icon = btnInventory.querySelector('.btn-icon');
+            if (label) label.textContent = this.originalFooterConfigs.inventory.label;
+            if (icon && this.originalFooterConfigs.inventory.iconId) {
+                icon.dataset.iconId = this.originalFooterConfigs.inventory.iconId;
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath(this.originalFooterConfigs.inventory.iconId) || ''}')`;
+            }
+            btnInventory.classList.remove('active');
+            btnInventory.onclick = null;
+        }
+
+        if (btnEquip && this.originalFooterConfigs.equip) {
+            delete btnEquip.dataset.footerOverride;
+            const label = btnEquip.querySelector('.btn-label');
+            const icon = btnEquip.querySelector('.btn-icon');
+            if (label) label.textContent = this.originalFooterConfigs.equip.label;
+            if (icon && this.originalFooterConfigs.equip.iconId) {
+                icon.dataset.iconId = this.originalFooterConfigs.equip.iconId;
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath(this.originalFooterConfigs.equip.iconId) || ''}')`;
+            }
+            btnEquip.classList.remove('active');
+            btnEquip.onclick = null;
+        }
+
+        if (btnMap && this.originalFooterConfigs.map) {
+            delete btnMap.dataset.footerOverride;
+            const label = btnMap.querySelector('.btn-label');
+            const icon = btnMap.querySelector('.btn-icon');
+            if (label) label.textContent = this.originalFooterConfigs.map.label;
+            if (icon && this.originalFooterConfigs.map.iconId) {
+                icon.dataset.iconId = this.originalFooterConfigs.map.iconId;
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath(this.originalFooterConfigs.map.iconId) || ''}')`;
+            }
+            btnMap.classList.remove('active');
+            btnMap.onclick = null;
+        }
+
+        if (btnMagnet && this.originalFooterConfigs.magnet) {
+            delete btnMagnet.dataset.footerOverride;
+            const label = btnMagnet.querySelector('.btn-label');
+            const icon = btnMagnet.querySelector('.btn-icon');
+            if (label) label.textContent = this.originalFooterConfigs.magnet.label;
+            if (icon && this.originalFooterConfigs.magnet.iconId) {
+                icon.dataset.iconId = this.originalFooterConfigs.magnet.iconId;
+                icon.style.backgroundImage = `url('${window.AssetLoader?.getImagePath(this.originalFooterConfigs.magnet.iconId) || ''}')`;
+            }
+            btnMagnet.classList.remove('active');
+            btnMagnet.onclick = null;
+        }
+
+        // Re-enable context button
+        if (btnContext) {
+            btnContext.classList.remove('inactive');
+        }
+
+        // Show weapon swap button again
+        const btnSwap = document.getElementById('btn-weapon-swap');
+        if (btnSwap) btnSwap.style.display = '';
+
+        this.originalFooterConfigs = null;
+    }
+
+    /**
+     * Get unique sub-types from EntityRegistry for a category
+     */
+    getSubTypes(category) {
+        const registry = category === 'items'
+            ? window.EntityRegistry?.items
+            : window.EntityRegistry?.resources;
+        if (!registry) return [];
+
+        const types = new Set();
+        for (const id in registry) {
+            if (registry[id]?.sourceFile) {
+                types.add(registry[id].sourceFile);
+            }
+        }
+        return Array.from(types).sort();
+    }
+
+    /**
+     * Get all sub-types across both items and resources
+     */
+    getAllSubTypes() {
+        const itemTypes = this.getSubTypes('items');
+        const resourceTypes = this.getSubTypes('resources');
+        return [...new Set([...itemTypes, ...resourceTypes])].sort();
+    }
+
+    /**
+     * Get entity info from EntityRegistry
+     */
+    getEntityInfo(key) {
+        if (window.EntityRegistry?.resources?.[key]) {
+            return { ...EntityRegistry.resources[key], category: 'resources' };
+        } else if (window.EntityRegistry?.items?.[key]) {
+            return { ...EntityRegistry.items[key], category: 'items' };
+        }
+        return null;
+    }
+
+    /**
+     * Check if item passes current filters
+     */
+    passesFilter(key) {
+        const entity = this.getEntityInfo(key);
+        if (!entity) return true;
+
+        if (this.activeCategory !== 'all' && entity.category !== this.activeCategory) {
+            return false;
+        }
+
+        if (this.activeType !== 'all' && entity.sourceFile !== this.activeType) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Render the fullscreen inventory panel
+     * Uses equipment-screen CSS classes for consistent styling
+     */
+    _render() {
+        const hero = window.GameInstance?.hero;
+        const inventory = hero?.inventory || {};
+        const items = Object.entries(inventory).filter(([k, v]) => v > 0);
+
+        // Get sub-types for current category
+        let subTypes = [];
+        if (this.activeCategory === 'all') {
+            subTypes = this.getAllSubTypes();
+        } else {
+            subTypes = this.getSubTypes(this.activeCategory);
+        }
+
+        // Filter items
+        const filteredItems = items.filter(([key]) => this.passesFilter(key));
+
+        // Count items per category for badges
+        const itemCount = items.filter(([k]) => this.getEntityInfo(k)?.category === 'items').reduce((a, [, v]) => a + v, 0);
+        const resourceCount = items.filter(([k]) => this.getEntityInfo(k)?.category === 'resources').reduce((a, [, v]) => a + v, 0);
+        const totalCount = items.reduce((a, [, v]) => a + v, 0);
+
+        this.container.innerHTML = `
+            <div class="equip-panel">
+                <!-- Header -->
+                <div class="equip-header" style="justify-content: center; padding: 12px;">
+                    <div class="equip-item-name" style="font-size: 14px; margin: 0;">INVENTORY</div>
+                </div>
+
+                <!-- Inventory Grid (reuses equip-inventory) -->
+                <div class="equip-inventory">
+                    <div class="inventory-grid">
+                        ${filteredItems.length === 0
+                ? '<div class="empty-inventory">No items match filter</div>'
+                : filteredItems.map(([key, amount]) => {
+                    const entity = this.getEntityInfo(key);
+                    const name = entity?.name || key;
+                    return `
+                                    <div class="inventory-item" data-id="${key}" title="${name}">
+                                        <div class="item-icon" data-icon-id="${key}"></div>
+                                        <div class="item-count">${amount}</div>
+                                    </div>
+                                `;
+                }).join('')
+            }
+                    </div>
+                </div>
+
+                <!-- Sub-filter Tabs (at bottom) -->
+                <div class="equip-tabs">
+                    <button class="equip-tab ${this.activeType === 'all' ? 'active' : ''}" data-type="all">ALL</button>
+                    ${subTypes.map(type => `
+                        <button class="equip-tab ${this.activeType === type ? 'active' : ''}" data-type="${type}">
+                            ${type.toUpperCase()}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        // Load icons
+        this._loadIcons();
+    }
+
+    /**
+     * Load icons using AssetLoader
+     */
+    _loadIcons() {
+        this.container.querySelectorAll('[data-icon-id]').forEach(el => {
+            const id = el.dataset.iconId;
+            const path = window.AssetLoader?.getImagePath(id);
+            if (path) {
+                el.style.backgroundImage = `url('${path}')`;
+                el.style.backgroundSize = 'contain';
+                el.style.backgroundRepeat = 'no-repeat';
+                el.style.backgroundPosition = 'center';
+            }
+        });
     }
 }
 
-// Preserve global access for legacy calls
+// Export
 window.InventoryUI = new InventoryPanel();
 if (window.Registry) Registry.register('InventoryUI', window.InventoryUI);

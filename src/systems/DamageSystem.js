@@ -1,8 +1,8 @@
-/**
+﻿/**
  * DamageSystem
  * Centralized damage calculation and application.
  * Handles defense mitigation, crits, and damage events.
- * 
+ *
  * Work Package: 06-damage-system.md
  */
 const DamageSystem = {
@@ -45,14 +45,20 @@ const DamageSystem = {
         if (!target || !target.components?.health) return { dealt: 0, killed: false };
 
         // Get defense
-        const defense = target.components.stats?.getDefense?.() ||
-            target.components.stats?.defense || 0;
+        const defense =
+            target.components.stats?.getDefense?.() || target.components.stats?.defense || 0;
 
         // Calculate mitigated damage
         const mitigatedDamage = this.calculateDamage(baseDamage, defense);
 
         // Apply
         const killed = target.components.health.takeDamage(mitigatedDamage);
+
+        // Spawn damage popup (skip for hero taking damage - handled separately)
+        if (window.FloatingTextManager && target.entityType !== EntityTypes.HERO) {
+            const isCrit = mitigatedDamage >= baseDamage * 1.4; // Rough crit detection
+            FloatingTextManager.showDamage(target.x, target.y, mitigatedDamage, isCrit);
+        }
 
         // Emit event
         if (window.EventBus && window.GameConstants) {
@@ -89,11 +95,15 @@ const DamageSystem = {
 
         // VFX
         if (window.VFXController && window.VFXConfig) {
-            VFXController.playForeground(target.x, target.y, VFXConfig.HERO?.HIT || {
-                type: 'burst',
-                color: '#FF0000',
-                count: 5
-            });
+            VFXController.playForeground(
+                target.x,
+                target.y,
+                VFXConfig.HERO?.HIT || {
+                    type: 'burst',
+                    color: '#FF0000',
+                    count: 5
+                }
+            );
         }
 
         // SFX
@@ -112,3 +122,4 @@ const DamageSystem = {
 
 window.DamageSystem = DamageSystem;
 if (window.Registry) Registry.register('DamageSystem', DamageSystem);
+

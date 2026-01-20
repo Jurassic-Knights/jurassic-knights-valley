@@ -1,9 +1,9 @@
-/**
+﻿/**
  * AISystem - Central orchestrator for all AI-driven entities
- * 
+ *
  * Routes entity updates to appropriate behavior modules based on entityType.
  * Supports: Enemies, Bosses, NPCs, and custom AI types.
- * 
+ *
  * Owner: AI System
  */
 
@@ -137,3 +137,4 @@ class AISystem {
 
 window.AISystem = new AISystem();
 if (window.Registry) Registry.register('AISystem', window.AISystem);
+

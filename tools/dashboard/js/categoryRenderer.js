@@ -7,6 +7,34 @@
  * - cardBuilders.js (build*Html helpers)
  */
 
+/**
+ * Sort items based on current categorySort setting
+ * @param {Array} items - Items to sort
+ * @returns {Array} Sorted items
+ */
+function sortCategoryItems(items) {
+    const sorted = [...items];
+
+    if (categorySort === 'tier') {
+        // Sort by tier (1 to 4), then by id
+        sorted.sort((a, b) => {
+            const tierA = a.tier || (a.id?.match(/_t(\d)_/)?.[1] ? parseInt(a.id.match(/_t(\d)_/)[1]) : 99);
+            const tierB = b.tier || (b.id?.match(/_t(\d)_/)?.[1] ? parseInt(b.id.match(/_t(\d)_/)[1]) : 99);
+            if (tierA !== tierB) return tierA - tierB;
+            return (a.id || '').localeCompare(b.id || '');
+        });
+    } else if (categorySort === 'newest' || categorySort === 'oldest') {
+        // Sort by image file modification time
+        sorted.sort((a, b) => {
+            const timeA = a.imageModifiedTime || 0;
+            const timeB = b.imageModifiedTime || 0;
+            return categorySort === 'newest' ? (timeB - timeA) : (timeA - timeB);
+        });
+    }
+
+    return sorted;
+}
+
 function renderCategoryView() {
     const container = document.getElementById('mainContent');
     container.innerHTML = '';
@@ -87,6 +115,16 @@ function renderCategoryView() {
                 ${tiers.map(t => `<button class="filter-btn ${categoryFilter.tier === t ? 'active' : ''}" onclick="setCategoryTierFilter(${t})" style="background:${t === 1 ? '#9e9e9e' : t === 2 ? '#4caf50' : t === 3 ? '#2196f3' : '#9c27b0'};">T${t}</button>`).join('')}
             </div>
             ` : ''}
+            ${currentCategoryName === 'nodes' ? `
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Node Type (additive filter):</div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'all' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('all')" style="background:#666;">All</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'mining' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('mining')" style="background:#795548;">⛏️ Mining</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'woodcutting' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('woodcutting')" style="background:#4caf50;">🪓 Woodcutting</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'harvesting' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('harvesting')" style="background:#ff9800;">🌾 Harvesting</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'fishing' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('fishing')" style="background:#2196f3;">🎣 Fishing</button>
+            </div>
+            ` : ''}
             ${currentCategoryName === 'equipment' ? `
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Weapon Type (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
@@ -98,8 +136,8 @@ function renderCategoryView() {
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Hands (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
                 <button class="filter-btn ${categoryFilter.hands === 'all' ? 'active' : ''}" onclick="setCategoryHandsFilter('all')" style="background:#666;">Clear</button>
-                <button class="filter-btn ${categoryFilter.hands === 1 ? 'active' : ''}" onclick="setCategoryHandsFilter(1)" style="background:#4caf50;">1-Hand</button>
-                <button class="filter-btn ${categoryFilter.hands === 2 ? 'active' : ''}" onclick="setCategoryHandsFilter(2)" style="background:#9c27b0;">2-Hand</button>
+                <button class="filter-btn ${categoryFilter.hands === '1-hand' ? 'active' : ''}" onclick="setCategoryHandsFilter('1-hand')" style="background:#4caf50;">✋ 1-Hand</button>
+                <button class="filter-btn ${categoryFilter.hands === '2-hand' ? 'active' : ''}" onclick="setCategoryHandsFilter('2-hand')" style="background:#9c27b0;">🤲 2-Hand</button>
             </div>
             ` : ''}
             <div style="display:flex; align-items:center; gap:1rem; margin-top:0.5rem;">
@@ -108,6 +146,10 @@ function renderCategoryView() {
                     oninput="setCategoryImageSize(this.value)" 
                     style="width:200px; accent-color:var(--accent-green);">
                 <span id="imageSizeValue" style="font-size:0.8rem; color:var(--text-dim);">${categoryImageSize}px</span>
+                <span style="margin-left:2rem; font-size:0.8rem; color:var(--text-dim);">📊 Sort:</span>
+                <button class="filter-btn ${categorySort === 'tier' ? 'active' : ''}" onclick="setCategorySortOrder('tier')" style="background:#666;">By Tier</button>
+                <button class="filter-btn ${categorySort === 'newest' ? 'active' : ''}" onclick="setCategorySortOrder('newest')" style="background:#666;">Newest First</button>
+                <button class="filter-btn ${categorySort === 'oldest' ? 'active' : ''}" onclick="setCategorySortOrder('oldest')" style="background:#666;">Oldest First</button>
             </div>
         </div>
     `;
@@ -126,9 +168,13 @@ function renderCategoryView() {
             return tier === categoryFilter.tier;
         });
         if (categoryFilter.weaponType !== 'all') filteredItems = filteredItems.filter(i => i.weaponType === categoryFilter.weaponType);
-        if (categoryFilter.hands !== 'all') filteredItems = filteredItems.filter(i => i.hands === categoryFilter.hands);
+        if (categoryFilter.hands !== 'all') filteredItems = filteredItems.filter(i => i.gripType === categoryFilter.hands);
+        if (categoryFilter.nodeSubtype !== 'all') filteredItems = filteredItems.filter(i => i.nodeSubtype === categoryFilter.nodeSubtype);
 
         if (filteredItems.length === 0) continue;
+
+        // Sort items based on categorySort
+        filteredItems = sortCategoryItems(filteredItems);
 
         const section = document.createElement('div');
         section.className = 'category';
@@ -171,7 +217,7 @@ function createCategoryCard(item, fileName) {
     if (imgPath && consumedPath) {
         imgHtml = buildSplitImageHtml(item, imgPath, consumedPath, safeId, fileName);
     } else if (imgPath) {
-        const displayPath = imgPath.replace(/^assets\/images\//, '');
+        const displayPath = imgPath.replace(/^(assets\/)?images\//, '');
         const fullImgUrl = `/images/${displayPath}`;
         imgHtml = `<img class="asset-image" src="${fullImgUrl}" alt="${item.name}" 
             onclick="openModal('${fullImgUrl}', '${item.name}', '${item.status || 'pending'}')"
@@ -185,15 +231,41 @@ function createCategoryCard(item, fileName) {
     const descPreview = (!hasConsumedFiles && item.sourceDescription) ?
         `<div style="font-size:0.65rem; color:var(--accent-yellow); margin-top:0.3rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${item.sourceDescription.replace(/"/g, '&quot;')}">📝 ${item.sourceDescription.substring(0, 40)}...</div>` : '';
 
-    // Build all card components using helpers from cardBuilders.js
+    // Build actions (approve/decline buttons)
     const actionsHtml = buildActionsHtml(item, safeId, fileName, hasImage);
+
+    // HERO CATEGORY: Simplified card - just image, name, hero sounds, and status
+    if (isHeroCategory(currentCategoryName)) {
+        const heroSfxHtml = buildHeroSfxHtml(item, fileName);
+
+        card.innerHTML = `
+            ${imgHtml}
+            <div class="asset-info" style="padding:0.5rem;">
+                <div style="font-weight:bold; color:#2196f3; margin-bottom:0.1rem; font-size:0.85rem;">🛡️ ${item.name || item.id}</div>
+                <div style="font-size:0.65rem; color:var(--text-dim); margin-bottom:0.3rem; font-family:monospace;">${item.id}</div>
+                <div style="font-size:0.6rem; color:#888; margin-bottom:0.3rem;">Hero Skin Variant</div>
+                ${heroSfxHtml}
+                <span class="asset-status status-${item.status || 'pending'}" style="margin-top:0.5rem;">${item.status || 'pending'}</span>
+                ${descPreview}
+                ${actionsHtml}
+            </div>
+        `;
+        return card;
+    }
+
+    // STANDARD CATEGORIES: Full card with all components
     const statsHtml = buildStatsHtml(item, fileName);
     const dropsHtml = buildDropsHtml(item);
     const recipeHtml = buildRecipeHtml(item);
     const sourceHtml = buildSourceHtml(item);
     const resourceDropHtml = buildResourceDropHtml(item);
     const badgesHtml = buildBadgesHtml(item);
+    const roleDropdownHtml = buildRoleDropdownHtml(item, fileName);
     const weaponDropdownHtml = buildWeaponDropdownHtml(item, fileName);
+    const genderBodyTypeHtml = buildGenderBodyTypeHtml(item, fileName);
+    const speciesDropdownHtml = buildSpeciesDropdownHtml(item, fileName);
+    const sizeScaleHtml = buildSizeScaleHtml(item);
+    const loreDescriptionHtml = buildLoreDescriptionHtml(item, fileName);
     const sfxHtml = buildSfxHtml(item);
     const vfxHtml = buildVfxHtml(item);
     const otherFieldsHtml = buildOtherFieldsHtml(item);
@@ -204,7 +276,12 @@ function createCategoryCard(item, fileName) {
             <div style="font-weight:bold; color:#9c27b0; margin-bottom:0.1rem; font-size:0.85rem;">${item.name || item.id}</div>
             <div style="font-size:0.65rem; color:var(--text-dim); margin-bottom:0.3rem; font-family:monospace;">${item.id}</div>
             ${badgesHtml}
+            ${roleDropdownHtml}
             ${weaponDropdownHtml}
+            ${genderBodyTypeHtml}
+            ${speciesDropdownHtml}
+            ${sizeScaleHtml}
+            ${loreDescriptionHtml}
             ${sfxHtml}
             ${vfxHtml}
             ${statsHtml}

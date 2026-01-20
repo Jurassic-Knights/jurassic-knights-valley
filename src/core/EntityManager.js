@@ -1,4 +1,4 @@
-/**
+﻿/**
  * EntityManager
  * Centralized storage and management for all game entities.
  * Replaces disconnected arrays in Game.js.
@@ -42,7 +42,7 @@ class EntityManagerService {
 
     /**
      * Update all active entities
-     * @param {number} dt 
+     * @param {number} dt
      */
     update(dt) {
         // 1. Rebuild Quadtree (Static reconstruction strategy)
@@ -84,7 +84,7 @@ class EntityManagerService {
 
     /**
      * Add an entity to the manager
-     * @param {object} entity 
+     * @param {object} entity
      */
     add(entity) {
         if (!entity) return;
@@ -106,7 +106,7 @@ class EntityManagerService {
 
     /**
      * Remove an entity
-     * @param {object} entity 
+     * @param {object} entity
      */
     remove(entity) {
         const idx = this.entities.indexOf(entity);
@@ -169,7 +169,7 @@ class EntityManagerService {
      */
     getInRadius(x, y, radius, type = null) {
         const results = [];
-        const targets = type ? (this.entitiesByType[type] || []) : this.entities;
+        const targets = type ? this.entitiesByType[type] || [] : this.entities;
 
         for (const entity of targets) {
             if (!entity.active) continue;
@@ -194,3 +194,4 @@ class EntityManagerService {
 // Global & Register
 window.EntityManager = new EntityManagerService();
 if (window.Registry) Registry.register('EntityManager', window.EntityManager);
+

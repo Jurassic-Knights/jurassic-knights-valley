@@ -1,0 +1,14 @@
+﻿{
+  "id": "mechanical_t3_01",
+  "name": "Precision Mechanism",
+  "sourceCategory": "items",
+  "sourceFile": "mechanical",
+  "sprite": "mechanical_t3_01",
+  "status": "approved",
+  "files": {
+    "original": "assets/images/items/mechanical_t3_01_original.png"
+  },
+  "type": "consumable",
+  "stackable": true,
+  "recipe": "1x Basic Mechanism + 2x Iron Ingot + 1x Mechanical Parts"
+}

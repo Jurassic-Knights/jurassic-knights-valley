@@ -1,0 +1,68 @@
+{
+  "id": "enemy_saurian_t4_02",
+  "name": "Rex Commander",
+  "sourceCategory": "enemies",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t4_02",
+  "status": "pending",
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 200,
+    "damage": 25,
+    "speed": 65,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t4_02",
+    "death": "sfx_death_saurian_t4_02",
+    "hurt": "sfx_hurt_saurian_t4_02",
+    "aggro": "sfx_aggro_saurian_t4_02"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t4_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t4_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 60,
+  "species": "Tyrannosaurus Rex",
+  "sourceDescription": "anthropomorphic Tyrannosaurus Rex, rust orange uniform, layered steel plates, barbuta helmet, war hammer",
+  "weaponType": "war_hammer",
+  "role": "special",
+  "description": "The Rex Commander fills every inch of available space, the Tyrannosaurus physique towering over human and saurian alike. Those massive jaws remain closed through iron discipline, but every soldier knows what those teeth could accomplish. The small arms are barely visible beneath heavy shoulder armor, vestigial but still tipped with claws.\n\nFull plate armor covers this heavy-role soldier's enormous frame - layered iron plates with a charcoal grey tabard bearing high command insignia. Blackened leather straps thick as a man's arm secure the tremendous weight of protection. A cape flows from shoulder guards that could shelter squads beneath their bulk.\n\nThose pillar-like legs end in exposed clawed feet that crack volcanic stone with each earth-shaking step. A war hammer sized for these proportions could demolish fortifications - or the defenders within them. This heavy-role soldier doesn't just hold lines; the Rex Commander is the line, unmovable and unstoppable.",
+  "files": {
+    "original": "images/enemies/saurian_t4_02_original.png"
+  },
+  "declineNote": ""
+}

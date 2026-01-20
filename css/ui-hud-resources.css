@@ -1,0 +1,139 @@
+/* ui-hud-resources.css - Top Resource Bar (Radio Panel Style) */
+
+/* ========================================
+   TOP RESOURCE BAR - "Radio Panel"
+   ======================================== */
+#ui-top-bar {
+    width: 100%;
+}
+
+.top-bar-frame {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(26, 26, 46, 0.85);
+    /* Glass effect base */
+    backdrop-filter: blur(8px);
+    border: var(--border-iron);
+    border-radius: var(--border-radius-md);
+    box-shadow:
+        var(--shadow-md),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+    /* Vignette */
+    position: relative;
+}
+
+/* ========================================
+   RESOURCE COUNTERS - High Fidelity Metal Plates
+   ======================================== */
+#resource-counters {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    pointer-events: auto;
+}
+
+.resource-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-metal-mid);
+    background-image:
+        var(--bg-noise),
+        var(--gradient-metal);
+    padding: 6px 14px 6px 10px;
+    border: 1px solid var(--color-metal-dark);
+    border-radius: 4px;
+    position: relative;
+    box-shadow:
+        /* Bevel Highlight */
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        /* Drop Shadow */
+        0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Rivets on the plate */
+.resource-counter::before,
+.resource-counter::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--bg-medium);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.resource-counter::before {
+    top: 4px;
+    left: 4px;
+}
+
+.resource-counter::after {
+    bottom: 4px;
+    right: 4px;
+}
+
+.counter-icon {
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid var(--bg-deepest);
+    border-bottom: 1px solid var(--bg-medium);
+    /* Inset look */
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8);
+    border-radius: 2px;
+}
+
+.counter-value {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-gold);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+    min-width: 28px;
+    letter-spacing: 0.5px;
+    background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.8));
+}
+
+/* Legacy styles hidden */
+#ui-top-bar {
+    display: none;
+}
+
+.top-bar-frame {
+    display: none;
+}
+
+.resource-group {
+    display: none;
+}
+
+.resource-item {
+    display: none;
+}
+
+.resource-icon {
+    display: none;
+}
+
+.resource-value {
+    display: none;
+}
+
+.settings-btn {
+    display: none;
+}
+
+/* Hide Left HUD (Portrait & Gauges - now rendered on canvas) */
+#ui-hud-left {
+    display: none !important;
+}

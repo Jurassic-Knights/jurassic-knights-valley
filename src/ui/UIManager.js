@@ -1,11 +1,11 @@
-/**
+﻿/**
  * UI Manager
  * Orchestrates UI rendering and updates
- * 
+ *
  * REFACTOR NOTICE: Split into focused files:
  * - ContextActionUI.js: Context-sensitive action button
  * - UICapture.js: Debug screenshot utilities
- * 
+ *
  * Owner: UI Artist
  */
 
@@ -14,6 +14,7 @@ class UIManagerService {
         this.initialized = false;
         this.currentUnlockTarget = null;
         this.panels = new Map();
+        this.fullscreenUIs = new Set();
         Logger.debug('[UIManager]', 'Constructed');
     }
 
@@ -33,9 +34,18 @@ class UIManagerService {
 
         // Global click sound
         document.addEventListener('click', (e) => {
-            if (e.target.matches('button, .clickable, .icon-btn, .shop-item, .upgrade-card') ||
-                e.target.closest('button, .clickable, .icon-btn, .shop-item, .upgrade-card')) {
+            if (
+                e.target.matches('button, .clickable, .icon-btn, .shop-item, .upgrade-card') ||
+                e.target.closest('button, .clickable, .icon-btn, .shop-item, .upgrade-card')
+            ) {
                 if (window.AudioManager) AudioManager.playSFX('sfx_ui_click');
+            }
+
+            // Action button click animation - add class so animation plays fully
+            const actionBtn = e.target.closest('.action-btn');
+            if (actionBtn && !actionBtn.classList.contains('clicked')) {
+                actionBtn.classList.add('clicked');
+                setTimeout(() => actionBtn.classList.remove('clicked'), 350);
             }
         });
 
@@ -53,8 +63,26 @@ class UIManagerService {
         const btnMagnet = document.getElementById('btn-magnet');
         if (btnMagnet) {
             btnMagnet.addEventListener('click', () => {
-                const eventName = (window.GameConstants && GameConstants.Events) ? GameConstants.Events.REQUEST_MAGNET : 'REQUEST_MAGNET';
+                // Skip if footer is in override mode (equipment/inventory screen has taken over)
+                if (btnMagnet.dataset.footerOverride) return;
+                const eventName =
+                    window.GameConstants && GameConstants.Events
+                        ? GameConstants.Events.REQUEST_MAGNET
+                        : 'REQUEST_MAGNET';
                 if (window.EventBus) EventBus.emit(eventName);
+            });
+        }
+
+        // Weapon Set Swap Button
+        const btnSwap = document.getElementById('btn-weapon-swap');
+        if (btnSwap) {
+            btnSwap.addEventListener('click', () => {
+                const hero = window.GameInstance?.hero;
+                if (hero?.equipment?.swapWeaponSet) {
+                    const activeSet = hero.equipment.swapWeaponSet();
+                    Logger.info(`[UIManager] Weapon set swapped to Set ${activeSet}`);
+                    if (window.AudioManager) AudioManager.playSFX('sfx_ui_click');
+                }
             });
         }
 
@@ -70,12 +98,12 @@ class UIManagerService {
 
     // === Icon Loading ===
     loadIcons() {
-        if (!window.AssetLoader || !AssetLoader.registries?.images) return;
+        if (!window.AssetLoader) return;
 
         const elements = document.querySelectorAll('[data-icon-id]');
         Logger.debug('[UIManager]', `Loading icons for ${elements.length} elements`);
 
-        elements.forEach(el => {
+        elements.forEach((el) => {
             const id = el.dataset.iconId;
             const path = AssetLoader.getImagePath(id);
             if (path) {
@@ -113,7 +141,7 @@ class UIManagerService {
         prompt.querySelector('.unlock-island-name').textContent = island.name;
         prompt.querySelector('.cost-amount').textContent = island.unlockCost;
 
-        const gold = window.GameState ? (window.GameState.get('gold') || 0) : 0;
+        const gold = window.GameState ? window.GameState.get('gold') || 0 : 0;
         const btn = prompt.querySelector('.unlock-btn');
         if (gold >= island.unlockCost) {
             btn.disabled = false;
@@ -145,8 +173,11 @@ class UIManagerService {
 
     // === Platform/Layout ===
     onPlatformChange(config) {
-        const format = (PlatformManager.currentMode === 'pc') ? 'desktop' : 'mobile';
-        Logger.debug('[UIManager]', `Platform changed: ${PlatformManager.currentMode} -> Layout: ${format}`);
+        const format = PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile';
+        Logger.debug(
+            '[UIManager]',
+            `Platform changed: ${PlatformManager.currentMode} -> Layout: ${format}`
+        );
         this.applyLayout(format);
     }
 
@@ -159,7 +190,8 @@ class UIManagerService {
     applyLayout(format) {
         if (!window.LayoutStrategies) return;
 
-        const StrategyClass = format === 'desktop' ? LayoutStrategies.Desktop : LayoutStrategies.Mobile;
+        const StrategyClass =
+            format === 'desktop' ? LayoutStrategies.Desktop : LayoutStrategies.Mobile;
 
         if (!this.currentStrategy || !(this.currentStrategy instanceof StrategyClass)) {
             this.currentStrategy?.exit();
@@ -224,7 +256,10 @@ class UIManagerService {
             Logger.debug('[UIManager]', `Registered panel: ${panel.id}`);
 
             if (this.currentStrategy) {
-                const mode = (this.currentStrategy.constructor.name === 'DesktopLayout') ? 'desktop' : 'mobile';
+                const mode =
+                    this.currentStrategy.constructor.name === 'DesktopLayout'
+                        ? 'desktop'
+                        : 'mobile';
                 panel.applyLayout(mode);
             }
         }
@@ -235,9 +270,40 @@ class UIManagerService {
     }
 
     handleAccordion(openingPanel) {
-        this.panels.forEach(panel => {
-            if (panel !== openingPanel && panel.isDocked && panel.isOpen &&
-                panel.config.defaultDock === openingPanel.config.defaultDock) {
+        this.panels.forEach((panel) => {
+            if (
+                panel !== openingPanel &&
+                panel.isDocked &&
+                panel.isOpen &&
+                panel.config.defaultDock === openingPanel.config.defaultDock
+            ) {
+                panel.close();
+            }
+        });
+    }
+
+    // === Fullscreen UI Management ===
+    /**
+     * Register a fullscreen UI (call in the UI's constructor)
+     * @param {Object} ui - UI object with isOpen and close() method
+     */
+    registerFullscreenUI(ui) {
+        this.fullscreenUIs.add(ui);
+    }
+
+    /**
+     * Close all other fullscreen UIs except the one being opened
+     * @param {Object} exceptUI - The UI that should remain open
+     */
+    closeOtherFullscreenUIs(exceptUI) {
+        this.fullscreenUIs.forEach((ui) => {
+            if (ui !== exceptUI && ui.isOpen && typeof ui.close === 'function') {
+                ui.close();
+            }
+        });
+        // Also close registered panels
+        this.panels.forEach((panel) => {
+            if (panel.isOpen) {
                 panel.close();
             }
         });
@@ -249,16 +315,31 @@ class UIManagerService {
     }
 
     // === Backward Compatibility Delegates ===
-    toggleDebugCapture() { return window.UICapture?.toggleMode(); }
-    async autoCapture() { return window.UICapture?.autoCapture(); }
-    async captureElement(s, f) { return window.UICapture?.captureElement(s, f); }
-    async captureAllZones() { return window.UICapture?.captureAllZones(); }
+    toggleDebugCapture() {
+        return window.UICapture?.toggleMode();
+    }
+    async autoCapture() {
+        return window.UICapture?.autoCapture();
+    }
+    async captureElement(s, f) {
+        return window.UICapture?.captureElement(s, f);
+    }
+    async captureAllZones() {
+        return window.UICapture?.captureAllZones();
+    }
 
-    showContextAction(type, data) { window.ContextActionUI?.show(type, data); }
-    hideContextAction(type) { window.ContextActionUI?.hide(type); }
-    executeContextAction() { window.ContextActionUI?.execute(); }
+    showContextAction(type, data) {
+        window.ContextActionUI?.show(type, data);
+    }
+    hideContextAction(type) {
+        window.ContextActionUI?.hide(type);
+    }
+    executeContextAction() {
+        window.ContextActionUI?.execute();
+    }
 }
 
 window.UIManager = new UIManagerService();
 window.debugUICapture = () => window.UICapture?.captureAllZones();
 if (window.Registry) Registry.register('UIManager', window.UIManager);
+

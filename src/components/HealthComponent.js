@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HealthComponent - Manages Health and Death
  */
 class HealthComponent extends Component {
@@ -20,9 +20,17 @@ class HealthComponent extends Component {
         // Emit Event (Local or Global?)
         // Global is easier for UI
         if (this.parent.id === 'hero' && window.EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: this.health, max: this.maxHealth });
+            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
+                current: this.health,
+                max: this.maxHealth
+            });
         } else if (window.EventBus) {
-            EventBus.emit('ENTITY_DAMAGED', { entity: this.parent, amount: amount, current: this.health, max: this.maxHealth });
+            EventBus.emit('ENTITY_DAMAGED', {
+                entity: this.parent,
+                amount: amount,
+                current: this.health,
+                max: this.maxHealth
+            });
         }
 
         if (this.health <= 0) {
@@ -42,7 +50,10 @@ class HealthComponent extends Component {
         if (this.health > this.maxHealth) this.health = this.maxHealth;
 
         if (this.parent.id === 'hero' && window.EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: this.health, max: this.maxHealth });
+            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
+                current: this.health,
+                max: this.maxHealth
+            });
         }
     }
 
@@ -56,10 +67,14 @@ class HealthComponent extends Component {
         this.isDead = false;
         this.health = this.maxHealth;
         if (this.parent.id === 'hero' && window.EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: this.health, max: this.maxHealth });
+            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
+                current: this.health,
+                max: this.maxHealth
+            });
         }
     }
 }
 
 window.HealthComponent = HealthComponent;
 if (window.Registry) Registry.register('HealthComponent', HealthComponent);
+

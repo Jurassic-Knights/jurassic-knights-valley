@@ -29,20 +29,20 @@ def main():
     
     # Base node IDs (29 total)
     base_node_ids = [
-        "node_acacia_tree", "node_ash_pile", "node_ash_tree", "node_badlands_nest",
-        "node_badlands_outcrop", "node_berry_bush", "node_burrow_nest", "node_carcass",
-        "node_coal_seam", "node_copper_vein", "node_deep_vein", "node_desert_cactus",
-        "node_desert_remains", "node_desert_rock", "node_field_kitchen", "node_frozen_ground",
-        "node_ice_hole", "node_iron_deposit", "node_ironwood_tree", "node_oak_tree",
-        "node_riverbank", "node_salt_flat", "node_salt_formation", "node_sandy_deposit",
-        "node_silver_vein", "node_stone_pile", "node_sulfur_vent", "node_tall_grass",
-        "node_wild_wheat"
+        "node_t3_02", "node_t3_03", "node_t2_03", "node_t3_04",
+        "node_t3_05", "node_t1_02", "node_t2_04", "node_t2_05",
+        "node_t2_06", "node_t1_03", "node_t4_02", "node_t2_07",
+        "node_t2_08", "node_t2_09", "node_t4_03", "node_t2_10",
+        "node_t2_11", "node_t2_12", "node_t4_04", "node_t1_04",
+        "node_t1_05", "node_t2_13", "node_t2_14", "node_t3_06",
+        "node_t3_07", "node_t1_06", "node_t3_08", "node_t1_07",
+        "node_t1_08"
     ]
     
     # Consumed versions generated before user feedback
     consumed_ids = [
-        "node_acacia_tree_consumed", "node_ash_pile_consumed", "node_ash_tree_consumed",
-        "node_badlands_nest_consumed", "node_badlands_outcrop_consumed", "node_berry_bush_consumed"
+        "node_t3_02_consumed", "node_t3_03_consumed", "node_t2_03_consumed",
+        "node_t3_04_consumed", "node_t3_05_consumed", "node_t1_02_consumed"
     ]
     
     # Read JSON

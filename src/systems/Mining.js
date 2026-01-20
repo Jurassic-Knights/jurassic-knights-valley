@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Mining System
  * Handles rock breaking, ore drops, and pickaxe interactions
- * 
+ *
  * Owner: Gameplay Designer
  */
 
@@ -83,7 +83,8 @@ const Mining = {
         const rockDef = RocksData?.[type] || { durability: 3 };
 
         this.rocks.set(`${x},${y}`, {
-            x, y,
+            x,
+            y,
             type,
             durability: rockDef.durability,
             maxDurability: rockDef.durability
@@ -92,3 +93,4 @@ const Mining = {
 };
 
 window.Mining = Mining;
+

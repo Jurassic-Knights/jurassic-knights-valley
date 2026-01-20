@@ -1,8 +1,8 @@
-/**
+﻿/**
  * DroppedItem - Collectible loot entity spawned when resources are destroyed
- * 
+ *
  * Hero must walk near to pick up.
- * 
+ *
  * Owner: Director (engine), Gameplay Designer (values)
  */
 
@@ -19,7 +19,7 @@ class DroppedItem extends Entity {
             ...config
         });
 
-        this.resourceType = config.resourceType || 'scrap_metal';
+        this.resourceType = config.resourceType || 'scraps_t1_01';
         this.amount = config.amount || 1;
         this.pickupRadius = finalConfig.pickupRadius || 140;
         this.customIcon = config.customIcon || null;
@@ -28,14 +28,17 @@ class DroppedItem extends Entity {
         this.pulseTime = 0;
 
         // Set color based on type (same as resource)
-        this.color = (window.Resource && Resource.COLORS) ? Resource.COLORS[this.resourceType] : '#888888';
+        this.color =
+            window.Resource && Resource.COLORS ? Resource.COLORS[this.resourceType] : '#888888';
 
         // Determine rarity
         const typeConfig = window.EntityRegistry?.resources?.[this.resourceType] || {};
         this.rarity = typeConfig.rarity || 'common';
 
-        this.rarityColor = (window.Resource && Resource.RARITY_COLORS) ?
-            Resource.RARITY_COLORS[this.rarity] : '#BDC3C7';
+        this.rarityColor =
+            window.Resource && Resource.RARITY_COLORS
+                ? Resource.RARITY_COLORS[this.rarity]
+                : '#BDC3C7';
 
         // Flight animation props
         this.isFlying = false;
@@ -59,12 +62,12 @@ class DroppedItem extends Entity {
         this.landedTime = null; // Set when flight finishes
         this.postLandDelay = 0.5; // Wait 0.5s after landing
         // Use config (SpawnManager) or default
-        this.minPickupTime = (config.minPickupTime !== undefined) ? config.minPickupTime : 0.8;
+        this.minPickupTime = config.minPickupTime !== undefined ? config.minPickupTime : 0.8;
     }
 
     /**
      * Start flying towards a target (magnet effect)
-     * @param {Entity} target 
+     * @param {Entity} target
      */
     magnetize(target) {
         if (!this.active || this.isMagnetized) return;
@@ -77,8 +80,8 @@ class DroppedItem extends Entity {
 
     /**
      * Start flight animation from current pos to target
-     * @param {number} targetX 
-     * @param {number} targetY 
+     * @param {number} targetX
+     * @param {number} targetY
      */
     flyTo(targetX, targetY) {
         this.isFlying = true;
@@ -86,14 +89,19 @@ class DroppedItem extends Entity {
 
         // Tween position and progress
         if (window.Tween) {
-            Tween.to(this, {
-                x: targetX,
-                y: targetY,
-                flightProgress: 1
-            }, 500, {
-                easing: 'linear',
-                onComplete: () => this.onLand()
-            });
+            Tween.to(
+                this,
+                {
+                    x: targetX,
+                    y: targetY,
+                    flightProgress: 1
+                },
+                500,
+                {
+                    easing: 'linear',
+                    onComplete: () => this.onLand()
+                }
+            );
         } else {
             // Fallback if no tween system (snap to end)
             this.x = targetX;
@@ -178,7 +186,8 @@ class DroppedItem extends Entity {
                 this.trailHistory.shift();
             }
 
-            if (dist < 20) { // Strict arrival threshold
+            if (dist < 20) {
+                // Strict arrival threshold
                 // Acknowledge arrival logic
                 // Usually InteractionSystem collects it, but we snap here visually
                 this.x = this.magnetTarget.x;
@@ -229,7 +238,8 @@ class DroppedItem extends Entity {
 
         // Passive pickup follows delay (player walking near)
         // Must be landed for at least postLandDelay
-        if (this.landedTime === null || this.age < this.landedTime + this.postLandDelay) return false;
+        if (this.landedTime === null || this.age < this.landedTime + this.postLandDelay)
+            return false;
 
         return this.distanceTo(hero) < this.pickupRadius;
     }
@@ -247,7 +257,11 @@ class DroppedItem extends Entity {
 
         // 2. Check minimum age (Manual pickup only)
         // Magnets bypass this delay
-        if (!this.isMagnetized && (this.landedTime === null || this.age < this.landedTime + this.postLandDelay)) return false;
+        if (
+            !this.isMagnetized &&
+            (this.landedTime === null || this.age < this.landedTime + this.postLandDelay)
+        )
+            return false;
 
         // Strict proximity
         return this.distanceTo(hero) < 20;
@@ -276,3 +290,4 @@ class DroppedItem extends Entity {
 }
 
 window.DroppedItem = DroppedItem;
+

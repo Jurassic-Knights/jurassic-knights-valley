@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Sound Registry
  * Maps sound IDs to audio configuration
- * 
+ *
  * Owner: SFX Engineer
  */
 
@@ -11,3 +11,4 @@ const SoundRegistry = {
 };
 
 window.SoundRegistry = SoundRegistry;
+

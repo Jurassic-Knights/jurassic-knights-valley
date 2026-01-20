@@ -1,18 +1,18 @@
-/**
+﻿/**
  * BossSystem
  * Manages boss spawning, respawn timers, and encounter tracking.
- * 
+ *
  * Features:
  * - One boss per biome
  * - Respawn on timer after death
  * - Spawn on biome entry or game start
- * 
+ *
  * Work Package: 09-boss-system.md
  */
 class BossSystem {
     constructor() {
         this.game = null;
-        this.bosses = new Map();        // biomeId -> Boss instance
+        this.bosses = new Map(); // biomeId -> Boss instance
         this.respawnTimers = new Map(); // biomeId -> remaining time (ms)
 
         Logger.info('[BossSystem] Constructed');
@@ -123,10 +123,10 @@ class BossSystem {
         const offsetY = window.GameConstants?.World?.IRONHAVEN_OFFSET_Y || 10000;
 
         const defaults = {
-            'grasslands': { x: offsetX + 5500, y: offsetY + 3000 },    // Near east edge of Ironhaven
-            'tundra': { x: offsetX + 3000, y: offsetY + 5500 },        // Near south edge of Ironhaven
-            'desert': { x: offsetX + 5500, y: offsetY + 5500 },        // Southeast of Ironhaven
-            'lava_crags': { x: offsetX + 3000, y: offsetY + 3000 }     // Center of Ironhaven (for testing)
+            grasslands: { x: offsetX + 5500, y: offsetY + 3000 }, // Near east edge of Ironhaven
+            tundra: { x: offsetX + 3000, y: offsetY + 5500 }, // Near south edge of Ironhaven
+            desert: { x: offsetX + 5500, y: offsetY + 5500 }, // Southeast of Ironhaven
+            lava_crags: { x: offsetX + 3000, y: offsetY + 3000 } // Center of Ironhaven (for testing)
         };
 
         return defaults[biomeId] || { x: offsetX + 3500, y: offsetY + 3500 };
@@ -230,3 +230,4 @@ class BossSystem {
 // Create singleton instance
 window.BossSystem = new BossSystem();
 if (window.Registry) Registry.register('BossSystem', window.BossSystem);
+

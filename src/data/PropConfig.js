@@ -1,6 +1,6 @@
-/**
+﻿/**
  * PropConfig - Prop Spawning and Decoration Configuration
- * 
+ *
  * Separated from BiomeConfig for single responsibility.
  * Contains foliage, item, and prop spawning rules.
  */
@@ -20,7 +20,7 @@ const PropConfig = {
     ITEM_MAP: {
         'Quarry Fields': ['prop_quarry_crate', 'prop_quarry_drill'],
         'Iron Ridge': ['prop_iron_gear'],
-        'Crossroads': ['prop_cross_sign', 'prop_cross_post'],
+        Crossroads: ['prop_cross_sign', 'prop_cross_post'],
         'Scrap Yard': ['prop_scrap_cog'],
         'Bone Valley': ['prop_bone_skull'],
         'The Ruins': ['prop_ruins_pillar']
@@ -54,3 +54,4 @@ const PropConfig = {
 };
 
 window.PropConfig = PropConfig;
+

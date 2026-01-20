@@ -1,14 +1,14 @@
-/**
+﻿/**
  * HomeBase - Player's starting home island with harvestable trees
- * 
+ *
  * Creates collectible wood resources around the home island perimeter.
  * Trees are actual Resource entities that can be gathered.
- * 
+ *
  * Owner: Level Architect
  */
 
 const HomeBase = {
-    treeBorderWidth: 100,  // Width of tree zone on each edge
+    treeBorderWidth: 100, // Width of tree zone on each edge
 
     /**
      * Get tree resources from EntityManager (cached per frame)
@@ -25,10 +25,11 @@ const HomeBase = {
 
         // Query and cache
         const home = this._cachedHome;
-        this._cachedTrees = EntityManager.getByType('Resource').filter(r =>
-            r.resourceType === 'wood' &&
-            r.islandGridX === home.gridX &&
-            r.islandGridY === home.gridY
+        this._cachedTrees = EntityManager.getByType('Resource').filter(
+            (r) =>
+                r.resourceType.startsWith('node_woodcutting_') &&
+                r.islandGridX === home.gridX &&
+                r.islandGridY === home.gridY
         );
         this._treeCacheFrame = frame;
 
@@ -61,8 +62,8 @@ const HomeBase = {
         if (window.AssetLoader) {
             this._outpostPath = AssetLoader.getImagePath('building_residential_01');
             this._forgePath = AssetLoader.getImagePath('building_industrial_01');
-            this._treePath = AssetLoader.getImagePath('world_wood');
-            this._treeConsumedPath = AssetLoader.getImagePath('world_wood_consumed');
+            this._treePath = AssetLoader.getImagePath('node_woodcutting_t1_01');
+            this._treeConsumedPath = AssetLoader.getImagePath('node_woodcutting_t1_01_consumed');
         }
 
         // Trees are now spawned by SpawnManager.spawnHomeIslandTrees()
@@ -148,8 +149,8 @@ const HomeBase = {
                 if (window.AssetLoader) {
                     this._outpostPath = AssetLoader.getImagePath('building_residential_01');
                     this._forgePath = AssetLoader.getImagePath('building_industrial_01');
-                    this._treePath = AssetLoader.getImagePath('world_wood');
-                    this._treeConsumedPath = AssetLoader.getImagePath('world_wood_consumed');
+                    this._treePath = AssetLoader.getImagePath('node_woodcutting_t1_01');
+                    this._treeConsumedPath = AssetLoader.getImagePath('node_woodcutting_t1_01_consumed');
                 }
             }
         }
@@ -207,17 +208,27 @@ const HomeBase = {
                 this._forgeImg = AssetLoader.createImage(this._forgePath);
             }
             if (this._forgeImg.complete && this._forgeImg.naturalWidth) {
-                ctx.drawImage(this._forgeImg, forgeX - forgeSize / 2, forgeY - forgeSize / 2, forgeSize, forgeSize);
+                ctx.drawImage(
+                    this._forgeImg,
+                    forgeX - forgeSize / 2,
+                    forgeY - forgeSize / 2,
+                    forgeSize,
+                    forgeSize
+                );
             }
         }
 
         // Load tree sprites once
         if (!this._treeImage && this._treePath) {
-            this._treeImage = AssetLoader.createImage(this._treePath, () => { this._treeLoaded = true; });
+            this._treeImage = AssetLoader.createImage(this._treePath, () => {
+                this._treeLoaded = true;
+            });
             this._treeLoaded = false;
         }
         if (!this._treeConsumedImage && this._treeConsumedPath) {
-            this._treeConsumedImage = AssetLoader.createImage(this._treeConsumedPath, () => { this._treeConsumedLoaded = true; });
+            this._treeConsumedImage = AssetLoader.createImage(this._treeConsumedPath, () => {
+                this._treeConsumedLoaded = true;
+            });
             this._treeConsumedLoaded = false;
         }
 
@@ -231,7 +242,13 @@ const HomeBase = {
             if (tree.state === 'depleted') {
                 if (this._treeConsumedLoaded && this._treeConsumedImage) {
                     const size = 160;
-                    ctx.drawImage(this._treeConsumedImage, tree.x - size / 2, tree.y - size / 2, size, size);
+                    ctx.drawImage(
+                        this._treeConsumedImage,
+                        tree.x - size / 2,
+                        tree.y - size / 2,
+                        size,
+                        size
+                    );
                 } else {
                     ctx.save();
                     ctx.globalAlpha = 0.5;
@@ -301,3 +318,4 @@ const HomeBase = {
 // Export
 window.HomeBase = HomeBase;
 if (window.Registry) Registry.register('HomeBase', HomeBase);
+

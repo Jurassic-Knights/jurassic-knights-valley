@@ -1,9 +1,9 @@
-/**
+﻿/**
  * DebugOverlays - Debug visualization overlays for development
- * 
+ *
  * Extracted from GameRenderer.js for modularity.
  * Handles debug grid, collision blocks, and world boundary rendering.
- * 
+ *
  * Owner: Development Tools
  */
 
@@ -96,3 +96,4 @@ const DebugOverlays = {
 };
 
 window.DebugOverlays = DebugOverlays;
+

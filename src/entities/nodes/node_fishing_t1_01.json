@@ -1,0 +1,15 @@
+{
+    "id":  "node_fishing_t1_01",
+    "name":  "Riverbank",
+    "sourceCategory":  "nodes",
+    "sourceFile":  "nodes",
+    "sprite":  "node_fishing_t1_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "assets/images/nodes/node_fishing_t1_01_original.png"
+              },
+    "type":  "ore",
+    "biome":  "grasslands",
+    "nodeSubtype":  "fishing",
+    "tier":  1
+}

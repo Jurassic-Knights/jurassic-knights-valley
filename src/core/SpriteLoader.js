@@ -1,17 +1,18 @@
-/**
+﻿/**
  * SpriteLoader - Utility for managing entity sprite loading
- * 
+ *
  * Provides a consistent pattern for loading sprites with:
  * - Cache hit detection for immediate rendering
  * - Async loading with loaded state tracking
  * - Fallback handling when sprites are missing
- * 
+ *
  * Owner: Director
  */
 
 const SpriteLoader = {
     /**
      * Load a sprite for an entity and attach it to the entity
+     * Uses AssetLoader's fallback chain: _clean â†’ _original â†’ PH.png
      * @param {object} entity - Entity to attach sprite to
      * @param {string} assetId - Asset ID from AssetLoader registry
      * @param {string} propName - Property name for the sprite (default: '_sprite')
@@ -35,12 +36,10 @@ const SpriteLoader = {
         const path = AssetLoader.getImagePath(assetId);
         if (!path) return false;
 
-        // Create and load image
-        entity[propName] = new Image();
-        entity[propName].onload = () => {
+        // Use AssetLoader.createImage for built-in fallback chain
+        entity[propName] = AssetLoader.createImage(path, () => {
             entity[loadedProp] = true;
-        };
-        entity[propName].src = path;
+        });
 
         // Check for immediate cache hit
         if (entity[propName].complete) {
@@ -102,15 +101,12 @@ const SpriteLoader = {
                 continue;
             }
 
-            const path = AssetLoader.getImagePath(assetId);
-            if (!path) {
-                continue;
-            }
-
-            // Create and load
+            // Use AssetLoader.createImage for built-in fallback chain
             if (!entity[propName][assetId]) {
-                entity[propName][assetId] = new Image();
-                entity[propName][assetId].onload = () => {
+                const path = AssetLoader.getImagePath(assetId);
+                if (!path) continue;
+
+                entity[propName][assetId] = AssetLoader.createImage(path, () => {
                     // Check if all loaded
                     let count = 0;
                     for (const id of assetIds) {
@@ -121,8 +117,7 @@ const SpriteLoader = {
                     if (count === assetIds.length) {
                         entity[loadedProp] = true;
                     }
-                };
-                entity[propName][assetId].src = path;
+                });
             }
 
             // Check cache hit
@@ -143,3 +138,4 @@ const SpriteLoader = {
 };
 
 window.SpriteLoader = SpriteLoader;
+

@@ -1,0 +1,29 @@
+{
+    "id":  "weapon_melee_sword_t4_01",
+    "name":  "Raptor Fang Blade",
+    "description":  "A legendary sword tempered with raptor bone. Strikes with primal fury.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "melee",
+    "weaponSubtype":  "sword",
+    "tier":  4,
+    "rarity":  "legendary",
+    "stats":  {
+                  "damage":  40,
+                  "attackSpeed":  1.4,
+                  "range":  300,
+                  "critChance":  0.1
+              },
+    "recipe":  {
+                   "scraps_t4_01":  15,
+                   "minerals_t3_01":  10,
+                   "bone_t2_01":  5,
+                   "fossil_t1_01":  2
+               },
+    "sprite":  "weapon_melee_sword_t4_01",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/sword/weapon_sword_t4_01_original.png"
+              },
+    "gripType":  "1-hand"
+}

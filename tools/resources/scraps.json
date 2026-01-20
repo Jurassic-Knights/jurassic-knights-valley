@@ -42,7 +42,7 @@
         }
     },
     {
-        "id": "scraps_t2_04",
+        "id": "scraps_t2_01",
         "name": "Thick Hide",
         "tier": 2,
         "source": "Tundra Herbivores",
@@ -52,11 +52,11 @@
         "status": "approved",
         "sourceDescription": "thick animal hide, game pickup asset, heavy brown fur-lined hide, durable leather",
         "files": {
-            "original": "assets/images/resources/scraps_t2_04_original.png"
+            "original": "assets/images/resources/scraps_t2_01_original.png"
         }
     },
     {
-        "id": "scraps_t2_05",
+        "id": "scraps_t2_02",
         "name": "Ash Wood",
         "tier": 2,
         "source": "Ash Tree",
@@ -66,11 +66,11 @@
         "status": "approved",
         "sourceDescription": "ash wood logs, game pickup asset, pale grey-cream wood, flexible timber",
         "files": {
-            "original": "assets/images/resources/scraps_t2_05_original.png"
+            "original": "assets/images/resources/scraps_t2_02_original.png"
         }
     },
     {
-        "id": "scraps_t2_06",
+        "id": "scraps_t2_03",
         "name": "Bone",
         "tier": 2,
         "source": "Carcass",
@@ -80,11 +80,11 @@
         "status": "approved",
         "sourceDescription": "animal bones, game pickup asset, white-cream colored bones, crafting material",
         "files": {
-            "original": "assets/images/resources/scraps_t2_06_original.png"
+            "original": "assets/images/resources/scraps_t2_03_original.png"
         }
     },
     {
-        "id": "scraps_t2_07",
+        "id": "scraps_t2_04",
         "name": "Cactus Spine",
         "tier": 2,
         "source": "Desert Cactus",
@@ -94,11 +94,11 @@
         "status": "approved",
         "sourceDescription": "cactus spines and needles, game pickup asset, sharp brown-white thorns, desert material",
         "files": {
-            "original": "assets/images/resources/scraps_t2_07_original.png"
+            "original": "assets/images/resources/scraps_t2_04_original.png"
         }
     },
     {
-        "id": "scraps_t3_08",
+        "id": "scraps_t3_01",
         "name": "Acacia Wood",
         "tier": 3,
         "source": "Acacia Tree",
@@ -108,11 +108,11 @@
         "status": "approved",
         "sourceDescription": "acacia wood logs, game pickup asset, reddish-brown hardwood, desert timber",
         "files": {
-            "original": "assets/images/resources/scraps_t3_08_original.png"
+            "original": "assets/images/resources/scraps_t3_01_original.png"
         }
     },
     {
-        "id": "scraps_t2_09",
+        "id": "scraps_t2_05",
         "name": "Sinew",
         "tier": 2,
         "source": "Large Herbivores",
@@ -122,11 +122,11 @@
         "status": "approved",
         "sourceDescription": "animal sinew tendons, game pickup asset, white stringy tendons, binding material",
         "files": {
-            "original": "assets/images/resources/scraps_t2_09_original.png"
+            "original": "assets/images/resources/scraps_t2_05_original.png"
         }
     },
     {
-        "id": "scraps_t2_10",
+        "id": "scraps_t2_06",
         "name": "Sun-Bleached Bone",
         "tier": 2,
         "source": "Desert Remains",
@@ -136,11 +136,11 @@
         "status": "approved",
         "sourceDescription": "sun-bleached white bones, game pickup asset, pure white weathered bones, desert material",
         "files": {
-            "original": "assets/images/resources/scraps_t2_10_original.png"
+            "original": "assets/images/resources/scraps_t2_06_original.png"
         }
     },
     {
-        "id": "scraps_t3_11",
+        "id": "scraps_t3_02",
         "name": "Black Glass",
         "tier": 3,
         "source": "Badlands Outcrop",
@@ -150,11 +150,11 @@
         "status": "approved",
         "sourceDescription": "volcanic black glass obsidian, game pickup asset, sharp shiny black volcanic glass, rare material",
         "files": {
-            "original": "assets/images/resources/scraps_t3_11_original.png"
+            "original": "assets/images/resources/scraps_t3_02_original.png"
         }
     },
     {
-        "id": "scraps_t3_12",
+        "id": "scraps_t3_03",
         "name": "Hardened Scale",
         "tier": 3,
         "source": "Badlands Creatures",
@@ -164,11 +164,11 @@
         "status": "approved",
         "sourceDescription": "hardened dinosaur scale, game pickup asset, dark grey tough reptilian scale, armor material",
         "files": {
-            "original": "assets/images/resources/scraps_t3_12_original.png"
+            "original": "assets/images/resources/scraps_t3_03_original.png"
         }
     },
     {
-        "id": "scraps_t3_13",
+        "id": "scraps_t3_04",
         "name": "Ash",
         "tier": 3,
         "source": "Ash Pile",
@@ -178,11 +178,11 @@
         "status": "approved",
         "sourceDescription": "grey volcanic ash pile, game pickup asset, fine grey powder ash, volcanic material",
         "files": {
-            "original": "assets/images/resources/scraps_t3_13_original.png"
+            "original": "assets/images/resources/scraps_t3_04_original.png"
         }
     },
     {
-        "id": "scraps_t4_14",
+        "id": "scraps_t4_01",
         "name": "Ironwood",
         "tier": 4,
         "source": "Ironwood Tree",
@@ -192,7 +192,7 @@
         "status": "approved",
         "sourceDescription": "ironwood logs, game pickup asset, extremely dark dense wood, premium timber",
         "files": {
-            "original": "assets/images/resources/scraps_t4_14_original.png"
+            "original": "assets/images/resources/scraps_t4_01_original.png"
         }
     }
 ]

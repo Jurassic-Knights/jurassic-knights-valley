@@ -1,6 +1,6 @@
 [
     {
-        "id": "nodes_t1_01",
+        "id": "node_t1_01",
         "name": "Dead Tree",
         "tier": 1,
         "nodeType": "wood",
@@ -22,7 +22,7 @@
         "consumedDeclineNote": "test"
     },
     {
-        "id": "nodes_t2_01",
+        "id": "node_t2_01",
         "name": "Iron Ore Deposit",
         "tier": 2,
         "nodeType": "mineral",
@@ -42,7 +42,7 @@
         }
     },
     {
-        "id": "nodes_t2_02",
+        "id": "node_t2_02",
         "name": "Scrap Metal Pile",
         "tier": 2,
         "nodeType": "salvage",
@@ -62,7 +62,7 @@
         }
     },
     {
-        "id": "nodes_t3_01",
+        "id": "node_t3_01",
         "name": "Tar Pit",
         "tier": 3,
         "nodeType": "fuel",
@@ -82,7 +82,7 @@
         }
     },
     {
-        "id": "nodes_t4_01",
+        "id": "node_t4_01",
         "name": "Gold Vein",
         "tier": 4,
         "nodeType": "mineral",
@@ -100,10 +100,10 @@
             "consumed_original": "assets/images/nodes/nodes_t4_01_consumed_original.png",
             "consumed_clean": "assets/images/nodes/nodes_t4_01_consumed_clean.png"
         },
-        "consumedStatus": "declined"
+        "consumedStatus": "pending"
     },
     {
-        "id": "node_acacia_tree",
+        "id": "node_t3_02",
         "name": "Acacia Tree",
         "tier": 3,
         "nodeType": "wood",
@@ -116,8 +116,8 @@
         "sourceDescription": "acacia tree, harvestable tree, full of wood, natural growth",
         "consumedSourceDescription": "depleted acacia tree, bare stump, no wood remaining",
         "files": {
-            "original": "assets/images/nodes/node_acacia_tree_original.png",
-            "consumed_original": "assets/images/nodes/node_acacia_tree_consumed_original.png"
+            "original": "assets/images/nodes/node_t3_02_original.png",
+            "consumed_original": "assets/images/nodes/node_t3_02_consumed_original.png"
         },
         "yields": [
             "Acacia Wood"
@@ -125,7 +125,7 @@
         "consumedStatus": "declined"
     },
     {
-        "id": "node_ash_pile",
+        "id": "node_t3_03",
         "name": "Ash Pile",
         "tier": 3,
         "nodeType": "mineral",
@@ -138,8 +138,8 @@
         "sourceDescription": "ash pile, resource deposit, minerals visible",
         "consumedSourceDescription": "depleted ash pile, empty, picked clean",
         "files": {
-            "original": "assets/images/nodes/node_ash_pile_original.png",
-            "consumed_original": "assets/images/nodes/node_ash_pile_consumed_original.png"
+            "original": "assets/images/nodes/node_t3_03_original.png",
+            "consumed_original": "assets/images/nodes/node_t3_03_consumed_original.png"
         },
         "yields": [
             "Ash"
@@ -147,7 +147,7 @@
         "consumedStatus": "declined"
     },
     {
-        "id": "node_ash_tree",
+        "id": "node_t2_03",
         "name": "Ash Tree",
         "tier": 2,
         "nodeType": "wood",
@@ -160,8 +160,8 @@
         "sourceDescription": "ash tree, harvestable tree, full of wood, natural growth",
         "consumedSourceDescription": "depleted ash tree, bare stump, no wood remaining",
         "files": {
-            "original": "assets/images/nodes/node_ash_tree_original.png",
-            "consumed_original": "assets/images/nodes/node_ash_tree_consumed_original.png"
+            "original": "assets/images/nodes/node_t2_03_original.png",
+            "consumed_original": "assets/images/nodes/node_t2_03_consumed_original.png"
         },
         "yields": [
             "Ash Wood"
@@ -169,7 +169,7 @@
         "consumedStatus": "declined"
     },
     {
-        "id": "node_badlands_nest",
+        "id": "node_t3_04",
         "name": "Badlands Nest",
         "tier": 3,
         "nodeType": "foraging",
@@ -182,8 +182,8 @@
         "sourceDescription": "badlands nest, creature nest, resources visible",
         "consumedSourceDescription": "empty badlands nest, ransacked, abandoned",
         "files": {
-            "original": "assets/images/nodes/node_badlands_nest_original.png",
-            "consumed_original": "assets/images/nodes/node_badlands_nest_consumed_original.png"
+            "original": "assets/images/nodes/node_t3_04_original.png",
+            "consumed_original": "assets/images/nodes/node_t3_04_consumed_original.png"
         },
         "yields": [
             "Smoked Rations"
@@ -191,7 +191,7 @@
         "consumedStatus": "declined"
     },
     {
-        "id": "node_badlands_outcrop",
+        "id": "node_t3_05",
         "name": "Badlands Outcrop",
         "tier": 3,
         "nodeType": "mineral",
@@ -204,8 +204,8 @@
         "sourceDescription": "badlands outcrop, resource deposit, minerals visible",
         "consumedSourceDescription": "depleted badlands outcrop, empty, picked clean",
         "files": {
-            "original": "assets/images/nodes/node_badlands_outcrop_original.png",
-            "consumed_original": "assets/images/nodes/node_badlands_outcrop_consumed_original.png"
+            "original": "assets/images/nodes/node_t3_05_original.png",
+            "consumed_original": "assets/images/nodes/node_t3_05_consumed_original.png"
         },
         "yields": [
             "Black Rock",
@@ -214,7 +214,7 @@
         "consumedStatus": "declined"
     },
     {
-        "id": "node_berry_bush",
+        "id": "node_t1_02",
         "name": "Berry Bush",
         "tier": 1,
         "nodeType": "food",
@@ -227,8 +227,8 @@
         "sourceDescription": "berry bush, foraging node, berries or fruit visible, natural vegetation",
         "consumedSourceDescription": "depleted berry bush, bare branches, no berries remaining",
         "files": {
-            "original": "assets/images/nodes/node_berry_bush_original.png",
-            "consumed_original": "assets/images/nodes/node_berry_bush_consumed_original.png"
+            "original": "assets/images/nodes/node_t1_02_original.png",
+            "consumed_original": "assets/images/nodes/node_t1_02_consumed_original.png"
         },
         "yields": [
             "Wild Berries"
@@ -236,7 +236,7 @@
         "consumedStatus": "declined"
     },
     {
-        "id": "node_burrow_nest",
+        "id": "node_t2_04",
         "name": "Burrow Nest",
         "tier": 2,
         "nodeType": "foraging",
@@ -249,14 +249,14 @@
         "sourceDescription": "burrow nest, creature nest, resources visible",
         "consumedSourceDescription": "empty burrow nest, ransacked, abandoned",
         "files": {
-            "original": "assets/images/nodes/node_burrow_nest_original.png"
+            "original": "assets/images/nodes/node_t2_04_original.png"
         },
         "yields": [
             "Sand Grub"
         ]
     },
     {
-        "id": "node_carcass",
+        "id": "node_t2_05",
         "name": "Carcass",
         "tier": 2,
         "nodeType": "salvage",
@@ -269,14 +269,14 @@
         "sourceDescription": "carcass, animal remains, bones and materials visible",
         "consumedSourceDescription": "stripped carcass, bare bones, nothing left",
         "files": {
-            "original": "assets/images/nodes/node_carcass_original.png"
+            "original": "assets/images/nodes/node_t2_05_original.png"
         },
         "yields": [
             "Bone"
         ]
     },
     {
-        "id": "node_coal_seam",
+        "id": "node_t2_06",
         "name": "Coal Seam",
         "tier": 2,
         "nodeType": "mineral",
@@ -289,14 +289,14 @@
         "sourceDescription": "coal seam, mining node, ore visible in rock, pickaxe marks",
         "consumedSourceDescription": "depleted coal seam, mined out cavity, no ore remaining",
         "files": {
-            "original": "assets/images/nodes/node_coal_seam_original.png"
+            "original": "assets/images/nodes/node_t2_06_original.png"
         },
         "yields": [
             "Coal"
         ]
     },
     {
-        "id": "node_copper_vein",
+        "id": "node_t1_03",
         "name": "Copper Vein",
         "tier": 1,
         "nodeType": "mineral",
@@ -309,14 +309,14 @@
         "sourceDescription": "copper vein, mining node, ore visible in rock, pickaxe marks",
         "consumedSourceDescription": "depleted copper vein, mined out cavity, no ore remaining",
         "files": {
-            "original": "assets/images/nodes/node_copper_vein_original.png"
+            "original": "assets/images/nodes/node_t1_03_original.png"
         },
         "yields": [
             "Copper Ore"
         ]
     },
     {
-        "id": "node_deep_vein",
+        "id": "node_t4_02",
         "name": "Deep Vein",
         "tier": 4,
         "nodeType": "mineral",
@@ -329,14 +329,14 @@
         "sourceDescription": "deep vein, mining node, ore visible in rock, pickaxe marks",
         "consumedSourceDescription": "depleted deep vein, mined out cavity, no ore remaining",
         "files": {
-            "original": "assets/images/nodes/node_deep_vein_original.png"
+            "original": "assets/images/nodes/node_t4_02_original.png"
         },
         "yields": [
             "Tungsten Ore"
         ]
     },
     {
-        "id": "node_desert_cactus",
+        "id": "node_t2_07",
         "name": "Desert Cactus",
         "tier": 2,
         "nodeType": "plant",
@@ -349,7 +349,7 @@
         "sourceDescription": "desert cactus, harvestable desert plant, fruit and spines",
         "consumedSourceDescription": "harvested desert cactus, bare cactus, no fruit",
         "files": {
-            "original": "assets/images/nodes/node_desert_cactus_original.png"
+            "original": "assets/images/nodes/node_t2_07_original.png"
         },
         "yields": [
             "Cactus Fruit",
@@ -357,7 +357,7 @@
         ]
     },
     {
-        "id": "node_desert_remains",
+        "id": "node_t2_08",
         "name": "Desert Remains",
         "tier": 2,
         "nodeType": "salvage",
@@ -370,14 +370,14 @@
         "sourceDescription": "desert remains, animal remains, bones and materials visible",
         "consumedSourceDescription": "stripped desert remains, bare bones, nothing left",
         "files": {
-            "original": "assets/images/nodes/node_desert_remains_original.png"
+            "original": "assets/images/nodes/node_t2_08_original.png"
         },
         "yields": [
             "Sun-Bleached Bone"
         ]
     },
     {
-        "id": "node_desert_rock",
+        "id": "node_t2_09",
         "name": "Desert Rock",
         "tier": 2,
         "nodeType": "mineral",
@@ -390,14 +390,14 @@
         "sourceDescription": "desert rock, rock formation, harvestable stone",
         "consumedSourceDescription": "depleted desert rock, crumbled, nothing usable",
         "files": {
-            "original": "assets/images/nodes/node_desert_rock_original.png"
+            "original": "assets/images/nodes/node_t2_09_original.png"
         },
         "yields": [
             "Sandstone"
         ]
     },
     {
-        "id": "node_field_kitchen",
+        "id": "node_t4_03",
         "name": "Field Kitchen",
         "tier": 4,
         "nodeType": "salvage",
@@ -410,14 +410,14 @@
         "sourceDescription": "field kitchen, military supplies, WWI-era container",
         "consumedSourceDescription": "empty field kitchen, looted, nothing remaining",
         "files": {
-            "original": "assets/images/nodes/node_field_kitchen_original.png"
+            "original": "assets/images/nodes/node_t4_03_original.png"
         },
         "yields": [
             "Iron Rations"
         ]
     },
     {
-        "id": "node_frozen_ground",
+        "id": "node_t2_10",
         "name": "Frozen Ground",
         "tier": 2,
         "nodeType": "foraging",
@@ -430,14 +430,14 @@
         "sourceDescription": "frozen ground, digging spot, disturbed earth, resources beneath",
         "consumedSourceDescription": "dug out frozen ground, empty hole, no resources",
         "files": {
-            "original": "assets/images/nodes/node_frozen_ground_original.png"
+            "original": "assets/images/nodes/node_t2_10_original.png"
         },
         "yields": [
             "Root Vegetables"
         ]
     },
     {
-        "id": "node_ice_hole",
+        "id": "node_t2_11",
         "name": "Ice Hole",
         "tier": 2,
         "nodeType": "fishing",
@@ -450,14 +450,14 @@
         "sourceDescription": "ice hole, fishing spot, dark water, fish visible below",
         "consumedSourceDescription": "depleted ice hole, murky water, no fish remaining",
         "files": {
-            "original": "assets/images/nodes/node_ice_hole_original.png"
+            "original": "assets/images/nodes/node_t2_11_original.png"
         },
         "yields": [
             "Frozen Fish"
         ]
     },
     {
-        "id": "node_iron_deposit",
+        "id": "node_t2_12",
         "name": "Iron Deposit",
         "tier": 2,
         "nodeType": "mineral",
@@ -470,14 +470,14 @@
         "sourceDescription": "iron deposit, mining node, ore visible in rock, pickaxe marks",
         "consumedSourceDescription": "depleted iron deposit, mined out cavity, no ore remaining",
         "files": {
-            "original": "assets/images/nodes/node_iron_deposit_original.png"
+            "original": "assets/images/nodes/node_t2_12_original.png"
         },
         "yields": [
             "Iron Ore"
         ]
     },
     {
-        "id": "node_ironwood_tree",
+        "id": "node_t4_04",
         "name": "Ironwood Tree",
         "tier": 4,
         "nodeType": "wood",
@@ -490,14 +490,14 @@
         "sourceDescription": "ironwood tree, harvestable tree, full of wood, natural growth",
         "consumedSourceDescription": "depleted ironwood tree, bare stump, no wood remaining",
         "files": {
-            "original": "assets/images/nodes/node_ironwood_tree_original.png"
+            "original": "assets/images/nodes/node_t4_04_original.png"
         },
         "yields": [
             "Ironwood"
         ]
     },
     {
-        "id": "node_oak_tree",
+        "id": "node_t1_04",
         "name": "Oak Tree",
         "tier": 1,
         "nodeType": "wood",
@@ -510,14 +510,14 @@
         "sourceDescription": "oak tree, harvestable tree, full of wood, natural growth",
         "consumedSourceDescription": "depleted oak tree, bare stump, no wood remaining",
         "files": {
-            "original": "assets/images/nodes/node_oak_tree_original.png"
+            "original": "assets/images/nodes/node_t1_04_original.png"
         },
         "yields": [
             "Oak Wood"
         ]
     },
     {
-        "id": "node_riverbank",
+        "id": "node_t1_05",
         "name": "Riverbank",
         "tier": 1,
         "nodeType": "foraging",
@@ -530,14 +530,14 @@
         "sourceDescription": "riverbank deposit, clay and sediment visible, muddy",
         "consumedSourceDescription": "dug out riverbank, empty hole, no clay",
         "files": {
-            "original": "assets/images/nodes/node_riverbank_original.png"
+            "original": "assets/images/nodes/node_t1_05_original.png"
         },
         "yields": [
             "Red Clay"
         ]
     },
     {
-        "id": "node_salt_flat",
+        "id": "node_t2_13",
         "name": "Salt Flat",
         "tier": 2,
         "nodeType": "mineral",
@@ -550,14 +550,14 @@
         "sourceDescription": "salt flat, surface mineral deposit, salt crystals visible",
         "consumedSourceDescription": "harvested salt flat, scraped clean",
         "files": {
-            "original": "assets/images/nodes/node_salt_flat_original.png"
+            "original": "assets/images/nodes/node_t2_13_original.png"
         },
         "yields": [
             "Oasis Salt"
         ]
     },
     {
-        "id": "node_salt_formation",
+        "id": "node_t2_14",
         "name": "Salt Formation",
         "tier": 2,
         "nodeType": "mineral",
@@ -570,14 +570,14 @@
         "sourceDescription": "salt formation, resource deposit, minerals visible",
         "consumedSourceDescription": "depleted salt formation, empty, picked clean",
         "files": {
-            "original": "assets/images/nodes/node_salt_formation_original.png"
+            "original": "assets/images/nodes/node_t2_14_original.png"
         },
         "yields": [
             "Salt Crystal"
         ]
     },
     {
-        "id": "node_sandy_deposit",
+        "id": "node_t3_06",
         "name": "Sandy Deposit",
         "tier": 3,
         "nodeType": "mineral",
@@ -590,14 +590,14 @@
         "sourceDescription": "sandy deposit, mining node, ore visible in rock, pickaxe marks",
         "consumedSourceDescription": "depleted sandy deposit, mined out cavity, no ore remaining",
         "files": {
-            "original": "assets/images/nodes/node_sandy_deposit_original.png"
+            "original": "assets/images/nodes/node_t3_06_original.png"
         },
         "yields": [
             "Gold Dust"
         ]
     },
     {
-        "id": "node_silver_vein",
+        "id": "node_t3_07",
         "name": "Silver Vein",
         "tier": 3,
         "nodeType": "mineral",
@@ -610,14 +610,14 @@
         "sourceDescription": "silver vein, mining node, ore visible in rock, pickaxe marks",
         "consumedSourceDescription": "depleted silver vein, mined out cavity, no ore remaining",
         "files": {
-            "original": "assets/images/nodes/node_silver_vein_original.png"
+            "original": "assets/images/nodes/node_t3_07_original.png"
         },
         "yields": [
             "Silver Ore"
         ]
     },
     {
-        "id": "node_stone_pile",
+        "id": "node_t1_06",
         "name": "Stone Pile",
         "tier": 1,
         "nodeType": "mineral",
@@ -630,14 +630,14 @@
         "sourceDescription": "stone pile, resource deposit, minerals visible",
         "consumedSourceDescription": "depleted stone pile, empty, picked clean",
         "files": {
-            "original": "assets/images/nodes/node_stone_pile_original.png"
+            "original": "assets/images/nodes/node_t1_06_original.png"
         },
         "yields": [
             "Rough Stone"
         ]
     },
     {
-        "id": "node_sulfur_vent",
+        "id": "node_t3_08",
         "name": "Sulfur Vent",
         "tier": 3,
         "nodeType": "foraging",
@@ -650,14 +650,14 @@
         "sourceDescription": "sulfur vent, resource node, harvestable",
         "consumedSourceDescription": "depleted sulfur vent, empty, exhausted",
         "files": {
-            "original": "assets/images/nodes/node_sulfur_vent_original.png"
+            "original": "assets/images/nodes/node_t3_08_original.png"
         },
         "yields": [
             "Sulfur"
         ]
     },
     {
-        "id": "node_tall_grass",
+        "id": "node_t1_07",
         "name": "Tall Grass",
         "tier": 1,
         "nodeType": "plant",
@@ -670,14 +670,14 @@
         "sourceDescription": "tall grass, harvestable plant, ready for gathering",
         "consumedSourceDescription": "harvested tall grass, cut stalks, regrowth needed",
         "files": {
-            "original": "assets/images/nodes/node_tall_grass_original.png"
+            "original": "assets/images/nodes/node_t1_07_original.png"
         },
         "yields": [
             "Plant Fiber"
         ]
     },
     {
-        "id": "node_wild_wheat",
+        "id": "node_t1_08",
         "name": "Wild Wheat",
         "tier": 1,
         "nodeType": "plant",
@@ -690,7 +690,7 @@
         "sourceDescription": "wild wheat, harvestable plant, ready for gathering",
         "consumedSourceDescription": "harvested wild wheat, cut stalks, regrowth needed",
         "files": {
-            "original": "assets/images/nodes/node_wild_wheat_original.png"
+            "original": "assets/images/nodes/node_t1_08_original.png"
         },
         "yields": [
             "Wheat Grain"

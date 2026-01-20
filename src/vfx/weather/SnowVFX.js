@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SnowVFX - Modular Weather Effect
  * Handles gently falling circles with sine-wave drift.
  * Simulates world-space persistence by shifting particles opposite to camera movement.
@@ -38,7 +38,7 @@ class SnowVFX {
         // Wind Force
         // Snow is lighter, affected more by wind? Or just moves with it.
         // Let's apply full wind force.
-        const windShift = wind ? (wind.currentX * (dt / 1000)) : 0;
+        const windShift = wind ? wind.currentX * (dt / 1000) : 0;
 
         for (const p of this.particles) {
             // 1. Apply Camera Shift
@@ -50,13 +50,14 @@ class SnowVFX {
 
             // 3. Horizontal Drift (Sine Wave) + Wind
             const drift = Math.sin(time * p.driftSpeed + p.driftOffset) * 0.5;
-            p.x += (drift * timeScale) + windShift;
+            p.x += drift * timeScale + windShift;
 
             // 4. Wrap
             if (p.y > height) {
                 p.y = -5;
                 p.x = Math.random() * width;
-            } else if (p.y < -50) { // Camera moved down fast
+            } else if (p.y < -50) {
+                // Camera moved down fast
                 p.y = height + 5;
                 p.x = Math.random() * width;
             }
@@ -83,3 +84,4 @@ class SnowVFX {
     }
 }
 window.SnowVFX = SnowVFX;
+

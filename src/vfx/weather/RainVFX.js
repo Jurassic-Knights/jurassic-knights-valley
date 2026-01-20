@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RainVFX - Modular Weather Effect
  * Handles high-velocity falling lines with screen wrapping.
  * Simulates world-space persistence by shifting particles opposite to camera movement.
@@ -51,7 +51,7 @@ class RainVFX {
         // Base angle 0.2 rad (~11 deg).
         // 100 wind -> +0.5 rad?
         if (wind) {
-            this.angle = 0.2 + (wind.currentX / 300); // 300 force = +1 rad (~57 deg)
+            this.angle = 0.2 + wind.currentX / 300; // 300 force = +1 rad (~57 deg)
         }
 
         for (const p of this.particles) {
@@ -61,12 +61,12 @@ class RainVFX {
 
             // 2. Move (Falling)
             // Calculate Velocity Components (per second approx for direction)
-            const vX_sec = (p.speed * 0.2) + windSpeed;
+            const vX_sec = p.speed * 0.2 + windSpeed;
             const vY_sec = p.speed;
 
             // Frame Delta
             const vx_frame = vX_sec * (dt / 1000); // or use timeScale logic: p.speed * timeScale is pixels/frame
-            const vy_frame = vY_sec * (dt / 1000); // 
+            const vy_frame = vY_sec * (dt / 1000); //
 
             // Consistent Physics Update (using timeScale logic for consistency with original tuning)
             // Original: p.y += p.speed * timeScale;
@@ -75,7 +75,7 @@ class RainVFX {
             // Let's stick to modifying p.x/p.y as before, but calculating angle from that.
 
             const moveY = p.speed * timeScale;
-            const moveX = (p.speed * 0.2 * timeScale) + (windSpeed * (dt / 1000));
+            const moveX = p.speed * 0.2 * timeScale + windSpeed * (dt / 1000);
 
             p.x += moveX;
             p.y += moveY;
@@ -95,7 +95,6 @@ class RainVFX {
                 p.renderDy = effectiveLen;
             }
 
-
             // 4. Wrapping
             // If particle goes off-screen, wrap it to the other side
             // Ideally we want to wrap around the *viewport bounds*
@@ -109,7 +108,8 @@ class RainVFX {
                 p.y = -p.len;
                 p.x = Math.random() * width;
             }
-            if (p.y < -p.len - 100) { // If camera moves UP fast (dy negative -> p.y increases. If dy positive (cam down) -> p.y decreases)
+            if (p.y < -p.len - 100) {
+                // If camera moves UP fast (dy negative -> p.y increases. If dy positive (cam down) -> p.y decreases)
                 // If p.y becomes too negative (cam moved down past it)
                 p.y = height + p.len;
                 p.x = Math.random() * width;
@@ -141,3 +141,4 @@ class RainVFX {
     }
 }
 window.RainVFX = RainVFX;
+

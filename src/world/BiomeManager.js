@@ -1,9 +1,9 @@
-/**
+﻿/**
  * BiomeManager - Handles world biome boundaries, detection, and roads
- * 
+ *
  * World Size: 30,000 x 30,000 pixels
  * Biomes: Badlands (N), Grasslands (W), Ironhaven (C), Tundra (E), Desert (SW)
- * 
+ *
  * Uses polygon boundaries for natural-looking biome shapes.
  */
 const BiomeManager = {
@@ -141,7 +141,12 @@ const BiomeManager = {
     IRONHAVEN_OFFSET: { x: 10000, y: 10000 },
 
     init() {
-        Logger.info('[BiomeManager] Initialized - World size:', this.WORLD_WIDTH, 'x', this.WORLD_HEIGHT);
+        Logger.info(
+            '[BiomeManager] Initialized - World size:',
+            this.WORLD_WIDTH,
+            'x',
+            this.WORLD_HEIGHT
+        );
         Logger.info('[BiomeManager] Biomes:', Object.keys(this.BIOMES).join(', '));
     },
 
@@ -168,10 +173,12 @@ const BiomeManager = {
         const n = polygon.length;
 
         for (let i = 0, j = n - 1; i < n; j = i++) {
-            const xi = polygon[i].x, yi = polygon[i].y;
-            const xj = polygon[j].x, yj = polygon[j].y;
+            const xi = polygon[i].x,
+                yi = polygon[i].y;
+            const xj = polygon[j].x,
+                yj = polygon[j].y;
 
-            if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+            if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
                 inside = !inside;
             }
         }
@@ -350,3 +357,4 @@ const BiomeManager = {
 
 window.BiomeManager = BiomeManager;
 if (window.Registry) Registry.register('BiomeManager', BiomeManager);
+

@@ -1,0 +1,789 @@
+/**
+ * Equipment Screen Styles
+ * Fullscreen equipment management UI
+ */
+
+/* Override ui-overlay pointer-events: none */
+#ui-overlay>.equipment-screen,
+.equipment-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 500;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    /* Panel fills entire height */
+    padding: 0;
+    /* No gaps - panel covers everything */
+    box-sizing: border-box;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    overflow: hidden;
+    /* Panel handles its own scrolling */
+    pointer-events: auto !important;
+}
+
+/* Ensure ALL children are clickable - override any parent rules */
+#ui-overlay>.equipment-screen *,
+.equipment-screen *,
+.equipment-screen button,
+.equipment-screen .inventory-item,
+.equipment-screen .equip-tab,
+.equipment-screen .action-btn,
+.equipment-screen .equip-slot {
+    pointer-events: auto !important;
+}
+
+.equip-panel {
+    width: 100%;
+    max-width: 100%;
+    /* Fill entire width */
+    height: 100%;
+    background: var(--bg-deepest);
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    padding-bottom: 115px;
+    /* Leave room for footer buttons (higher position) */
+    box-sizing: border-box;
+    position: relative;
+}
+
+.equip-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--bg-medium);
+    border: none;
+    color: var(--text-disabled);
+    font-size: 18px;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.equip-close:hover {
+    background: var(--bg-light);
+    color: var(--text-primary);
+}
+
+.equip-back {
+    background: var(--bg-medium);
+    border: 2px solid var(--bg-light);
+    color: var(--text-disabled);
+    font-size: 10px;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.equip-back:hover {
+    background: var(--bg-light);
+    border-color: var(--text-muted);
+    color: var(--text-primary);
+}
+
+/* Header: Character + Stats */
+.equip-header {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    background: var(--bg-dark);
+    border: 2px solid var(--bg-light);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.equip-character {
+    width: 160px;
+    height: 160px;
+    background: var(--bg-deepest);
+    border: 2px solid var(--bg-light);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.character-sprite {
+    width: 150px;
+    height: 150px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.equip-stats-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.equip-item-name {
+    color: var(--gold-primary);
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--text-secondary);
+}
+
+.stat-icon {
+    font-size: 12px;
+}
+
+.stat-bar {
+    flex: 1;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stat-bar.health::after {
+    content: '';
+    display: block;
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(90deg, #c23b22, #e74c3c);
+}
+
+.stat-bar.armor::after {
+    content: '';
+    display: block;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, #2980b9, #3498db);
+}
+
+.stat-bar.attack::after {
+    content: '';
+    display: block;
+    width: 70%;
+    height: 100%;
+    background: linear-gradient(90deg, #c9a050, #f1c40f);
+}
+
+.stat-value {
+    color: #fff;
+    font-size: 10px;
+    min-width: 40px;
+    text-align: right;
+}
+
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.mini-stat {
+    font-size: 8px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mini-stat span:last-child {
+    color: #fff;
+    margin-left: auto;
+}
+
+/* Selected Item Preview Bar */
+.equip-summary-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    background: #252525;
+    border: 2px solid #3a3a3a;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.equip-summary-bar.has-item {
+    border-color: #c9a050;
+    background: linear-gradient(180deg, #2a2520 0%, #252525 100%);
+}
+
+.item-preview-name {
+    font-size: 11px;
+    color: #c9a050;
+    font-weight: bold;
+    text-align: center;
+}
+
+.equip-summary-bar.empty .item-preview-name {
+    color: #666;
+}
+
+.item-stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.summary-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 9px;
+    color: #8f8;
+}
+
+.summary-stat span:last-child {
+    font-weight: bold;
+}
+
+.summary-stat.empty {
+    color: #555;
+    font-style: italic;
+}
+
+/* Equip Button */
+.equip-btn {
+    margin-top: 8px;
+    padding: 8px 24px;
+    background: linear-gradient(180deg, #4a7c3f 0%, #2d5a24 100%);
+    border: 2px solid #5a9c4f;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 10px;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.equip-btn:hover {
+    background: linear-gradient(180deg, #5a9c4f 0%, #3a7a34 100%);
+    border-color: #8ac87f;
+}
+
+/* Selected Inventory Item */
+.inventory-item.selected {
+    border-color: #c9a050 !important;
+    box-shadow: 0 0 10px rgba(201, 160, 80, 0.5);
+}
+
+/* Equipped Slots */
+.equipped-slots {
+    background: #252525;
+    border: 2px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+}
+
+.slot-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.slot-row:last-child {
+    margin-bottom: 0;
+}
+
+.equip-slot {
+    position: relative;
+    cursor: pointer;
+}
+
+.slot-label {
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7px;
+    color: #fff;
+    text-transform: uppercase;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1px 4px;
+    border-radius: 3px;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+.slot-icon {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #1a1a1a;
+    border: 2px solid #444;
+    border-radius: 6px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden;
+}
+
+.slot-icon.filled {
+    border-color: #c9a050;
+}
+
+.slot-icon.empty::after {
+    content: '+';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #444;
+    font-size: 24px;
+}
+
+/* Selected equipped slot */
+.equip-slot.selected .slot-icon {
+    border-color: #c9a050 !important;
+    box-shadow: 0 0 10px rgba(201, 160, 80, 0.5);
+}
+
+.equip-slot:hover .slot-icon {
+    border-color: #e74c3c;
+}
+
+/* Slot selection mode - TRUE marching ants using SVG stroke animation */
+.equip-slot.slot-selectable {
+    position: relative;
+}
+
+.equip-slot.slot-selectable .slot-icon {
+    position: relative;
+    border: none !important;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+}
+
+/* SVG marching ants border */
+.marching-ants-border {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    pointer-events: none;
+}
+
+.marching-ants-border rect {
+    fill: none;
+    stroke: #4caf50;
+    stroke-width: 3;
+    stroke-dasharray: 8, 4;
+    animation: marchingAntsStroke 1s linear infinite;
+}
+
+@keyframes marchingAntsStroke {
+    0% {
+        stroke-dashoffset: 0;
+    }
+
+    100% {
+        stroke-dashoffset: -24;
+    }
+}
+
+.equip-slot.slot-selectable .slot-label {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+/* Disabled slot (2-hand weapon blocks off-hand) */
+.equip-slot.slot-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.equip-slot.slot-disabled .slot-label {
+    color: #777;
+}
+
+.slot-disabled-slash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.slot-disabled-slash::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    width: 90%;
+    height: 3px;
+    background: #e74c3c;
+    transform: translateY(-50%) rotate(-45deg);
+    transform-origin: center;
+    box-shadow: 0 0 4px rgba(231, 76, 60, 0.5);
+    border-radius: 2px;
+}
+
+/* Category Tabs - Container for filter buttons */
+.equip-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    padding: 4px;
+}
+
+/* ===========================================
+   Filter Button Style (equip-tab)
+   Simpler design without L-corners.
+   Used for sub-filters in equipment/inventory screens.
+   =========================================== */
+.equip-tab {
+    flex: 1;
+    min-width: 45px;
+    height: 32px;
+    padding: 6px 10px;
+    background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+    border: 2px solid #4a4a4a;
+    border-radius: 4px;
+    color: #888;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    font-size: 7px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.equip-tab:hover {
+    background: linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
+    border-color: #666;
+    color: #ccc;
+    transform: translateY(-1px);
+}
+
+.equip-tab:active {
+    transform: translateY(1px);
+    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+}
+
+.equip-tab.active {
+    background: linear-gradient(180deg, #5a4a30 0%, #4a3a20 100%);
+    border-color: #c9a050;
+    color: #fff;
+    box-shadow: 0 0 8px rgba(201, 160, 80, 0.3);
+}
+
+.equip-sort {
+    width: 40px;
+    padding: 8px;
+    background: #333;
+    border: 2px solid #444;
+    border-radius: 4px;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Inventory Grid */
+.equip-inventory {
+    flex: 1;
+    background: #1a1a1a;
+    border: 2px solid #3a3a3a;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.inventory-item {
+    aspect-ratio: 1;
+    background: #252525;
+    border: 2px solid #444;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    overflow: hidden;
+}
+
+.inventory-item:hover {
+    border-color: #c9a050;
+    transform: scale(1.05);
+}
+
+.item-icon {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.empty-inventory {
+    text-align: center;
+    color: #555;
+    font-size: 10px;
+    padding: 40px;
+}
+
+/* Item count badge (for inventory items) */
+.item-count {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #c9a050;
+    font-size: 8px;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid #444;
+}
+
+.inventory-item {
+    position: relative;
+}
+
+/* Footer buttons now use main screen footer - no custom footer CSS needed */
+
+/* Weapon Set Labels */
+.weapon-set-label {
+    font-size: 9px;
+    color: #c9a050;
+    font-weight: bold;
+    text-align: center;
+    padding: 4px 0;
+    background: rgba(201, 160, 80, 0.1);
+    border-radius: 4px;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+}
+
+/* Weapon Set Toggle Buttons */
+.weapon-set-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.set-toggle-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: #333;
+    border: 2px solid #444;
+    border-radius: 6px;
+    color: #888;
+    font-size: 9px;
+    font-family: 'Press Start 2P', 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.set-toggle-btn:hover {
+    background: #444;
+    border-color: #666;
+    color: #ccc;
+}
+
+.set-toggle-btn.active {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4caf50;
+    color: #4caf50;
+}
+
+/* Weapon Sets Container - side by side */
+.weapon-sets-container {
+    display: flex;
+    gap: 12px;
+}
+
+.weapon-set {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Weapon slot pairs - 2 slots per set */
+.slot-row.weapon-slots-pair {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* Tool slots - keep same slot size as armor (4-column grid) */
+.slot-row.tool-slots {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+/* ============================================
+   HERO SKIN SELECTOR MODAL
+   ============================================ */
+
+/* Make the character portrait clickable */
+.equip-character {
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.equip-character:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(33, 150, 243, 0.5);
+}
+
+.equip-character:active {
+    transform: scale(0.98);
+}
+
+/* Modal overlay */
+.hero-skin-selector-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-skin-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+.hero-skin-modal {
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid #2196f3;
+    border-radius: 12px;
+    padding: 20px;
+    min-width: 300px;
+    max-width: 400px;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(33, 150, 243, 0.3);
+}
+
+.hero-skin-modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.hero-skin-modal-close:hover {
+    background: #d32f2f;
+    transform: scale(1.1);
+}
+
+.hero-skin-modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2196f3;
+    text-align: center;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-skin-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.hero-skin-option {
+    background: #2a2a4a;
+    border: 2px solid #444;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-skin-option:hover {
+    border-color: #2196f3;
+    background: #3a3a5a;
+    transform: translateY(-2px);
+}
+
+.hero-skin-option.selected {
+    border-color: #4caf50;
+    background: #2a4a2a;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+}
+
+.hero-skin-image {
+    width: 64px;
+    height: 64px;
+    background: #1a1a2e;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    background-size: cover;
+    background-position: center;
+}
+
+.hero-skin-name {
+    font-size: 10px;
+    color: #aaa;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.hero-skin-option.selected .hero-skin-name {
+    color: #4caf50;
+    font-weight: bold;
+}
+
+.hero-skin-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-style: italic;
+}

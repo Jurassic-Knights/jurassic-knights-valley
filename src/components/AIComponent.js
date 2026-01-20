@@ -1,7 +1,7 @@
-/**
+﻿/**
  * AIComponent
  * Manages behavioral state for autonomous entities (Dinosaurs, Army Units).
- * 
+ *
  * Properties:
  * - State: 'IDLE', 'WANDER', 'CHASE', 'ATTACK', 'FLEE'
  * - Target: Entity reference (Hero, Enemy)
@@ -56,7 +56,9 @@ class AIComponent extends Component {
             x: Math.cos(angle),
             y: Math.sin(angle)
         };
-        this.wanderTimer = this.wanderIntervalMin + Math.random() * (this.wanderIntervalMax - this.wanderIntervalMin);
+        this.wanderTimer =
+            this.wanderIntervalMin +
+            Math.random() * (this.wanderIntervalMax - this.wanderIntervalMin);
     }
 
     /**
@@ -94,3 +96,4 @@ class AIComponent extends Component {
 }
 
 window.AIComponent = AIComponent;
+

@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Animations Utility
  * Helper functions for UI animations
- * 
+ *
  * Owner: VFX Specialist
  */
 
@@ -47,3 +47,4 @@ const Animations = {
 };
 
 window.Animations = Animations;
+

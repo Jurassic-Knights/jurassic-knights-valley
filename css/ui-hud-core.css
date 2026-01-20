@@ -1,0 +1,109 @@
+/* ui-hud-core.css - Overlay, Zones, Icon Placeholders */
+/* Split from ui-hud.css for 500-line limit compliance */
+
+/* ========================================
+   UI OVERLAY CONTAINER
+   ======================================== */
+/* ========================================
+   UI OVERLAY CONTAINER - Refactored for Zones
+   ======================================== */
+#ui-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    padding: var(--hud-padding) var(--hud-padding) 0 var(--hud-padding);
+    gap: var(--space-sm);
+    /* Spacing between zones */
+    overflow: hidden;
+    /* Prevent scrolling if UI exceeds screen */
+}
+
+#ui-overlay>* {
+    pointer-events: none;
+    /* Default for zones */
+}
+
+/* ========================================
+   ZONES
+   ======================================== */
+#ui-header-zone {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    pointer-events: auto;
+    flex-shrink: 0;
+    /* Header size is determined by content */
+}
+
+#ui-body-zone {
+    flex: 1;
+    /* Fills remaining space */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    /* Align HUDs to top of body zone */
+    pointer-events: none;
+    min-height: 0;
+    /* Important for flex overflow handling */
+}
+
+#ui-footer-zone {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    pointer-events: auto;
+    min-height: 80px;
+    /* Increased for taller buttons */
+    margin-bottom: 0;
+    padding-bottom: 0;
+    margin-top: auto;
+    /* Force to bottom of flex container */
+    width: calc(100% + 20px);
+    /* Extend beyond parent padding (10px each side) */
+    margin-left: -10px;
+    /* Offset the parent padding */
+    margin-right: -10px;
+    /* Full width for footer coverage */
+}
+
+/* ========================================
+   ICON PLACEHOLDERS (for Image Artist)
+   ======================================== */
+[data-icon-id] {
+    /* Background is set by UIManager.loadIcons() via JS */
+    background-color: var(--color-primary-mid);
+    background-size: cover;
+    background-position: center;
+    border: 1px solid var(--color-accent-iron);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    pointer-events: auto;
+    /* Ensure icons are clickable if needed */
+}
+
+/* Debug: show icon ID */
+[data-icon-id]::after {
+    content: attr(data-icon-id);
+    font-size: 6px;
+    color: var(--color-text-secondary);
+    position: absolute;
+    text-align: center;
+    word-break: break-all;
+    padding: 1px;
+    opacity: 0.5;
+    display: none;
+    /* Hide in production, show with .debug-icons class on body */
+}
+
+body.debug-icons [data-icon-id]::after {
+    display: block;
+}

@@ -43,7 +43,7 @@
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        background: #000;
+        background: var(--bg-deepest);
     }
 
     #app {
@@ -253,7 +253,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: #000;
+    background: var(--bg-deepest);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.5s ease-in-out;

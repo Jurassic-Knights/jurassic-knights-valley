@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Prop - Static decorative entity
  * Rendered as part of the world environment
  */
@@ -49,12 +49,10 @@ class Prop extends Entity {
             const w = this.width * this.scale;
             const h = this.height * this.scale;
             ctx.drawImage(img, this.x - w / 2, this.y - h / 2, w, h);
-        } else {
-            // Fallback: Grey square (Matches user observation, helps debug if load fails)
-            ctx.fillStyle = '#888888';
-            ctx.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         }
+        // No fallback - skip rendering until sprite loads
     }
 }
 
 window.Prop = Prop;
+

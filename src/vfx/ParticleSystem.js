@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Particle System
  * Handles particle effects rendering
- * 
+ *
  * Owner: VFX Specialist
  */
 
@@ -98,7 +98,10 @@ const ParticleSystem = {
                 gravity,
                 drag,
                 rotation: Math.random() * Math.PI * 2,
-                rotationSpeed: options.rotationSpeed !== undefined ? options.rotationSpeed : (Math.random() - 0.5) * 0.5,
+                rotationSpeed:
+                    options.rotationSpeed !== undefined
+                        ? options.rotationSpeed
+                        : (Math.random() - 0.5) * 0.5,
                 blendMode, // Store blend mode
                 sprite: options.sprite, // CRITICAL: Store sprite ID
                 pulse: options.pulse, // Size oscillation
@@ -123,11 +126,13 @@ const ParticleSystem = {
     // Helper: Hex to RGB
     hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : { r: 255, g: 255, b: 255 };
+        return result
+            ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            }
+            : { r: 255, g: 255, b: 255 };
     },
 
     update(dt) {
@@ -200,7 +205,9 @@ const ParticleSystem = {
                 if (p.pulse) {
                     if (!p._baseSize) p._baseSize = p.size;
                     const offset = p.pulseOffset || 0;
-                    const wave = Math.sin((p.age * 0.001 * (p.pulse.speed || 1) * Math.PI * 2) + offset);
+                    const wave = Math.sin(
+                        p.age * 0.001 * (p.pulse.speed || 1) * Math.PI * 2 + offset
+                    );
                     const scale = 1 + wave * (p.pulse.amplitude || 0.1);
                     p.size = p._baseSize * scale;
                 }
@@ -245,261 +252,66 @@ const ParticleSystem = {
         let canvasTop = 0;
 
         // Calculate projection if we are drawing to our own overlay canvas
-        // and GameRenderer is active
-        if (!overrideCtx && window.GameRenderer && window.GameRenderer.viewport && window.GameRenderer.canvas) {
+        if (
+            !overrideCtx &&
+            window.GameRenderer &&
+            window.GameRenderer.viewport &&
+            window.GameRenderer.canvas
+        ) {
             const gr = window.GameRenderer;
             const rect = gr.canvas.getBoundingClientRect();
 
-            // Viewport Offset (World -> Canvas Internal)
             offsetX = gr.viewport.x;
             offsetY = gr.viewport.y;
-
-            // Canvas Dest Rect (Canvas Internal -> Screen/Window)
             canvasLeft = rect.left;
             canvasTop = rect.top;
-
-            // Scale Factor (Internal Resolution -> Screen Size)
             scaleX = rect.width / gr.canvas.width;
             scaleY = rect.height / gr.canvas.height;
         }
 
-        // Only clear if we are using the system's own canvas (no override)
+        // Only clear if we are using the system's own canvas
         if (!overrideCtx) {
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
         // Apply strict clipping to the Game Window area
-        // This prevents "Fog of War" or other particles from leaking onto the background
         if (!overrideCtx && window.GameRenderer && window.GameRenderer.canvas) {
             ctx.save();
             ctx.beginPath();
-            // Clip to the exact projected rectangle of the game canvas on screen
-            // We use the same 'rect' values calculated above
             const gr = window.GameRenderer;
             const rect = gr.canvas.getBoundingClientRect();
             ctx.rect(rect.left, rect.top, rect.width, rect.height);
             ctx.clip();
         }
 
-        // Batch by blend mode to minimize state changes? 
-        // For now, just set it per particle (not optimal but fine for low counts)
-        // actually, default is source-over, so we only switch if needed
-
-        // Render
-
-        this.particles.forEach(p => {
+        // Render particles (delegate shape drawing to ParticleRenderer)
+        this.particles.forEach((p) => {
             if (ctx.globalCompositeOperation !== p.blendMode) {
                 ctx.globalCompositeOperation = p.blendMode;
             }
 
             ctx.globalAlpha = Math.max(0, p.alpha);
 
-            // Project Coordinates:
-            // 1. World to GameCanvas Internal: (p.x - offsetX)
-            // 2. Internal to CSS Pixels: * scaleX
-            // 3. CSS Pixels to Window: + canvasLeft
+            // Project Coordinates
             let px, py, pSize;
-
             if (overrideCtx) {
-                // If overriding (drawing ONTO game canvas), just use simple world offset
-                // The context itself should handle scale if configured, or we assume 1:1 with game canvas
                 px = p.x - offsetX;
                 py = p.y - offsetY;
                 pSize = p.size;
             } else {
-                // Overlay Mode
                 px = (p.x - offsetX) * scaleX + canvasLeft;
                 py = (p.y - offsetY) * scaleY + canvasTop;
-                pSize = p.size * scaleX; // Scale particle size too!
+                pSize = p.size * scaleX;
             }
 
             ctx.save();
             ctx.translate(px, py);
 
-            if (p.type === 'glow') {
-                // Radial Gradient
-                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, pSize);
-                gradient.addColorStop(0, p.color);
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(0, 0, pSize, 0, Math.PI * 2);
-                ctx.fill();
-
-            } else if (p.type === 'streak') {
-                // Motion Blur Streak
-                // Stretches based on velocity magnitude
-                const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                const angle = Math.atan2(p.vy, p.vx);
-
-                ctx.rotate(angle);
-
-                ctx.fillStyle = p.color; // Use fill for soft edges if we want, or stroke
-                // Draw a tapered capsule
-                ctx.beginPath();
-                // Tail
-                ctx.moveTo(-speed * 2 * scaleX, 0); // Scale trailing effect too
-                // Head (thick)
-                ctx.lineTo(0, pSize / 2);
-                ctx.lineTo(speed * 0.5 * scaleX, 0);
-                ctx.lineTo(0, -pSize / 2);
-                ctx.closePath();
-                ctx.fill();
-
-            } else if (p.type === 'ray') {
-                // God Ray (Rotating Beam)
-                ctx.rotate(p.rotation);
-
-                // Long, thin triangle fading out at tip
-                const gradient = ctx.createLinearGradient(0, 0, pSize * 4, 0);
-                gradient.addColorStop(0, p.color);
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
-
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.moveTo(0, -pSize / 4);
-                ctx.lineTo(pSize * 6, 0); // Long beam
-                ctx.lineTo(0, pSize / 4);
-                ctx.closePath();
-                ctx.fill();
-
-            } else if (p.type === 'ring') {
-                ctx.strokeStyle = p.color;
-                ctx.lineWidth = 2 * scaleX;
-                ctx.beginPath();
-                ctx.arc(0, 0, pSize, 0, Math.PI * 2);
-                ctx.stroke();
-
-            } else if (p.type === 'spark') {
-                ctx.strokeStyle = p.color;
-                ctx.lineWidth = 2 * scaleX;
-                ctx.beginPath();
-                const vAngle = Math.atan2(p.vy, p.vx);
-                ctx.rotate(vAngle);
-                ctx.moveTo(0, 0);
-                // Scale length
-                const len = Math.min(pSize * 3, Math.sqrt(p.vx * p.vx + p.vy * p.vy) * 3 * scaleX);
-                ctx.lineTo(-len, 0);
-                ctx.stroke();
-
-            } else if (p.type === 'sprite') {
-                if (window.AssetLoader) {
-                    // Try cache first
-                    let img = AssetLoader.getImage(p.sprite);
-
-                    // Lazy-load if not in cache (same pattern as Prop.js)
-                    if (!img) {
-                        const path = AssetLoader.getImagePath(p.sprite);
-                        if (path) {
-                            // Use a shared lazy-load cache on the ParticleSystem
-                            if (!this._spriteCache) this._spriteCache = {};
-                            if (!this._spriteCache[p.sprite]) {
-                                this._spriteCache[p.sprite] = new Image();
-                                this._spriteCache[p.sprite].src = path;
-                            }
-                            img = this._spriteCache[p.sprite];
-                        }
-                    }
-
-                    // Render if image is ready
-                    if (img && img.complete && img.naturalWidth > 0) {
-                        ctx.rotate(p.rotation);
-
-                        // AAA Feature: Jelly Warp Distortion (Slice-based)
-                        if (p.warp) {
-                            const time = p.age * 0.001 * p.warp.speed;
-                            const slices = 10; // Number of horizontal slices
-                            const sliceH = pSize / slices;
-                            const imgSliceH = img.height / slices;
-
-                            for (let i = 0; i < slices; i++) {
-                                // Calculate normalized Y (0 to 1)
-                                const ny = i / slices;
-
-                                // Internal distortion wave (Bulge effect)
-                                // Expands/Shrinks width based on sine wave + Random Phase Offset
-                                const offset = p.warpOffset || 0;
-                                const wave = Math.sin(time + ny * Math.PI * (p.warp.freq || 2) + offset);
-                                const scaleFactor = 1 + wave * (p.warp.amp || 0.1);
-
-                                // Calculate distorted dimensions
-                                const dw = pSize * scaleFactor;
-                                const dh = sliceH; // Keep height constant to avoid gaps
-                                const dx = -dw / 2; // Center it
-                                const dy = -pSize / 2 + i * sliceH;
-
-                                // Source coords
-                                const sx = 0;
-                                const sy = i * imgSliceH;
-                                const sw = img.width;
-                                const sh = imgSliceH;
-
-                                ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-                            }
-                        } else {
-                            // Standard Render
-                            ctx.drawImage(img, -pSize / 2, -pSize / 2, pSize, pSize);
-                        }
-                    } else if (img instanceof HTMLCanvasElement) {
-                        // Canvas-based sprites (procedural)
-                        ctx.rotate(p.rotation);
-                        ctx.drawImage(img, -pSize / 2, -pSize / 2, pSize, pSize);
-                    }
-                    // If not ready yet, skip silently (will render on next frame once loaded)
-                }
-
-            } else if (p.type === 'fog_soft') {
-                // Procedural Gradient Cloud (Code-based, no assets)
-                const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, pSize / 2);
-                // Boosted Alpha for visibility
-                grad.addColorStop(0, 'rgba(240, 245, 255, 0.9)');    // Core (Dense White/Blue)
-                grad.addColorStop(0.5, 'rgba(200, 210, 230, 0.5)');  // Body (Greyish)
-                grad.addColorStop(1, 'rgba(255, 255, 255, 0)');      // Edge (Transparent)
-
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(0, 0, pSize / 2, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (p.type === 'cloud' && p.blobPoints) {
-                ctx.fillStyle = p.color;
-                ctx.rotate(p.rotation);
-
-                // Draw smooth organic blob
-                ctx.beginPath();
-                const points = p.blobPoints;
-                const len = points.length;
-                const coords = [];
-                // 1. Calculate vertices
-                // Use pSize instead of p.size
-                for (let i = 0; i < len; i++) {
-                    const r = pSize * points[i];
-                    const a = (i / len) * Math.PI * 2;
-                    coords.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
-                }
-                // 2. Draw smooth curve through midpoints
-                // Start at midpoint of first edge
-                const firstMidX = (coords[0].x + coords[len - 1].x) / 2;
-                const firstMidY = (coords[0].y + coords[len - 1].y) / 2;
-                ctx.moveTo(firstMidX, firstMidY);
-
-                for (let i = 0; i < len; i++) {
-                    const next = coords[(i + 1) % len]; // Wrap
-                    const midX = (coords[i].x + next.x) / 2;
-                    const midY = (coords[i].y + next.y) / 2;
-                    // Curve from previous midpoint to this midpoint, using vertex as control
-                    ctx.quadraticCurveTo(coords[i].x, coords[i].y, midX, midY);
-                }
-                ctx.closePath();
-                ctx.fill();
-
-            } else if (p.type === 'debris') {
-                ctx.fillStyle = p.color;
-                ctx.rotate(p.rotation);
-                const s = pSize;
-                ctx.fillRect(-s / 2, -s / 2, s, s);
-
+            // Delegate to ParticleRenderer for shape-specific drawing
+            if (window.ParticleRenderer) {
+                ParticleRenderer.renderParticle(ctx, p, pSize, scaleX);
             } else {
-                // Default: Circle (Used for Smoke, Fire, Trails, Debris)
+                // Fallback: simple circle
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
                 ctx.arc(0, 0, pSize, 0, Math.PI * 2);
@@ -521,3 +333,4 @@ const ParticleSystem = {
 };
 
 window.ParticleSystem = ParticleSystem;
+

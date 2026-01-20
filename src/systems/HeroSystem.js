@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HeroSystem
  * Handles Input, Physics, and logic for the Hero entity.
  * Decoupled from the Hero class data container.
@@ -85,7 +85,10 @@ class HeroSystem {
         // Home State Change
         if (hero.isAtHomeOutpost !== this.lastHomeState) {
             this.lastHomeState = hero.isAtHomeOutpost;
-            if (window.EventBus) EventBus.emit(GameConstants.Events.HERO_HOME_STATE_CHANGE, { isHome: hero.isAtHomeOutpost });
+            if (window.EventBus)
+                EventBus.emit(GameConstants.Events.HERO_HOME_STATE_CHANGE, {
+                    isHome: hero.isAtHomeOutpost
+                });
         }
 
         // Stats Emission - Throttle to every 100ms (6 events/sec instead of 60)
@@ -93,10 +96,12 @@ class HeroSystem {
             const now = performance.now();
             if (!this._lastStaminaEmit || now - this._lastStaminaEmit > 100) {
                 this._lastStaminaEmit = now;
-                EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, { current: hero.stamina, max: hero.maxStamina });
+                EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
+                    current: hero.stamina,
+                    max: hero.maxStamina
+                });
             }
         }
-
     }
 
     // Death/Respawn Handler (06-damage-system)
@@ -109,19 +114,22 @@ class HeroSystem {
 
         // Death VFX
         if (window.VFXController && window.VFXConfig) {
-            VFXController.playForeground(hero.x, hero.y, VFXConfig.TEMPLATES?.HERO_DEATH_FX || {
-                type: 'burst',
-                color: '#FF0000',
-                count: 15
-            });
+            VFXController.playForeground(
+                hero.x,
+                hero.y,
+                VFXConfig.TEMPLATES?.HERO_DEATH_FX || {
+                    type: 'burst',
+                    color: '#FF0000',
+                    count: 15
+                }
+            );
         }
 
         // Respawn after delay
         setTimeout(() => {
             // Get spawn position
             const spawnPos = this._islandManager?.getHeroSpawnPosition?.() ||
-                window.IslandManager?.getHeroSpawnPosition?.() ||
-                { x: hero.x, y: hero.y };
+                window.IslandManager?.getHeroSpawnPosition?.() || { x: hero.x, y: hero.y };
             hero.x = spawnPos.x;
             hero.y = spawnPos.y;
 
@@ -141,7 +149,7 @@ class HeroSystem {
     }
 
     updateMovement(dt, hero) {
-        // if (!window.InputManager) return; 
+        // if (!window.InputManager) return;
         const move = this.inputMove;
         hero.inputMove = move; // Sync for Renderer
         const dtSec = dt / 1000;
@@ -222,7 +230,7 @@ class HeroSystem {
 
     updateVFX(dt, hero) {
         const dtSec = dt / 1000;
-        const isMoving = (hero.x !== hero.prevX || hero.y !== hero.prevY);
+        const isMoving = hero.x !== hero.prevX || hero.y !== hero.prevY;
 
         // Use cached VFXController ref
         const vfxController = this._vfxController;
@@ -243,10 +251,15 @@ class HeroSystem {
                         // GC Config Reuse
                         this._dustConfig.color = cfg.COLOR;
                         this._dustConfig.speed = 1.5 + Math.random();
-                        this._dustConfig.lifetime = cfg.LIFETIME_BASE + Math.random() * cfg.LIFETIME_RND;
+                        this._dustConfig.lifetime =
+                            cfg.LIFETIME_BASE + Math.random() * cfg.LIFETIME_RND;
                         this._dustConfig.size = 20 + Math.random() * 8;
 
-                        vfxController.playBackground(hero.x + offsetX, hero.y + hero.height / 2 - 35 + offsetY, this._dustConfig);
+                        vfxController.playBackground(
+                            hero.x + offsetX,
+                            hero.y + hero.height / 2 - 35 + offsetY,
+                            this._dustConfig
+                        );
                     }
                 }
             }
@@ -271,3 +284,4 @@ class HeroSystem {
 
 window.HeroSystem = new HeroSystem();
 if (window.Registry) Registry.register('HeroSystem', window.HeroSystem);
+
