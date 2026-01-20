@@ -318,3 +318,5 @@ class EnemySpawner {
 
 window.EnemySpawner = EnemySpawner;
 
+// ES6 Module Export
+export { EnemySpawner };

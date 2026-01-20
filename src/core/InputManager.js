@@ -208,3 +208,5 @@ const InputManager = {
 window.InputManager = InputManager;
 if (window.Registry) Registry.register('InputManager', InputManager);
 
+// ES6 Module Export
+export { InputManager };

@@ -415,3 +415,5 @@ const EntityLoader = {
 
 window.EntityLoader = EntityLoader;
 
+// ES6 Module Export
+export { EntityLoader };

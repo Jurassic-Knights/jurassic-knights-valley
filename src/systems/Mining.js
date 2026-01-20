@@ -94,3 +94,5 @@ const Mining = {
 
 window.Mining = Mining;
 
+// ES6 Module Export
+export { Mining };

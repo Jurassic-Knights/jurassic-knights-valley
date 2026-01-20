@@ -119,3 +119,5 @@ class RestSystem {
 window.RestSystem = new RestSystem();
 if (window.Registry) Registry.register('RestSystem', window.RestSystem);
 
+// ES6 Module Export
+export { RestSystem };

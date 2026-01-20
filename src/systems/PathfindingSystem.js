@@ -301,3 +301,5 @@ class PathfindingSystem {
 window.PathfindingSystem = new PathfindingSystem();
 if (window.Registry) Registry.register('PathfindingSystem', window.PathfindingSystem);
 
+// ES6 Module Export
+export { PathfindingSystem };

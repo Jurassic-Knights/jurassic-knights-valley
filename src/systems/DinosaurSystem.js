@@ -192,3 +192,5 @@ class DinosaurSystem {
 window.DinosaurSystem = new DinosaurSystem();
 if (window.Registry) Registry.register('DinosaurSystem', window.DinosaurSystem);
 
+// ES6 Module Export
+export { DinosaurSystem };

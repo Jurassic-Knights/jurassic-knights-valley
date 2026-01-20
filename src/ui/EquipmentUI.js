@@ -718,3 +718,5 @@ class EquipmentUI {
 window.EquipmentUI = new EquipmentUI();
 if (window.Registry) Registry.register('EquipmentUI', window.EquipmentUI);
 
+// ES6 Module Export
+export { EquipmentUI };

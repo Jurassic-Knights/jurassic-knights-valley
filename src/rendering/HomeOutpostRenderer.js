@@ -63,3 +63,5 @@ const HomeOutpostRenderer = {
 
 window.HomeOutpostRenderer = HomeOutpostRenderer;
 
+// ES6 Module Export
+export { HomeOutpostRenderer };

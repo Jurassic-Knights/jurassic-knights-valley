@@ -65,4 +65,5 @@ const ColorPalette = {
 
 window.ColorPalette = ColorPalette;
 
-
+// ES6 Module Export
+export { ColorPalette };

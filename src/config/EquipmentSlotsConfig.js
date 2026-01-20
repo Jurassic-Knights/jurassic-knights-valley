@@ -105,3 +105,5 @@ if (typeof module !== 'undefined') {
     module.exports = EquipmentSlotsConfig;
 }
 
+// ES6 Module Export
+export { EquipmentSlotsConfig };

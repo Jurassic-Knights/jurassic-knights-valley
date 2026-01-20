@@ -174,3 +174,5 @@ if (document.readyState === 'loading') {
     profilerLoop();
 }
 
+// ES6 Module Export
+export { Profiler };

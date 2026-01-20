@@ -113,3 +113,5 @@ class LightingSystem {
 // Export Singleton
 window.LightingSystem = new LightingSystem();
 
+// ES6 Module Export
+export { LightingSystem };

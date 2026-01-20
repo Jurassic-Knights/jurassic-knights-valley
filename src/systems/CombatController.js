@@ -148,3 +148,5 @@ class CombatController {
 
 window.CombatController = new CombatController();
 
+// ES6 Module Export
+export { CombatController };

@@ -306,3 +306,5 @@ if (typeof window !== 'undefined') {
     window.EquipmentUIRenderer = EquipmentUIRenderer;
 }
 
+// ES6 Module Export
+export { EquipmentUIRenderer };

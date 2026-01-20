@@ -274,3 +274,5 @@ class EnemySystem {
 window.EnemySystem = new EnemySystem();
 if (window.Registry) Registry.register('EnemySystem', window.EnemySystem);
 
+// ES6 Module Export
+export { EnemySystem };

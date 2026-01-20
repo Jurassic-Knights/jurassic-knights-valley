@@ -79,3 +79,5 @@ const UICapture = {
 window.UICapture = UICapture;
 window.debugUICapture = () => UICapture.captureAllZones();
 
+// ES6 Module Export
+export { UICapture };

@@ -120,3 +120,5 @@ class WeatherSystem {
 
 window.WeatherSystem = new WeatherSystem();
 
+// ES6 Module Export
+export { WeatherSystem };

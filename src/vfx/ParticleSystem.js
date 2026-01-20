@@ -334,3 +334,5 @@ const ParticleSystem = {
 
 window.ParticleSystem = ParticleSystem;
 
+// ES6 Module Export
+export { ParticleSystem };

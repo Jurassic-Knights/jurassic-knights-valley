@@ -130,3 +130,5 @@ const RenderProfiler = {
 
 window.RenderProfiler = RenderProfiler;
 
+// ES6 Module Export
+export { RenderProfiler };

@@ -144,3 +144,5 @@ const NPCAI = {
 
 window.NPCAI = NPCAI;
 
+// ES6 Module Export
+export { NPCAI };

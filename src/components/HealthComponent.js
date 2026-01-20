@@ -78,3 +78,5 @@ class HealthComponent extends Component {
 window.HealthComponent = HealthComponent;
 if (window.Registry) Registry.register('HealthComponent', HealthComponent);
 
+// ES6 Module Export
+export { HealthComponent };

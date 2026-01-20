@@ -138,3 +138,5 @@ class AISystem {
 window.AISystem = new AISystem();
 if (window.Registry) Registry.register('AISystem', window.AISystem);
 
+// ES6 Module Export
+export { AISystem };

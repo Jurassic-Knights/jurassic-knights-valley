@@ -308,3 +308,5 @@ Resource.TYPES = {}; // Safety placeholder implies lookup elsewhere
 
 window.Resource = Resource;
 
+// ES6 Module Export
+export { Resource };

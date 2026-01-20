@@ -1,8 +1,25 @@
 import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
+import path from 'path';
 
 export default defineConfig({
     // Serve from project root
     root: '.',
+
+    // Path aliases for cleaner imports
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+            '@core': path.resolve(__dirname, './src/core'),
+            '@systems': path.resolve(__dirname, './src/systems'),
+            '@vfx': path.resolve(__dirname, './src/vfx'),
+            '@ui': path.resolve(__dirname, './src/ui'),
+            '@config': path.resolve(__dirname, './src/config'),
+            '@data': path.resolve(__dirname, './src/data'),
+            '@audio': path.resolve(__dirname, './src/audio'),
+            '@entities': path.resolve(__dirname, './src/entities')
+        }
+    },
 
     // Dev server config
     server: {
@@ -16,9 +33,21 @@ export default defineConfig({
         outDir: 'dist',
         assetsDir: 'assets',
         // Don't minify for easier debugging
-        minify: false
+        minify: false,
+        rollupOptions: {
+            plugins: [
+                // Bundle size analyzer - generates stats.html after build
+                visualizer({
+                    filename: 'dist/stats.html',
+                    open: false,
+                    gzipSize: true,
+                    brotliSize: true
+                })
+            ]
+        }
     },
 
     // Treat .json files as assets that can be fetched
     assetsInclude: ['**/*.json']
 });
+

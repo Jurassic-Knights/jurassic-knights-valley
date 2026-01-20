@@ -101,3 +101,5 @@ const VFXTriggerService = {
 
 window.VFXTriggerService = VFXTriggerService;
 
+// ES6 Module Export
+export { VFXTriggerService };

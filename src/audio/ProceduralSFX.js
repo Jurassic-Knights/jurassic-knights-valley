@@ -107,3 +107,5 @@ if (window.SFX) {
     window.ProceduralSFX = SFX;
 }
 
+// ES6 Module Export
+export { SFX };

@@ -475,3 +475,5 @@ const MeleeTrailVFX = {
 window.MeleeTrailVFX = MeleeTrailVFX;
 if (window.Registry) Registry.register('MeleeTrailVFX', MeleeTrailVFX);
 
+// ES6 Module Export
+export { MeleeTrailVFX };

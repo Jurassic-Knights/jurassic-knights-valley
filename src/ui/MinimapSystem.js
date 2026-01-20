@@ -413,3 +413,5 @@ class MinimapSystem {
 window.MinimapSystem = new MinimapSystem();
 if (window.Registry) Registry.register('MinimapSystem', window.MinimapSystem);
 
+// ES6 Module Export
+export { MinimapSystem };

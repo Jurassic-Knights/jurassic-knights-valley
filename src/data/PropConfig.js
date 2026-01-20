@@ -55,3 +55,5 @@ const PropConfig = {
 
 window.PropConfig = PropConfig;
 
+// ES6 Module Export
+export { PropConfig };

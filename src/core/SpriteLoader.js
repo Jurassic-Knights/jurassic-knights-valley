@@ -139,3 +139,5 @@ const SpriteLoader = {
 
 window.SpriteLoader = SpriteLoader;
 
+// ES6 Module Export
+export { SpriteLoader };

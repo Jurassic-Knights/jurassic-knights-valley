@@ -160,3 +160,5 @@ const IslandUpgrades = {
 
 window.IslandUpgrades = IslandUpgrades;
 
+// ES6 Module Export
+export { IslandUpgrades };

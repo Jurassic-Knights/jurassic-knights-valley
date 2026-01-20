@@ -206,3 +206,5 @@ class Hero extends Entity {
 
 window.Hero = Hero;
 
+// ES6 Module Export
+export { Hero };

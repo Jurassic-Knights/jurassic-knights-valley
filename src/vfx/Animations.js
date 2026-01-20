@@ -48,3 +48,5 @@ const Animations = {
 
 window.Animations = Animations;
 
+// ES6 Module Export
+export { Animations };

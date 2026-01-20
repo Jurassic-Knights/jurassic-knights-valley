@@ -272,3 +272,5 @@ const DebugUI = {
 
 window.DebugUI = DebugUI;
 
+// ES6 Module Export
+export { DebugUI };

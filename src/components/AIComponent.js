@@ -97,3 +97,5 @@ class AIComponent extends Component {
 
 window.AIComponent = AIComponent;
 
+// ES6 Module Export
+export { AIComponent };

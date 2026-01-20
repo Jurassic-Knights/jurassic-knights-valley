@@ -119,3 +119,5 @@ const AudioManager = {
 window.AudioManager = AudioManager;
 if (window.Registry) Registry.register('AudioManager', AudioManager);
 
+// ES6 Module Export
+export { AudioManager };

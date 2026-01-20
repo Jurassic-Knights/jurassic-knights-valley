@@ -130,3 +130,5 @@ const SFX = {
 window.ProceduralSFX = SFX;
 window.SFX = SFX;
 
+// ES6 Module Export
+export { SFX };

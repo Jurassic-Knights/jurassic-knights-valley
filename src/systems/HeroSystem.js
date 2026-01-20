@@ -285,3 +285,5 @@ class HeroSystem {
 window.HeroSystem = new HeroSystem();
 if (window.Registry) Registry.register('HeroSystem', window.HeroSystem);
 
+// ES6 Module Export
+export { HeroSystem };

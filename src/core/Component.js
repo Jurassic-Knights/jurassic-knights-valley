@@ -30,3 +30,5 @@ class Component {
 
 window.Component = Component;
 
+// ES6 Module Export
+export { Component };

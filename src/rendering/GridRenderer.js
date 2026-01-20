@@ -210,3 +210,5 @@ const GridRenderer = {
 
 window.GridRenderer = GridRenderer;
 
+// ES6 Module Export
+export { GridRenderer };

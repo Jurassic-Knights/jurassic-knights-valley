@@ -230,3 +230,5 @@ class TimeSystem {
 
 window.TimeSystem = new TimeSystem();
 
+// ES6 Module Export
+export { TimeSystem };

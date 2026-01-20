@@ -244,3 +244,5 @@ const RoadsData = {
 
 window.RoadsData = RoadsData;
 
+// ES6 Module Export
+export { RoadsData };

@@ -357,3 +357,5 @@ const ProjectileVFX = {
 window.ProjectileVFX = ProjectileVFX;
 if (window.Registry) Registry.register('ProjectileVFX', ProjectileVFX);
 
+// ES6 Module Export
+export { ProjectileVFX };

@@ -117,4 +117,5 @@ const Components = {
 
 window.Components = Components;
 
-
+// ES6 Module Export
+export { Components };

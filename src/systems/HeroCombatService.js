@@ -320,3 +320,5 @@ const HeroCombatService = {
 window.HeroCombatService = HeroCombatService;
 if (window.Registry) Registry.register('HeroCombatService', HeroCombatService);
 
+// ES6 Module Export
+export { HeroCombatService };

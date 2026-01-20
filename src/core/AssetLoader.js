@@ -375,3 +375,5 @@ const AssetLoader = {
 // Export for global access
 window.AssetLoader = AssetLoader;
 
+// ES6 Module Export
+export { AssetLoader };

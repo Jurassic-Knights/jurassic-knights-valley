@@ -369,3 +369,5 @@ const VFX_Categories = {
 
 window.VFX_Categories = VFX_Categories;
 
+// ES6 Module Export
+export { VFX_Categories };

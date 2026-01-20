@@ -277,3 +277,5 @@ class Enemy extends Entity {
 // Global registration (methods added in EnemyBehavior.js and EnemyRender.js)
 window.Enemy = Enemy;
 
+// ES6 Module Export
+export { Enemy };

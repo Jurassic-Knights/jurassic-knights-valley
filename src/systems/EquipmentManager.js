@@ -278,3 +278,5 @@ if (typeof module !== 'undefined') {
     module.exports = EquipmentManager;
 }
 
+// ES6 Module Export
+export { EquipmentManager };

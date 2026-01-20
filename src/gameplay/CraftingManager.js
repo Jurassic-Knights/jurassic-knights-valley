@@ -325,3 +325,5 @@ const CraftingManager = {
 window.CraftingManager = CraftingManager;
 if (window.Registry) Registry.register('CraftingManager', CraftingManager);
 
+// ES6 Module Export
+export { CraftingManager };

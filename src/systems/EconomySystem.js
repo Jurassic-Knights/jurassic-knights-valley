@@ -184,3 +184,5 @@ class EconomySystem {
 window.EconomySystem = new EconomySystem();
 if (window.Registry) Registry.register('EconomySystem', window.EconomySystem);
 
+// ES6 Module Export
+export { EconomySystem };

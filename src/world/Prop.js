@@ -56,3 +56,5 @@ class Prop extends Entity {
 
 window.Prop = Prop;
 
+// ES6 Module Export
+export { Prop };

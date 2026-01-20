@@ -99,3 +99,5 @@ const ShadowRenderer = {
 
 window.ShadowRenderer = ShadowRenderer;
 
+// ES6 Module Export
+export { ShadowRenderer };

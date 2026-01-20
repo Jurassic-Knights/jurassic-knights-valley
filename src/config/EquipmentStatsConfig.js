@@ -72,3 +72,6 @@ if (typeof window !== 'undefined') {
 if (typeof module !== 'undefined') {
     module.exports = EquipmentStatsConfig;
 }
+
+// ES6 Module Export
+export { EquipmentStatsConfig };

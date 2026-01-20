@@ -189,3 +189,5 @@ class StatsComponent extends Component {
 
 window.StatsComponent = StatsComponent;
 
+// ES6 Module Export
+export { StatsComponent };

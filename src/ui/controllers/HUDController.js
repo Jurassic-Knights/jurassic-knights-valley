@@ -72,3 +72,5 @@ class HUDController {
 window.HUDController = new HUDController();
 if (window.Registry) Registry.register('HUDController', window.HUDController);
 
+// ES6 Module Export
+export { HUDController };

@@ -67,3 +67,5 @@ class InventoryComponent extends Component {
 window.InventoryComponent = InventoryComponent;
 if (window.Registry) Registry.register('InventoryComponent', InventoryComponent);
 
+// ES6 Module Export
+export { InventoryComponent };

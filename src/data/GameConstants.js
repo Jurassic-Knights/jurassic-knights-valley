@@ -310,3 +310,5 @@ const GameConstants = {
 
 window.GameConstants = GameConstants;
 
+// ES6 Module Export
+export { GameConstants };

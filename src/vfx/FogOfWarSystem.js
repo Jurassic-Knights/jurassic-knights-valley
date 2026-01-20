@@ -278,3 +278,5 @@ const FogOfWarSystem = {
 window.FogOfWarSystem = FogOfWarSystem;
 if (window.Registry) Registry.register('FogOfWarSystem', FogOfWarSystem);
 
+// ES6 Module Export
+export { FogOfWarSystem };

@@ -38,3 +38,5 @@
     window.VFXConfig = VFXConfig;
 })();
 
+// ES6 Module Export
+export { VFXConfig };

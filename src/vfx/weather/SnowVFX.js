@@ -85,3 +85,5 @@ class SnowVFX {
 }
 window.SnowVFX = SnowVFX;
 
+// ES6 Module Export
+export { SnowVFX };

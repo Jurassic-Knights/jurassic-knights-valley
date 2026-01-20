@@ -168,3 +168,5 @@ const SpeciesScaleConfig = {
 
 window.SpeciesScaleConfig = SpeciesScaleConfig;
 
+// ES6 Module Export
+export { SpeciesScaleConfig };

@@ -20,3 +20,5 @@ const EntityTypes = {
 
 window.EntityTypes = EntityTypes;
 
+// ES6 Module Export
+export { EntityTypes };

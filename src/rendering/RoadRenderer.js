@@ -163,3 +163,5 @@ class RoadRenderer {
 window.RoadRenderer = new RoadRenderer();
 if (window.Registry) Registry.register('RoadRenderer', window.RoadRenderer);
 
+// ES6 Module Export
+export { RoadRenderer };

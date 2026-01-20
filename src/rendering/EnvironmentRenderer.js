@@ -430,3 +430,5 @@ class EnvironmentRenderer {
 
 window.EnvironmentRenderer = new EnvironmentRenderer();
 
+// ES6 Module Export
+export { EnvironmentRenderer };

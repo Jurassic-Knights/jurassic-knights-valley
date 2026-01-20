@@ -261,3 +261,5 @@ const WeaponRenderer = {
 
 window.WeaponRenderer = WeaponRenderer;
 
+// ES6 Module Export
+export { WeaponRenderer };

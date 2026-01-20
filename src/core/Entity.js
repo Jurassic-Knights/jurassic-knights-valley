@@ -227,3 +227,5 @@ class Entity {
 
 window.Entity = Entity;
 
+// ES6 Module Export
+export { Entity };

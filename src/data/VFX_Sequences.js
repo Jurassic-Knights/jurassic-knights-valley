@@ -17,3 +17,5 @@ const VFX_Sequences = {
 
 window.VFX_Sequences = VFX_Sequences;
 
+// ES6 Module Export
+export { VFX_Sequences };

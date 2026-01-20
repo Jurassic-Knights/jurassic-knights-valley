@@ -154,3 +154,5 @@ class InteractionSystem {
 window.InteractionSystem = new InteractionSystem();
 if (window.Registry) Registry.register('InteractionSystem', window.InteractionSystem);
 
+// ES6 Module Export
+export { InteractionSystem };

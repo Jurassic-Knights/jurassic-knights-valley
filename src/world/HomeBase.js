@@ -319,3 +319,5 @@ const HomeBase = {
 window.HomeBase = HomeBase;
 if (window.Registry) Registry.register('HomeBase', HomeBase);
 
+// ES6 Module Export
+export { HomeBase };

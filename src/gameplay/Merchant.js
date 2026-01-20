@@ -198,3 +198,5 @@ class Merchant extends Entity {
 
 window.Merchant = Merchant;
 
+// ES6 Module Export
+export { Merchant };

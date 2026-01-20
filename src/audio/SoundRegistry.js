@@ -12,3 +12,5 @@ const SoundRegistry = {
 
 window.SoundRegistry = SoundRegistry;
 
+// ES6 Module Export
+export { SoundRegistry };

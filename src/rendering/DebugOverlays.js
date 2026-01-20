@@ -97,3 +97,5 @@ const DebugOverlays = {
 
 window.DebugOverlays = DebugOverlays;
 
+// ES6 Module Export
+export { DebugOverlays };

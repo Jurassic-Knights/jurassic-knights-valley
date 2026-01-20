@@ -291,3 +291,5 @@ class DroppedItem extends Entity {
 
 window.DroppedItem = DroppedItem;
 
+// ES6 Module Export
+export { DroppedItem };

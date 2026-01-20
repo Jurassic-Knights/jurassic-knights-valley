@@ -133,3 +133,5 @@ const Analytics = {
 window.Analytics = Analytics;
 if (window.Registry) Registry.register('Analytics', Analytics);
 
+// ES6 Module Export
+export { Analytics };

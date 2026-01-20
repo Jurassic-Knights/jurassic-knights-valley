@@ -131,3 +131,5 @@ class InputSystem {
 window.InputSystem = new InputSystem();
 if (window.Registry) Registry.register('InputSystem', window.InputSystem);
 
+// ES6 Module Export
+export { InputSystem };

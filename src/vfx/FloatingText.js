@@ -247,3 +247,5 @@ window.FloatingText = FloatingText;
 window.FloatingTextManager = FloatingTextManager;
 if (window.Registry) Registry.register('FloatingTextManager', FloatingTextManager);
 
+// ES6 Module Export
+export { FloatingText, FloatingTextManager };

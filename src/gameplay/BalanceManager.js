@@ -26,3 +26,5 @@ const BalanceManager = {
 
 window.BalanceManager = BalanceManager;
 
+// ES6 Module Export
+export { BalanceManager };

@@ -51,8 +51,13 @@ class EventBusHub {
 }
 
 // Global Singleton
-window.EventBus = new EventBusHub();
-if (window.Registry) Registry.register('EventBus', window.EventBus);
+const EventBus = new EventBusHub();
+window.EventBus = EventBus;
+if (window.Registry) Registry.register('EventBus', EventBus);
 
 // Event Constants moved to src/config/Events.js
+
+// ES6 Module Export
+export { EventBus };
+
 

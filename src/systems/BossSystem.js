@@ -231,3 +231,5 @@ class BossSystem {
 window.BossSystem = new BossSystem();
 if (window.Registry) Registry.register('BossSystem', window.BossSystem);
 
+// ES6 Module Export
+export { BossSystem };

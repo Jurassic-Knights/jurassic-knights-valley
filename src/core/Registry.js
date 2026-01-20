@@ -63,5 +63,9 @@ class ServiceRegistry {
 // Global Singleton
 // We intentionally do NOT assign to window.Registry separately here,
 // the constructor handles it to ensure `this` context is correct if needed.
-new ServiceRegistry();
+const Registry = new ServiceRegistry();
+
+// ES6 Module Export
+export { Registry };
+
 

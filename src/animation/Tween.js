@@ -144,3 +144,5 @@ const Tween = {
 
 window.Tween = Tween;
 
+// ES6 Module Export
+export { Tween };

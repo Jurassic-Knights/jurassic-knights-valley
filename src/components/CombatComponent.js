@@ -52,3 +52,5 @@ class CombatComponent extends Component {
 window.CombatComponent = CombatComponent;
 if (window.Registry) Registry.register('CombatComponent', CombatComponent);
 
+// ES6 Module Export
+export { CombatComponent };

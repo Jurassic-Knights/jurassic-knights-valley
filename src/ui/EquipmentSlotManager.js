@@ -150,3 +150,5 @@ if (typeof window !== 'undefined') {
     window.EquipmentSlotManager = EquipmentSlotManager;
 }
 
+// ES6 Module Export
+export { EquipmentSlotManager };

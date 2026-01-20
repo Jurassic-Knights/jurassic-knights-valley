@@ -82,3 +82,5 @@ class DropSpawner {
 
 window.DropSpawner = DropSpawner;
 
+// ES6 Module Export
+export { DropSpawner };

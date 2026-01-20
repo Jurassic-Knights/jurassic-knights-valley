@@ -120,3 +120,5 @@ const ResponsiveManager = {
 // Export for global access
 window.ResponsiveManager = ResponsiveManager;
 
+// ES6 Module Export
+export { ResponsiveManager };

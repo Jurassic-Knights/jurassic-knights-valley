@@ -86,3 +86,5 @@ if (typeof module !== 'undefined') {
     module.exports = SetBonusesConfig;
 }
 
+// ES6 Module Export
+export { SetBonusesConfig };

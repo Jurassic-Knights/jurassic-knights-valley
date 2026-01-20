@@ -72,3 +72,5 @@ const SystemConfig = [
 // Verify standard export for pure JS environment or attach to window
 window.SystemConfig = SystemConfig;
 
+// ES6 Module Export
+export { SystemConfig };

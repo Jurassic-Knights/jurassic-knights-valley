@@ -47,3 +47,5 @@ if (window.Registry) {
     Registry.register('EntityConfig', EntityConfig);
 }
 
+// ES6 Module Export
+export { EntityConfig };

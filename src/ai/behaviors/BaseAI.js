@@ -88,3 +88,5 @@ const BaseAI = {
 
 window.BaseAI = BaseAI;
 
+// ES6 Module Export
+export { BaseAI };

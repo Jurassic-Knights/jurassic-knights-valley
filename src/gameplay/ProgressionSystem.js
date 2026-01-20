@@ -156,3 +156,5 @@ const ProgressionSystem = {
 window.ProgressionSystem = ProgressionSystem;
 if (window.Registry) Registry.register('ProgressionSystem', ProgressionSystem);
 
+// ES6 Module Export
+export { ProgressionSystem };

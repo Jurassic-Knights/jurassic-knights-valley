@@ -219,3 +219,5 @@ class IslandManagerService {
 // Global registration (methods added in IslandManagerCollision.js and IslandManagerGrid.js)
 window.IslandManagerService = IslandManagerService;
 
+// ES6 Module Export
+export { IslandManagerService };

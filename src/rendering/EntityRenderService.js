@@ -140,3 +140,5 @@ const EntityRenderService = {
 window.EntityRenderService = EntityRenderService;
 if (window.Registry) Registry.register('EntityRenderService', EntityRenderService);
 
+// ES6 Module Export
+export { EntityRenderService };

@@ -65,3 +65,5 @@ class ResourceSystem {
 window.ResourceSystem = new ResourceSystem();
 if (window.Registry) Registry.register('ResourceSystem', window.ResourceSystem);
 
+// ES6 Module Export
+export { ResourceSystem };

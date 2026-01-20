@@ -71,3 +71,5 @@ const RenderConfig = {
 window.RenderConfig = RenderConfig;
 if (window.Registry) Registry.register('RenderConfig', RenderConfig);
 
+// ES6 Module Export
+export { RenderConfig };

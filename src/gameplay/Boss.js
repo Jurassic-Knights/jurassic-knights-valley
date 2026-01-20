@@ -124,3 +124,5 @@ class Boss extends Enemy {
 // Global registration
 window.Boss = Boss;
 
+// ES6 Module Export
+export { Boss };

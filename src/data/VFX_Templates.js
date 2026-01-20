@@ -189,3 +189,5 @@ const VFX_Templates = {
 
 window.VFX_Templates = VFX_Templates;
 
+// ES6 Module Export
+export { VFX_Templates };

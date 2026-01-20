@@ -47,3 +47,5 @@ const Events = {
 // Export
 window.Events = Events;
 
+// ES6 Module Export
+export { Events };

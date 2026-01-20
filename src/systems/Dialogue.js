@@ -97,3 +97,5 @@ const DialogueSystem = {
 
 window.DialogueSystem = DialogueSystem;
 
+// ES6 Module Export
+export { DialogueSystem };

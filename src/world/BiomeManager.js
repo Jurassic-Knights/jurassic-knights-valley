@@ -358,3 +358,5 @@ const BiomeManager = {
 window.BiomeManager = BiomeManager;
 if (window.Registry) Registry.register('BiomeManager', BiomeManager);
 
+// ES6 Module Export
+export { BiomeManager };

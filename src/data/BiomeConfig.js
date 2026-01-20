@@ -124,3 +124,5 @@ const BiomeConfig = {
 
 window.BiomeConfig = BiomeConfig;
 
+// ES6 Module Export
+export { BiomeConfig };

@@ -237,3 +237,5 @@ const AmbientSystem = {
 window.AmbientSystem = AmbientSystem;
 if (window.Registry) Registry.register('AmbientSystem', AmbientSystem);
 
+// ES6 Module Export
+export { AmbientSystem };

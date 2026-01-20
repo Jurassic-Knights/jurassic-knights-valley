@@ -142,3 +142,5 @@ class RainVFX {
 }
 window.RainVFX = RainVFX;
 
+// ES6 Module Export
+export { RainVFX };

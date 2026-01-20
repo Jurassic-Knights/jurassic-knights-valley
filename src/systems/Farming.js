@@ -110,3 +110,5 @@ const Farming = {
 
 window.Farming = Farming;
 
+// ES6 Module Export
+export { Farming };

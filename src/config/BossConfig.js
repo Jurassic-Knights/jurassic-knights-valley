@@ -45,3 +45,5 @@ const BossConfig = {
 
 window.BossConfig = BossConfig;
 
+// ES6 Module Export
+export { BossConfig };

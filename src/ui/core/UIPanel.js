@@ -162,3 +162,5 @@ class UIPanel {
 
 window.UIPanel = UIPanel;
 
+// ES6 Module Export
+export { UIPanel };

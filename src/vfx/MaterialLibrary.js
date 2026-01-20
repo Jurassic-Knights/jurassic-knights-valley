@@ -237,3 +237,5 @@ const MaterialLibrary = {
 window.MaterialLibrary = MaterialLibrary;
 if (window.Registry) Registry.register('MaterialLibrary', MaterialLibrary);
 
+// ES6 Module Export
+export { MaterialLibrary };

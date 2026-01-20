@@ -202,3 +202,5 @@ class PropSpawner {
 
 window.PropSpawner = PropSpawner;
 
+// ES6 Module Export
+export { PropSpawner };

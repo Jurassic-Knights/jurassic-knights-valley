@@ -110,3 +110,7 @@ if (window.location.hostname !== 'localhost' && !window.location.hostname.includ
 
 window.Logger = Logger;
 
+// ES6 Module Export
+export { Logger };
+
+

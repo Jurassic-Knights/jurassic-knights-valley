@@ -427,3 +427,5 @@ class WorldRenderer {
 window.WorldRenderer = new WorldRenderer();
 if (window.Registry) Registry.register('WorldRenderer', window.WorldRenderer);
 
+// ES6 Module Export
+export { WorldRenderer };

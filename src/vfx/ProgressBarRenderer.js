@@ -174,3 +174,5 @@ const ProgressBarRenderer = {
 
 window.ProgressBarRenderer = ProgressBarRenderer;
 
+// ES6 Module Export
+export { ProgressBarRenderer };

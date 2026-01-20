@@ -216,3 +216,5 @@ class Quadtree {
 
 window.Quadtree = Quadtree;
 
+// ES6 Module Export
+export { Quadtree };

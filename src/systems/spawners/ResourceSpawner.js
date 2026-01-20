@@ -311,3 +311,5 @@ class ResourceSpawner {
 
 window.ResourceSpawner = ResourceSpawner;
 
+// ES6 Module Export
+export { ResourceSpawner };

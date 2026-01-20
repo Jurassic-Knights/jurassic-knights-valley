@@ -209,3 +209,5 @@ const BossAI = {
 
 window.BossAI = BossAI;
 
+// ES6 Module Export
+export { BossAI };

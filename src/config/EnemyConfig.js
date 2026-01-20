@@ -80,3 +80,5 @@ const EnemyConfig = {
 
 window.EnemyConfig = EnemyConfig;
 
+// ES6 Module Export
+export { EnemyConfig };

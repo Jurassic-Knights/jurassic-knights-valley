@@ -551,3 +551,5 @@ const GameRenderer = {
 window.GameRenderer = GameRenderer;
 if (window.Registry) Registry.register('GameRenderer', GameRenderer);
 
+// ES6 Module Export
+export { GameRenderer };

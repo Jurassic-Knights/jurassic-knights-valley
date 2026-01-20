@@ -43,3 +43,5 @@ const WorldData = {
 // Export
 window.WorldData = WorldData;
 
+// ES6 Module Export
+export { WorldData };

@@ -74,3 +74,5 @@ const HeroDefaults = {
 // Export
 window.HeroDefaults = HeroDefaults;
 
+// ES6 Module Export
+export { HeroDefaults };

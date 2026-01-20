@@ -225,3 +225,5 @@ const ParticleRenderer = {
 
 window.ParticleRenderer = ParticleRenderer;
 
+// ES6 Module Export
+export { ParticleRenderer };

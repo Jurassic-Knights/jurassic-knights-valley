@@ -123,3 +123,5 @@ const DamageSystem = {
 window.DamageSystem = DamageSystem;
 if (window.Registry) Registry.register('DamageSystem', DamageSystem);
 
+// ES6 Module Export
+export { DamageSystem };

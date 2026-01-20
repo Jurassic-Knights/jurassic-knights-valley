@@ -206,3 +206,5 @@ const EnemyAI = {
 
 window.EnemyAI = EnemyAI;
 
+// ES6 Module Export
+export { EnemyAI };

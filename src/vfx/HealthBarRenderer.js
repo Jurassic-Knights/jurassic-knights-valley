@@ -115,3 +115,5 @@ const HealthBarRenderer = {
 
 window.HealthBarRenderer = HealthBarRenderer;
 
+// ES6 Module Export
+export { HealthBarRenderer };

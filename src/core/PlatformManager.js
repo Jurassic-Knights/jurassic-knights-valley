@@ -155,3 +155,5 @@ const PlatformManager = {
 
 window.PlatformManager = PlatformManager;
 
+// ES6 Module Export
+export { PlatformManager };

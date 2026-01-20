@@ -230,3 +230,5 @@ class Dinosaur extends Entity {
 
 window.Dinosaur = Dinosaur;
 
+// ES6 Module Export
+export { Dinosaur };
