@@ -10,13 +10,11 @@
 
 <body>
     <header>
-        <h1>🦖 Asset Dashboard <span class="server-badge">Modular</span></h1>
+        <h1>🦖 Asset Dashboard <span class="server-badge">TypeScript</span></h1>
         <div class="controls">
             <button id="btnTemplates" class="secondary" onclick="showTemplatesView()">📝 Templates</button>
             <button id="btnSyncToGame" class="secondary" onclick="syncAssetsToGame()" style="background:#4caf50;">🔄
                 Sync to Game</button>
-            <button id="btnSyncEntities" class="secondary" onclick="syncEntitiesToJson()" style="background:#ff9800;">📦
-                Sync Entities</button>
             <button id="btnHero" class="secondary" onclick="showCategoryView('hero')" style="background:#2196f3;">🛡️
                 Hero</button>
             <button id="btnEnemies" class="secondary" onclick="showCategoryView('enemies')"
@@ -145,20 +143,8 @@
     <!-- Config -->
     <script src="/src/config/EquipmentStatsConfig.js"></script>
 
-    <!-- Dashboard Modules -->
-    <script src="js/state.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/modals.js"></script>
-    <script src="js/views.js"></script>
-
-    <!-- Rendering Modules (split for scalability) -->
-    <script src="js/filters.js"></script>
-    <script src="js/cardBuilders.js"></script>
-    <script src="js/categoryRenderer.js"></script>
-    <script src="js/legacyAssets.js"></script>
-    <script src="js/lootRenderer.js"></script>
-    <script src="js/templates.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Dashboard Bundle (TypeScript compiled) -->
+    <script src="dist/dashboard.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: hands_t2_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "hands_t2_01",
+    "name":  "Iron Gauntlets",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "hands",
+    "sprite":  "hands_t2_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/hands/hands_t2_01_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "hands",
+    "stats":  "+4 Armor",
+    "recipe":  "2x Iron Ingot"
+}
+;

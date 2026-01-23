@@ -1,95 +1,60 @@
 ﻿"""
 Dashboard API - Category Handlers
-CRUD operations for category data
-- Gameplay data from src/entities/
-- Asset metadata from src/assets/registry/
+CRUD operations for entity data stored in src/entities/ (.ts files)
 """
 import os
 import json
 from .utils import TOOLS_DIR, BASE_DIR
 
-# Source folders
+# Source folder for entity TypeScript files
 ENTITIES_DIR = os.path.join(BASE_DIR, 'src', 'entities')
-REGISTRY_DIR = os.path.join(BASE_DIR, 'src', 'assets', 'registry')
 
 
 def get_all_categories():
     """Get summary of all available entity categories"""
     categories = []
     # Categories that exist in src/entities/
-    for name in ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'environment', 'nodes', 'ui']:
+    for name in ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'environment', 'nodes', 'ui', 'hero']:
         cat_dir = os.path.join(ENTITIES_DIR, name)
         if os.path.exists(cat_dir):
-            file_count = len([f for f in os.listdir(cat_dir) if f.endswith('.json')])
+            file_count = len([f for f in os.listdir(cat_dir) if f.endswith('.ts') and f != 'index.ts'])
             categories.append({"name": name, "files": file_count})
     return {"categories": categories}
 
 
 def get_category_data(category):
     """
-    Get merged entity data:
-    - Gameplay fields from src/entities/{category}/
-    - Asset fields from src/assets/registry/{category}/
+    Get entity data directly from src/entities/{category}/ (.ts files)
+    All data (gameplay + asset metadata) is stored in the entity TS files.
     """
     cat_dir = os.path.join(ENTITIES_DIR, category)
-    registry_cat_dir = os.path.join(REGISTRY_DIR, category)
     
     if not os.path.exists(cat_dir):
         return {"error": f"Category not found: {category}"}
     
-    # Load registry data (asset metadata) into a lookup by ID
-    registry_lookup = {}
-    if os.path.exists(registry_cat_dir):
-        for filename in os.listdir(registry_cat_dir):
-            if not filename.endswith('.json'):
-                continue
-            filepath = os.path.join(registry_cat_dir, filename)
-            try:
-                with open(filepath, 'r', encoding='utf-8-sig') as f:
-                    reg_data = json.load(f)
-                registry_lookup[reg_data.get('id')] = reg_data
-            except Exception as e:
-                print(f"Error reading registry {filepath}: {e}")
-    
-    # Read individual entity JSON files and merge with registry
-    # For equipment, also scan subfolders (e.g., weapons/sword/, weapons/pistol/)
     entities = []
-    json_files = []
+    ts_files = []
     
-    # Collect all JSON files (including in subdirectories for equipment)
+    # Collect all TypeScript entity files (including in subdirectories for equipment)
     if category == 'equipment':
         for root, dirs, files in os.walk(cat_dir):
             for f in files:
-                if f.endswith('.json'):
-                    json_files.append(os.path.join(root, f))
+                if f.endswith('.ts') and f != 'index.ts':
+                    ts_files.append(os.path.join(root, f))
     else:
         for f in os.listdir(cat_dir):
-            if f.endswith('.json'):
-                json_files.append(os.path.join(cat_dir, f))
+            if f.endswith('.ts') and f != 'index.ts':
+                ts_files.append(os.path.join(cat_dir, f))
     
-    for filepath in json_files:
+    for filepath in ts_files:
         try:
-            with open(filepath, 'r', encoding='utf-8-sig') as f:
-                entity = json.load(f)
+            entity = _read_ts_entity(filepath)
+            if not entity:
+                continue
             
-            entity_id = entity.get('id')
-            
-            # Merge asset metadata from registry
-            if entity_id in registry_lookup:
-                reg_data = registry_lookup[entity_id]
-                # Override with registry fields for asset metadata
-                entity['status'] = reg_data.get('status', 'pending')
-                # Prefer registry sourceDescription, but keep entity's if registry doesn't have one
-                if reg_data.get('sourceDescription'):
-                    entity['sourceDescription'] = reg_data.get('sourceDescription')
-                entity['declineNote'] = reg_data.get('declineNote')
-                entity['files'] = reg_data.get('files', entity.get('files', {}))
-                entity['bodyType'] = reg_data.get('bodyType', entity.get('bodyType'))
-                entity['gender'] = reg_data.get('gender', entity.get('gender'))
-            else:
-                # No registry entry - set defaults so buttons still show
-                if 'status' not in entity:
-                    entity['status'] = 'pending'
+            # Set default status if not present
+            if 'status' not in entity:
+                entity['status'] = 'pending'
             
             # Add imageModifiedTime for sorting by image modification date
             files_dict = entity.get('files', {})
@@ -107,11 +72,11 @@ def get_category_data(category):
             else:
                 entity['imageModifiedTime'] = 0
             
-            # Fallback chain for sourceDescription: registry > entity > description field > name
+            # Fallback for sourceDescription
             if not entity.get('sourceDescription'):
                 entity['sourceDescription'] = entity.get('description', entity.get('name', ''))
             
-            entity['_sourceFile'] = os.path.basename(filepath)
+            entity['_sourceFile'] = os.path.basename(filepath).replace('.ts', '')
             entities.append(entity)
         except Exception as e:
             print(f"Error reading {filepath}: {e}")
@@ -128,30 +93,27 @@ def get_category_data(category):
 
 
 def update_category_status(category, filename, item_id, new_status, note=None):
-    """Update the status of an entity - writes to REGISTRY, not entity JSON"""
+    """Update the status of an entity - writes directly to entity TS file"""
     if not item_id or not new_status:
         return {"success": False, "error": "Missing required parameters"}
     
-    # Find or create registry file
-    registry_path = os.path.join(REGISTRY_DIR, category, f"{item_id}.json")
+    entity_path = _find_entity_file(category, item_id)
+    if not entity_path:
+        return {"success": False, "error": f"Entity not found: {item_id}"}
     
-    if os.path.exists(registry_path):
-        with open(registry_path, 'r', encoding='utf-8-sig') as f:
-            registry_entry = json.load(f)
-    else:
-        # Create new registry entry
-        registry_entry = {"id": item_id, "category": category}
+    entity = _read_ts_entity(entity_path)
+    if not entity:
+        return {"success": False, "error": f"Could not parse entity: {item_id}"}
     
-    registry_entry['status'] = new_status
+    entity['status'] = new_status
     if note:
-        registry_entry['declineNote'] = note
-    elif new_status != 'declined':
-        registry_entry.pop('declineNote', None)
+        entity['declineNote'] = note
+    elif new_status != 'declined' and 'declineNote' in entity:
+        del entity['declineNote']
     
-    os.makedirs(os.path.dirname(registry_path), exist_ok=True)
-    with open(registry_path, 'w', encoding='utf-8-sig') as f:
-        json.dump(registry_entry, f, indent=2)
+    _write_ts_entity(entity_path, entity)
     
+    print(f"[EntityUpdate] {item_id} status = {new_status}")
     return {"success": True, "message": f"Updated {item_id} to {new_status}"}
 
 
@@ -277,7 +239,7 @@ def _sync_weapon_in_description(description, old_weapon, new_weapon):
 
 
 def update_item_field(category, filename, item_id, field, value):
-    """Update any top-level field on an entity (e.g., gender, bodyType)"""
+    """Update any field on an entity. Supports nested fields with dot notation (e.g., display.sizeScale)"""
     if not item_id or not field:
         return {"success": False, "error": "Missing required parameters"}
     
@@ -285,28 +247,79 @@ def update_item_field(category, filename, item_id, field, value):
     if not entity_path:
         return {"success": False, "error": f"Entity not found: {item_id}"}
     
-    with open(entity_path, 'r', encoding='utf-8-sig') as f:
-        entity = json.load(f)
+    # Read entity from TypeScript file
+    entity = _read_ts_entity(entity_path)
+    if not entity:
+        return {"success": False, "error": f"Could not parse entity: {item_id}"}
     
-    entity[field] = value
+    # Handle nested fields with dot notation (e.g., "display.sizeScale")
+    if '.' in field:
+        parts = field.split('.', 1)  # Split into parent and child
+        parent_key = parts[0]
+        child_key = parts[1]
+        if parent_key not in entity:
+            entity[parent_key] = {}
+        entity[parent_key][child_key] = value
+        print(f"[EntityUpdate] {item_id}.{parent_key}.{child_key} = {value}")
+    else:
+        entity[field] = value
+        print(f"[EntityUpdate] {item_id}.{field} = {value}")
     
-    with open(entity_path, 'w', encoding='utf-8-sig') as f:
-        json.dump(entity, f, indent=2)
+    # Write entity back to TypeScript file
+    _write_ts_entity(entity_path, entity)
     
-    print(f"[EntityUpdate] {item_id}.{field} = {value}")
+    print(f"[EntityUpdate] Saved {item_id}.{field} = {value}")
     return {"success": True, "message": f"Updated {item_id}.{field} = {value}"}
 
 
+def update_entity(category, filename, item_id, updates):
+    """
+    Unified update function that can apply multiple field updates at once.
+    All updates go directly to the entity TS file.
+    Supports nested fields with dot notation (e.g., stats.health, display.sizeScale)
+    """
+    if not item_id or not updates:
+        return {"success": False, "error": "Missing required parameters"}
+    
+    entity_path = _find_entity_file(category, item_id)
+    if not entity_path:
+        return {"success": False, "error": f"Entity not found: {item_id}"}
+    
+    entity = _read_ts_entity(entity_path)
+    if not entity:
+        return {"success": False, "error": f"Could not parse entity: {item_id}"}
+    
+    for field, value in updates.items():
+        # Handle nested fields with dot notation
+        if '.' in field:
+            parts = field.split('.', 1)
+            parent_key = parts[0]
+            child_key = parts[1]
+            if parent_key not in entity:
+                entity[parent_key] = {}
+            entity[parent_key][child_key] = value
+        elif value is None and field in entity:
+            # Remove field if value is None
+            del entity[field]
+        else:
+            entity[field] = value
+    
+    _write_ts_entity(entity_path, entity)
+    print(f"[EntityUpdate] {item_id} updated: {list(updates.keys())}")
+    
+    return {"success": True, "message": f"Updated {item_id}"}
+
+
 def _find_entity_file(category, item_id):
-    """Find entity JSON file by ID, searching in category folder (and subfolders for equipment)"""
-    # Direct path: src/entities/{category}/{item_id}.json
-    direct_path = os.path.join(ENTITIES_DIR, category, f"{item_id}.json")
+    """Find entity TypeScript file by ID, searching in category folder (and subfolders for equipment)"""
+    # Direct path: src/entities/{category}/{item_id}.ts
+    direct_path = os.path.join(ENTITIES_DIR, category, f"{item_id}.ts")
     if os.path.exists(direct_path):
         return direct_path
     
     # Try with enemy_ prefix for enemies
     if category in ['enemies', 'bosses']:
-        prefixed_path = os.path.join(ENTITIES_DIR, category, f"enemy_{item_id}.json")
+        prefixed_path = os.path.join(ENTITIES_DIR, category, f"enemy_{item_id}.ts")
         if os.path.exists(prefixed_path):
             return prefixed_path
     
@@ -317,26 +330,24 @@ def _find_entity_file(category, item_id):
             # Recursive search for equipment (weapons in subfolders)
             for root, dirs, files in os.walk(cat_dir):
                 for filename in files:
-                    if not filename.endswith('.json'):
+                    if not filename.endswith('.ts'):
                         continue
                     filepath = os.path.join(root, filename)
                     try:
-                        with open(filepath, 'r', encoding='utf-8-sig') as f:
-                            entity = json.load(f)
-                        if entity.get('id') == item_id:
+                        entity = _read_ts_entity(filepath)
+                        if entity and entity.get('id') == item_id:
                             return filepath
                     except:
                         pass
         else:
             # Flat search for other categories
             for filename in os.listdir(cat_dir):
-                if not filename.endswith('.json'):
+                if not filename.endswith('.ts'):
                     continue
                 filepath = os.path.join(cat_dir, filename)
                 try:
-                    with open(filepath, 'r', encoding='utf-8-sig') as f:
-                        entity = json.load(f)
-                    if entity.get('id') == item_id:
+                    entity = _read_ts_entity(filepath)
+                    if entity and entity.get('id') == item_id:
                         return filepath
                 except:
                     pass
@@ -347,3 +358,75 @@ def _find_entity_file(category, item_id):
     
     return None
 
+
+def _read_ts_entity(filepath):
+    """Read entity data from a TypeScript module file"""
+    import re
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # Extract JSON object from: export default { ... } satisfies ...
+    match = re.search(r'export\s+default\s+(\{[\s\S]*\})\s*satisfies', content)
+    if match:
+        json_str = match.group(1)
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            # Try fixing trailing commas
+            fixed = re.sub(r',(\s*[}\]])', r'\1', json_str)
+            try:
+                return json.loads(fixed)
+            except:
+                pass
+    
+    # Try simpler pattern: export default { ... };
+    match = re.search(r'export\s+default\s+(\{[\s\S]*\});?\s*$', content)
+    if match:
+        json_str = match.group(1)
+        try:
+            return json.loads(json_str)
+        except json.JSONDecodeError:
+            fixed = re.sub(r',(\s*[}\]])', r'\1', json_str)
+            try:
+                return json.loads(fixed)
+            except:
+                pass
+    
+    return None
+
+
+def _write_ts_entity(filepath, entity):
+    """Write entity data to a TypeScript module file"""
+    # Determine entity type from category
+    import os
+    rel_path = os.path.relpath(filepath, ENTITIES_DIR)
+    category = rel_path.split(os.sep)[0]
+    
+    type_map = {
+        'enemies': 'EnemyEntity',
+        'bosses': 'BossEntity',
+        'equipment': 'EquipmentEntity',
+        'items': 'ItemEntity',
+        'resources': 'ResourceEntity',
+        'nodes': 'NodeEntity',
+        'environment': 'EnvironmentEntity',
+        'npcs': 'NPCEntity',
+        'hero': 'HeroEntity'
+    }
+    entity_type = type_map.get(category, 'BaseEntity')
+    
+    # Format JSON nicely
+    json_str = json.dumps(entity, indent=4, ensure_ascii=False)
+    
+    # Build TypeScript content
+    ts_content = f"""/**
+ * Entity: {entity.get('id', 'unknown')}
+ * Auto-generated. Edit in dashboard.
+ */
+import type {{ {entity_type} }} from '@types/entities';
+
+export default {json_str} satisfies {entity_type};
+"""
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(ts_content)

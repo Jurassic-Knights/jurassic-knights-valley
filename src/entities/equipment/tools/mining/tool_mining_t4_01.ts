@@ -1,0 +1,25 @@
+﻿/**
+ * Entity: tool_mining_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "sprite":  "tool_mining_t4_01",
+    "id":  "tool_mining_t4_01",
+    "sourceFile":  "tool",
+    "category":  "equipment",
+    "description":  "For extracting ore from mineral deposits.",
+    "tier":  4,
+    "name":  "Forge Breaker",
+    "files":  {
+                  "original":  "images/equipment/tools/mining/tool_mining_t4_01_original.png"
+              },
+    "stats":  {
+                  "gatherSpeed":  1.8,
+                  "efficiency":  4
+              },
+    "equipSlot":  "tool",
+    "rarity":  "epic",
+    "toolType":  "mining"
+}
+;

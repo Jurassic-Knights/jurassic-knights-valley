@@ -1,0 +1,82 @@
+﻿/**
+ * Entity: boss_human_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "boss_human_t4_01",
+  "name": "Feldwebel",
+  "sourceCategory": "bosses",
+  "sourceFile": "human",
+  "sprite": "human_t4_01",
+  "status": "pending",
+  "files": {
+    "original": "images/bosses/boss_human_t4_01_original.png"
+  },
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 150,
+    "damage": 20,
+    "speed": 75,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 300,
+    "attackRate": 1.2,
+    "aggroRange": 280,
+    "packAggro": true,
+    "attackType": "ranged"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_human_t4_01",
+    "death": "sfx_death_human_t4_01",
+    "hurt": "sfx_hurt_human_t4_01",
+    "aggro": "sfx_aggro_human_t4_01"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "salvage_t1_01",
+      "chance": 0.8,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "mechanical_t1_01",
+      "chance": 0.4,
+      "amount": [
+        1,
+        1
+      ]
+    },
+    {
+      "item": "stahlhelm",
+      "chance": 0.08,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 70,
+  "isBoss": true,
+  "sourceDescription": "male commander, muscle build, charred black and rust uniform with yellow trim, polished steel plate with rank insignia, dinosaur skull visor, machine gun",
+  "weaponType": "machine_gun",
+  "role": "special",
+  "description": "The Feldwebel's helmet bears the ornate iron mask of badlands command, the face engraved with unit citations and kill tallies that would fill books. Those unseen eyes have witnessed every horror the volcanic hellscape produces and mastered each one. The mask's expression is stern authority frozen in metal.\n\nElite commander armor announces status before rank insignia appears - gilded iron plates over a charcoal grey tunic, the fabric somehow pristine despite badlands conditions. A decorated cape flows from shoulder guards that bear campaign honors from three theaters of war. Every piece of equipment reflects decades of service.\n\nHeavy boots have marched across every terrain the badlands offer, from volcanic glass to ash dunes. That machine gun has held positions against impossible odds, the weapon itself bearing decorations for distinguished service. The Feldwebel defines what special-role command means in this theater.",
+  "bodyType": "medium",
+  "declineNote": ""
+};

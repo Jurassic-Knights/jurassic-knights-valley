@@ -1,0 +1,35 @@
+﻿/**
+ * Entity: weapon_melee_lance_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "weapon_melee_lance_t4_01",
+    "name":  "Pteranodon Impaler",
+    "description":  "A legendary lance for aerial strike tactics.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "melee",
+    "weaponSubtype":  "lance",
+    "tier":  4,
+    "rarity":  "legendary",
+    "stats":  {
+                  "damage":  58,
+                  "attackSpeed":  0.9,
+                  "range":  450,
+                  "armorPen":  12
+              },
+    "recipe":  {
+                   "scraps_t4_01":  18,
+                   "minerals_t3_01":  14,
+                   "bone_t2_01":  7,
+                   "fossil_t1_01":  3
+               },
+    "sprite":  "weapon_melee_lance_t4_01",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/lance/weapon_lance_t4_01_original.png"
+              },
+    "gripType":  "2-hand"
+}
+;

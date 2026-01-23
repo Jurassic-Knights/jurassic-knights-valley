@@ -1,0 +1,71 @@
+﻿/**
+ * Entity: boss_dinosaur_t4_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "boss_dinosaur_t4_03",
+  "name": "Roost Patriarch",
+  "sourceCategory": "bosses",
+  "sourceFile": "dinosaur",
+  "sprite": "dinosaur_t4_03",
+  "status": "pending",
+  "files": {
+    "original": "images/bosses/boss_dinosaur_t4_03_original.png"
+  },
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 350,
+    "damage": 35,
+    "speed": 80,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 200,
+    "attackRate": 0.8,
+    "aggroRange": 300,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_dinosaur_t4_03",
+    "death": "sfx_death_dinosaur_t4_03",
+    "hurt": "sfx_hurt_dinosaur_t4_03",
+    "aggro": "sfx_aggro_dinosaur_t4_03"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "food_t2_02",
+      "chance": 1.0,
+      "amount": [
+        2,
+        3
+      ]
+    },
+    {
+      "item": "leather_t3_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 120,
+  "isBoss": true,
+  "sourceDescription": "Spinosaurus, charred black and rust coloring, ornate barding with painted war markings, massive muscular build, battle scars visible",
+  "species": "Spinosaurus",
+  "description": "The Roost Patriarch rules badlands waterways from a position of absolute dominance. This colossal Spinosaurus has grown to unprecedented proportions, the sail on its back visible for miles through volcanic haze. Those crocodilian jaws have ended more naval expeditions than any enemy fleet. The creature seems ancient, witnessing civilizations from its eternal river domain.\n\nSteel plate barding reinforced with iron bands covers its elongated body, the armor patterns suggesting decades of accumulated military trophies. Charcoal grey scales are streaked with rust-red natural markings that glow eerily in volcanic twilight. The sail has been fitted with iron bands that double as territorial display and weapon.\n\nThe massive tail propels this creature through volcanic rivers with deceptive speed, emerging for devastating ambush strikes. Those clawed forelimbs can pin war-boats to riverbanks while the jaws finish crews. The Roost Patriarch has patrolled these waters for longer than living memory records."
+};

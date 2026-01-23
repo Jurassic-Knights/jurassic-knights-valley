@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: building_t1_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "building_t1_02",
+  "name": "Outpost",
+  "sourceCategory": "environment",
+  "sourceFile": "buildings",
+  "sprite": "building_t1_02",
+  "status": "clean",
+  "files": {
+    "original": "assets/images/buildings/building_outpost_final_original.png",
+    "clean": "assets/images/buildings/building_outpost_clean.png"
+  },
+  "type": "prop",
+  "biome": "grasslands"
+};

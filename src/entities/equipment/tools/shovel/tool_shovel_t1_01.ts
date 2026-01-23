@@ -1,0 +1,25 @@
+﻿/**
+ * Entity: tool_shovel_t1_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "sprite":  "tool_shovel_t1_01",
+    "id":  "tool_shovel_t1_01",
+    "sourceFile":  "tool",
+    "category":  "equipment",
+    "description":  "For digging and excavation.",
+    "tier":  1,
+    "name":  "Crude Shovel",
+    "files":  {
+                  "original":  "images/equipment/tools/shovel/tool_shovel_t1_01_original.png"
+              },
+    "stats":  {
+                  "gatherSpeed":  1.2,
+                  "efficiency":  1
+              },
+    "equipSlot":  "tool",
+    "rarity":  "common",
+    "toolType":  "shovel"
+}
+;

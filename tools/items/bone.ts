@@ -1,0 +1,68 @@
+﻿/**
+ * bone - Auto-generated from JSON
+ */
+
+export const bone = [
+    {
+        "id": "bone_t1_01",
+        "name": "Bone Shard",
+        "tier": 1,
+        "category": "bone",
+        "recipe": "2x Bone",
+        "fuelCost": 1,
+        "time": "15s",
+        "biome": "all",
+        "status": "approved",
+        "sourceDescription": "sharpened bone shard fragment, pale off-white bone color, gritty, weathered, jagged crafting material",
+        "files": {
+            "original": "assets/images/items/bone_t1_01_original.png"
+        }
+    },
+    {
+        "id": "bone_t2_01",
+        "name": "Bone Plate",
+        "tier": 2,
+        "category": "bone",
+        "recipe": "3x Bone + 1x Sinew",
+        "fuelCost": 2,
+        "time": "25s",
+        "biome": "all",
+        "status": "approved",
+        "sourceDescription": "reinforced bone plate armor piece, cream-white layered bone structure, gritty, weathered, primitive armor material",
+        "files": {
+            "original": "assets/images/items/bone_t2_01_original.png"
+        }
+    },
+    {
+        "id": "bone_t3_01",
+        "name": "Bleached Bone Plate",
+        "tier": 3,
+        "category": "bone",
+        "recipe": "2x Sun-Bleached Bone + 1x Bone Plate",
+        "fuelCost": 4,
+        "time": "35s",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "sun-bleached white bone plate armor piece, pure white desert-baked bone, gritty, weathered, refined primitive armor material",
+        "files": {
+            "original": "assets/images/items/bone_t3_01_original.png"
+        }
+    },
+    {
+        "id": "bone_t4_01",
+        "name": "Fossilized Plate",
+        "tier": 4,
+        "category": "bone",
+        "recipe": "2x Bleached Bone Plate + 1x Black Rock",
+        "fuelCost": 8,
+        "time": "45s",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "fossilized stone-hard bone plate armor piece, dark grey-brown mineralized ancient bone, gritty, weathered, premium prehistoric armor material",
+        "files": {
+            "original": "assets/images/items/bone_t4_01_original.png"
+        }
+    }
+];
+
+export default bone;

@@ -1,0 +1,30 @@
+﻿/**
+ * _config - Auto-generated from JSON
+ */
+
+export const config = {
+    "version": "1.0",
+    "lastUpdated": "2026-01-11",
+    "description": "Player equipment - armor, weapons, and tools",
+    "statusWorkflow": [
+        "pending",
+        "approved",
+        "declined",
+        "clean",
+        "missing"
+    ],
+    "slots": {
+        "chest": "Body armor",
+        "legs": "Leg armor",
+        "head": "Helmets and headgear",
+        "hands": "Gloves and gauntlets",
+        "feet": "Boots and footwear",
+        "weapon": "Melee and ranged weapons",
+        "tool": "Utility items"
+    },
+    "notes": {
+        "signature": "Boss-dropped weapons are normal T1-T4 items that cannot be crafted, only obtained from boss kills"
+    }
+};
+
+export default config;

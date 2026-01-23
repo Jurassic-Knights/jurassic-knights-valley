@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: leather_t2_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "leather_t2_01",
+  "name": "Reinforced Leather",
+  "sourceCategory": "items",
+  "sourceFile": "leather",
+  "sprite": "leather_t2_01",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/items/leather_t2_01_original.png"
+  },
+  "type": "consumable",
+  "stackable": true,
+  "recipe": "2x Thick Hide + 1x Cured Leather"
+};

@@ -1,0 +1,69 @@
+﻿/**
+ * Entity: enemy_dinosaur_t3_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t3_01",
+  "name": "Carnotaurus",
+  "sourceCategory": "enemies",
+  "sourceFile": "dinosaur",
+  "sprite": "dinosaur_t3_01",
+  "status": "approved",
+  "files": {
+    "original": "assets/images/enemies/dinosaur_t3_01_original.png"
+  },
+  "tier": 3,
+  "biome": "desert",
+  "stats": {
+    "health": 120,
+    "damage": 20,
+    "speed": 110,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 110,
+    "attackRate": 1.2,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_dinosaur_t3_01",
+    "death": "sfx_death_dinosaur_t3_01",
+    "hurt": "sfx_hurt_dinosaur_t3_01",
+    "aggro": "sfx_aggro_dinosaur_t3_01"
+  },
+  "spawning": {
+    "biomes": [
+      "desert"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "food_t2_02",
+      "chance": 0.7,
+      "amount": [
+        1,
+        1
+      ]
+    },
+    {
+      "item": "minerals_t3_02",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 40,
+  "species": "Carnotaurus",
+  "weaponType": "claws"
+};

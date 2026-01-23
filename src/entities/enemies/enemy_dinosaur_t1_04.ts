@@ -1,0 +1,69 @@
+﻿/**
+ * Entity: enemy_dinosaur_t1_04
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t1_04",
+  "name": "Gallimimus",
+  "sourceCategory": "enemies",
+  "sourceFile": "dinosaur",
+  "sprite": "dinosaur_t1_04",
+  "status": "approved",
+  "files": {
+    "original": "assets/images/enemies/dinosaur_t1_04_original.png"
+  },
+  "tier": 1,
+  "biome": "grasslands",
+  "stats": {
+    "health": 30,
+    "damage": 0,
+    "speed": 130,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 0,
+    "attackRate": 0,
+    "aggroRange": 150,
+    "packAggro": false,
+    "attackType": "none"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_dinosaur_t1_04",
+    "death": "sfx_death_dinosaur_t1_04",
+    "hurt": "sfx_hurt_dinosaur_t1_04",
+    "aggro": "sfx_aggro_dinosaur_t1_04"
+  },
+  "spawning": {
+    "biomes": [
+      "grasslands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "food_t1_02",
+      "chance": 1.0,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "leather_t1_01",
+      "chance": 0.4,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 5,
+  "species": "Gallimimus",
+  "weaponType": "claws"
+};

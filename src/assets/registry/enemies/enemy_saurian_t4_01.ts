@@ -1,0 +1,13 @@
+﻿/**
+ * Registry: enemy_saurian_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_saurian_t4_01",
+  "category": "enemies",
+  "status": "declined",
+  "files": {
+    "original": "assets/images/enemies/saurian_t4_01_original.png"
+  }
+};

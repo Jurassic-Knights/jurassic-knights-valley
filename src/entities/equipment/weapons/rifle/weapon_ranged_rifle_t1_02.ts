@@ -1,0 +1,34 @@
+﻿/**
+ * Entity: weapon_ranged_rifle_t1_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "weapon_ranged_rifle_t1_02",
+    "name":  "Infantry Carbine",
+    "description":  "A shorter rifle variant for mobility.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "ranged",
+    "weaponSubtype":  "rifle",
+    "tier":  1,
+    "rarity":  "common",
+    "stats":  {
+                  "damage":  12,
+                  "attackSpeed":  1.2,
+                  "range":  450,
+                  "ammoCapacity":  5
+              },
+    "recipe":  {
+                   "scraps_t1_01":  8,
+                   "minerals_t1_01":  4,
+                   "wood_t1_01":  5
+               },
+    "sprite":  "weapon_ranged_rifle_t1_02",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/rifle/weapon_rifle_t1_02_original.png"
+              },
+    "gripType":  "2-hand"
+}
+;

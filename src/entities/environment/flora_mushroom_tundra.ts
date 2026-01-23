@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: flora_mushroom_tundra
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "flora_mushroom_tundra",
+  "name": "Frost Shroom",
+  "sourceCategory": "environment",
+  "sourceFile": "flora",
+  "sprite": "flora_mushroom_tundra",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/flora/flora_mushroom_tundra_original.png"
+  },
+  "type": "flora",
+  "biome": "tundra"
+};

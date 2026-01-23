@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: flora_log_badlands
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "flora_log_badlands",
+  "name": "Burnt Log",
+  "sourceCategory": "environment",
+  "sourceFile": "flora",
+  "sprite": "flora_log_badlands",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/flora/flora_log_badlands_original.png"
+  },
+  "type": "flora",
+  "biome": "badlands"
+};

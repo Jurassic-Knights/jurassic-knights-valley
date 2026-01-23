@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: prop_cart_grasslands
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "prop_cart_grasslands",
+  "name": "Farm Cart",
+  "sourceCategory": "environment",
+  "sourceFile": "props",
+  "sprite": "prop_cart_grasslands",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/props/prop_cart_grasslands_original.png"
+  },
+  "type": "prop",
+  "biome": "grasslands"
+};

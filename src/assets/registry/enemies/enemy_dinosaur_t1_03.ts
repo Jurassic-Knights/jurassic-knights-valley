@@ -1,0 +1,17 @@
+﻿/**
+ * Registry: enemy_dinosaur_t1_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t1_03",
+  "name": "Oviraptor",
+  "category": "enemies",
+  "sourceFile": "dinosaur",
+  "status": "approved",
+  "sourceDescription": "Oviraptor, beaked face, feathered body, swift and cunning",
+  "files": {
+    "original": "assets/images/enemies/dinosaur_t1_03_original.png"
+  },
+  "lastUpdated": "2026-01-15T01:02:30.360955"
+};

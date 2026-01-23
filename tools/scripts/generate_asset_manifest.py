@@ -1,15 +1,16 @@
 """
 Asset Manifest Generator
-Scans assets/images and generates a JSON manifest for the dashboard.
+Scans assets/images and generates a TypeScript manifest for the dashboard.
 Run this script whenever assets change.
 """
 import os
 import json
 import glob
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Go up two levels: scripts -> tools -> project root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 IMAGES_DIR = os.path.join(BASE_DIR, "assets", "images")
-OUTPUT_FILE = os.path.join(BASE_DIR, "tools", "asset_manifest.js")
+OUTPUT_FILE = os.path.join(BASE_DIR, "tools", "asset_manifest.ts")
 
 def get_status(filename):
     """Determine asset status from filename suffix."""
@@ -68,12 +69,34 @@ def main():
         "counts": counts
     }
     
-    # Write as JavaScript module (avoids CORS)
+    # Write as TypeScript module
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write("// Auto-generated asset manifest\n")
-        f.write("window.ASSET_MANIFEST = ")
+        f.write("/**\n")
+        f.write(" * Auto-generated asset manifest\n")
+        f.write(" * Run: python tools/scripts/generate_asset_manifest.py\n")
+        f.write(" */\n\n")
+        f.write("export interface AssetManifestEntry {\n")
+        f.write("    name: string;\n")
+        f.write("    path: string;\n")
+        f.write("    category: string;\n")
+        f.write("    status: 'pending' | 'approved' | 'declined' | 'clean' | 'final' | 'unknown';\n")
+        f.write("}\n\n")
+        f.write("export interface AssetManifest {\n")
+        f.write("    generated: boolean;\n")
+        f.write("    basePath: string;\n")
+        f.write("    assets: AssetManifestEntry[];\n")
+        f.write("    counts: Record<string, number>;\n")
+        f.write("}\n\n")
+        f.write("export const ASSET_MANIFEST: AssetManifest = ")
         json.dump(manifest, f, indent=2)
-        f.write(";\n")
+        f.write(";\n\n")
+        f.write("// Also expose on window for legacy dashboard access\n")
+        f.write("declare global {\n")
+        f.write("    interface Window {\n")
+        f.write("        ASSET_MANIFEST: AssetManifest;\n")
+        f.write("    }\n")
+        f.write("}\n")
+        f.write("window.ASSET_MANIFEST = ASSET_MANIFEST;\n")
     
     print(f"Generated manifest with {len(assets)} assets")
     print(f"Counts: {counts}")
@@ -81,3 +104,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

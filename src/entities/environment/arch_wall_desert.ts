@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: arch_wall_desert
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "arch_wall_desert",
+  "name": "Adobe Wall",
+  "sourceCategory": "environment",
+  "sourceFile": "architecture",
+  "sprite": "arch_wall_desert",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/architecture/arch_wall_desert_original.png"
+  },
+  "type": "architecture",
+  "biome": "desert"
+};

@@ -1,0 +1,17 @@
+﻿/**
+ * Registry: enemy_saurian_t3_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_saurian_t3_03",
+  "name": "Ankylosaurus Siege",
+  "category": "enemies",
+  "sourceFile": "saurian",
+  "status": "pending",
+  "sourceDescription": "anthropomorphic Ankylosaurus, siege artillery harness, armored shell with a bazooka, thick plate barding, ammunition crates strapped to sides, welding mask helm",
+  "files": {
+    "original": "assets/images/enemies/saurian_t3_03_original.png"
+  },
+  "lastUpdated": "2026-01-15T01:02:30.376456"
+};

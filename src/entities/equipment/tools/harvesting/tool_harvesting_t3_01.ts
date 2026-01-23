@@ -1,0 +1,25 @@
+﻿/**
+ * Entity: tool_harvesting_t3_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "sprite":  "tool_harvesting_t3_01",
+    "id":  "tool_harvesting_t3_01",
+    "sourceFile":  "tool",
+    "category":  "equipment",
+    "description":  "For gathering plants and herbs.",
+    "tier":  3,
+    "name":  "Steel Scythe",
+    "files":  {
+                  "original":  "images/equipment/tools/harvesting/tool_harvesting_t3_01_original.png"
+              },
+    "stats":  {
+                  "gatherSpeed":  1.6,
+                  "efficiency":  3
+              },
+    "equipSlot":  "tool",
+    "rarity":  "rare",
+    "toolType":  "harvesting"
+}
+;

@@ -1,0 +1,20 @@
+﻿/**
+ * Entity: node_harvesting_t2_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "node_harvesting_t2_02",
+    "name":  "Carcass",
+    "sourceCategory":  "nodes",
+    "sourceFile":  "nodes",
+    "sprite":  "node_harvesting_t2_02",
+    "status":  "pending",
+    "files":  {
+                  "original":  "assets/images/nodes/node_harvesting_t2_02_original.png"
+              },
+    "type":  "ore",
+    "biome":  "all",
+    "nodeSubtype":  "harvesting",
+    "tier":  2
+};

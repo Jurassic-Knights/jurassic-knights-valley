@@ -1,0 +1,78 @@
+﻿/**
+ * Entity: enemy_human_t1_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_human_t1_02",
+  "name": "Rifleman",
+  "sourceCategory": "enemies",
+  "sourceFile": "human",
+  "sprite": "human_t1_02",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/enemies/human_t1_02_original.png"
+  },
+  "tier": 1,
+  "biome": "grasslands",
+  "stats": {
+    "health": 50,
+    "damage": 10,
+    "speed": 65,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 350,
+    "attackRate": 0.8,
+    "aggroRange": 250,
+    "packAggro": true,
+    "attackType": "ranged"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_human_t1_02",
+    "death": "sfx_death_human_t1_02",
+    "hurt": "sfx_hurt_human_t1_02",
+    "aggro": "sfx_aggro_human_t1_02"
+  },
+  "spawning": {
+    "biomes": [
+      "grasslands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "salvage_t1_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "minerals_t2_02",
+      "chance": 0.4,
+      "amount": [
+        1,
+        1
+      ]
+    },
+    {
+      "item": "trench_knife",
+      "chance": 0.1,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 18,
+  "species": "Recruit",
+  "weaponType": "rifle",
+  "role": "light"
+};

@@ -1,0 +1,73 @@
+﻿/**
+ * Entity: boss_saurian_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "boss_saurian_t4_01",
+  "name": "T-Rex General",
+  "sourceCategory": "bosses",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t4_01",
+  "status": "pending",
+  "files": {
+    "original": "images/bosses/boss_saurian_t4_01_original.png"
+  },
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 400,
+    "damage": 35,
+    "speed": 65,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 150,
+    "attackRate": 1,
+    "aggroRange": 350,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t4_01",
+    "death": "sfx_death_saurian_t4_01",
+    "hurt": "sfx_hurt_saurian_t4_01",
+    "aggro": "sfx_aggro_saurian_t4_01"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "leather_t3_01",
+      "chance": 0.6,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t2_01",
+      "chance": 0.4,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 150,
+  "isBoss": true,
+  "sourceDescription": "anthropomorphic Tyrannosaurus Rex, charred black and rust uniform, decorated insignia, longsword, clawed dinosaur feet exposed",
+  "species": "Tyrannosaurus Rex",
+  "weaponType": "longsword",
+  "role": "special",
+  "description": "The T-Rex General is the most terrifying sight the badlands produce - a Tyrannosaurus Rex saurian of unprecedented size, standing upright in command armor that would require its own wagon to transport. That massive skull could swallow soldiers whole, yet those intelligent eyes hold strategic rather than merely predatory calculation. The tiny arms are hidden beneath shoulder armor, their vestigial nature irrelevant beside such overwhelming power.\n\nOrnate command armor covers a body that dwarfs human structures - gilded iron plates the size of carriage doors, secured by chains rather than straps. A charcoal grey cape flows from shoulder guards that could shelter squads beneath their bulk. Campaign honors and kill markers cover every available surface, each representing destroyed units rather than individuals.\n\nThose pillar-like legs end in exposed clawed feet that can crack volcanic basalt with casual steps. A longsword sized for this titan serves as both weapon and symbol of command, the blade longer than most polearms. The T-Rex General commands saurian forces across the badlands - and nothing has successfully challenged that authority."
+};

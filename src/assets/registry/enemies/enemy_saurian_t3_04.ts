@@ -1,0 +1,17 @@
+﻿/**
+ * Registry: enemy_saurian_t3_04
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_saurian_t3_04",
+  "name": "Carnotaurus Striker",
+  "category": "enemies",
+  "sourceFile": "saurian",
+  "status": "pending",
+  "sourceDescription": "Carnotaurus striker, brown and tan clothing, iron armor, hulking muscular body, bull-like horns, combat helmet, dual blades, exposed carnotaurus feet with claws",
+  "files": {
+    "original": "assets/images/enemies/saurian_t3_04_original.png"
+  },
+  "lastUpdated": "2026-01-15T01:02:30.376456"
+};

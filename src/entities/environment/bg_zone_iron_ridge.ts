@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: bg_zone_iron_ridge
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "bg_zone_iron_ridge",
+  "name": "Iron Ridge",
+  "sourceCategory": "environment",
+  "sourceFile": "backgrounds",
+  "sprite": "bg_zone_iron_ridge",
+  "status": "clean",
+  "files": {
+    "original": "assets/images/backgrounds/zone_iron_ridge.png",
+    "clean": "assets/images/backgrounds/zone_iron_ridge_clean.png"
+  },
+  "type": "zone_background",
+  "biome": "grasslands"
+};

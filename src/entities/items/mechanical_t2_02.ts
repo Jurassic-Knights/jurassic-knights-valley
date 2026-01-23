@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: mechanical_t2_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "mechanical_t2_02",
+  "name": "Gun Barrel",
+  "sourceCategory": "items",
+  "sourceFile": "mechanical",
+  "sprite": "mechanical_t2_02",
+  "status": "approved",
+  "files": {
+    "original": "assets/images/items/mechanical_t2_02_original.png"
+  },
+  "type": "consumable",
+  "stackable": true,
+  "recipe": "2x Iron Ingot + 1x Coal"
+};

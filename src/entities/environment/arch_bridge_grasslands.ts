@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: arch_bridge_grasslands
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "arch_bridge_grasslands",
+  "name": "Wooden Bridge",
+  "sourceCategory": "environment",
+  "sourceFile": "architecture",
+  "sprite": "arch_bridge_grasslands",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/architecture/arch_bridge_grasslands_original.png"
+  },
+  "type": "architecture",
+  "biome": "grasslands"
+};

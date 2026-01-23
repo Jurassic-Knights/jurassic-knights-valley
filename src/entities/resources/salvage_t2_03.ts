@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: salvage_t2_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "salvage_t2_03",
+  "name": "Mechanical Parts",
+  "sourceCategory": "resources",
+  "sourceFile": "salvage",
+  "sprite": "salvage_t2_03",
+  "status": "approved",
+  "files": {
+    "original": "assets/images/resources/salvage_t2_03_original.png"
+  },
+  "tier": 2,
+  "stackable": true,
+  "type": "material"
+};

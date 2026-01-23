@@ -1,0 +1,71 @@
+﻿/**
+ * Entity: enemy_dinosaur_t4_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t4_02",
+  "name": "Apex Hunter",
+  "sourceCategory": "enemies",
+  "sourceFile": "dinosaur",
+  "sprite": "dinosaur_t4_02",
+  "status": "pending",
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 200,
+    "damage": 25,
+    "speed": 70,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_dinosaur_t4_02",
+    "death": "sfx_death_dinosaur_t4_02",
+    "hurt": "sfx_hurt_dinosaur_t4_02",
+    "aggro": "sfx_aggro_dinosaur_t4_02"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t4_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t4_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 60,
+  "species": "Giganotosaurus",
+  "sourceDescription": "Giganotosaurus, rust orange and black scales, reinforced steel plating with mounted spotlight, towering predator",
+  "description": "The Apex Hunter materializes from volcanic ash like a nightmare given flesh, its Giganotosaurus bulk blocking out the smoke-filtered sun. That massive skull holds jaws designed to shear through anything organic, while intelligent eyes assess prey with patience that belies the creature's violence. Scars crisscross its hide where previous challenges failed.\n\nSteel plate armor covers its most vital areas - chest, shoulders, and the sides of that massive neck. Blackened leather and iron chain connect the plates, jangling with each earthshaking footstep. The charred grey and rust coloring of its natural hide blends seamlessly with badlands terrain, making something impossibly huge somehow disappear into the hellscape.\n\nEach tree-trunk leg ends in clawed feet that leave craters in volcanic soil. The tail sweeps behind it like a dreadnought's rudder, capable of shattering wooden structures with casual swings. Only the most desperate or foolish engage this creature - it is deployed as a weapon of last resort, impossible to control once its blood rises.",
+  "files": {
+    "original": "images/enemies/dinosaur_t4_02_original.png"
+  },
+  "weaponType": "bite"
+};

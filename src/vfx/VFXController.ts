@@ -1,0 +1,298 @@
+﻿/**
+ * VFX Controller (System 2.0)
+ * Orchestrates all visual effects using a Data-Driven Sequencer.
+ *
+ * Owner: VFX Specialist
+ */
+
+// Ambient declarations for global dependencies
+declare const Logger: any;
+declare const ParticleSystem: any;
+declare const Registry: any;
+declare const ProjectileVFX: any;
+declare const MeleeTrailVFX: any;
+declare const FloatingTextManager: any;
+declare const VFXConfig: any;
+declare const GameRenderer: any;
+declare const FloatingText: any;
+
+class VFXSystem {
+    // Property declarations
+    game: any = null;
+    bgParticles: any = null;
+    fgParticles: any = null;
+    texts: any[] = [];
+    activeSequences: any[] = [];
+    initialized: boolean = false;
+
+    constructor() {
+        Logger.info('[VFXSystem] Constructed');
+    }
+
+    init(game) {
+        this.game = game;
+        // Initialize dual-layer canvas system
+        // Note: ParticleSystem is expected to be a global or imported class
+        if (ParticleSystem) {
+            this.bgParticles = Object.create(ParticleSystem);
+            this.fgParticles = Object.create(ParticleSystem);
+
+            this.bgParticles.init('vfx-canvas');
+            this.fgParticles.init('vfx-canvas-fg');
+            Logger.info('[VFXSystem] Particles initialized');
+        } else {
+            Logger.error('[VFXSystem] ParticleSystem not found! Check load order.');
+        }
+
+        // Subscribe to game state for implicit event detection
+        // const gameState = this.game ? this.game.getSystem('GameState') : null;
+
+        this.initialized = true;
+        Logger.info('[VFXSystem] Initialized');
+        if (Registry) Registry.register('VFXController', this);
+    }
+
+    /**
+     * Update all VFX systems
+     */
+    update(dt) {
+        if (!this.initialized) return;
+
+        if (this.bgParticles) this.bgParticles.update(dt);
+        if (this.fgParticles) this.fgParticles.update(dt);
+
+        // Update Texts
+        for (let i = this.texts.length - 1; i >= 0; i--) {
+            const text = this.texts[i];
+            text.update(dt);
+            if (!text.active) {
+                this.texts.splice(i, 1);
+            }
+        }
+
+        // Update Active Sequences
+        for (let i = this.activeSequences.length - 1; i >= 0; i--) {
+            const seq = this.activeSequences[i];
+            seq.elapsed += dt;
+
+            // Check for cues to fire
+            while (seq.cues.length > 0 && seq.cues[0].time <= seq.elapsed) {
+                const cue = seq.cues.shift(); // Remove and fire
+                this.executeCue(cue, seq.x, seq.y, seq.options);
+            }
+
+            // Remove finished sequences
+            if (seq.cues.length === 0) {
+                this.activeSequences.splice(i, 1);
+            }
+        }
+
+        // Update traveling projectiles
+        if (ProjectileVFX) {
+            ProjectileVFX.update(dt);
+        }
+
+        // Update melee trails
+        if (MeleeTrailVFX) {
+            MeleeTrailVFX.update(dt);
+        }
+
+        // Update floating text (damage numbers, etc.)
+        if (FloatingTextManager) {
+            FloatingTextManager.update(dt);
+        }
+    }
+
+    /**
+     * Execute a single cue from a sequence
+     */
+    executeCue(cue, x, y, contextOptions = {}) {
+        // Resolve Template if present
+        let config = {};
+
+        if (cue.template && VFXConfig && VFXConfig.TEMPLATES[cue.template]) {
+            // Merge Template with Cue Params (Cue wins)
+            config = { ...VFXConfig.TEMPLATES[cue.template], ...(cue.params || {}) };
+        } else if (cue.type) {
+            // Direct definition
+            config = { type: cue.type, ...(cue.params || {}) };
+        } else {
+            // cue.template might refer to a template that doesn't exist?
+            Logger.warn('[VFXSystem] Invalid cue config:', cue);
+            return;
+        }
+
+        // Determine Layer
+        const layer = cue.layer || 'fg';
+        const system = layer === 'bg' ? this.bgParticles : this.fgParticles;
+
+        if (!system) return;
+
+        // Emit Particle
+        system.emit(x, y, config);
+    }
+
+    /**
+     * Play a named sequence from VFXConfig
+     * @param {string} sequenceName - Key in VFXConfig.SEQUENCES
+     * @param {number} x - World X
+     * @param {number} y - World Y
+     * @param {object} options - Optional overrides
+     */
+    playSequence(sequenceName, x, y, options = {}) {
+        if (!VFXConfig || !VFXConfig.SEQUENCES[sequenceName]) {
+            Logger.warn(`[VFXSystem] Sequence not found: ${sequenceName}`);
+            return;
+        }
+
+        const rawSequence = VFXConfig.SEQUENCES[sequenceName];
+
+        // GC Optimization: Build cues array more efficiently
+        const cues = [];
+        for (let i = 0; i < rawSequence.length; i++) {
+            const src = rawSequence[i];
+            cues.push({
+                time: src.time,
+                template: src.template,
+                type: src.type,
+                layer: src.layer,
+                params: src.params
+            });
+        }
+        // Sort by time just in case config is out of order
+        cues.sort((a, b) => a.time - b.time);
+
+        this.activeSequences.push({
+            name: sequenceName,
+            cues: cues,
+            elapsed: 0,
+            x: x,
+            y: y,
+            options: options
+        });
+    }
+
+    /**
+     * Helper: Play a generic effect immediately (using Template or raw config)
+     */
+    playEffect(configOrTemplateName, x, y, layer = 'fg') {
+        let config = configOrTemplateName;
+
+        // Check if string -> Template
+        if (typeof configOrTemplateName === 'string') {
+            if (VFXConfig && VFXConfig.TEMPLATES[configOrTemplateName]) {
+                config = VFXConfig.TEMPLATES[configOrTemplateName];
+            } else {
+                Logger.warn(`[VFXSystem] Template not found: ${configOrTemplateName}`);
+                return;
+            }
+        }
+
+        const system = layer === 'bg' ? this.bgParticles : this.fgParticles;
+        if (system) system.emit(x, y, config);
+    }
+
+    /**
+     * Render (Called by GameRenderer with main context)
+     */
+    render(ctx) {
+        if (!this.initialized) return;
+
+        // Render all floating texts to the game canvas
+        for (const text of this.texts) {
+            text.render(ctx);
+        }
+
+        // Render traveling projectiles (no camera offset needed - ctx is already translated)
+        if (ProjectileVFX) {
+            ProjectileVFX.render(ctx);
+        }
+
+        // Render melee trails (needs viewport for world-to-screen conversion)
+        if (MeleeTrailVFX && GameRenderer) {
+            const viewport = {
+                x: GameRenderer.viewport.x,
+                y: GameRenderer.viewport.y,
+                scale: GameRenderer.viewport.scale,
+                screenX: 0,
+                screenY: 0
+            };
+            MeleeTrailVFX.render(ctx, viewport);
+        }
+
+        // Render floating text (damage numbers, etc.)
+        if (FloatingTextManager) {
+            FloatingTextManager.render(ctx);
+        }
+    }
+
+    /**
+     * Render Foreground Particles to their own overlay canvas
+     * Called by Game.js main loop, NOT GameRenderer
+     */
+    renderForeground() {
+        if (!this.initialized || !this.fgParticles) return;
+        this.fgParticles.render();
+    }
+
+    /**
+     * Legacy Compat: Play a foreground effect (above UI)
+     */
+    playForeground(x, y, options = {}) {
+        if (this.fgParticles) this.fgParticles.emit(x, y, options);
+    }
+
+    /**
+     * Legacy Compat: Play a background effect (behind UI)
+     */
+    playBackground(x, y, options = {}) {
+        if (this.bgParticles) this.bgParticles.emit(x, y, options);
+    }
+
+    /**
+     * Map UI DOM coordinates to Canvas coordinates
+     */
+    uiToCanvas(clientX: number, clientY: number, canvasId: string = 'vfx-canvas-fg') {
+        const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+        if (!canvas) return { x: 0, y: 0 };
+
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    /**
+     * Spawn floating text at world coordinates
+     */
+    spawnFloatingText(text, worldX, worldY, color = '#FFD700', duration = 2000) {
+        if (FloatingText) {
+            // FloatingText expects a config object, not separate color/duration params
+            const config = {
+                color: color,
+                floatDuration: duration / 2000, // Convert ms to seconds
+                holdDuration: 0.2
+            };
+            const ft = new FloatingText(text, worldX, worldY, config, 0);
+            this.texts.push(ft);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Utility Methods
+    // -------------------------------------------------------------------------
+
+    createExplosion(x, y) {
+        // Redirect to sequence system
+        this.playSequence('EXPLOSION_GENERIC', x, y);
+    }
+}
+
+// Export Singleton
+const VFXController = new VFXSystem();
+
+export { VFXSystem, VFXController };

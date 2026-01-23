@@ -1,0 +1,264 @@
+﻿/**
+ * merchants - Auto-generated from JSON
+ */
+
+export const merchants = [
+    {
+        "id": "npc_merchant_01",
+        "name": "Quarry Merchant",
+        "category": "merchant",
+        "biome": "quarry",
+        "status": "pending",
+        "sourceDescription": "dusty grey-uniformed quartermaster with miner's helmet, WWI-era military gear, miner helmet with lamp",
+        "groupId": "npc_merchant_01",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_01_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_01",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_01",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_01",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_01",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_02",
+        "name": "Iron Ridge Merchant",
+        "category": "merchant",
+        "biome": "iron_ridge",
+        "status": "pending",
+        "sourceDescription": "rust-stained overalls wearing blacksmith with welding mask, WWI-era industrial worker",
+        "groupId": "npc_merchant_02",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_02_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_02",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_02",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_02",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_02",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_03",
+        "name": "Dead Woods Merchant",
+        "category": "merchant",
+        "biome": "dead_woods",
+        "status": "pending",
+        "sourceDescription": "tattered cloak wearing mysterious trader with plague doctor mask, WWI-era military gear, eerie presence",
+        "groupId": "npc_merchant_03",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_03_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_03",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_03",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_03",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_03",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_04",
+        "name": "Crossroads Merchant",
+        "category": "merchant",
+        "biome": "crossroads",
+        "status": "pending",
+        "sourceDescription": "travel-worn coat wearing wandering trader with wide-brimmed hat and visor, WWI-era military gear",
+        "groupId": "npc_merchant_04",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_04_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_04",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_04",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_04",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_04",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_05",
+        "name": "Scrap Yard Merchant",
+        "category": "merchant",
+        "biome": "scrap_yard",
+        "status": "pending",
+        "sourceDescription": "salvaged armor patchwork wearing scrapper with riveted faceplate, WWI-era scavenger",
+        "groupId": "npc_merchant_05",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_05_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_05",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_05",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_05",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_05",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_06",
+        "name": "Mud Flats Merchant",
+        "category": "merchant",
+        "biome": "mud_flats",
+        "status": "pending",
+        "sourceDescription": "waterproof poncho wearing swamp trader with diving helmet, WWI-era amphibious gear",
+        "groupId": "npc_merchant_06",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_06_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_06",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_06",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_06",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_06",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_07",
+        "name": "Bone Valley Merchant",
+        "category": "merchant",
+        "biome": "bone_valley",
+        "status": "pending",
+        "sourceDescription": "bone-decorated armor wearing fossil trader with skull visor, WWI-era tribal warrior aesthetic",
+        "groupId": "npc_merchant_07",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_07_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_07",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_07",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_07",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_07",
+                "status": "approved"
+            }
+        }
+    },
+    {
+        "id": "npc_merchant_08",
+        "name": "Ruins Merchant",
+        "category": "merchant",
+        "biome": "ruins",
+        "status": "pending",
+        "sourceDescription": "ancient-styled armor wearing mysterious antiquarian with full-face helm, WWI-era meets ancient artifact dealer",
+        "groupId": "npc_merchant_08",
+        "files": {
+            "original": "assets/images/characters/npc_merchant_08_original.png"
+        },
+        "vfx": {
+            "idle": {
+                "id": "vfx_idle_npc_merchant_08",
+                "status": "pending"
+            },
+            "interact": {
+                "id": "vfx_interact_npc_merchant_08",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "greet": {
+                "id": "sfx_greet_npc_merchant_08",
+                "status": "approved"
+            },
+            "trade": {
+                "id": "sfx_trade_npc_merchant_08",
+                "status": "approved"
+            }
+        }
+    }
+];
+
+export default merchants;

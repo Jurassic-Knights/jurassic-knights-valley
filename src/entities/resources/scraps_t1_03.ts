@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: scraps_t1_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "scraps_t1_03",
+  "name": "Leather Scraps",
+  "sourceCategory": "resources",
+  "sourceFile": "scraps",
+  "sprite": "scraps_t1_03",
+  "status": "approved",
+  "files": {
+    "original": "assets/images/resources/scraps_t1_03_original.png"
+  },
+  "tier": 1,
+  "stackable": true,
+  "type": "material"
+};

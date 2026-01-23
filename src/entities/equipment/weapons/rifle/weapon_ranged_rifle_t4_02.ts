@@ -1,0 +1,36 @@
+﻿/**
+ * Entity: weapon_ranged_rifle_t4_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "weapon_ranged_rifle_t4_02",
+    "name":  "Rex Slayer",
+    "description":  "A legendary anti-dinosaur rifle with explosive rounds.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "ranged",
+    "weaponSubtype":  "rifle",
+    "tier":  4,
+    "rarity":  "legendary",
+    "stats":  {
+                  "damage":  55,
+                  "attackSpeed":  1.1,
+                  "range":  450,
+                  "ammoCapacity":  5,
+                  "armorPen":  15
+              },
+    "recipe":  {
+                   "scraps_t4_01":  20,
+                   "minerals_t3_01":  14,
+                   "bone_t2_01":  7,
+                   "fossil_t1_01":  4
+               },
+    "sprite":  "weapon_ranged_rifle_t4_02",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/rifle/weapon_rifle_t4_02_original.png"
+              },
+    "gripType":  "2-hand"
+}
+;

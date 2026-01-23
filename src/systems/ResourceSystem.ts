@@ -1,0 +1,81 @@
+﻿/**
+ * ResourceSystem
+ * Handles state updates and respawning for all resources.
+ */
+
+// Ambient declarations for global dependencies
+declare const Logger: any;
+declare const EntityManager: any;
+declare const AudioManager: any;
+declare const EntityRegistry: any;
+declare const VFXController: any;
+declare const VFXConfig: any;
+declare const Registry: any;
+
+class ResourceSystem {
+    game: any = null;
+
+    constructor() {
+        Logger.info('[ResourceSystem] Initialized');
+    }
+
+    init(game: any) {
+        this.game = game;
+    }
+
+    update(dt) {
+        if (!EntityManager) return;
+        const resources = EntityManager.getByType('Resource');
+        for (const res of resources) {
+            if (res.active) {
+                this.updateResource(res, dt);
+            }
+        }
+    }
+
+    updateResource(res, dt) {
+        if (res.state === 'depleted') {
+            res.respawnTimer -= dt / 1000;
+            if (res.respawnTimer <= 0) {
+                this.respawn(res);
+            }
+        }
+    }
+
+    respawn(res) {
+        res.state = 'ready';
+        res.health = res.maxHealth;
+        res.respawnTimer = 0;
+
+        // Play material-specific respawn SFX - config-driven
+        if (AudioManager) {
+            const typeConfig = EntityRegistry?.resources?.[res.resourceType] || {};
+            const suffix = typeConfig.sfxSuffix || 'metal';
+            AudioManager.playSFX(`sfx_respawn_${suffix}`);
+        }
+
+        // Visual Effects
+        if (VFXController && VFXConfig && VFXConfig.TEMPLATES.RESOURCE_RESPAWN_FX) {
+            // New Pixelated Respawn
+            // Allow dynamic color override if resource has specific color?
+            // res.color is usually for the minimap dot, might be appropriate.
+            // But usually resources are wood/stone.
+            // Let's mix the template with a color override if present.
+
+            const baseTemplate = VFXConfig.TEMPLATES.RESOURCE_RESPAWN_FX;
+            const fx = { ...baseTemplate };
+
+            // If resource has a color, maybe tint the debris?
+            // For now, keep the "Digital Materialization" (Cyan/White) as distinct from the resource itself.
+            // It implies the world is reconstructing it.
+
+            VFXController.playForeground(res.x, res.y, fx);
+        }
+    }
+}
+
+// Create singleton and export
+const resourceSystem = new ResourceSystem();
+if (Registry) Registry.register('ResourceSystem', resourceSystem);
+
+export { ResourceSystem, resourceSystem };

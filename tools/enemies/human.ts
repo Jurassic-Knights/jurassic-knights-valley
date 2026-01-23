@@ -1,0 +1,982 @@
+﻿/**
+ * human - Auto-generated from JSON
+ */
+
+export const human = [
+    {
+        "id": "human_t1_01",
+        "name": "Conscript",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "grasslands",
+        "status": "pending",
+        "stats": {
+            "health": 35,
+            "damage": 6,
+            "speed": 70,
+            "attackRate": 1,
+            "attackRange": 250,
+            "aggroRange": 200,
+            "xpReward": 12,
+            "threatLevel": 1,
+            "attackType": "ranged",
+            "packAggro": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_01",
+                "chance": 60,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "food_t1_03",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "salvage_t1_02",
+                "chance": 30,
+                "min": 1,
+                "max": 2
+            }
+        ],
+        "sourceDescription": "recruit uniform, basic rifle, tattered cloth, stahlhelm with face guard",
+        "groupId": "human_t1_01",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t1_01",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t1_01",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t1_01",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t1_01",
+                "status": "approved"
+            },
+            "death": {
+                "id": "sfx_death_human_t1_01",
+                "status": "approved"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t1_01",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t1_01",
+                "status": "approved"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t1_01_original.png"
+        },
+        "weaponType": "rifle"
+    },
+    {
+        "id": "human_t1_02",
+        "name": "Rifleman",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "grasslands",
+        "status": "pending",
+        "stats": {
+            "health": 50,
+            "damage": 10,
+            "speed": 65,
+            "attackRate": 0.8,
+            "attackRange": 350,
+            "aggroRange": 250,
+            "xpReward": 18,
+            "threatLevel": 2,
+            "attackType": "ranged",
+            "packAggro": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_01",
+                "chance": 70,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "minerals_t2_02",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "trench_knife",
+                "chance": 10,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "infantry uniform, bolt-action rifle, muddy coat, medieval war helm",
+        "groupId": "human_t1_02",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t1_02",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t1_02",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t1_02",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t1_02",
+                "status": "approved"
+            },
+            "death": {
+                "id": "sfx_death_human_t1_02",
+                "status": "approved"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t1_02",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t1_02",
+                "status": "approved"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t1_02_original.png"
+        },
+        "weaponType": "rifle"
+    },
+    {
+        "id": "human_t2_01",
+        "name": "Sturmtruppen",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "tundra",
+        "status": "pending",
+        "stats": {
+            "health": 80,
+            "damage": 15,
+            "speed": 90,
+            "attackRate": 1.5,
+            "attackRange": 200,
+            "aggroRange": 220,
+            "xpReward": 30,
+            "threatLevel": 3,
+            "attackType": "ranged",
+            "packAggro": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_01",
+                "chance": 60,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "food_t1_03",
+                "chance": 50,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "Sturmtruppen assault armor, submachine gun, plate carrier, full-face helmet",
+        "groupId": "human_t2_01",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t2_01",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t2_01",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t2_01",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t2_01",
+                "status": "approved"
+            },
+            "death": {
+                "id": "sfx_death_human_t2_01",
+                "status": "approved"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t2_01",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t2_01",
+                "status": "approved"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t2_01_original.png"
+        },
+        "weaponType": "submachine_gun"
+    },
+    {
+        "id": "human_t3_01",
+        "name": "Machine Gunner",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "desert",
+        "status": "pending",
+        "stats": {
+            "health": 100,
+            "damage": 8,
+            "speed": 40,
+            "attackRate": 3,
+            "attackRange": 400,
+            "aggroRange": 300,
+            "xpReward": 45,
+            "threatLevel": 3,
+            "attackType": "ranged",
+            "packAggro": false,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_02",
+                "chance": 70,
+                "min": 2,
+                "max": 3
+            },
+            {
+                "id": "minerals_t2_02",
+                "chance": 50,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "webley_revolver",
+                "chance": 10,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "heavy weapons harness, machine gun, armored vest, ammunition belt, iron mask",
+        "groupId": "human_t3_01",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t3_01",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t3_01",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t3_01",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t3_01",
+                "status": "approved"
+            },
+            "death": {
+                "id": "sfx_death_human_t3_01",
+                "status": "approved"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t3_01",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t3_01",
+                "status": "approved"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t3_01_original.png"
+        },
+        "weaponType": "machine_gun"
+    },
+    {
+        "id": "human_t4_01",
+        "name": "Feldwebel",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "badlands",
+        "status": "pending",
+        "stats": {
+            "health": 150,
+            "damage": 20,
+            "speed": 75,
+            "attackRate": 1.2,
+            "attackRange": 300,
+            "aggroRange": 280,
+            "xpReward": 70,
+            "threatLevel": 4,
+            "attackType": "ranged",
+            "packAggro": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_01",
+                "chance": 80,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "mechanical_t1_01",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "stahlhelm",
+                "chance": 8,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "Feldwebel sergeant uniform, officer insignia, long coat, combat helmet with visor",
+        "groupId": "human_t4_01",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t4_01",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t4_01",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t4_01",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t4_01",
+                "status": "approved"
+            },
+            "death": {
+                "id": "sfx_death_human_t4_01",
+                "status": "approved"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t4_01",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t4_01",
+                "status": "approved"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t4_01_original.png"
+        },
+        "weaponType": "rifle"
+    },
+    {
+        "id": "human_t4_02",
+        "name": "Leutnant",
+        "type": "elite",
+        "enemyType": "human",
+        "biome": "all",
+        "status": "pending",
+        "stats": {
+            "health": 200,
+            "damage": 25,
+            "speed": 80,
+            "attackRate": 1.5,
+            "attackRange": 350,
+            "aggroRange": 300,
+            "xpReward": 100,
+            "threatLevel": 5,
+            "attackType": "ranged",
+            "packAggro": true,
+            "isElite": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "mechanical_t1_01",
+                "chance": 80,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "mechanical_t3_01",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            },
+            {
+                "id": "lee_enfield",
+                "chance": 25,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "Leutnant officer, dark grey and forest green clothing, gunmetal steel armor, great helm with plume, pistol",
+        "groupId": "human_t4_02",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t4_02",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t4_02",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t4_02",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t4_02",
+                "status": "approved"
+            },
+            "death": {
+                "id": "sfx_death_human_t4_02",
+                "status": "approved"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t4_02",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t4_02",
+                "status": "approved"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t4_02_original.png"
+        },
+        "weaponType": "pistol"
+    },
+    {
+        "id": "human_t1_03",
+        "name": "Trench Knight",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "grasslands",
+        "status": "pending",
+        "stats": {
+            "health": 60,
+            "damage": 12,
+            "speed": 65,
+            "attackRate": 0.9,
+            "attackRange": 100,
+            "aggroRange": 180,
+            "xpReward": 15,
+            "threatLevel": 2,
+            "attackType": "melee",
+            "packAggro": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_01",
+                "chance": 60,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "leather_t1_01",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "plate breastplate over trench coat, chain mail sleeves, wielding a longsword and heater shield, knight helmet with stahlhelm modifications",
+        "groupId": "human_t1_03",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t1_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t1_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t1_03",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t1_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "sfx_death_human_t1_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t1_03",
+                "status": "pending"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t1_03",
+                "status": "pending"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t1_03_original.png"
+        },
+        "weaponType": "sword"
+    },
+    {
+        "id": "human_t2_02",
+        "name": "Crossbowman",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "tundra",
+        "status": "pending",
+        "stats": {
+            "health": 55,
+            "damage": 18,
+            "speed": 55,
+            "attackRate": 0.6,
+            "attackRange": 380,
+            "aggroRange": 300,
+            "xpReward": 25,
+            "threatLevel": 2,
+            "attackType": "ranged",
+            "packAggro": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_02",
+                "chance": 70,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "mechanical_t1_01",
+                "chance": 30,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "Sniper soldier, navy blue and charcoal grey clothing, blackened iron armor, hooded mask with goggles, sniper rifle",
+        "groupId": "human_t2_02",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t2_02",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t2_02",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t2_02",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t2_02",
+                "status": "pending"
+            },
+            "death": {
+                "id": "sfx_death_human_t2_02",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t2_02",
+                "status": "pending"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t2_02",
+                "status": "pending"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t2_02_original.png"
+        },
+        "weaponType": "sniper_rifle"
+    },
+    {
+        "id": "human_t2_03",
+        "name": "Halberdier",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "tundra",
+        "status": "pending",
+        "stats": {
+            "health": 85,
+            "damage": 20,
+            "speed": 60,
+            "attackRate": 0.7,
+            "attackRange": 150,
+            "aggroRange": 200,
+            "xpReward": 32,
+            "threatLevel": 3,
+            "attackType": "melee",
+            "packAggro": false,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t1_02",
+                "chance": 70,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "bone_t1_01",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "full plate armor over WWI greatcoat, pauldrons with rank insignia, wielding a halberd, great helm with slit visor, ammunition pouches at waist",
+        "groupId": "human_t2_03",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t2_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t2_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t2_03",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t2_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "sfx_death_human_t2_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t2_03",
+                "status": "pending"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t2_03",
+                "status": "pending"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t2_03_original.png"
+        },
+        "weaponType": "halberd"
+    },
+    {
+        "id": "human_t3_02",
+        "name": "Flametrooper",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "desert",
+        "status": "pending",
+        "stats": {
+            "health": 90,
+            "damage": 6,
+            "speed": 50,
+            "attackRate": 4,
+            "attackRange": 180,
+            "aggroRange": 200,
+            "xpReward": 50,
+            "threatLevel": 3,
+            "attackType": "ranged",
+            "packAggro": false,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t2_01",
+                "chance": 80,
+                "min": 2,
+                "max": 3
+            },
+            {
+                "id": "mechanical_t2_01",
+                "chance": 40,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "heavy asbestos coat over plate armor, fuel tank backpack, wielding a flamethrower, full iron mask with glass visor, leather gauntlets",
+        "groupId": "human_t3_02",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t3_02",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t3_02",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t3_02",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t3_02",
+                "status": "pending"
+            },
+            "death": {
+                "id": "sfx_death_human_t3_02",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t3_02",
+                "status": "pending"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t3_02",
+                "status": "pending"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t3_02_original.png"
+        },
+        "weaponType": "rifle"
+    },
+    {
+        "id": "human_t3_03",
+        "name": "Field Medic",
+        "type": "enemy",
+        "enemyType": "human",
+        "biome": "desert",
+        "status": "pending",
+        "stats": {
+            "health": 70,
+            "damage": 8,
+            "speed": 70,
+            "attackRate": 1.5,
+            "attackRange": 150,
+            "aggroRange": 250,
+            "xpReward": 40,
+            "threatLevel": 2,
+            "attackType": "ranged",
+            "packAggro": true,
+            "flees": true,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "food_t2_01",
+                "chance": 80,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "salvage_t1_02",
+                "chance": 50,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "Field Medic soldier, brown and tan clothing with dark red trim, iron armor, iron mask, medical pouches, pistol",
+        "groupId": "human_t3_03",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t3_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t3_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t3_03",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t3_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "sfx_death_human_t3_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t3_03",
+                "status": "pending"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t3_03",
+                "status": "pending"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t3_03_original.png"
+        },
+        "weaponType": "pistol"
+    },
+    {
+        "id": "human_t4_03",
+        "name": "War General",
+        "type": "boss",
+        "enemyType": "human",
+        "biome": "badlands",
+        "status": "pending",
+        "stats": {
+            "health": 350,
+            "damage": 30,
+            "speed": 60,
+            "attackRate": 1.0,
+            "attackRange": 130,
+            "aggroRange": 300,
+            "xpReward": 180,
+            "threatLevel": 5,
+            "attackType": "melee",
+            "packAggro": false,
+            "isBoss": true,
+            "flees": false,
+            "gridSize": 1
+        },
+        "drops": [
+            {
+                "id": "salvage_t3_01",
+                "chance": 100,
+                "min": 2,
+                "max": 4
+            },
+            {
+                "id": "mechanical_t3_01",
+                "chance": 60,
+                "min": 1,
+                "max": 2
+            },
+            {
+                "id": "kriegsmesser",
+                "chance": 15,
+                "min": 1,
+                "max": 1
+            }
+        ],
+        "sourceDescription": "ornate general's plate armor with golden trim, medals and ribbons on breastplate, fur-lined officer's greatcoat cape, wielding a decorated kriegsmesser, crowned helm with face visor and plume",
+        "groupId": "human_t4_03",
+        "vfx": {
+            "spawn": {
+                "id": "vfx_spawn_human_t4_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "vfx_death_human_t4_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "vfx_blood_hit",
+                "status": "approved"
+            },
+            "aggro": {
+                "id": "vfx_aggro_human_t4_03",
+                "status": "pending"
+            }
+        },
+        "sfx": {
+            "spawn": {
+                "id": "sfx_spawn_human_t4_03",
+                "status": "pending"
+            },
+            "death": {
+                "id": "sfx_death_human_t4_03",
+                "status": "pending"
+            },
+            "hurt": {
+                "id": "sfx_hurt_human_t4_03",
+                "status": "pending"
+            },
+            "aggro": {
+                "id": "sfx_aggro_human_t4_03",
+                "status": "pending"
+            }
+        },
+        "files": {
+            "original": "assets/images/enemies/human_t4_03_original.png"
+        },
+        "weaponType": "sword"
+    }
+];
+
+export default human;

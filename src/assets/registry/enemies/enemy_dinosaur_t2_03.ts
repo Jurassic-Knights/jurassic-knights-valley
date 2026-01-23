@@ -1,0 +1,17 @@
+﻿/**
+ * Registry: enemy_dinosaur_t2_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t2_03",
+  "name": "Pachyrhinosaurus",
+  "category": "enemies",
+  "sourceFile": "dinosaur",
+  "status": "approved",
+  "sourceDescription": "Pachyrhinosaurus, bony frill, large body, grey-brown armored hide",
+  "files": {
+    "original": "assets/images/enemies/dinosaur_t2_03_original.png"
+  },
+  "lastUpdated": "2026-01-15T01:02:30.364456"
+};

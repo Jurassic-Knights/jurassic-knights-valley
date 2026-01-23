@@ -1,0 +1,25 @@
+﻿/**
+ * Entity: tool_harvesting_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "sprite":  "tool_harvesting_t4_01",
+    "id":  "tool_harvesting_t4_01",
+    "sourceFile":  "tool",
+    "category":  "equipment",
+    "description":  "For gathering plants and herbs.",
+    "tier":  4,
+    "name":  "Reaper\u0027s Edge",
+    "files":  {
+                  "original":  "images/equipment/tools/harvesting/tool_harvesting_t4_01_original.png"
+              },
+    "stats":  {
+                  "gatherSpeed":  1.8,
+                  "efficiency":  4
+              },
+    "equipSlot":  "tool",
+    "rarity":  "epic",
+    "toolType":  "harvesting"
+}
+;

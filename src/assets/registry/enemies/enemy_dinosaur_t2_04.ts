@@ -1,0 +1,17 @@
+﻿/**
+ * Registry: enemy_dinosaur_t2_04
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t2_04",
+  "name": "Therizinosaurus",
+  "category": "enemies",
+  "sourceFile": "dinosaur",
+  "status": "approved",
+  "sourceDescription": "Therizinosaurus, massive claws, feathered body, bizarre appearance",
+  "files": {
+    "original": "assets/images/enemies/dinosaur_t2_04_original.png"
+  },
+  "lastUpdated": "2026-01-15T01:02:30.364456"
+};

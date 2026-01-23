@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: leather_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "leather_t4_01",
+  "name": "Scaled Leather",
+  "sourceCategory": "items",
+  "sourceFile": "leather",
+  "sprite": "leather_t4_01",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/items/leather_t4_01_original.png"
+  },
+  "type": "consumable",
+  "stackable": true,
+  "recipe": "2x Hardened Leather + 1x Hardened Scale"
+};

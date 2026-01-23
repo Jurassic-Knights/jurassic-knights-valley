@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: feet_t1_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "feet_t1_02",
+    "name":  "Leather Boots",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "feet",
+    "sprite":  "feet_t1_02",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/feet/feet_t1_02_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "feet",
+    "stats":  "+3 Armor",
+    "recipe":  "2x Leather"
+}
+;

@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: arch_wall_tundra
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "arch_wall_tundra",
+  "name": "Ice Wall",
+  "sourceCategory": "environment",
+  "sourceFile": "architecture",
+  "sprite": "arch_wall_tundra",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/architecture/arch_wall_tundra_original.png"
+  },
+  "type": "architecture",
+  "biome": "tundra"
+};

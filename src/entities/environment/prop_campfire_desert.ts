@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: prop_campfire_desert
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "prop_campfire_desert",
+  "name": "Fire Pit",
+  "sourceCategory": "environment",
+  "sourceFile": "props",
+  "sprite": "prop_campfire_desert",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/props/prop_campfire_desert_original.png"
+  },
+  "type": "prop",
+  "biome": "desert"
+};

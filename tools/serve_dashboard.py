@@ -82,10 +82,10 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             parsed = urlparse(self.path)
             print(f"GET: {parsed.path}")
             
-            # Root redirect - serve game at root
+            # Root redirect - redirect to Vite dev server
             if parsed.path in ["/", ""]:
                 self.send_response(302)
-                self.send_header('Location', '/game/')
+                self.send_header('Location', 'http://localhost:5173/')
                 self.end_headers()
                 return
             
@@ -99,22 +99,13 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
                 self.serve_file(os.path.join(TOOLS_DIR, "dashboard", rel_path))
                 return
             
-            # Game routes
-            if parsed.path in ["/game", "/game/"]:
-                self.serve_file(os.path.join(BASE_DIR, "index.html"), "text/html")
-                return
-            
-            # Game static assets (relative paths from /game/index.html)
-            if parsed.path.startswith("/game/src/"):
-                self.serve_file(os.path.join(BASE_DIR, parsed.path[6:]))  # Remove /game prefix
-                return
-            
-            if parsed.path.startswith("/game/assets/"):
-                self.serve_file(os.path.join(BASE_DIR, parsed.path[6:]))  # Remove /game prefix
-                return
-            
-            if parsed.path.startswith("/game/css/"):
-                self.serve_file(os.path.join(BASE_DIR, parsed.path[6:]))  # Remove /game prefix
+            # Game routes - redirect to Vite dev server for hot reload
+            if parsed.path.startswith("/game"):
+                # Redirect to Vite which handles HMR
+                vite_path = parsed.path[5:] if parsed.path.startswith("/game/") else "/"
+                self.send_response(302)
+                self.send_header('Location', f'http://localhost:5173{vite_path}')
+                self.end_headers()
                 return
             
             # Asset routes
@@ -241,6 +232,17 @@ class DashboardHandler(http.server.SimpleHTTPRequestHandler):
             
             elif parsed.path == "/api/save_prompt_templates":
                 result = self._save_prompt_templates(data.get("content", ""))
+            
+            elif parsed.path == "/api/update_entity":
+                print(f"[DEBUG] update_entity called with: category={data.get('category')}, file={data.get('file')}, id={data.get('id')}, updates={data.get('updates', {})}")
+                result = category_handlers.update_entity(
+                    data.get("category"), data.get("file"),
+                    data.get("id"), data.get("updates", {})
+                )
+                print(f"[DEBUG] update_entity result: {result}")
+            
+            elif parsed.path == "/api/sync_to_game":
+                result = asset_handlers.regenerate_asset_loader()
             
             else:
                 self.send_error(404)

@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: head_t1_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "head_t1_01",
+    "name":  "Cloth Cap",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "head",
+    "sprite":  "head_t1_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/head/head_t1_01_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "head",
+    "stats":  "+2 Armor",
+    "recipe":  "2x Plant Fiber"
+}
+;

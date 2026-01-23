@@ -1,0 +1,24 @@
+﻿/**
+ * combat - Auto-generated from JSON
+ */
+
+export const combat = [
+    {
+        "id": "vfx_combat_01",
+        "name": "Blood Hit",
+        "category": "combat",
+        "status": "pending",
+        "sourceDescription": "blood splatter impact effect, small red particles, short duration, game vfx asset",
+        "groupId": "vfx_blood_hit"
+    },
+    {
+        "id": "vfx_combat_02",
+        "name": "Blood Splatter",
+        "category": "combat",
+        "status": "pending",
+        "sourceDescription": "large blood splatter on death, red spray particles, medium duration, game vfx asset",
+        "groupId": "vfx_blood_splatter"
+    }
+];
+
+export default combat;

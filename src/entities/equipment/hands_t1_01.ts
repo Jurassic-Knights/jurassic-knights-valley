@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: hands_t1_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "hands_t1_01",
+    "name":  "Cloth Gloves",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "hands",
+    "sprite":  "hands_t1_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/hands/hands_t1_01_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "hands",
+    "stats":  "+1 Armor",
+    "recipe":  "1x Plant Fiber"
+}
+;

@@ -1,0 +1,74 @@
+﻿/**
+ * Entity: boss_saurian_t1_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "boss_saurian_t1_02",
+  "name": "Claw Sergeant",
+  "sourceCategory": "bosses",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t1_02",
+  "status": "pending",
+  "tier": 1,
+  "biome": "grasslands",
+  "stats": {
+    "health": 100,
+    "damage": 10,
+    "speed": 95,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 280,
+    "packAggro": true,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t1_02",
+    "death": "sfx_death_saurian_t1_02",
+    "hurt": "sfx_hurt_saurian_t1_02",
+    "aggro": "sfx_aggro_saurian_t1_02"
+  },
+  "spawning": {
+    "biomes": [
+      "grasslands"
+    ],
+    "groupSize": [
+      1,
+      1
+    ],
+    "weight": 25,
+    "respawnTime": 60
+  },
+  "loot": [
+    {
+      "item": "minerals_t1_01",
+      "chance": 1.0,
+      "amount": [
+        2,
+        4
+      ]
+    },
+    {
+      "item": "leather_t1_01",
+      "chance": 0.8,
+      "amount": [
+        1,
+        2
+      ]
+    }
+  ],
+  "xpReward": 30,
+  "isBoss": true,
+  "species": "Deinonychus",
+  "sourceDescription": "anthropomorphic Deinonychus, tan uniform, officer greatcoat, medieval war helm, knife",
+  "weaponType": "knife",
+  "role": "light",
+  "description": "The Claw Sergeant's Deinonychus heritage shows in every predatory movement, the killing claw on each foot clicking against ground with barely restrained violence. Those slitted eyes hold both intelligence and hunger in unsettling balance. The small head tilts as it assesses threat levels with military precision overlaying apex predator instinct.\n\nLight armor marks this creature as a strike specialist - gilded leather straps crossing a lean muscular frame designed for combat, not display. Olive-brown feathers bristle through gaps in the harness. A commander's token hangs from the leather, marking earned rather than given rank.\n\nThose powerful legs coil with spring-loaded tension, ready to launch devastating attacks at any provocation. A military knife augments those natural killing claws, though the combination seems redundant. The Claw Sergeant leads from the front, demonstrating techniques before ordering troops to execute them.",
+  "files": {
+    "original": "images/bosses/boss_saurian_t1_02_original.png"
+  },
+  "declineNote": ""
+};

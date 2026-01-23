@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: arch_bridge_tundra
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "arch_bridge_tundra",
+  "name": "Ice Bridge",
+  "sourceCategory": "environment",
+  "sourceFile": "architecture",
+  "sprite": "arch_bridge_tundra",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/architecture/arch_bridge_tundra_original.png"
+  },
+  "type": "architecture",
+  "biome": "tundra"
+};

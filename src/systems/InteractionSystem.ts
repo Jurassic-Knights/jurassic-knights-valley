@@ -1,0 +1,172 @@
+﻿/**
+ * InteractionSystem
+ * Handles entity interactions, specifically item pickups and magnetism.
+ * Decouples logic from Game.js.
+ */
+
+// Ambient declarations for global dependencies
+declare const Logger: any;
+declare const EventBus: any;
+declare const GameConstants: any;
+declare const EntityManager: any;
+declare const SpawnManager: any;
+declare const IslandManager: any;
+declare const AudioManager: any;
+declare const QuestManager: any;
+declare const VFXTriggerService: any;
+declare const Registry: any;
+
+class InteractionSystem {
+    game: any = null;
+    magnetActiveCount: number = 0;
+
+    constructor() {
+        Logger.info('[InteractionSystem] Constructed');
+    }
+
+    init(game: any) {
+        this.game = game;
+        this.initListeners();
+        Logger.info('[InteractionSystem] Initialized');
+    }
+
+    initListeners() {
+        if (EventBus) {
+            EventBus.on(GameConstants.Events.REQUEST_MAGNET, () => this.triggerMagnet());
+        }
+    }
+
+    update(dt) {
+        if (!EntityManager || !this.game.hero) return;
+
+        const hero = this.game.hero;
+        const items = EntityManager.getByType('DroppedItem');
+
+        for (const item of items) {
+            if (!item.active) continue;
+
+            // 1. Magnet Logic Check (Auto-magnetize if close enough even without global trigger)
+            if (item.shouldAutoMagnetize(hero)) {
+                item.magnetize(hero);
+            }
+
+            // 2. Pickup Logic
+            if (item.canBePickedUpBy(hero)) {
+                this.collectItem(hero, item);
+            }
+        }
+
+        // 3. Spatial Triggers (UI Prompts)
+        this.updateSpatialTriggers(hero);
+    }
+
+    /**
+     * Check for spatial triggers (Merchant, Bridge)
+     * Replaces Game.updateUITriggers
+     */
+    updateSpatialTriggers(hero) {
+        // Merchant Button
+        if (SpawnManager && EventBus) {
+            const nearbyMerchant = SpawnManager.getMerchantNearHero(hero);
+            EventBus.emit(GameConstants.Events.INTERACTION_OPPORTUNITY, {
+                type: 'merchant',
+                target: nearbyMerchant,
+                visible: !!nearbyMerchant
+            });
+        }
+
+        // Bridge Unlocks
+        if (IslandManager) {
+            const lockedIsland = IslandManager.getUnlockTrigger(hero.x, hero.y);
+            if (lockedIsland) {
+                if (EventBus)
+                    EventBus.emit(GameConstants.Events.UI_UNLOCK_PROMPT, lockedIsland);
+            } else {
+                if (EventBus) EventBus.emit(GameConstants.Events.UI_HIDE_UNLOCK_PROMPT);
+            }
+        }
+    }
+
+    /**
+     * Handle item collection
+     */
+    collectItem(hero, item) {
+        // Hero logic (add to inventory)
+        // Hero logic (add to inventory)
+        const type = item.resourceType;
+        const amount = item.amount || 1;
+
+        // SFX - play for EVERY item pickup (no debounce)
+        if (AudioManager) {
+            AudioManager.playSFX('sfx_resource_collect');
+        }
+
+        // Add to Inventory
+        if (hero.components.inventory) {
+            hero.components.inventory.add(type, amount);
+        }
+
+        // Quest Update
+        if (QuestManager) QuestManager.onCollect(type, amount);
+
+        // Check magnet completion logic
+        if (item.isMagnetized && this.magnetActiveCount > 0) {
+            this.magnetActiveCount--;
+            if (this.magnetActiveCount <= 0) {
+                this.magnetActiveCount = 0;
+                this.triggerMagnetCompletionVFX(hero);
+            }
+        }
+
+        // Deactivate
+        item.active = false;
+        if (EntityManager) EntityManager.remove(item);
+
+        // Events & Feedback
+        if (EventBus) {
+            EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
+        }
+
+        // SFX is handled by Hero.collect or specific item logic usually,
+        // but if not, we can do it here. Hero.collect() usually plays 'sfx_pickup'.
+    }
+
+    /**
+     * Trigger global magnet effect
+     */
+    triggerMagnet() {
+        if (!this.game.hero || !EntityManager) return;
+
+        // Check cooldown or resource cost if applicable (currently free/event based)
+
+        let count = 0;
+        const items = EntityManager.getByType('DroppedItem');
+        for (const item of items) {
+            if (item.active && !item.isMagnetized) {
+                item.magnetize(this.game.hero);
+                count++;
+            }
+        }
+
+        if (count > 0) {
+            this.magnetActiveCount = count;
+            Logger.info(`[InteractionSystem] Magnet triggered for ${count} items`);
+            if (AudioManager) AudioManager.playSFX('sfx_ui_magnet');
+        }
+    }
+
+    /**
+     * Trigger "Singularity" VFX when all magnetized items arrive
+     */
+    triggerMagnetCompletionVFX(hero) {
+        if (VFXTriggerService) {
+            VFXTriggerService.triggerMagnetCompletionVFX(hero);
+        }
+    }
+}
+
+// Create singleton and export
+const interactionSystem = new InteractionSystem();
+if (Registry) Registry.register('InteractionSystem', interactionSystem);
+
+export { InteractionSystem, interactionSystem };

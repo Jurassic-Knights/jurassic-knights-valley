@@ -1,0 +1,421 @@
+﻿/**
+ * EntityLoader - Loads entity definitions from individual JSON files
+ *
+ * Source of truth: src/entities/{category}/{entity_id}.json
+ * Bidirectionally synced with dashboard.
+ * Populates EntityRegistry for runtime access.
+ *
+ * Owner: Director
+ */
+
+// Ambient declarations for global dependencies
+declare const Logger: any;
+declare let EntityRegistry: any;
+
+const EntityLoader = {
+    loaded: false,
+    basePath: 'src/entities/',
+
+    // Default stats applied when entity JSON is missing fields
+    defaults: {
+        enemy: {
+            gridSize: 1,
+            width: 128,
+            height: 128,
+            health: 50,
+            speed: 80,
+            damage: 10,
+            defense: 0,
+            attackRange: 80,
+            attackRate: 1.0,
+            aggroRange: 200,
+            leashDistance: 400,
+            respawnTime: 30,
+            xpReward: 10
+        },
+        boss: {
+            gridSize: 3,
+            width: 384,
+            height: 384,
+            health: 500,
+            speed: 60,
+            damage: 40,
+            defense: 10,
+            attackRange: 150,
+            attackRate: 0.8,
+            aggroRange: 400,
+            respawnTime: 180,
+            xpReward: 200
+        }
+    },
+
+    /**
+     * Initialize - called by Game.js via SystemConfig
+     */
+    async init() {
+        return this.load();
+    },
+
+    /**
+     * Load all entity JSON files from folders
+     */
+    async load() {
+        if (this.loaded) return true;
+
+        EntityRegistry = {
+            enemies: {},
+            bosses: {},
+            nodes: {},
+            resources: {},
+            items: {},
+            equipment: {},
+            npcs: {},
+            environment: {},
+            hero: {},  // Hero skins registry (hero_t1_01, etc.)
+            defaults: this.defaults
+        };
+
+        try {
+            // Load entity manifest (lists all available entity files)
+            const manifestResp = await fetch(this.basePath + 'manifest.json');
+            if (manifestResp.ok) {
+                const manifest = await manifestResp.json();
+                await this.loadFromManifest(manifest);
+            } else {
+                // Fallback: try to load known categories
+                Logger.warn('[EntityLoader] No manifest.json found, using fallback');
+                await this.loadCategory('enemies');
+                await this.loadCategory('bosses');
+                await this.loadHero();
+            }
+
+            this.loaded = true;
+            const counts = Object.keys(EntityRegistry)
+                .filter((k) => typeof EntityRegistry[k] === 'object' && k !== 'defaults')
+                .map((k) => {
+                    const count =
+                        EntityRegistry[k] && typeof EntityRegistry[k] === 'object'
+                            ? Object.keys(EntityRegistry[k]).length
+                            : 0;
+                    return count > 0 ? `${count} ${k}` : null;
+                })
+                .filter(Boolean);
+            Logger.info(`[EntityLoader] Loaded: ${counts.join(', ')}`);
+            return true;
+        } catch (error) {
+            Logger.error(`[EntityLoader] Failed to load: ${error.message}`);
+            return false;
+        }
+    },
+
+    /**
+     * Load entities from manifest
+     */
+    async loadFromManifest(manifest) {
+        const promises = [];
+
+        // All entity categories
+        const categories = [
+            'enemies',
+            'bosses',
+            'nodes',
+            'resources',
+            'items',
+            'equipment',
+            'npcs',
+            'environment',
+            'hero'  // Hero skins as a category
+        ];
+
+        for (const category of categories) {
+            if (manifest[category] && Array.isArray(manifest[category])) {
+                for (const id of manifest[category]) {
+                    promises.push(this.loadGenericEntity(category, id));
+                }
+            }
+        }
+
+        // Legacy: Load hero from hero.json if manifest.hero is true but no hero array
+        if (manifest.hero === true) {
+            promises.push(this.loadLegacyHero());
+        }
+
+        await Promise.all(promises);
+    },
+
+    /**
+     * Load a generic entity JSON file into the correct registry category
+     */
+    async loadGenericEntity(category, id) {
+        try {
+            // Determine the file path - weapons are in subfolders by subtype
+            let filePath = `${this.basePath}${category}/${id}.json`;
+
+            // For equipment, check if it's a weapon and route to subfolder
+            if (category === 'equipment' && id.startsWith('weapon_')) {
+                const subtype = this.getWeaponSubtype(id);
+                if (subtype) {
+                    filePath = `${this.basePath}${category}/weapons/${subtype}/${id}.json`;
+                }
+            }
+
+            // For equipment, check if it's a tool and route to subfolder
+            if (category === 'equipment' && id.startsWith('tool_')) {
+                const toolType = this.getToolType(id);
+                if (toolType) {
+                    filePath = `${this.basePath}${category}/tools/${toolType}/${id}.json`;
+                }
+            }
+
+            const resp = await fetch(filePath);
+            if (!resp.ok) return null;
+
+            const data = await resp.json();
+
+            // For enemies/bosses, use processEntity for backward compatibility
+            if (category === 'enemies' || category === 'bosses') {
+                return this.loadEntity(category, id);
+            }
+
+            // For other categories, store directly with minimal processing
+            const entity = {
+                ...data,
+                _sourceFile: `${id}.json`
+            };
+
+            // Ensure registry category exists
+            if (!EntityRegistry[category]) {
+                EntityRegistry[category] = {};
+            }
+
+            EntityRegistry[category][id] = entity;
+            return entity;
+        } catch (e) {
+            Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
+            return null;
+        }
+    },
+
+    /**
+     * Extract weapon subtype from weapon ID
+     * e.g. weapon_melee_sword_t1_01 -> sword, weapon_ranged_pistol_t1_01 -> pistol
+     */
+    getWeaponSubtype(id) {
+        const match = id.match(/^weapon_(melee|ranged)_([a-z_]+?)_t\d/);
+        if (match) {
+            return match[2]; // e.g. "sword", "pistol", "machine_gun"
+        }
+        return null;
+    },
+
+    /**
+     * Extract tool type from tool ID
+     * e.g. tool_mining_t1_01 -> mining, tool_woodcutting_t2_01 -> woodcutting
+     */
+    getToolType(id) {
+        const match = id.match(/^tool_([a-z_]+?)_t\d/);
+        if (match) {
+            return match[1]; // e.g. "mining", "woodcutting", "fishing"
+        }
+        return null;
+    },
+
+    /**
+     * Load all entities from a category folder
+     */
+    async loadCategory(category) {
+        try {
+            const indexResp = await fetch(`${this.basePath}${category}/index.json`);
+            if (!indexResp.ok) return;
+
+            const index = await indexResp.json();
+            const promises = index.map((id) => this.loadEntity(category, id));
+            await Promise.all(promises);
+        } catch (e) {
+            Logger.warn(`[EntityLoader] Could not load category ${category}`);
+        }
+    },
+
+    /**
+     * Load a single entity JSON file
+     */
+    async loadEntity(category, id) {
+        try {
+            const resp = await fetch(`${this.basePath}${category}/${id}.json`);
+            if (!resp.ok) return null;
+
+            const data = await resp.json();
+            const entity = this.processEntity(data, category);
+
+            // Store in registry
+            if (category === 'bosses') {
+                EntityRegistry.bosses[id] = entity;
+                EntityRegistry.enemies[id] = entity; // Also in enemies for unified lookup
+            } else {
+                EntityRegistry.enemies[id] = entity;
+            }
+
+            return entity;
+        } catch (e) {
+            Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
+            return null;
+        }
+    },
+
+    /**
+     * Load legacy hero entity (single hero.json config)
+     * @deprecated Use hero category in manifest instead
+     */
+    async loadLegacyHero() {
+        try {
+            const resp = await fetch(`${this.basePath}hero/hero.json`);
+            if (!resp.ok) return null;
+
+            const data = await resp.json();
+            // Store as both legacy single hero and in hero skins registry
+            EntityRegistry.hero['hero'] = {
+                id: 'hero',
+                entityType: 'Hero',
+                ...data
+            };
+            return EntityRegistry.hero['hero'];
+        } catch (e) {
+            Logger.warn('[EntityLoader] Could not load legacy hero');
+            return null;
+        }
+    },
+
+    /**
+     * Process entity data: flatten nested structures, apply defaults
+     */
+    processEntity(data, category) {
+        const defaults = category === 'bosses' ? this.defaults.boss : this.defaults.enemy;
+        const entity = {
+            entityType: category === 'bosses' ? 'Boss' : 'Enemy',
+            ...defaults
+        };
+
+        // Copy direct properties
+        for (const [key, value] of Object.entries(data)) {
+            if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+                entity[key] = value;
+            }
+        }
+
+        // Flatten nested objects
+        if (data.stats) Object.assign(entity, data.stats);
+        if (data.combat) Object.assign(entity, data.combat);
+        if (data.size) Object.assign(entity, data.size);
+
+        // Handle display block (species-based sizing)
+        // Both flatten properties AND preserve the display object for game code
+        if (data.display) {
+            Object.assign(entity, data.display);
+            entity.display = data.display; // Keep reference for EnemyCore/Dinosaur
+        }
+
+        // Handle spawning
+        if (data.spawning) {
+            entity.spawnBiomes = data.spawning.biomes;
+            if (data.spawning.groupSize) {
+                entity.groupSize = {
+                    min: data.spawning.groupSize[0] || 1,
+                    max: data.spawning.groupSize[1] || 1
+                };
+            }
+            entity.spawnWeight = data.spawning.weight;
+            entity.respawnTime = data.spawning.respawnTime;
+        }
+
+        // Handle assets
+        if (data.assets) {
+            entity.sprite = data.assets.sprite;
+            entity.spriteId = data.assets.sprite;
+            entity.sfx = data.assets.sfx;
+            entity.vfx = data.assets.vfx;
+        }
+
+        // Alternative: sprite at top level
+        if (data.sprite && !entity.sprite) {
+            entity.sprite = data.sprite;
+            entity.spriteId = data.sprite;
+        }
+
+        // Handle loot
+        if (data.loot) {
+            entity.lootTable = data.loot.map((l) => ({
+                item: l.item,
+                chance: l.chance,
+                amount: Array.isArray(l.amount)
+                    ? { min: l.amount[0], max: l.amount[1] }
+                    : l.amount || 1
+            }));
+        }
+
+        return entity;
+    },
+
+    // ============ Lookup Helpers ============
+
+    getEnemy(id) {
+        return EntityRegistry?.enemies?.[id] || null;
+    },
+
+    getBoss(id: string) {
+        return EntityRegistry?.bosses?.[id] || null;
+    },
+
+    getHero() {
+        return EntityRegistry?.hero || null;
+    },
+
+    getEnemiesForBiome(biomeId: string) {
+        const enemies = EntityRegistry?.enemies || {};
+        return Object.values(enemies).filter((e: any) => e.spawnBiomes?.includes(biomeId) && !e.isBoss);
+    },
+
+    getEnemiesByTier(tier: number) {
+        const enemies = EntityRegistry?.enemies || {};
+        return Object.values(enemies).filter((e: any) => e.tier === tier);
+    },
+
+    getEnemiesByCategory(category: string) {
+        const enemies = EntityRegistry?.enemies || {};
+        return Object.values(enemies).filter((e: any) => e.category === category);
+    },
+
+    /**
+     * Get all equipment from EntityRegistry.equipment
+     * Derives sourceFile from ID prefix (chest_, head_, weapon_, etc.)
+     * @returns {Array} All equipment items as an array
+     */
+    getAllEquipment() {
+        const equipment = EntityRegistry?.equipment || {};
+        const allEquipment: any[] = [];
+
+        for (const [id, item] of Object.entries(equipment)) {
+            // Derive sourceFile from ID prefix
+            let sourceFile = 'equipment';
+            if (id.startsWith('chest_')) sourceFile = 'chest';
+            else if (id.startsWith('head_')) sourceFile = 'head';
+            else if (id.startsWith('hands_')) sourceFile = 'hands';
+            else if (id.startsWith('feet_')) sourceFile = 'feet';
+            else if (id.startsWith('legs_')) sourceFile = 'legs';
+            else if (id.startsWith('tool_')) sourceFile = 'tool';
+            else if (id.startsWith('weapon_')) sourceFile = 'weapon';
+            else if (id.startsWith('signature_')) sourceFile = 'signature';
+            else if (id.startsWith('accessory_')) sourceFile = 'accessory';
+
+            const itemData = item as any;
+            allEquipment.push({
+                ...itemData,
+                id: itemData.id || id,
+                sourceFile: sourceFile
+            });
+        }
+
+        return allEquipment;
+    }
+};
+
+export { EntityLoader };

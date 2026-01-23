@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: prop_barrel_badlands
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "prop_barrel_badlands",
+  "name": "Oil Drum",
+  "sourceCategory": "environment",
+  "sourceFile": "props",
+  "sprite": "prop_barrel_badlands",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/props/prop_barrel_badlands_original.png"
+  },
+  "type": "prop",
+  "biome": "badlands"
+};

@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: feet_t2_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "feet_t2_03",
+    "name":  "Sand Striders",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "feet",
+    "sprite":  "feet_t2_03",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/feet/feet_t2_03_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "feet",
+    "stats":  "+3 Armor, +Speed",
+    "recipe":  "2x Leather + 2x Sinew"
+}
+;

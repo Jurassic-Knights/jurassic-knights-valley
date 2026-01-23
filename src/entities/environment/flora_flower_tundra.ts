@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: flora_flower_tundra
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "flora_flower_tundra",
+  "name": "Arctic Flower",
+  "sourceCategory": "environment",
+  "sourceFile": "flora",
+  "sprite": "flora_flower_tundra",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/flora/flora_flower_tundra_original.png"
+  },
+  "type": "flora",
+  "biome": "tundra"
+};

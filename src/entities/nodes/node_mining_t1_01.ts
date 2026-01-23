@@ -1,0 +1,20 @@
+﻿/**
+ * Entity: node_mining_t1_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "node_mining_t1_01",
+    "name":  "Copper Vein",
+    "sourceCategory":  "nodes",
+    "sourceFile":  "nodes",
+    "sprite":  "node_mining_t1_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "assets/images/nodes/node_mining_t1_01_original.png"
+              },
+    "type":  "ore",
+    "biome":  "grasslands",
+    "nodeSubtype":  "mining",
+    "tier":  1
+};

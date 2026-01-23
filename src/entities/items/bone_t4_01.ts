@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: bone_t4_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "bone_t4_01",
+  "name": "Fossilized Plate",
+  "sourceCategory": "items",
+  "sourceFile": "bone",
+  "sprite": "bone_t4_01",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/items/bone_t4_01_original.png"
+  },
+  "type": "consumable",
+  "stackable": true,
+  "recipe": "2x Bleached Bone Plate + 1x Black Rock"
+};

@@ -1,0 +1,33 @@
+﻿/**
+ * Entity: weapon_melee_sword_t3_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "weapon_melee_sword_t3_01",
+    "name":  "Steel Cutlass",
+    "description":  "A curved blade favored by veterans. Cuts through scales with ease.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "melee",
+    "weaponSubtype":  "sword",
+    "tier":  3,
+    "rarity":  "rare",
+    "stats":  {
+                  "damage":  25,
+                  "attackSpeed":  1.3,
+                  "range":  300
+              },
+    "recipe":  {
+                   "scraps_t3_01":  12,
+                   "minerals_t2_01":  8,
+                   "bone_t1_01":  3
+               },
+    "sprite":  "weapon_melee_sword_t3_01",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/sword/weapon_sword_t3_01_original.png"
+              },
+    "gripType":  "1-hand"
+}
+;

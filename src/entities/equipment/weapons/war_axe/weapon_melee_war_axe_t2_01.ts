@@ -1,0 +1,32 @@
+﻿/**
+ * Entity: weapon_melee_war_axe_t2_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "weapon_melee_war_axe_t2_01",
+    "name":  "Iron War Axe",
+    "description":  "A reinforced double-headed axe.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "melee",
+    "weaponSubtype":  "war_axe",
+    "tier":  2,
+    "rarity":  "uncommon",
+    "stats":  {
+                  "damage":  26,
+                  "attackSpeed":  0.8,
+                  "range":  350
+              },
+    "recipe":  {
+                   "scraps_t2_01":  14,
+                   "minerals_t1_01":  8
+               },
+    "sprite":  "weapon_melee_war_axe_t2_01",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/war_axe/weapon_war_axe_t2_01_original.png"
+              },
+    "gripType":  "2-hand"
+}
+;

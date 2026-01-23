@@ -1,0 +1,129 @@
+﻿/**
+ * WeatherSystem
+ * Manages weather states based on the current season and RNG.
+ *
+ * Responsibilities:
+ * - Listens for Season changes to update weather probabilities
+ * - Periodically rolls for weather changes
+ * - Emits WEATHER_CHANGE events
+ */
+
+// Ambient declarations for global dependencies
+declare const Logger: any;
+declare const EventBus: any;
+declare const GameConstants: any;
+
+class WeatherSystem {
+    // Property declarations
+    game: any = null;
+    currentWeather: string = 'CLEAR';
+    currentSeason: string = 'SPRING';
+    nextChangeCheck: number = 0;
+    config: any;
+    overrideEnabled: boolean = false;
+
+    constructor() {
+        this.config = GameConstants.Weather;
+    }
+
+    init(game) {
+        this.game = game;
+
+        // Subscribe to events
+        EventBus.on(GameConstants.Events.SEASON_CHANGE, this.handleSeasonChange.bind(this));
+
+        // Initial weather roll
+        this.rollWeather();
+
+        Logger.info('[WeatherSystem] Initialized');
+    }
+
+    /**
+     * Set a weather override
+     * @param {string|null} type - Weather type or 'auto' to disable
+     */
+    setWeatherOverride(type) {
+        if (!type || type === 'auto') {
+            this.overrideEnabled = false;
+            Logger.info('[WeatherSystem] Override Disabled (Auto)');
+            // Force a roll to pick new weather naturally
+            this.rollWeather();
+            return;
+        }
+
+        this.overrideEnabled = true;
+        this.setWeather(type);
+        Logger.info(`[WeatherSystem] Override Enabled: ${type}`);
+    }
+
+    update(dt) {
+        // Skip auto changes when override is active
+        if (this.overrideEnabled) return;
+
+        // We use TimeSystem's time, but we can also track our own interval
+        // Simple Real-time check is fine
+        this.nextChangeCheck -= dt / 1000;
+
+        if (this.nextChangeCheck <= 0) {
+            this.tryChangeWeather();
+            this.nextChangeCheck = this.config.CHANGE_INTERVAL;
+        }
+    }
+
+    handleSeasonChange(data) {
+        this.currentSeason = data.season;
+        Logger.info(
+            `[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`
+        );
+        // Force a weather change on season start (if not overridden)
+        if (!this.overrideEnabled) {
+            this.tryChangeWeather(true);
+        }
+    }
+
+    /**
+     * Attempt to change weather
+     * @param {boolean} force - If true, guarantees a roll happens (though result might be same)
+     */
+    tryChangeWeather(force = false) {
+        // RNG roll could simply be weighted based on season
+        this.rollWeather();
+    }
+
+    rollWeather() {
+        // Get probabilities for current season
+        const probs = this.config.PROBABILITIES[this.currentSeason];
+        if (!probs) return;
+
+        const roll = Math.random();
+        let cumulative = 0;
+        let selectedWeather = 'CLEAR'; // Default
+
+        for (const [type, chance] of Object.entries(probs) as [string, number][]) {
+            cumulative += chance;
+            if (roll <= cumulative) {
+                selectedWeather = type;
+                break;
+            }
+        }
+
+        if (selectedWeather !== this.currentWeather) {
+            this.setWeather(selectedWeather);
+        }
+    }
+
+    setWeather(type) {
+        this.currentWeather = type;
+        Logger.info(`[WeatherSystem] Weather Changed to: ${type}`);
+
+        EventBus.emit(GameConstants.Events.WEATHER_CHANGE, {
+            type: type,
+            intensity: 1.0 // Future: Variable intensity
+        });
+    }
+}
+
+// Create singleton and export
+const weatherSystem = new WeatherSystem();
+
+export { WeatherSystem, weatherSystem };

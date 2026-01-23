@@ -9,9 +9,13 @@
             "DOM.Iterable"
         ],
         "allowJs": true,
-        "checkJs": true,
+        "checkJs": false,
         "noEmit": true,
         "strict": false,
+        "strictNullChecks": false,
+        "noImplicitAny": false,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
@@ -22,6 +26,9 @@
             "@/*": [
                 "src/*"
             ],
+            "@core/*": [
+                "src/core/*"
+            ],
             "@systems/*": [
                 "src/systems/*"
             ],
@@ -30,11 +37,24 @@
             ],
             "@vfx/*": [
                 "src/vfx/*"
+            ],
+            "@ui/*": [
+                "src/ui/*"
+            ],
+            "@types/*": [
+                "src/types/*"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
+            "@data/*": [
+                "src/data/*"
             ]
         }
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "src/types/**/*.d.ts"
     ],
     "exclude": [
         "node_modules",

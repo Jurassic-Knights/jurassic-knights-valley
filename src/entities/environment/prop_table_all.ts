@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: prop_table_all
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "prop_table_all",
+  "name": "Command Table",
+  "sourceCategory": "environment",
+  "sourceFile": "props",
+  "sprite": "prop_table_all",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/environment/props/prop_table_all_original.png"
+  },
+  "type": "prop",
+  "biome": "all"
+};

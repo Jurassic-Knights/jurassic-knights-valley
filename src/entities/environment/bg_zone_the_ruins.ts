@@ -1,0 +1,19 @@
+﻿/**
+ * Entity: bg_zone_the_ruins
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "bg_zone_the_ruins",
+  "name": "The Ruins",
+  "sourceCategory": "environment",
+  "sourceFile": "backgrounds",
+  "sprite": "bg_zone_the_ruins",
+  "status": "clean",
+  "files": {
+    "original": "assets/images/backgrounds/zone_the_ruins.png",
+    "clean": "assets/images/backgrounds/zone_the_ruins_clean.png"
+  },
+  "type": "zone_background",
+  "biome": "grasslands"
+};

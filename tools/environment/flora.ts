@@ -1,0 +1,385 @@
+﻿/**
+ * flora - Auto-generated from JSON
+ */
+
+export const flora = [
+    {
+        "id": "flora_shrub_grasslands",
+        "name": "Berry Bush",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "wild berry bush, green leaves, small red berries, healthy foliage",
+        "files": {
+            "original": "assets/images/environment/flora/flora_shrub_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_shrub_tundra",
+        "name": "Frost Bush",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "low frost-covered shrub, ice crystals, hardy arctic bush, white-blue leaves",
+        "files": {
+            "original": "assets/images/environment/flora/flora_shrub_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_shrub_desert",
+        "name": "Sagebrush",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "desert sagebrush, silvery-green leaves, woody stems, arid scrubland",
+        "files": {
+            "original": "assets/images/environment/flora/flora_shrub_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_shrub_badlands",
+        "name": "Toxic Shrub",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "mutated shrub, sickly yellow-green, twisted branches, chemical exposure marks",
+        "files": {
+            "original": "assets/images/environment/flora/flora_shrub_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_grass_grasslands",
+        "name": "Tall Grass",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "tall wild grass patch, green blades, seed heads, meadow vegetation",
+        "files": {
+            "original": "assets/images/environment/flora/flora_grass_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_grass_tundra",
+        "name": "Tundra Grass",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "sparse frozen grass patch, frost-tipped blades, hardy tundra vegetation",
+        "files": {
+            "original": "assets/images/environment/flora/flora_grass_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_grass_desert",
+        "name": "Desert Grass",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "dry desert grass clump, sand-colored blades, sparse growth",
+        "files": {
+            "original": "assets/images/environment/flora/flora_grass_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_grass_badlands",
+        "name": "Scorched Grass",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "burnt grass patch, charred blades, ash residue, fire damage",
+        "files": {
+            "original": "assets/images/environment/flora/flora_grass_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_flower_grasslands",
+        "name": "Wildflowers",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "colorful wildflower cluster, mixed colors, meadow blooms, green stems",
+        "files": {
+            "original": "assets/images/environment/flora/flora_flower_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_flower_tundra",
+        "name": "Arctic Flower",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "small arctic flower, white petals, frost-resistant, snow-dusted",
+        "files": {
+            "original": "assets/images/environment/flora/flora_flower_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_flower_desert",
+        "name": "Cactus Flower",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "blooming cactus flower, pink petals, spiny plant base, desert bloom",
+        "files": {
+            "original": "assets/images/environment/flora/flora_flower_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_flower_badlands",
+        "name": "Toxic Flower",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "mutated toxic flower, unnatural purple glow, wilted petals, chemical residue",
+        "files": {
+            "original": "assets/images/environment/flora/flora_flower_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_cactus_desert",
+        "name": "Large Cactus",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "tall saguaro cactus, multiple arms, spiny surface, desert landmark",
+        "files": {
+            "original": "assets/images/environment/flora/flora_cactus_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_cactus_small_desert",
+        "name": "Small Cactus",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "small barrel cactus, round shape, thick spines, desert groundcover",
+        "files": {
+            "original": "assets/images/environment/flora/flora_cactus_small_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_fern_grasslands",
+        "name": "Fern Cluster",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "green fern cluster, curled fronds, forest floor vegetation",
+        "files": {
+            "original": "assets/images/environment/flora/flora_fern_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_moss_tundra",
+        "name": "Tundra Moss",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "thick moss patch, cold-adapted, grey-green color, rocky surface growth",
+        "files": {
+            "original": "assets/images/environment/flora/flora_moss_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_stump_grasslands",
+        "name": "Tree Stump",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "old tree stump, axe marks, moss growth, rotting wood",
+        "files": {
+            "original": "assets/images/environment/flora/flora_stump_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_stump_tundra",
+        "name": "Frozen Stump",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "ice-encased tree stump, frozen bark, icicle formations",
+        "files": {
+            "original": "assets/images/environment/flora/flora_stump_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_stump_desert",
+        "name": "Bleached Stump",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "sun-bleached tree stump, cracked wood, bone-white color, ancient",
+        "files": {
+            "original": "assets/images/environment/flora/flora_stump_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_stump_badlands",
+        "name": "Charred Stump",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "charred tree stump, blackened bark, ash residue, fire-damaged roots",
+        "files": {
+            "original": "assets/images/environment/flora/flora_stump_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_log_grasslands",
+        "name": "Fallen Log",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "moss-covered fallen log, rotting bark, forest floor debris",
+        "files": {
+            "original": "assets/images/environment/flora/flora_log_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_log_tundra",
+        "name": "Frozen Log",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "frost-covered fallen log, ice crystals, preserved by cold",
+        "files": {
+            "original": "assets/images/environment/flora/flora_log_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_log_desert",
+        "name": "Petrified Log",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "ancient petrified log, stone texture, fossilized wood, prehistoric",
+        "files": {
+            "original": "assets/images/environment/flora/flora_log_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_log_badlands",
+        "name": "Burnt Log",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "burnt fallen log, charcoal surface, ash scattered, fire victim",
+        "files": {
+            "original": "assets/images/environment/flora/flora_log_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_mushroom_grasslands",
+        "name": "Mushroom Cluster",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "forest mushroom cluster, brown caps, white stems, forest floor growth",
+        "files": {
+            "original": "assets/images/environment/flora/flora_mushroom_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_mushroom_tundra",
+        "name": "Frost Shroom",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "cold-adapted mushroom, ice-blue cap, frost crystals, hardy fungus",
+        "files": {
+            "original": "assets/images/environment/flora/flora_mushroom_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_mushroom_badlands",
+        "name": "Toxic Mushroom",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "mutated toxic mushroom, sickly green glow, spotted cap, chemical growth",
+        "files": {
+            "original": "assets/images/environment/flora/flora_mushroom_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_rock_grasslands",
+        "name": "Mossy Boulder",
+        "type": "flora",
+        "biome": "grasslands",
+        "status": "pending",
+        "sourceDescription": "large mossy boulder, green moss patches, grey stone, natural formation",
+        "files": {
+            "original": "assets/images/environment/flora/flora_rock_grasslands_original.png"
+        }
+    },
+    {
+        "id": "flora_rock_tundra",
+        "name": "Ice Boulder",
+        "type": "flora",
+        "biome": "tundra",
+        "status": "pending",
+        "sourceDescription": "ice-covered boulder, frozen surface, icicle formations, snow-dusted",
+        "files": {
+            "original": "assets/images/environment/flora/flora_rock_tundra_original.png"
+        }
+    },
+    {
+        "id": "flora_rock_desert",
+        "name": "Desert Boulder",
+        "type": "flora",
+        "biome": "desert",
+        "status": "pending",
+        "sourceDescription": "sun-baked sandstone boulder, wind-eroded surface, desert weathering",
+        "files": {
+            "original": "assets/images/environment/flora/flora_rock_desert_original.png"
+        }
+    },
+    {
+        "id": "flora_rock_badlands",
+        "name": "Slag Rock",
+        "type": "flora",
+        "biome": "badlands",
+        "status": "pending",
+        "sourceDescription": "industrial slag rock, metallic sheen, toxic coloring, factory waste",
+        "files": {
+            "original": "assets/images/environment/flora/flora_rock_badlands_original.png"
+        }
+    },
+    {
+        "id": "flora_vine_all",
+        "name": "Climbing Vine",
+        "type": "flora",
+        "biome": "all",
+        "status": "approved",
+        "sourceDescription": "climbing vine section, green leaves, woody stems, wall coverage",
+        "files": {}
+    },
+    {
+        "id": "flora_weed_all",
+        "name": "Weeds",
+        "type": "flora",
+        "biome": "all",
+        "status": "approved",
+        "sourceDescription": "hardy weed patch, mixed vegetation, survival plants, wild growth",
+        "files": {}
+    },
+    {
+        "id": "flora_roots_all",
+        "name": "Exposed Roots",
+        "type": "flora",
+        "biome": "all",
+        "status": "approved",
+        "sourceDescription": "gnarled exposed tree roots, twisted formation, soil erosion reveal",
+        "files": {}
+    },
+    {
+        "id": "flora_branch_all",
+        "name": "Fallen Branch",
+        "type": "flora",
+        "biome": "all",
+        "status": "approved",
+        "sourceDescription": "broken tree branch, scattered leaves, natural debris, forest floor",
+        "files": {}
+    }
+];
+
+export default flora;

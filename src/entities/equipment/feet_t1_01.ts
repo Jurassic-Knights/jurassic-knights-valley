@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: feet_t1_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "feet_t1_01",
+    "name":  "Cloth Boots",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "feet",
+    "sprite":  "feet_t1_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/feet/feet_t1_01_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "feet",
+    "stats":  "+1 Armor",
+    "recipe":  "2x Plant Fiber"
+}
+;

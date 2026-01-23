@@ -1,0 +1,82 @@
+﻿/**
+ * Entity: boss_saurian_t4_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "boss_saurian_t4_02",
+  "name": "Spinosaurus Commander",
+  "sourceCategory": "bosses",
+  "sourceFile": "saurian",
+  "sprite": "saurian_t4_02",
+  "status": "pending",
+  "files": {
+    "original": "images/bosses/boss_saurian_t4_02_original.png"
+  },
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 500,
+    "damage": 40,
+    "speed": 55,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 180,
+    "attackRate": 0.8,
+    "aggroRange": 400,
+    "packAggro": false,
+    "attackType": "ranged"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_saurian_t4_02",
+    "death": "sfx_death_saurian_t4_02",
+    "hurt": "sfx_hurt_saurian_t4_02",
+    "aggro": "sfx_aggro_saurian_t4_02"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "bone_t4_01",
+      "chance": 1.0,
+      "amount": [
+        3,
+        5
+      ]
+    },
+    {
+      "item": "salvage_t3_01",
+      "chance": 0.6,
+      "amount": [
+        2,
+        3
+      ]
+    },
+    {
+      "item": "mechanical_t3_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 200,
+  "isBoss": true,
+  "sourceDescription": "anthropomorphic Spinosaurus, charred black and rust uniform, full plate armor, machine gun, clawed dinosaur feet exposed",
+  "species": "Spinosaurus",
+  "weaponType": "machine_gun",
+  "role": "heavy",
+  "description": "The Spinosaurus Commander rises from volcanic rivers like emerging nightmare, that sail breaking the surface before the rest of the massive body reveals itself. The crocodilian jaws are filled with teeth designed for gripping prey that never escapes, while the eyes hold strategic intelligence rare even among saurian commanders. Water streams from iron-banded armor as the creature ascends to dry land.\n\nHeavy plate armor covers the elongated body, designed for amphibious transition without compromising protection. Iron bands reinforce natural armor across the sail, transforming the intimidation display into actual defense. Charcoal grey coloring blends with volcanic rock when not submerged.\n\nThat massive tail propels the creature through water with deceptive speed, while heavy clawed limbs carry it with equal effectiveness on land. A heavy machine gun seems almost comical in those massive clawed hands, yet the creature wields it with trained precision. The Spinosaurus Commander controls both waterways and shores throughout the badlands.",
+  "declineNote": ""
+};

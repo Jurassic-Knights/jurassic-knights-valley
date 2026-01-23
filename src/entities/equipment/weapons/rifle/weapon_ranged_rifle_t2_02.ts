@@ -1,0 +1,34 @@
+﻿/**
+ * Entity: weapon_ranged_rifle_t2_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "weapon_ranged_rifle_t2_02",
+    "name":  "Scout Rifle",
+    "description":  "A lighter rifle for reconnaissance units.",
+    "category":  "equipment",
+    "equipSlot":  "hand1",
+    "weaponType":  "ranged",
+    "weaponSubtype":  "rifle",
+    "tier":  2,
+    "rarity":  "uncommon",
+    "stats":  {
+                  "damage":  20,
+                  "attackSpeed":  1.3,
+                  "range":  450,
+                  "ammoCapacity":  5,
+                  "critChance":  0.05
+              },
+    "recipe":  {
+                   "scraps_t2_01":  10,
+                   "minerals_t1_01":  6
+               },
+    "sprite":  "weapon_ranged_rifle_t2_02",
+    "sourceFile":  "weapon",
+    "files":  {
+                  "original":  "images/equipment/weapons/rifle/weapon_rifle_t2_02_original.png"
+              },
+    "gripType":  "2-hand"
+}
+;

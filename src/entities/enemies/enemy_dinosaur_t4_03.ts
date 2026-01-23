@@ -1,0 +1,71 @@
+﻿/**
+ * Entity: enemy_dinosaur_t4_03
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_dinosaur_t4_03",
+  "name": "Spined Terror",
+  "sourceCategory": "enemies",
+  "sourceFile": "dinosaur",
+  "sprite": "dinosaur_t4_03",
+  "status": "pending",
+  "tier": 4,
+  "biome": "badlands",
+  "stats": {
+    "health": 180,
+    "damage": 22,
+    "speed": 80,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 100,
+    "attackRate": 1.5,
+    "aggroRange": 250,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_dinosaur_t4_03",
+    "death": "sfx_death_dinosaur_t4_03",
+    "hurt": "sfx_hurt_dinosaur_t4_03",
+    "aggro": "sfx_aggro_dinosaur_t4_03"
+  },
+  "spawning": {
+    "biomes": [
+      "badlands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "minerals_t4_01",
+      "chance": 0.7,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "salvage_t4_01",
+      "chance": 0.3,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 60,
+  "species": "Spinosaurus",
+  "sourceDescription": "Spinosaurus, charred brown with rust markings, riveted iron barding, distinctive sail on back",
+  "description": "The Spined Terror is aptly named - a Spinosaurus of legendary size, the sail on its back rising like a war banner visible for miles. Its crocodilian jaws stretch impossibly wide, revealing rows of teeth designed for gripping prey that never escapes. Those ancient eyes have watched civilizations rise and fall from badlands riverways.\n\nOrnate steel barding wraps its elongated body, the armor inlaid with iron patterns mimicking the creature's natural sail. Blackened leather straps cross beneath its belly, secured with reinforced buckles that took three smiths to forge. The charcoal-grey hide is streaked with rust-red markings that glow eerily in volcanic light.\n\nThe long powerful tail is fitted with iron bands, transforming it from a swimming appendage into a siege weapon. Massive clawed forelimbs can pin soldiers to the ground while those devastating jaws finish the work. This creature fears nothing - it has outlived every threat the badlands produced, and it knows it.",
+  "files": {
+    "original": "images/enemies/dinosaur_t4_03_original.png"
+  },
+  "weaponType": "tail"
+};

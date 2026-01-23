@@ -1,0 +1,18 @@
+﻿/**
+ * Entity: npc_merchant_07
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "npc_merchant_07",
+  "name": "Bone Valley Merchant",
+  "sourceCategory": "npcs",
+  "sourceFile": "merchants",
+  "sprite": "npc_merchant_07",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/characters/npc_merchant_07_original.png"
+  },
+  "type": "merchant",
+  "biome": "bone_valley"
+};

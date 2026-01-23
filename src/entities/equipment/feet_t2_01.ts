@@ -1,0 +1,21 @@
+﻿/**
+ * Entity: feet_t2_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+    "id":  "feet_t2_01",
+    "name":  "Iron Boots",
+    "sourceCategory":  "equipment",
+    "sourceFile":  "feet",
+    "sprite":  "feet_t2_01",
+    "status":  "pending",
+    "files":  {
+                  "original":  "images/equipment/armor/feet/feet_t2_01_original.png"
+              },
+    "type":  "weapon",
+    "slot":  "feet",
+    "stats":  "+6 Armor",
+    "recipe":  "2x Iron Ingot + 1x Leather"
+}
+;

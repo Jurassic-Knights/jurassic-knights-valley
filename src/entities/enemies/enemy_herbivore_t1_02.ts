@@ -1,0 +1,69 @@
+﻿/**
+ * Entity: enemy_herbivore_t1_02
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_herbivore_t1_02",
+  "name": "Parasaurolophus",
+  "sourceCategory": "enemies",
+  "sourceFile": "herbivore",
+  "sprite": "herbivore_t1_02",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/enemies/herbivore_t1_02_original.png"
+  },
+  "tier": 1,
+  "biome": "grasslands",
+  "stats": {
+    "health": 45,
+    "damage": 0,
+    "speed": 90,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 0,
+    "attackRate": 0,
+    "aggroRange": 180,
+    "packAggro": false,
+    "attackType": "none"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_herbivore_t1_02",
+    "death": "sfx_death_herbivore_t1_02",
+    "hurt": "sfx_hurt_herbivore_t1_02",
+    "aggro": "sfx_aggro_herbivore_t1_02"
+  },
+  "spawning": {
+    "biomes": [
+      "grasslands"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "food_t1_02",
+      "chance": 1.0,
+      "amount": [
+        1,
+        1
+      ]
+    },
+    {
+      "item": "leather_t1_01",
+      "chance": 0.2,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 8,
+  "species": "Parasaurolophus",
+  "weaponType": "tail"
+};

@@ -1,0 +1,69 @@
+﻿/**
+ * Entity: enemy_herbivore_t2_01
+ * Auto-generated from JSON.
+ */
+
+export default {
+  "id": "enemy_herbivore_t2_01",
+  "name": "Stegosaurus",
+  "sourceCategory": "enemies",
+  "sourceFile": "herbivore",
+  "sprite": "herbivore_t2_01",
+  "status": "pending",
+  "files": {
+    "original": "assets/images/enemies/herbivore_t2_01_original.png"
+  },
+  "tier": 2,
+  "biome": "tundra",
+  "stats": {
+    "health": 100,
+    "damage": 15,
+    "speed": 45,
+    "defense": 0
+  },
+  "combat": {
+    "attackRange": 120,
+    "attackRate": 0.6,
+    "aggroRange": 150,
+    "packAggro": false,
+    "attackType": "melee"
+  },
+  "sfx": {
+    "spawn": "sfx_spawn_herbivore_t2_01",
+    "death": "sfx_death_herbivore_t2_01",
+    "hurt": "sfx_hurt_herbivore_t2_01",
+    "aggro": "sfx_aggro_herbivore_t2_01"
+  },
+  "spawning": {
+    "biomes": [
+      "tundra"
+    ],
+    "groupSize": [
+      1,
+      2
+    ],
+    "weight": 50,
+    "respawnTime": 30
+  },
+  "loot": [
+    {
+      "item": "food_t2_01",
+      "chance": 1.0,
+      "amount": [
+        1,
+        2
+      ]
+    },
+    {
+      "item": "bone_t2_01",
+      "chance": 0.4,
+      "amount": [
+        1,
+        1
+      ]
+    }
+  ],
+  "xpReward": 25,
+  "species": "Stegosaurus",
+  "weaponType": "horns"
+};
