@@ -15,6 +15,19 @@ import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
 import { GameConstants } from '../data/GameConstants';
 class StatsComponent extends Component {
+    type: string = 'StatsComponent';
+    speed: number = 100;
+    maxStamina: number = 100;
+    stamina: number = 100;
+    critChance: number = 0;
+    defense: number = 0;
+    attack: number = 10;
+    critMultiplier: number = 1.5;
+    level: number = 1;
+    xp: number = 0;
+    xpToNextLevel: number = 100;
+    xpScaling: number = 1.5;
+
     constructor(parent: any, config: any = {}) {
         super(parent);
         this.type = 'StatsComponent';

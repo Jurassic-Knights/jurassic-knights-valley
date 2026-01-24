@@ -107,6 +107,8 @@ export interface IEntity {
     stamina?: number;
     /** Maximum stamina */
     maxStamina?: number;
+    /** Equipment system reference */
+    equipment?: any;
 }
 
 /**

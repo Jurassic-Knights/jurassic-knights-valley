@@ -4,12 +4,7 @@
  * Enables modular logic composition.
  */
 
-// Forward declaration for Entity type (to avoid circular import)
-interface IEntity {
-    id: string;
-    x: number;
-    y: number;
-}
+import type { IEntity } from '../types/core';
 
 class Component {
     parent: IEntity | null;
@@ -41,4 +36,3 @@ class Component {
 
 // ES6 Module Export
 export { Component };
-export type { IEntity };
