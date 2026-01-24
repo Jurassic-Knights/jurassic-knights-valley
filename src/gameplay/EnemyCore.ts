@@ -388,6 +388,21 @@ class Enemy extends Entity {
     die(_killer: any = null): void {
         // Implementation in EnemyBehavior.ts via prototype
     }
+
+    // ============================================
+    // Prototype extension stubs (implemented in EnemyBehavior.ts)
+    // ============================================
+    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): any { }
+    moveDirectly(_targetX: number, _targetY: number, _speed: number, _dt: number): boolean { return false; }
+    updateWander(_dt: number): void { }
+    updateChase(_dt: number): void { }
+    updateAttack(_dt: number): void { }
+    performAttack(): void { }
+    updateReturning(_dt: number): void { }
+    takeDamage(_amount: number, _attacker?: any): void { }
+    triggerPackAggro(_target: any): void { }
+    renderHealthBar(_ctx: any): void { }
+    renderThreatIndicator(_ctx: any): void { }
 }
 
 // ES6 Module Export

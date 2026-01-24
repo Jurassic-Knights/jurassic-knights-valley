@@ -19,7 +19,7 @@ import { VFXConfig } from '../data/VFXConfig';
 import { IslandManager } from '../world/IslandManager';
 import { EntityTypes } from '../config/EntityTypes';
 import { spawnManager as SpawnManager } from '../systems/SpawnManager';
-import { Game } from '../core/Game';
+import { GameInstance } from '../core/Game';
 
 import { pathfindingSystem as PathfindingSystem } from '../systems/PathfindingSystem';
 
@@ -121,7 +121,7 @@ Enemy.prototype.moveDirectly = function (targetX, targetY, speed, dt) {
  * Basic wander behavior with aggro detection
  */
 Enemy.prototype.updateWander = function (dt) {
-    const hero = EntityManager?.getByType('Hero')?.[0] || Game?.hero;
+    const hero = EntityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
     if (hero && !hero.isDead) {
         const dx = hero.x - this.x;
         const dy = hero.y - this.y;
