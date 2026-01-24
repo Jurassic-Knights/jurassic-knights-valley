@@ -56,8 +56,8 @@ const GameConstants = {
 
     // Combat Settings
     Combat: {
-        DEFAULT_GUN_RANGE: 450,
-        DEFAULT_MINING_RANGE: 125,
+        DEFAULT_GUN_RANGE: 800,
+        DEFAULT_MINING_RANGE: 1250,
         DEFAULT_DAMAGE: 10,
         ATTACK_COOLDOWN: 0.5,
         DEFAULT_PATROL_RADIUS: 150,
@@ -93,7 +93,7 @@ const GameConstants = {
 
     // Interaction Radii
     Interaction: {
-        REST_AREA_RADIUS: 200,
+        REST_AREA_RADIUS: 400,
         FORGE_AREA_RADIUS: 200,
         MERCHANT_RADIUS: 140,
         RESOURCE_PICKUP_RADIUS: 145,

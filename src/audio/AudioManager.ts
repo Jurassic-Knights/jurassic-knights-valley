@@ -62,10 +62,12 @@ const AudioManager = {
                 ProceduralSFX.init(this.context, this.sfxGain);
 
                 // Sync weather from EnvironmentRenderer (visual source of truth)
-                if (EnvironmentRenderer && EnvironmentRenderer.weatherType) {
-                    ProceduralSFX.setWeather(EnvironmentRenderer.weatherType);
-                } else if (WeatherSystem) {
-                    ProceduralSFX.setWeather(WeatherSystem.currentWeather);
+                const envRenderer = EnvironmentRenderer as any;
+                const weatherSys = WeatherSystem as any;
+                if (envRenderer?.weatherType) {
+                    ProceduralSFX.setWeather(envRenderer.weatherType);
+                } else if (weatherSys?.currentWeather) {
+                    ProceduralSFX.setWeather(weatherSys.currentWeather);
                 }
             }
 

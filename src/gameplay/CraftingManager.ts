@@ -207,8 +207,9 @@ const CraftingManager = {
             inv[recipe.id] = (inv[recipe.id] || 0) + 1;
 
             // Update UI immediately if open
-            if (UIManager && UIManager.updateResources) {
-                UIManager.updateResources(inv);
+            const uiMgr = UIManager as any;
+            if (uiMgr?.updateResources) {
+                uiMgr.updateResources(inv);
             }
         }
 

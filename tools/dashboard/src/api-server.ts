@@ -18,6 +18,8 @@ const BASE_DIR = path.resolve(__dirname, '../../..');
 const TOOLS_DIR = path.resolve(BASE_DIR, 'tools');
 const IMAGES_DIR = path.resolve(BASE_DIR, 'assets/images');
 const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
+const GAME_CONSTANTS_PATH = path.resolve(BASE_DIR, 'src/data/GameConstants.ts');
+const BODY_TYPE_CONFIG_PATH = path.resolve(BASE_DIR, 'src/config/BodyTypeConfig.ts');
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -364,6 +366,132 @@ function savePrompts(prompts: Record<string, unknown>): { success: boolean } {
 }
 
 // ============================================
+// CONFIG HANDLERS
+// ============================================
+
+interface ConfigSection {
+    [key: string]: unknown;
+}
+
+interface GameConfig {
+    Core: ConfigSection;
+    Combat: ConfigSection;
+    Interaction: ConfigSection;
+    Time: ConfigSection;
+    Weather: ConfigSection;
+    AI: ConfigSection;
+    Biome: ConfigSection;
+    Spawning: ConfigSection;
+    UnlockCosts: number[];
+    BodyTypes: Record<string, { scale: number }>;
+}
+
+function parseGameConstants(): Partial<GameConfig> {
+    const content = fs.readFileSync(GAME_CONSTANTS_PATH, 'utf-8');
+    const result: Partial<GameConfig> = {};
+
+    // Extract each section using regex
+    const sections = ['Core', 'Combat', 'Interaction', 'Time', 'Weather', 'AI', 'Biome', 'Spawning'];
+
+    for (const section of sections) {
+        const regex = new RegExp(`${section}:\\s*\\{([^}]+(?:\\{[^}]*\\}[^}]*)*)\\}`, 's');
+        const match = content.match(regex);
+        if (match) {
+            try {
+                // Convert to valid JSON
+                let jsonStr = '{' + match[1] + '}';
+                // Remove comments
+                jsonStr = jsonStr.replace(/\/\/.*$/gm, '');
+                // Add quotes to keys
+                jsonStr = jsonStr.replace(/(\w+):/g, '"$1":');
+                // Remove trailing commas
+                jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1');
+                result[section as keyof GameConfig] = JSON.parse(jsonStr);
+            } catch {
+                console.log(`[Config] Failed to parse section: ${section}`);
+            }
+        }
+    }
+
+    // Parse UnlockCosts array
+    const unlockMatch = content.match(/UnlockCosts:\s*\[([\s\S]*?)\]/);
+    if (unlockMatch) {
+        try {
+            const numbers = unlockMatch[1].replace(/\/\/.*$/gm, '').match(/\d+/g);
+            result.UnlockCosts = numbers ? numbers.map(Number) : [];
+        } catch {
+            console.log('[Config] Failed to parse UnlockCosts');
+        }
+    }
+
+    return result;
+}
+
+function parseBodyTypeConfig(): Record<string, { scale: number }> {
+    if (!fs.existsSync(BODY_TYPE_CONFIG_PATH)) return {};
+
+    const content = fs.readFileSync(BODY_TYPE_CONFIG_PATH, 'utf-8');
+    const result: Record<string, { scale: number }> = {};
+
+    // Match: bodyType: { scale: number }
+    const matches = content.matchAll(/(\w+):\s*\{\s*scale:\s*([\d.]+)\s*\}/g);
+    for (const match of matches) {
+        result[match[1]] = { scale: parseFloat(match[2]) };
+    }
+
+    return result;
+}
+
+function getConfig(): GameConfig {
+    const gameConstants = parseGameConstants();
+    const bodyTypes = parseBodyTypeConfig();
+
+    return {
+        Core: gameConstants.Core || {},
+        Combat: gameConstants.Combat || {},
+        Interaction: gameConstants.Interaction || {},
+        Time: gameConstants.Time || {},
+        Weather: gameConstants.Weather || {},
+        AI: gameConstants.AI || {},
+        Biome: gameConstants.Biome || {},
+        Spawning: gameConstants.Spawning || {},
+        UnlockCosts: gameConstants.UnlockCosts || [],
+        BodyTypes: bodyTypes
+    };
+}
+
+function updateConfigValue(
+    section: string,
+    key: string,
+    value: unknown
+): { success: boolean; message?: string; error?: string } {
+    try {
+        if (section === 'BodyTypes') {
+            // Update BodyTypeConfig.ts
+            let content = fs.readFileSync(BODY_TYPE_CONFIG_PATH, 'utf-8');
+            const regex = new RegExp(`(${key}:\\s*\\{\\s*scale:\\s*)([\\d.]+)(\\s*\\})`, 'g');
+            content = content.replace(regex, `$1${value}$3`);
+            fs.writeFileSync(BODY_TYPE_CONFIG_PATH, content);
+            console.log(`[Config] Updated BodyTypes.${key} = ${value}`);
+        } else {
+            // Update GameConstants.ts
+            let content = fs.readFileSync(GAME_CONSTANTS_PATH, 'utf-8');
+
+            // Match the key within the section
+            const sectionRegex = new RegExp(`(${section}:\\s*\\{[\\s\\S]*?)(${key}:\\s*)([^,\\n}]+)`, 'g');
+            content = content.replace(sectionRegex, `$1$2${JSON.stringify(value).replace(/"/g, '')}`);
+
+            fs.writeFileSync(GAME_CONSTANTS_PATH, content);
+            console.log(`[Config] Updated ${section}.${key} = ${value}`);
+        }
+
+        return { success: true, message: `Updated ${section}.${key}` };
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+}
+
+// ============================================
 // ASSET SYNC
 // ============================================
 
@@ -420,6 +548,9 @@ export function dashboardApiPlugin() {
                         if (url === '/api/get_prompts') {
                             return sendJson(res, getPrompts());
                         }
+                        if (url === '/api/config') {
+                            return sendJson(res, getConfig());
+                        }
                     }
 
                     // POST endpoints
@@ -465,6 +596,13 @@ export function dashboardApiPlugin() {
                                 result[cat] = getCategoryData(cat);
                             }
                             return sendJson(res, result);
+                        }
+                        if (apiPath === '/api/update_config') {
+                            return sendJson(res, updateConfigValue(
+                                data.section as string,
+                                data.key as string,
+                                data.value
+                            ));
                         }
                     }
 

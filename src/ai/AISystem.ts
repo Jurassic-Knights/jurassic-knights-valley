@@ -91,10 +91,11 @@ class AISystem {
         const behavior = this.behaviors[aiType];
 
         if (behavior && typeof behavior.updateState === 'function') {
-            behavior.updateState(entity, hero, dt);
+            // Some behaviors expect (entity, hero, dt), others just (entity, dt)
+            behavior.updateState(entity, dt);
         } else if (EnemyAI) {
-            // Fallback to generic enemy AI
-            EnemyAI.updateState(entity, hero, dt);
+            // Fallback to generic enemy AI (takes entity, dt)
+            EnemyAI.updateState(entity, dt);
         }
     }
 

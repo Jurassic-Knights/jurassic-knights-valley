@@ -62,7 +62,7 @@ class EquipmentUI {
         this.originalFooterConfigs = null;
 
         // Use centralized slot definitions from GameConstants
-        const equipCfg = GameConstants?.Equipment || {};
+        const equipCfg = (GameConstants as any)?.Equipment || {};
         this.slots = equipCfg.ALL_SLOTS || ['head', 'body', 'hands', 'legs', 'accessory', 'hand1', 'hand2', 'accessory2'];
         this.toolSlots = equipCfg.TOOL_SLOTS || ['tool_mining', 'tool_woodcutting', 'tool_harvesting', 'tool_fishing'];
 

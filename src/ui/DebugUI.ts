@@ -61,8 +61,9 @@ const DebugUI = {
         const tpBtn = document.createElement('button');
         tpBtn.textContent = 'Go to Merchant';
         tpBtn.onclick = () => {
-            if (IslandManager && GameInstance?.hero) {
-                const merchant = IslandManager.merchants[0];
+            const isMgr = IslandManager as any;
+            if (isMgr && GameInstance?.hero) {
+                const merchant = isMgr.merchants?.[0];
                 if (merchant) {
                     GameInstance.hero.x = merchant.x;
                     GameInstance.hero.y = merchant.y - 50; // Slightly above

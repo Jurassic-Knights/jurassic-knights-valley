@@ -290,8 +290,9 @@ class EquipmentUIRenderer {
      * @param {HTMLElement} container - Container element
      */
     static loadIcons(container) {
-        if (AssetLoader && AssetLoader.loadIcons) {
-            AssetLoader.loadIcons(container);
+        const loader = AssetLoader as any;
+        if (loader?.loadIcons) {
+            loader.loadIcons(container);
         }
 
         // Also load hero skin portrait

@@ -246,7 +246,9 @@ class UIManagerService {
             bar.style.width = `${pct}%`;
 
             if (animate && VFXController?.triggerUIProgressSparks) {
-                VFXController.triggerUIProgressSparks(bar, '#3498DB');
+                // Get position from bar element for VFX
+                const rect = bar.getBoundingClientRect();
+                VFXController.triggerUIProgressSparks(rect.right, rect.top + rect.height / 2, { color: '#3498DB' });
             }
         }
     }

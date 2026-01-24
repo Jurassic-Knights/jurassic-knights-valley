@@ -288,6 +288,39 @@ class VFXSystem {
         // Redirect to sequence system
         this.playSequence('EXPLOSION_GENERIC', x, y);
     }
+
+    /**
+     * Get active particle count (for profiler)
+     */
+    getActiveCount(): number {
+        let count = 0;
+        if (this.fgParticles?.particles) count += this.fgParticles.particles.length;
+        if (this.bgParticles?.particles) count += this.bgParticles.particles.length;
+        count += this.texts.length;
+        count += this.activeSequences.length;
+        return count;
+    }
+
+    /**
+     * Trigger UI progress sparks effect (for upgrade/progress animations)
+     */
+    triggerUIProgressSparks(x: number, y: number, _config: any = {}) {
+        this.playForeground(x, y, {
+            type: 'spark',
+            color: '#FFD700',
+            count: 8,
+            speed: 5,
+            lifetime: 500,
+            size: 3
+        });
+    }
+
+    /**
+     * Presets accessor (backward compatibility)
+     */
+    get presets() {
+        return VFXConfig?.TEMPLATES || {};
+    }
 }
 
 // Export Singleton

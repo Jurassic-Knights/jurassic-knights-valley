@@ -5,6 +5,9 @@
  * Owner: Gameplay Designer
  */
 
+// Stub declarations (TODO: Implement TileMap and RocksData)
+declare const TileMap: any;
+declare const RocksData: Record<string, any>;
 
 const Mining = {
     rocks: new Map<string, any>(),

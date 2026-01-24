@@ -60,6 +60,21 @@ import {
 import { showTemplatesView } from './templates';
 import { showLootView } from './lootRenderer';
 import { buildCategoryFilters, renderAssets } from './legacyAssets';
+import { renderConfigView } from './configRenderer';
+
+// Wrapper function for config view
+function showConfigView(): void {
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) {
+        // Hide stats and filters when showing config
+        const stats = document.querySelector('.stats') as HTMLElement;
+        const stickyBar = document.querySelector('.sticky-bar') as HTMLElement;
+        if (stats) stats.style.display = 'none';
+        if (stickyBar) stickyBar.style.display = 'none';
+
+        renderConfigView(mainContent);
+    }
+}
 
 // Import SFX system from game (Vite resolves @audio alias)
 import { SFX } from '@audio/SFX_Core';
@@ -233,6 +248,9 @@ Object.assign(window, {
 
     // Loot
     showLootView,
+
+    // Config
+    showConfigView,
 
     // Legacy
     buildCategoryFilters,

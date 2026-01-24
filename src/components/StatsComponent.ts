@@ -119,7 +119,8 @@ class StatsComponent extends Component {
     }
 
     getAttackRate() {
-        const base = this.parent.components?.combat?.rate || 1.0;
+        const combat = this.parent.components?.combat as any;
+        const base = combat?.rate || 1.0;
         const equipBonus = this.parent.equipment?.getStatBonus('attackRate') || 0;
         return base + equipBonus;
     }

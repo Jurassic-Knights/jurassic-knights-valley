@@ -232,7 +232,7 @@ export async function updateItemField(
             if (files && files[fileName]) {
                 const item = files[fileName].find((i) => i.id === itemId);
                 if (item) {
-                    (item as Record<string, unknown>)[field] = value;
+                    (item as unknown as Record<string, unknown>)[field] = value;
                 }
             }
             console.log(`[Dashboard] Updated ${itemId} field ${field}`);
@@ -346,7 +346,7 @@ export async function updateWeaponMeta(
             if (files && files[fileName]) {
                 const item = files[fileName].find((i) => i.id === itemId);
                 if (item) {
-                    (item as Record<string, unknown>)[field] = value;
+                    (item as unknown as Record<string, unknown>)[field] = value;
                 }
             }
             renderCategoryView();

@@ -78,8 +78,9 @@ class Dinosaur extends Entity {
         const sizeInfo = SpeciesScaleConfig.getSize(entityConfig, false) || { width: 150, height: 150 };
 
         // Debug
-        if (sizeInfo.scale !== 1.0) {
-            Logger.info(`[Dinosaur] ${config.dinoType}: species=${entityConfig.species}, scale=${sizeInfo.scale}, size=${sizeInfo.width}x${sizeInfo.height}`);
+        const scaleValue = (sizeInfo as any).scale;
+        if (scaleValue !== 1.0) {
+            Logger.info(`[Dinosaur] ${config.dinoType}: species=${entityConfig.species}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`);
         }
 
         // IMPORTANT: Apply ...config first, then override with species sizing
@@ -240,7 +241,7 @@ class Dinosaur extends Entity {
         if (!this.active || !hero) return false;
         if (this.state === 'dead') return false;
         // Use config value for interaction range
-        const range = EntityConfig.interactionRange || 120;
+        const range = (EntityConfig as any).interactionRange || 120;
         return this.distanceTo(hero) < range;
     }
 

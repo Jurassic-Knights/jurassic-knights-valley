@@ -88,7 +88,7 @@ class WorldRenderer {
         if (!this.game) return;
 
         // Hook into GameRenderer timing if available
-        const timing = GameRenderer?._renderTiming;
+        const timing = (GameRenderer as any)?._renderTiming;
         let t0;
 
         // 1. Water / Background

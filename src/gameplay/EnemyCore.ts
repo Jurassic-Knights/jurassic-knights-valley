@@ -182,8 +182,9 @@ class Enemy extends Entity {
         const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss) || { width: 192, height: 192 };
 
         // Debug
-        if (sizeInfo.scale && sizeInfo.scale !== 1.0) {
-            Logger.info(`[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${sizeInfo.scale}, size=${sizeInfo.width}x${sizeInfo.height}`);
+        const scaleValue = (sizeInfo as any).scale;
+        if (scaleValue && scaleValue !== 1.0) {
+            Logger.info(`[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`);
         }
 
         super({

@@ -33,7 +33,7 @@ const HomeBase = {
      */
     get treeResources() {
         // Return cached if same frame
-        const frame = GameRenderer?._renderTiming?.frames || 0;
+        const frame = (GameRenderer as any)?._renderTiming?.frames || 0;
         if (this._treeCacheFrame === frame && this._cachedTrees) {
             return this._cachedTrees;
         }
