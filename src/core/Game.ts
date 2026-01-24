@@ -21,7 +21,17 @@ import { Tween } from '../animation/Tween';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { MerchantUI } from '../ui/MerchantUI';
 import { VFXController } from '../vfx/VFXController';
-// REMOVED: CameraService, worldZoneManager, persistenceManager - modules don't exist
+import type { ISystem, IEntity } from '../types/core';
+
+/** Profile data structure for performance monitoring */
+interface ProfileData {
+    systems: Record<string, number>;
+    entityManager: number;
+    gameRenderer: number;
+    vfxForeground: number;
+    frameCount: number;
+    startTime: number;
+}
 
 
 class Game {
@@ -29,10 +39,10 @@ class Game {
     private lastTime: number = 0;
     private tickRate: number;
     private accumulator: number = 0;
-    public hero: any = null;
-    private systems: any[] = [];
+    public hero: Hero | null = null;
+    private systems: ISystem[] = [];
     private _boundGameLoop: () => void;
-    private _profile: any = null;
+    private _profile: ProfileData | null = null;
 
     constructor() {
         this.tickRate = GameConstants.Core.TICK_RATE_MS;
@@ -43,12 +53,12 @@ class Game {
      * Get a registered system
      * @param {string} name
      */
-    getSystem(name) {
+    getSystem<T extends ISystem>(name: string): T | null {
         if (Registry) {
             const sys = Registry.get(name);
-            if (sys) return sys;
+            if (sys) return sys as T;
         }
-        return window[name]; // Fallback if not in registry (or not yet registered)
+        return (window as unknown as Record<string, unknown>)[name] as T | null;
     }
 
     /**
@@ -356,7 +366,7 @@ class Game {
             `Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`
         );
         Logger.info('--- Systems (ms total) ---');
-        for (const [name, time] of Object.entries(p.systems).sort((a: any, b: any) => (b[1] as number) - (a[1] as number))) {
+        for (const [name, time] of Object.entries(p.systems).sort((a, b) => (b[1] as number) - (a[1] as number))) {
             Logger.info(
                 `  ${name}: ${(time as number).toFixed(1)}ms (${((time as number) / p.frameCount).toFixed(2)}ms/frame)`
             );

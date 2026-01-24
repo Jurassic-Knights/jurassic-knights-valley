@@ -379,23 +379,21 @@ class HeroRendererSystem {
                 const baseAngle = Math.atan2(aimY, aimX);
                 const facingRight = aimX >= 0;
 
-                // Calculate perpendicular direction for horizontal weapon offset
-                const perpX = -aimY;
-                const perpY = aimX;
-                const offsetDistance = 12;
+                // Fixed horizontal offset from hero center
+                const offsetX = hero.width * 0.3;
 
-                // Draw hand1 (right side of aim direction)
+                // Draw hand1 on RIGHT side of hero
                 if (hand1Item) {
                     ctx.save();
-                    ctx.translate(perpX * offsetDistance, perpY * offsetDistance);
+                    ctx.translate(offsetX, 0);
                     this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand1Item, hero.hand1Attacking);
                     ctx.restore();
                 }
 
-                // Draw hand2 (left side of aim direction)
+                // Draw hand2 on LEFT side of hero
                 if (hand2Item) {
                     ctx.save();
-                    ctx.translate(-perpX * offsetDistance, -perpY * offsetDistance);
+                    ctx.translate(-offsetX, 0);
                     this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand2Item, hero.hand2Attacking);
                     ctx.restore();
                 }

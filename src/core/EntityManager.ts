@@ -9,22 +9,23 @@ import { Logger } from './Logger';
 import { Quadtree } from './Quadtree';
 import { GameRenderer } from './GameRenderer';
 import { Registry } from './Registry';
+import type { IEntity, IGame } from '../types/core';
 
 // Ambient declaration for not-yet-migrated module
 
 class EntityManagerService {
-    private game: any = null;
-    private entities: any[] = [];
-    private entitiesByType: Record<string, any[]> = {};
+    private game: IGame | null = null;
+    private entities: IEntity[] = [];
+    private entitiesByType: Record<string, IEntity[]> = {};
     private tree: Quadtree | null = null;
-    private _queryBuffer: any[] = [];
-    private _insertPool: WeakMap<any, any> = new WeakMap();
+    private _queryBuffer: IEntity[] = [];
+    private _insertPool: WeakMap<IEntity, { x: number; y: number; width: number; height: number; entity: IEntity }> = new WeakMap();
 
     constructor() {
         Logger.info('[EntityManager] Constructed');
     }
 
-    init(game: any): void {
+    init(game: IGame): void {
         this.game = game;
 
         if (Quadtree) {
@@ -82,7 +83,7 @@ class EntityManagerService {
     /**
      * Add an entity to the manager
      */
-    add(entity: any): void {
+    add(entity: IEntity): void {
         if (!entity) return;
 
         this.entities.push(entity);
@@ -100,7 +101,7 @@ class EntityManagerService {
     /**
      * Remove an entity
      */
-    remove(entity: any): void {
+    remove(entity: IEntity): void {
         const idx = this.entities.indexOf(entity);
         if (idx !== -1) {
             this.entities.splice(idx, 1);
@@ -124,21 +125,21 @@ class EntityManagerService {
     /**
      * Get all entities
      */
-    getAll(): any[] {
+    getAll(): IEntity[] {
         return this.entities;
     }
 
     /**
      * Get entities by class name
      */
-    getByType(typeName: string): any[] {
+    getByType(typeName: string): IEntity[] {
         return this.entitiesByType[typeName] || [];
     }
 
     /**
      * Query entities within a rectangular region (View Frustum)
      */
-    queryRect(rect: { x: number; y: number; width: number; height: number }): any[] {
+    queryRect(rect: { x: number; y: number; width: number; height: number }): IEntity[] {
         if (!this.tree) return this.entities; // Fallback to all if no tree
 
         const results = this.tree.queryRect(rect);
@@ -155,8 +156,8 @@ class EntityManagerService {
     /**
      * Find entities within radius of a point
      */
-    getInRadius(x: number, y: number, radius: number, type: string | null = null): any[] {
-        const results: any[] = [];
+    getInRadius(x: number, y: number, radius: number, type: string | null = null): IEntity[] {
+        const results: IEntity[] = [];
         const targets = type ? this.entitiesByType[type] || [] : this.entities;
 
         for (const entity of targets) {
