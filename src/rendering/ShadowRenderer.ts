@@ -26,7 +26,7 @@ const ShadowRenderer = {
      * @param {Object} timing - Optional profiling timing object
      */
     renderShadowPass(ctx, entities, viewport, renderers, timing = null) {
-        if (!ctx || !EnvironmentRenderer) return;
+        if (!ctx || !environmentRenderer) return;
 
         // PERFORMANCE MODE: Simple ellipse shadows
         if (this.simpleShadows) {
@@ -39,7 +39,7 @@ const ShadowRenderer = {
 
         ctx.save();
         ctx.translate(-viewport.x, -viewport.y);
-        ctx.globalAlpha = EnvironmentRenderer.shadowAlpha || 0.3;
+        ctx.globalAlpha = environmentRenderer.shadowAlpha || 0.3;
 
         const { heroRenderer, dinosaurRenderer, resourceRenderer } = renderers;
 
@@ -81,7 +81,7 @@ const ShadowRenderer = {
      * Fast simple ellipse shadows (performance mode)
      */
     renderSimpleShadows(ctx, entities, viewport) {
-        const alpha = EnvironmentRenderer?.shadowAlpha || 0.3;
+        const alpha = environmentRenderer?.shadowAlpha || 0.3;
 
         ctx.save();
         ctx.translate(-viewport.x, -viewport.y);

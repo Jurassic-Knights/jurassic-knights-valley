@@ -45,8 +45,8 @@ class DinosaurRendererService {
 
     // ... rest of methods ...
     renderShadow(ctx, dino, forceOpaque = false) {
-        // Check EnvironmentRenderer for dynamic shadows
-        const env = EnvironmentRenderer;
+        // Check environmentRenderer singleton for dynamic shadows
+        const env = environmentRenderer;
 
         let scaleY = 0.3;
         let alpha = 0.3;

@@ -162,8 +162,8 @@ class HeroRendererSystem {
         const cfg = RenderConfig ? RenderConfig.Hero : null;
         if (!cfg) return;
 
-        // Check EnvironmentRenderer for dynamic shadows
-        const env = EnvironmentRenderer;
+        // Check environmentRenderer singleton for dynamic shadows
+        const env = environmentRenderer;
 
         // Default values if system missing
         let scaleY = 0.3;
