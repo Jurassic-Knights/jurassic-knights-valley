@@ -71,6 +71,17 @@ export interface ICombatEntity extends IEntity {
     isDead?(): boolean;
 }
 
+/**
+ * Entity tied to island grid (resources, nodes, trees)
+ */
+export interface IResourceEntity extends IEntity {
+    islandGridX?: number;
+    islandGridY?: number;
+    resourceType?: string;
+    recalculateRespawnTimer?(): void;
+}
+
+
 // ============================================
 // GAME INTERFACE
 // ============================================

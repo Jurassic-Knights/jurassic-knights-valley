@@ -20,10 +20,15 @@ class Entity {
     width: number;
     height: number;
     color: string;
-    sprite: any;
+    sprite: HTMLImageElement | null;
     active: boolean;
     islandGridX?: number;
     islandGridY?: number;
+
+    /** IEntity interface compliance - returns entityType */
+    get type(): string {
+        return this.entityType;
+    }
 
     /**
      * Create an entity

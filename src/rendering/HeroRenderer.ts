@@ -379,22 +379,41 @@ class HeroRendererSystem {
                 const baseAngle = Math.atan2(aimY, aimX);
                 const facingRight = aimX >= 0;
 
-                // Fixed horizontal offset from hero center
-                const offsetX = hero.width * 0.3;
+                // Normalize aim direction for consistent perpendicular offset
+                const aimLen = Math.sqrt(aimX * aimX + aimY * aimY) || 1;
+                const normAimX = aimX / aimLen;
+                const normAimY = aimY / aimLen;
 
-                // Draw hand1 on RIGHT side of hero
+                // Perpendicular direction (rotated 90 degrees)
+                const perpX = -normAimY;
+                const perpY = normAimX;
+                const offsetDistance = hero.width * 0.75;
+
+                // When facing left, flip the weapons to mirror right-facing behavior
+                if (!facingRight) {
+                    ctx.scale(-1, 1); // Mirror horizontally
+                }
+
+                // Use absolute angle for consistent rendering
+                const drawAngle = facingRight ? baseAngle : Math.PI - baseAngle;
+
+                // Draw hand1 (right side of aim direction)
                 if (hand1Item) {
                     ctx.save();
-                    ctx.translate(offsetX, 0);
-                    this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand1Item, hero.hand1Attacking);
+                    const ox = facingRight ? perpX * offsetDistance : -perpX * offsetDistance;
+                    const oy = perpY * offsetDistance;
+                    ctx.translate(ox, oy);
+                    this.drawEquippedWeapon(ctx, hero, drawAngle, true, hand1Item, hero.hand1Attacking);
                     ctx.restore();
                 }
 
-                // Draw hand2 on LEFT side of hero
+                // Draw hand2 (left side of aim direction)
                 if (hand2Item) {
                     ctx.save();
-                    ctx.translate(-offsetX, 0);
-                    this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand2Item, hero.hand2Attacking);
+                    const ox = facingRight ? -perpX * offsetDistance : perpX * offsetDistance;
+                    const oy = -perpY * offsetDistance;
+                    ctx.translate(ox, oy);
+                    this.drawEquippedWeapon(ctx, hero, drawAngle, true, hand2Item, hero.hand2Attacking);
                     ctx.restore();
                 }
             }

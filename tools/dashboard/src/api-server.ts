@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import type { ServerResponse } from 'http';
 import type { Connect, ViteDevServer } from 'vite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,7 +23,7 @@ const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
 // UTILITY FUNCTIONS
 // ============================================
 
-function sendJson(res: Connect.ServerResponse, data: unknown): void {
+function sendJson(res: ServerResponse, data: unknown): void {
     const json = JSON.stringify(data);
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
