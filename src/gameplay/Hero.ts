@@ -34,6 +34,12 @@ class Hero extends Entity {
     footstepTimer: number;
     footstepInterval: number;
     attackTimer: number;
+    selectedSkin: string | null = null;
+
+    /** Check if hero is dead */
+    isDead(): boolean {
+        return this.health <= 0;
+    }
 
     constructor(config: any = {}) {
         // 1. Load Config from EntityRegistry (v2 architecture) or fallback

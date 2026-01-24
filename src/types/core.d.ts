@@ -51,6 +51,20 @@ export interface IEntity {
     sprite?: HTMLImageElement | null;
     /** Visual scale multiplier */
     scale?: number;
+
+    // Common optional properties used by various systems
+    /** Entity state (e.g., 'idle', 'attacking', 'dead') */
+    state?: string;
+    /** Component container */
+    components?: Record<string, unknown>;
+    /** Biome the entity belongs to */
+    biomeId?: string;
+    /** Island grid X coordinate */
+    islandGridX?: number;
+    /** Island grid Y coordinate */
+    islandGridY?: number;
+
+    // Common methods
     /** Update the entity each frame */
     update?(dt: number): void;
     /** Render the entity */
@@ -59,6 +73,20 @@ export interface IEntity {
     getFootY?(): number;
     /** Cleanup resources when entity is removed */
     destroy?(): void;
+    /** Check if entity is dead */
+    isDead?(): boolean;
+    /** Check if entity can be picked up by another */
+    canBePickedUpBy?(entity: IEntity): boolean;
+    /** Magnetize the entity toward a target */
+    magnetize?(target: IEntity): void;
+    /** Check if entity should auto-magnetize */
+    shouldAutoMagnetize?(): boolean;
+    /** Check if entity is magnetized */
+    isMagnetized?(): boolean;
+    /** Recalculate respawn timer (for resources) */
+    recalculateRespawnTimer?(): void;
+    /** Resource type for resources/items */
+    resourceType?: string;
 }
 
 /**

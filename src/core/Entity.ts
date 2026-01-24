@@ -7,7 +7,7 @@
 import { RenderConfig } from '../config/RenderConfig';
 import { MaterialLibrary } from '../vfx/MaterialLibrary';
 import { AssetLoader } from './AssetLoader';
-import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
+import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { Registry } from './Registry';
 
 
@@ -87,8 +87,8 @@ class Entity {
             return;
         }
 
-        // Check EnvironmentRenderer for dynamic shadows
-        const env = EnvironmentRenderer;
+        // Check environmentRenderer singleton for dynamic shadows
+        const env = environmentRenderer;
 
         // Default values if system missing
         let scaleY = 0.3;

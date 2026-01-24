@@ -387,7 +387,7 @@ class HeroRendererSystem {
                 // Perpendicular direction (rotated 90 degrees)
                 const perpX = -normAimY;
                 const perpY = normAimX;
-                const offsetDistance = hero.width * 0.75;
+                const offsetDistance = facingRight ? hero.width * 0.75 : hero.width * 0.35; // Different offset for left/right
 
                 // When facing left, flip the weapons to mirror right-facing behavior
                 if (!facingRight) {
