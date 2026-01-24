@@ -7,7 +7,7 @@ import { Entity } from '../core/Entity';
 import { MaterialLibrary } from '../vfx/MaterialLibrary';
 import { AssetLoader } from '../core/AssetLoader';
 import { EntityConfig } from '../config/EntityConfig';
-import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
+import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { EntityTypes } from '../config/EntityTypes';
 import { Registry } from '../core/Registry';
 
@@ -99,7 +99,7 @@ class Merchant extends Entity {
         if (!this.active || !this._img) return;
 
         // Standard Shadow config
-        const env = EnvironmentRenderer;
+        const env = environmentRenderer;
         let scaleY = 0.3;
         let alpha = 0.3;
         if (env) {

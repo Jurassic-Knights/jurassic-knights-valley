@@ -20,6 +20,7 @@ class InventoryPanel {
     activeCategory: string = 'all';
     activeType: string = 'all';
     originalFooterConfigs: any = null;
+    gridSize: number = 5;
 
     constructor() {
         // Defer init until DOM is ready
@@ -474,6 +475,21 @@ class InventoryPanel {
                 (el as HTMLElement).style.backgroundPosition = 'center';
             }
         });
+    }
+
+    /**
+     * Set grid size for layout strategies
+     */
+    setGridSize(size: number) {
+        this.gridSize = size;
+        if (this.isOpen) this._render();
+    }
+
+    /**
+     * Public render method for external access
+     */
+    render() {
+        this._render();
     }
 }
 

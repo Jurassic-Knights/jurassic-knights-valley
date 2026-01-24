@@ -11,6 +11,22 @@
 import { Component } from '../core/Component';
 import { Logger } from '../core/Logger';
 class AIComponent extends Component {
+    type: string = 'AIComponent';
+    state: string = 'WANDER';
+    previousState: string | null = null;
+    wanderDirection: { x: number; y: number } = { x: 1, y: 0 };
+    wanderTimer: number = 0;
+    wanderIntervalMin: number = 2000;
+    wanderIntervalMax: number = 5000;
+    target: any = null;
+    combatCooldown: number = 0;
+    aggroRange: number = 200;
+    leashDistance: number = 500;
+    attackRange: number = 100;
+    attackCooldown: number = 0;
+    attackWindup: number = 0;
+    isAttacking: boolean = false;
+
     constructor(parent: any, config: any = {}) {
         super(parent);
         this.type = 'AIComponent';

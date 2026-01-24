@@ -81,20 +81,32 @@ export interface IEntity {
     getFootY?(): number;
     /** Cleanup resources when entity is removed */
     destroy?(): void;
-    /** Check if entity is dead */
-    isDead?(): boolean;
+    /** Check if entity is dead - can be boolean property or method */
+    isDead?: boolean | (() => boolean);
     /** Check if entity can be picked up by another */
     canBePickedUpBy?(entity: IEntity): boolean;
     /** Magnetize the entity toward a target */
     magnetize?(target: IEntity): void;
-    /** Check if entity should auto-magnetize */
-    shouldAutoMagnetize?(): boolean;
-    /** Check if entity is magnetized */
-    isMagnetized?(): boolean;
+    /** Check if entity should auto-magnetize - can be method with optional parameter */
+    shouldAutoMagnetize?(hero?: IEntity): boolean;
+    /** Check if entity is magnetized - can be boolean property or method */
+    isMagnetized?: boolean | (() => boolean);
     /** Recalculate respawn timer (for resources) */
     recalculateRespawnTimer?(): void;
     /** Resource type for resources/items */
     resourceType?: string;
+    /** Whether entity is currently being attacked */
+    isBeingAttacked?: boolean;
+    /** Spawn X position (for leash calculations) */
+    spawnX?: number;
+    /** Spawn Y position (for leash calculations) */
+    spawnY?: number;
+    /** Current chase/attack target */
+    target?: IEntity | null;
+    /** Current stamina */
+    stamina?: number;
+    /** Maximum stamina */
+    maxStamina?: number;
 }
 
 /**

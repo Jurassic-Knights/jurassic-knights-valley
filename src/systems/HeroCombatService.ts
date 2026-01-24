@@ -13,7 +13,7 @@ import { ProjectileVFX } from '../vfx/ProjectileVFX';
 import { VFXConfig } from '../data/VFXConfig';
 import { FloatingTextManager } from '../vfx/FloatingText';
 import { Registry } from '../core/Registry';
-import { InputSystem } from '../input/InputSystem';
+import { inputSystem } from '../input/InputSystem';
 import { EntityTypes } from '../config/EntityTypes';
 
 // Unmapped modules - need manual import
@@ -60,9 +60,9 @@ const HeroCombatService = {
 
         // Manual Interaction check (future expansion)
         if (
-            InputSystem &&
-            typeof InputSystem.hasIntent === 'function' &&
-            InputSystem.hasIntent('INTERACT')
+            inputSystem &&
+            typeof inputSystem.hasIntent === 'function' &&
+            inputSystem.hasIntent('INTERACT')
         ) {
             // Placeholder for interaction intent handling
         }

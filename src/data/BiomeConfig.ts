@@ -119,6 +119,18 @@ const BiomeConfig = {
     transitionZones: {
         blendWidth: 200,
         mixedSpawnChance: 0.3
+    },
+
+    // ============================================
+    // BACKWARD COMPATIBILITY (legacy uppercase property names)
+    // ============================================
+    Biome: {
+        PATROL_AREA_RADIUS: 300,
+        LEASH_DISTANCE: 500,
+        AGGRO_RANGE: 200,
+        GROUP_SPACING: 50,
+        ELITE_SPAWN_CHANCE: 0.05,
+        BOSS_RESPAWN_DEFAULT: 300
     }
 };
 

@@ -10,6 +10,9 @@
  * REMAINING SECTIONS:
  * - droppedItem: Dropped item defaults
  * - npc: NPC defaults
+ *
+ * BACKWARD COMPATIBILITY STUBS:
+ * - resources, resource, boss: Empty objects for legacy code
  */
 
 import { Registry } from '../core/Registry';
@@ -41,6 +44,39 @@ const EntityConfig = {
                 color: '#8E44AD'
             }
         }
+    },
+
+    // ============================================
+    // DEPRECATED STUBS (for backward compatibility)
+    // Use EntityRegistry.resources, EntityLoader.getBoss() instead
+    // ============================================
+    resources: {} as Record<string, any>,
+    resource: {} as Record<string, any>,
+    boss: {} as Record<string, any>,
+    enemy: {
+        defaults: {
+            gridSize: 1,
+            width: 128,
+            height: 128,
+            scale: 1.0
+        },
+        dinosaurs: {} as Record<string, any>,
+        soldiers: {} as Record<string, any>,
+        eliteSpawnChance: 0.05
+    } as Record<string, any>,
+    nodes: {} as Record<string, any>,
+
+    // Top-level defaults (alias for enemy.defaults)
+    defaults: {
+        gridSize: 1,
+        width: 128,
+        height: 128,
+        scale: 1.0
+    },
+
+    // Stub get method for legacy config access
+    get(key: string): any {
+        return (this as any)[key] || {};
     }
 };
 

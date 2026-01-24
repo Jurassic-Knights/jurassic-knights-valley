@@ -134,7 +134,8 @@ class EnemySystem {
             if (enemy === aggroEnemy) continue;
             if (enemy.groupId !== aggroEnemy.groupId) continue;
             if (!enemy.packAggro) continue; // Respect individual packAggro flag
-            if (enemy.components.ai?.state !== 'WANDER') continue;
+            const ai = enemy.components?.ai as { state?: string; setState?(s: string): void; target?: any };
+            if (ai?.state !== 'WANDER') continue;
 
             // Check distance
             const dx = enemy.x - aggroEnemy.x;
@@ -142,8 +143,8 @@ class EnemySystem {
             const dist = Math.sqrt(dx * dx + dy * dy);
 
             if (dist <= alertRadius) {
-                enemy.components.ai.setState('CHASE');
-                enemy.components.ai.target = target;
+                ai.setState?.('CHASE');
+                ai.target = target;
             }
         }
     }

@@ -174,6 +174,15 @@ const VFX_Categories = {
             DISTANCE: 190,
             SIZE_BASE: 60,
             SIZE_RND: 20
+        },
+        HIT: {
+            type: 'burst',
+            color: '#FF0000',
+            count: 8,
+            speed: 6,
+            lifetime: 300,
+            size: 4,
+            drag: 0.9
         }
     },
 

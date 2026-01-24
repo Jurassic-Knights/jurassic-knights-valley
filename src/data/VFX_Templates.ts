@@ -104,6 +104,21 @@ const VFX_Templates = {
         blendMode: 'source-over'
     },
 
+    // Hero Death
+    HERO_DEATH_FX: {
+        type: 'debris',
+        color: '#FF0000',
+        count: 40,
+        speed: 10,
+        gravity: 0.3,
+        bias: 'up',
+        lifetime: 2000,
+        size: 5,
+        drag: 0.95,
+        colorOverLifetime: ['#FF0000', '#8B0000'],
+        blendMode: 'source-over'
+    },
+
     // Resource
     RESOURCE_RESPAWN_FX: {
         type: 'debris',

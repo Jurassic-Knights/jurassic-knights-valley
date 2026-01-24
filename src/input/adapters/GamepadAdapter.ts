@@ -3,7 +3,7 @@
  */
 
 import { Logger } from '../../core/Logger';
-import { InputSystem } from '../InputSystem';
+import { inputSystem } from '../InputSystem';
 
 class GamepadAdapter {
     gamepadIndex: number | null;
@@ -56,8 +56,8 @@ class GamepadAdapter {
     }
 }
 
-if (InputSystem) {
-    InputSystem.registerAdapter(new GamepadAdapter());
+if (inputSystem) {
+    inputSystem.registerAdapter(new GamepadAdapter());
 }
 
 export { GamepadAdapter };

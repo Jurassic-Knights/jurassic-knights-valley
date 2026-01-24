@@ -7,6 +7,9 @@ import { GameState } from '../core/State';
 import { EventBus } from '../core/EventBus';
 import { GameConstants } from '../data/GameConstants';
 class InventoryComponent extends Component {
+    items: Record<string, number> = {};
+    capacity: number = 20;
+
     constructor(parent: any, config: any = {}) {
         super(parent);
         this.items = {};
