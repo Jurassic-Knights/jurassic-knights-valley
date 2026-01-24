@@ -7,7 +7,7 @@ import { Logger } from '../core/Logger';
 import { MaterialLibrary } from '../vfx/MaterialLibrary';
 import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
 import { Registry } from '../core/Registry';
-import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { environmentRenderer } from './EnvironmentRenderer';
 
 class DinosaurRendererService {
     constructor() {

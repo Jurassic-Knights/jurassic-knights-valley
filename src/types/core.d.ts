@@ -37,6 +37,8 @@ export interface IEntity {
     id: string;
     /** Entity type (e.g., 'Enemy', 'Hero', 'Resource') */
     type: string;
+    /** Entity type (alternative property name) */
+    entityType?: string;
     /** World X position */
     x: number;
     /** World Y position */
@@ -63,6 +65,12 @@ export interface IEntity {
     islandGridX?: number;
     /** Island grid Y coordinate */
     islandGridY?: number;
+    /** Group ID for pack behavior */
+    groupId?: string | null;
+    /** Whether entity uses pack aggro */
+    packAggro?: boolean;
+    /** Distance to another entity */
+    distanceTo?(other: IEntity): number;
 
     // Common methods
     /** Update the entity each frame */

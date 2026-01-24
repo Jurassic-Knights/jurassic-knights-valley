@@ -8,7 +8,7 @@
  */
 
 import { GameRenderer } from '../core/GameRenderer';
-import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { environmentRenderer } from './EnvironmentRenderer';
 import { EntityTypes } from '../config/EntityTypes';
 
 // Unmapped modules - need manual import

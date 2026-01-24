@@ -14,7 +14,7 @@ import { WeaponRenderer } from './WeaponRenderer';
 import { Registry } from '../core/Registry';
 import { EntityRegistry } from '../entities/EntityLoader';
 import { ColorPalette } from '../config/ColorPalette';
-import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { environmentRenderer } from './EnvironmentRenderer';
 import { EntityTypes } from '../config/EntityTypes';
 
 // Unmapped modules - need manual import

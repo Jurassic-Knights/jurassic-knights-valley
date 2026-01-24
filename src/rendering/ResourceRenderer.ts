@@ -8,7 +8,7 @@ import { MaterialLibrary } from '../vfx/MaterialLibrary';
 import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
 import { AssetLoader } from '../core/AssetLoader';
 import { Registry } from '../core/Registry';
-import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { environmentRenderer } from './EnvironmentRenderer';
 import { EntityConfig } from '../config/EntityConfig';
 import { Resource } from '../gameplay/Resource';
 import { ColorPalette } from '../config/ColorPalette';

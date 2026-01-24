@@ -301,6 +301,9 @@ const GameConstants = {
         //ENEMY_ATTACK: 'ENEMY_ATTACK', // (duplicate - already defined above)
         ENEMY_DAMAGED: 'ENEMY_DAMAGED', // { enemy, damage, source, remaining }
         ENEMY_DIED: 'ENEMY_DIED', // { enemy, killer, xpReward, lootTableId, ... }
+        ENEMY_KILLED: 'ENEMY_KILLED', // { enemy, xpReward, lootTableId } - alias for ENEMY_DIED
+        ENEMY_AGGRO: 'ENEMY_AGGRO', // { enemy, target }
+        ENEMY_LEASH: 'ENEMY_LEASH', // { enemy }
         ENEMY_RESPAWNED: 'ENEMY_RESPAWNED', // { enemy, biomeId, groupId, waveId }
 
         // Loot System

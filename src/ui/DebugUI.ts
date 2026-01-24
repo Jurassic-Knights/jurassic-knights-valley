@@ -14,6 +14,7 @@ import { EventBus } from '../core/EventBus';
 import { weatherSystem } from '../systems/WeatherSystem';
 import { GameInstance } from '../core/Game';
 import { Registry } from '../core/Registry';
+import { GameState } from '../core/State';
 
 
 const DebugUI = {
@@ -70,6 +71,18 @@ const DebugUI = {
             }
         };
         this.addControl('Teleport', tpBtn);
+
+        // Reset Gold button
+        const goldBtn = document.createElement('button');
+        goldBtn.textContent = '+100k Gold';
+        goldBtn.onclick = () => {
+            GameState.set('gold', 100000);
+            if (GameInstance?.hero?.inventory) {
+                GameInstance.hero.inventory.gold = 100000;
+            }
+            Logger.info('[DebugUI] Gold set to 100000');
+        };
+        this.addControl('Gold', goldBtn);
     },
 
     /**

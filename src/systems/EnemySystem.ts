@@ -128,7 +128,7 @@ class EnemySystem {
         if (!entityManager) return;
 
         const enemies = entityManager.getByType('Enemy');
-        const alertRadius = GameConstants?.Biome?.PACK_ALERT_RADIUS || 300;
+        const alertRadius = GameConstants?.Biome?.PACK_AGGRO_RADIUS || 300;
 
         for (const enemy of enemies) {
             if (enemy === aggroEnemy) continue;
