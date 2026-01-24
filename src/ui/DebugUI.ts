@@ -8,10 +8,10 @@ import { Logger } from '../core/Logger';
 import { IslandManager } from '../world/IslandManager';
 import { PlatformManager } from '../core/PlatformManager';
 import { GameRenderer } from '../core/GameRenderer';
-import { TimeSystem } from '../systems/TimeSystem';
+import { timeSystem } from '../systems/TimeSystem';
 import { GameConstants } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
-import { WeatherSystem } from '../systems/WeatherSystem';
+import { weatherSystem } from '../systems/WeatherSystem';
 import { GameInstance } from '../core/Game';
 import { Registry } from '../core/Registry';
 
@@ -95,11 +95,11 @@ const DebugUI = {
         advanceBtn.textContent = '+1 Day';
         advanceBtn.style.padding = '2px 5px';
         advanceBtn.onclick = () => {
-            if (TimeSystem) {
+            if (timeSystem) {
                 // Force advance time
                 const secondsPerDay = GameConstants.Time.REAL_SECONDS_PER_GAME_DAY;
-                TimeSystem.totalTime += secondsPerDay;
-                TimeSystem.handleNewDay(); // Manually trigger logic to ensure events fire
+                timeSystem.totalTime += secondsPerDay;
+                timeSystem.handleNewDay(); // Manually trigger logic to ensure events fire
             }
         };
 
@@ -110,7 +110,7 @@ const DebugUI = {
         if (EventBus) {
             EventBus.on(GameConstants.Events.TIME_TICK, (data: any) => {
                 const season = data.season ? data.season.substring(0, 3) : '???';
-                const weather = WeatherSystem ? WeatherSystem.currentWeather : '---';
+                const weather = weatherSystem ? weatherSystem.currentWeather : '---';
                 stats.textContent = `D${data.dayCount} ${season} | ${data.phase} | ${weather}`;
             });
         }
@@ -237,10 +237,10 @@ const DebugUI = {
         if (timeSelect) {
             timeSelect.addEventListener('change', (e) => {
                 Logger.info('[DebugUI] Time dropdown changed to:', (e.target as HTMLSelectElement).value);
-                if (TimeSystem) {
-                    TimeSystem.setTimeOverride((e.target as HTMLSelectElement).value);
+                if (timeSystem) {
+                    timeSystem.setTimeOverride((e.target as HTMLSelectElement).value);
                 } else {
-                    Logger.warn('[DebugUI] TimeSystem not found on window!');
+                    Logger.warn('[DebugUI] timeSystem not found on window!');
                 }
                 (e.target as HTMLElement).blur(); // Remove focus so movement keys don't change selection
             });
@@ -253,10 +253,10 @@ const DebugUI = {
         if (seasonSelect) {
             seasonSelect.addEventListener('change', (e) => {
                 Logger.info('[DebugUI] Season dropdown changed to:', (e.target as HTMLSelectElement).value);
-                if (TimeSystem) {
-                    TimeSystem.setSeasonOverride((e.target as HTMLSelectElement).value);
+                if (timeSystem) {
+                    timeSystem.setSeasonOverride((e.target as HTMLSelectElement).value);
                 } else {
-                    Logger.warn('[DebugUI] TimeSystem not found on window!');
+                    Logger.warn('[DebugUI] timeSystem not found on window!');
                 }
                 (e.target as HTMLElement).blur();
             });
@@ -269,10 +269,10 @@ const DebugUI = {
         if (weatherSelect) {
             weatherSelect.addEventListener('change', (e) => {
                 Logger.info('[DebugUI] Weather dropdown changed to:', (e.target as HTMLSelectElement).value);
-                if (WeatherSystem) {
-                    WeatherSystem.setWeatherOverride((e.target as HTMLSelectElement).value);
+                if (weatherSystem) {
+                    weatherSystem.setWeatherOverride((e.target as HTMLSelectElement).value);
                 } else {
-                    Logger.warn('[DebugUI] WeatherSystem not found on window!');
+                    Logger.warn('[DebugUI] weatherSystem not found on window!');
                 }
                 (e.target as HTMLElement).blur();
             });

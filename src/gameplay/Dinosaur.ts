@@ -24,7 +24,7 @@ declare const BaseCreature: any; // TODO: Add proper import
 
 
 // Unmapped modules - need manual import
- // TODO: Add proper import
+// TODO: Add proper import
 
 
 class Dinosaur extends Entity {
@@ -191,16 +191,14 @@ class Dinosaur extends Entity {
 
         Logger.info(`[Dinosaur] Loading sprite: ${this.dinoType} -> ${path}`);
 
-        this._sprite = new Image();
-        this._sprite.onload = () => {
+        this._sprite = AssetLoader.createImage(path, () => {
             this._spriteLoaded = true;
             Logger.info(`[Dinosaur] Sprite loaded: ${this.dinoType}`);
-        };
+        });
         this._sprite.onerror = (e) => {
             Logger.error(`[Dinosaur] Failed to load sprite: ${this.dinoType}, path: ${path}`, e);
             this._spriteLoaded = false;
         };
-        this._sprite.src = path;
     }
 
     /**

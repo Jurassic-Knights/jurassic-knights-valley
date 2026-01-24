@@ -1,89 +1,171 @@
 # 🦖 Jurassic Knights: Valley
 
-A 2D open-world dinosaur RPG built with modern JavaScript and HTML5 Canvas.
+A 2D open-world dinosaur RPG built with TypeScript and HTML5 Canvas.
 
-## 🎮 Features
+**Last Reviewed**: 2026-01-24
 
-- **Open World Exploration** - Traverse diverse biomes from lush valleys to dangerous bone fields
-- **Dynamic Combat** - Real-time combat with melee and ranged weapons
-- **Dinosaur Encounters** - Face off against procedurally spawned prehistoric creatures
-- **Day/Night Cycle** - Dynamic time and weather systems
-- **Crafting & Progression** - Gather resources, craft gear, and upgrade your outpost
-- **Procedural Audio** - Web Audio API-powered sound effects
+## Overview
 
-## 🚀 Quick Start
+Top-down action RPG where players explore prehistoric biomes, fight dinosaurs, and upgrade their outpost. Uses an ECS architecture with event-driven systems, procedural audio via Web Audio API, and AI-assisted development workflows.
+
+### Dependencies
+
+- **Build**: Vite 7, TypeScript 5.9, ESLint 9
+- **Runtime**: Browser with Canvas 2D + Web Audio API support
+- **Dev Tools**: Node 20+, npm
+
+## Local Development Setup
+
+### Prerequisites
+
+- Node.js 20+
+- npm
+
+### Running Locally
 
 ```bash
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
-
-# Run tests
-npm run test
-
-# Build for production
-npm run build
+# → localhost:5173
 ```
 
-## 🛠️ Tech Stack
+### Running Tests
+
+```bash
+npm run test           # Single run
+npm run test:watch     # Watch mode
+npm run test:coverage  # With coverage
+```
+
+## Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| Build | Vite 5 |
-| Language | JavaScript (ES6 Modules) + TypeScript configs |
+| Build | Vite 7 |
+| Language | TypeScript (ES Modules) |
 | Rendering | HTML5 Canvas 2D |
 | Audio | Web Audio API (Procedural) |
 | Testing | Vitest |
 | Linting | ESLint 9 + Prettier |
-| CI/CD | GitHub Actions |
+| Git Hooks | Husky + lint-staged |
 
-## 📁 Project Structure
+## Architecture
+
+**Entity-Component-System (ECS)** with event-driven communication:
 
 ```
-jurassic-knights-valley/
-├── src/
-│   ├── core/           # Engine core (Registry, EventBus, Logger)
-│   ├── systems/        # Game systems (Combat, Spawning, AI)
-│   ├── entities/       # Entity definitions (JSON-based)
-│   ├── components/     # ECS components
-│   ├── rendering/      # Renderers (Hero, Dinosaur, World)
-│   ├── vfx/            # Visual effects (Particles, Lighting)
-│   ├── ui/             # UI components
-│   ├── audio/          # Procedural audio system
-│   └── config/         # Game configuration
-├── assets/             # Images, audio, fonts
-├── locales/            # Internationalization
-├── tests/              # Unit tests
-└── tools/              # Build scripts
+Registry (DI) ──► Systems (Logic) ──► EventBus (Pub/Sub)
+                       │
+                       ▼
+               EntityManager ◄── Components (Data)
 ```
 
-## 🏗️ Architecture
+### Key Directories
 
-The game uses an **Entity-Component-System (ECS)** architecture with event-driven communication:
+| Path | Purpose |
+|------|---------|
+| `src/core/` | Engine core (Registry, EventBus, Logger, Game) |
+| `src/systems/` | Game systems (Combat, Spawning, AI, Weather) |
+| `src/audio/` | Procedural SFX (50 modules, tier-based) |
+| `src/entities/` | JSON entity definitions (~650 entities) |
+| `src/components/` | ECS components (Health, Stats, Combat, AI) |
+| `src/rendering/` | Canvas renderers (Hero, Dinosaur, World) |
+| `src/vfx/` | Visual effects (Particles, Lighting, Fog) |
+| `src/ui/` | UI panels and controllers |
+| `src/config/` | Game constants and entity configs |
 
-- **Registry** - Dependency injection container
-- **EventBus** - Pub/sub system for decoupled communication
-- **EntityManager** - Entity lifecycle management
-- **Systems** - Pure logic processors (Combat, AI, Spawning)
-- **Components** - Data containers (Health, Stats, Inventory)
+### Key Files
 
-## 📜 Scripts
+| File | Purpose |
+|------|---------|
+| `src/main.ts` | Application entry point |
+| `src/core/Game.ts` | Main game loop |
+| `src/SystemLoader.ts` | System registration orchestrator |
+| `src/audio/SFXLoader.ts` | Procedural audio registration |
+
+## Agent Workflows
+
+This project uses AI-assisted development via `.agent/`:
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start dev server at localhost:5173 |
+| `/github` | Commit and push to GitHub |
+| `/feature` | Create implementation plan for new features |
+| `/system-audit` | Full codebase audit |
+| `/performance-audit` | FPS optimization audit |
+| `/clean` | Process assets through Photoshop |
+| `/regenerate` | Regenerate declined/missing assets |
+
+### Skills Available
+
+- `brainstorming` - Creative exploration before implementation
+- `clean-code` - Code hygiene standards
+- `frontend-design` - UI/UX development
+- `software-architecture` - Architecture decisions
+- `prompt-engineering` - AI prompt optimization
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Dev server at localhost:5173 |
 | `npm run build` | Production build to `dist/` |
 | `npm run test` | Run Vitest tests |
 | `npm run lint` | ESLint check |
+| `npm run lint:fix` | ESLint with auto-fix |
 | `npm run format` | Prettier formatting |
 | `npm run typecheck` | TypeScript validation |
+| `npm run dashboard:build` | Build asset dashboard |
 
-## 🤝 Contributing
+## Runbooks
+
+### Adding a New SFX Module
+
+1. Create `src/audio/SFX_[Category]_T[Tier]_[Num].ts`
+2. Import `Logger` from `../core/Logger`
+3. Import `ProceduralSFX` from `./ProceduralSFX`
+4. Add registration to `src/audio/SFXLoader.ts`
+
+### Adding a New Entity
+
+1. Add JSON definition to `src/entities/[category]/`
+2. Register in `src/entities/manifest.ts`
+3. Add asset entry to `src/core/AssetLoader.ts`
+
+### Bypassing Pre-Commit Hooks
+
+```bash
+git commit --no-verify -m "message"
+```
+Use sparingly—only when ESLint is failing on TypeScript syntax during migration.
+
+## Troubleshooting
+
+### "Logger is not defined" in SFX files
+
+**Cause**: Missing import in procedural audio modules.  
+**Fix**: Add `import { Logger } from '../core/Logger';` at top of file.
+
+### ESLint "Unexpected token" errors
+
+**Cause**: ESLint is parsing `.ts` files as JavaScript.  
+**Fix**: Ensure `@typescript-eslint/parser` is configured in `eslint.config.js`.
+
+### Game loads but no visuals
+
+**Cause**: Missing side-effect imports for renderers.  
+**Fix**: Check `src/SystemLoader.ts` for renderer registrations.
+
+## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
-## 📄 License
+Follow the Master Architecture Principles in `.agent/rules/coding-guide.md`:
+- Composition over Inheritance
+- Event-driven communication via EventBus
+- Data-driven design (no magic numbers)
+- Object pooling (no `new` in update loops)
+
+## License
 
 [MIT License](LICENSE) - © 2026 Jurassic Knights

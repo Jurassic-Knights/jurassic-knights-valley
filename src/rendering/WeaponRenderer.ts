@@ -77,8 +77,7 @@ const WeaponRenderer = {
         const weaponPath = AssetLoader ? AssetLoader.getImagePath(spriteId) : null;
         if (weaponPath) {
             if (!this._weaponImages[spriteId]) {
-                this._weaponImages[spriteId] = new Image();
-                this._weaponImages[spriteId].src = weaponPath;
+                this._weaponImages[spriteId] = AssetLoader.createImage(weaponPath);
             }
             const img = this._weaponImages[spriteId];
 
@@ -154,8 +153,7 @@ const WeaponRenderer = {
         const gunPath = AssetLoader ? AssetLoader.getImagePath(spriteId) : null;
         if (gunPath) {
             if (!this._rangedImages[spriteId]) {
-                this._rangedImages[spriteId] = new Image();
-                this._rangedImages[spriteId].src = gunPath;
+                this._rangedImages[spriteId] = AssetLoader.createImage(gunPath);
             }
             const img = this._rangedImages[spriteId];
 
@@ -228,8 +226,7 @@ const WeaponRenderer = {
         const toolPath = AssetLoader ? AssetLoader.getImagePath(spriteId) : null;
         if (toolPath) {
             if (!this._toolImages[spriteId]) {
-                this._toolImages[spriteId] = new Image();
-                this._toolImages[spriteId].src = toolPath;
+                this._toolImages[spriteId] = AssetLoader.createImage(toolPath);
             }
             const img = this._toolImages[spriteId];
 

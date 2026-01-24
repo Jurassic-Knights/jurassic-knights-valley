@@ -80,8 +80,7 @@ const GridRenderer = {
                 const bgPath = assetLoader.getImagePath(assetId);
                 if (bgPath) {
                     if (!this._zoneImages[assetId]) {
-                        this._zoneImages[assetId] = new Image();
-                        this._zoneImages[assetId].src = bgPath;
+                        this._zoneImages[assetId] = assetLoader.createImage(bgPath);
                     }
 
                     const img = this._zoneImages[assetId];

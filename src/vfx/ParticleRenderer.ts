@@ -119,8 +119,7 @@ const ParticleRenderer = {
             const path = AssetLoader.getImagePath(p.sprite);
             if (path) {
                 if (!this._spriteCache[p.sprite]) {
-                    this._spriteCache[p.sprite] = new Image();
-                    this._spriteCache[p.sprite].src = path;
+                    this._spriteCache[p.sprite] = AssetLoader.createImage(path);
                 }
                 img = this._spriteCache[p.sprite];
             }

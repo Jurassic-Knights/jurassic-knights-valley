@@ -61,6 +61,55 @@ import { showTemplatesView } from './templates';
 import { showLootView } from './lootRenderer';
 import { buildCategoryFilters, renderAssets } from './legacyAssets';
 
+// Import SFX system from game (Vite resolves @audio alias)
+import { SFX } from '@audio/SFX_Core';
+
+// Import all SFX category modules to register their handlers
+import '@audio/SFX_UI';
+import '@audio/SFX_Resources';
+import '@audio/SFX_Enemies';
+import '@audio/SFX_Herbivores';
+import '@audio/SFX_Dino_T1_01';
+import '@audio/SFX_Dino_T1_02';
+import '@audio/SFX_Dino_T1_03';
+import '@audio/SFX_Dino_T1_04';
+import '@audio/SFX_Dino_T2_01';
+import '@audio/SFX_Dino_T2_02';
+import '@audio/SFX_Dino_T2_03';
+import '@audio/SFX_Dino_T2_04';
+import '@audio/SFX_Dino_T2_05';
+import '@audio/SFX_Dino_T3_01';
+import '@audio/SFX_Dino_T3_02';
+import '@audio/SFX_Dino_T3_03';
+import '@audio/SFX_Dino_T3_04';
+import '@audio/SFX_Dino_T4_01';
+import '@audio/SFX_Dino_T4_02';
+import '@audio/SFX_Dino_T4_03';
+import '@audio/SFX_Human_T1_01';
+import '@audio/SFX_Human_T1_02';
+import '@audio/SFX_Human_T1_03';
+import '@audio/SFX_Human_T2_01';
+import '@audio/SFX_Human_T2_02';
+import '@audio/SFX_Human_T2_03';
+import '@audio/SFX_Human_T3_01';
+import '@audio/SFX_Human_T3_02';
+import '@audio/SFX_Human_T3_03';
+import '@audio/SFX_Human_T4_01';
+import '@audio/SFX_Human_T4_02';
+import '@audio/SFX_Human_T4_03';
+import '@audio/SFX_Saurian_T1_01';
+import '@audio/SFX_Saurian_T1_02';
+import '@audio/SFX_Saurian_T1_03';
+import '@audio/SFX_Saurian_T2_01';
+import '@audio/SFX_Saurian_T2_02';
+import '@audio/SFX_Saurian_T2_03';
+import '@audio/SFX_Saurian_T3_01';
+import '@audio/SFX_Saurian_T3_02';
+import '@audio/SFX_Saurian_T3_03';
+import '@audio/SFX_Saurian_T3_04';
+import '@audio/SFX_Saurian_T4_01';
+import '@audio/SFX_Saurian_T4_02';
+
 // ============================================
 // AUDIO CONTEXT
 // ============================================
@@ -68,34 +117,20 @@ import { buildCategoryFilters, renderAssets } from './legacyAssets';
 let audioCtx: AudioContext | null = null;
 let masterGain: GainNode | null = null;
 
-declare global {
-    interface Window {
-        ProceduralSFX?: {
-            init: (ctx: AudioContext, gain: GainNode) => void;
-            play: (id: string) => void;
-        };
-    }
-}
-
 function initAudio(): void {
     if (audioCtx) return;
     audioCtx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     masterGain = audioCtx.createGain();
     masterGain.gain.value = 0.7;
     masterGain.connect(audioCtx.destination);
-    if (window.ProceduralSFX) {
-        window.ProceduralSFX.init(audioCtx, masterGain);
-    }
+    SFX.init(audioCtx, masterGain);
+    console.log('[Dashboard] SFX initialized with', Object.keys(SFX.handlers).length, 'sounds');
 }
 
 function playSound(id: string): void {
     initAudio();
     console.log('[Dashboard] Playing sound:', id);
-    if (window.ProceduralSFX) {
-        window.ProceduralSFX.play(id);
-    } else {
-        console.warn('ProceduralSFX not loaded');
-    }
+    SFX.play(id);
 }
 
 // ============================================

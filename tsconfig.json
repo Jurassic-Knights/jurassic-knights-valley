@@ -49,12 +49,19 @@
             ],
             "@data/*": [
                 "src/data/*"
+            ],
+            "@audio/*": [
+                "src/audio/*"
+            ],
+            "@dashboard/*": [
+                "tools/dashboard/src/*"
             ]
         }
     },
     "include": [
         "src/**/*",
-        "src/types/**/*.d.ts"
+        "src/types/**/*.d.ts",
+        "tools/dashboard/src/**/*"
     ],
     "exclude": [
         "node_modules",

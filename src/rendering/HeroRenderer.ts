@@ -250,11 +250,14 @@ class HeroRendererSystem {
         if (this._heroPath) {
             // Lazy load image on the renderer instance
             if (!this._heroImg) {
-                this._heroImg = new Image();
-                this._heroImg.src = this._heroPath;
+                this._heroImg = AssetLoader.createImage(this._heroPath);
             }
 
-            if (this._heroImg.complete && this._heroImg.naturalWidth) {
+            // Wait for image to be fully processed (white removal converts src to data URL)
+            const isProcessed = this._heroImg.src.startsWith('data:') || this._heroImg.src.includes('PH.png');
+            const isLoaded = this._heroImg.complete && this._heroImg.naturalWidth;
+
+            if (isLoaded && isProcessed) {
                 // PERF: Cache scaled sprite to avoid expensive resizing every frame
                 // Invalidate cache if dimensions change
                 if (
@@ -281,13 +284,23 @@ class HeroRendererSystem {
     /**
      * Draw the equipped weapon based on target
      * Uses equipped items from hero.equipment for sprite rendering
+     * 
+     * Positioning:
+     * - Idle: Hand 1 on LEFT, Hand 2 on RIGHT, pointing diagonally upward
+     * - Active (moving/targeting): Rotate toward aim direction
      */
     drawWeapon(ctx, hero) {
-        // Calculate Aim Direction
+        // Determine if idle or active
+        const inputMove = hero.inputMove || { x: 0, y: 0 };
+        const isMoving = inputMove.x !== 0 || inputMove.y !== 0;
+        const hasTarget = !!hero.targetResource;
+        const isIdle = !isMoving && !hasTarget;
+
+        // Calculate Aim Direction (only used when active)
         let aimX = 0;
         let aimY = 0;
 
-        if (hero.targetResource) {
+        if (hasTarget) {
             const dx = hero.targetResource.x - hero.x;
             const dy = hero.targetResource.y - hero.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -295,21 +308,13 @@ class HeroRendererSystem {
                 aimX = dx / dist;
                 aimY = dy / dist;
             }
-        } else {
-            const inputMove = hero.inputMove || { x: 0, y: 0 };
-            if (inputMove.x !== 0 || inputMove.y !== 0) {
-                aimX = inputMove.x;
-                aimY = inputMove.y;
-            } else {
-                aimX = 1; // Default right
-            }
+        } else if (isMoving) {
+            aimX = inputMove.x;
+            aimY = inputMove.y;
         }
 
         ctx.save();
         ctx.translate(hero.x, hero.y);
-
-        const baseAngle = Math.atan2(aimY, aimX);
-        const facingRight = aimX >= 0;
 
         // Get equipped items from the active weapon set
         const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
@@ -326,14 +331,13 @@ class HeroRendererSystem {
                 target.constructor?.name === 'Boss');
 
         // Check if actively gathering at a resource node
-        // Use attackTimer > 0 (stays positive during entire attack animation)
         const isResource = target &&
             (target.entityType === EntityTypes?.RESOURCE ||
                 target.entityType === 'resource' ||
                 target.constructor?.name === 'Resource');
         const isGathering = isResource && hero.attackTimer > 0;
 
-        // Get the appropriate tool based on node subtype (mining, woodcutting, harvesting, fishing)
+        // Get the appropriate tool based on node subtype
         let toolItem = null;
         if (isGathering && target) {
             const nodeSubtype = target.nodeSubtype;
@@ -343,37 +347,67 @@ class HeroRendererSystem {
             }
         }
 
-        // Calculate perpendicular direction for horizontal weapon offset
-        const perpX = -aimY; // Perpendicular (90° rotated)
-        const perpY = aimX;
-        const offsetDistance = 12; // Pixels left/right of hero center
-
         if (isGathering && toolItem) {
             // Actively gathering at resource: draw equipped tool
+            const baseAngle = Math.atan2(aimY, aimX);
+            const facingRight = aimX >= 0;
             this.drawEquippedTool(ctx, hero, baseAngle, facingRight, toolItem);
         } else if (hand1Item || hand2Item) {
-            // Default: draw equipped weapons (combat or idle)
-            // Draw hand1 (right side of aim direction)
-            if (hand1Item) {
-                ctx.save();
-                ctx.translate(perpX * offsetDistance, perpY * offsetDistance);
-                this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand1Item, hero.hand1Attacking);
-                ctx.restore();
-            }
+            if (isIdle) {
+                // IDLE: Weapons on left/right sides at edge of hero sprite
+                const idleOffsetX = hero.width / 2; // At edge of hero
 
-            // Draw hand2 (left side of aim direction)
-            if (hand2Item) {
-                ctx.save();
-                ctx.translate(-perpX * offsetDistance, -perpY * offsetDistance);
-                this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand2Item, hero.hand2Attacking);
-                ctx.restore();
+                // Draw hand1 on LEFT side, pointing up-left
+                // Use horizontal mirror + same angle as hand2 for symmetry
+                if (hand1Item) {
+                    ctx.save();
+                    ctx.translate(-idleOffsetX, 0);
+                    ctx.scale(-1, 1); // Mirror horizontally for left side
+                    this.drawEquippedWeapon(ctx, hero, -Math.PI * 0.25, true, hand1Item, false);
+                    ctx.restore();
+                }
+
+                // Draw hand2 on RIGHT side, pointing up-right
+                if (hand2Item) {
+                    ctx.save();
+                    ctx.translate(idleOffsetX, 0);
+                    this.drawEquippedWeapon(ctx, hero, -Math.PI * 0.25, true, hand2Item, false);
+                    ctx.restore();
+                }
+            } else {
+                // ACTIVE: Weapons follow aim direction
+                const baseAngle = Math.atan2(aimY, aimX);
+                const facingRight = aimX >= 0;
+
+                // Calculate perpendicular direction for horizontal weapon offset
+                const perpX = -aimY;
+                const perpY = aimX;
+                const offsetDistance = 12;
+
+                // Draw hand1 (right side of aim direction)
+                if (hand1Item) {
+                    ctx.save();
+                    ctx.translate(perpX * offsetDistance, perpY * offsetDistance);
+                    this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand1Item, hero.hand1Attacking);
+                    ctx.restore();
+                }
+
+                // Draw hand2 (left side of aim direction)
+                if (hand2Item) {
+                    ctx.save();
+                    ctx.translate(-perpX * offsetDistance, -perpY * offsetDistance);
+                    this.drawEquippedWeapon(ctx, hero, baseAngle, facingRight, hand2Item, hero.hand2Attacking);
+                    ctx.restore();
+                }
             }
         } else if (isCombat) {
             // Fallback: rifle for combat
-            this.drawRifle(ctx, hero, baseAngle, facingRight, 'weapon_ranged_pistol_t1_01');
+            const baseAngle = Math.atan2(aimY, aimX);
+            this.drawRifle(ctx, hero, baseAngle, aimX >= 0, 'weapon_ranged_pistol_t1_01');
         } else {
             // Fallback: shovel for resources (no weapons equipped)
-            this.drawShovel(ctx, hero, baseAngle, facingRight, 'tool_t1_01');
+            const baseAngle = isIdle ? -Math.PI * 0.5 : Math.atan2(aimY, aimX);
+            this.drawShovel(ctx, hero, baseAngle, true, 'tool_t1_01');
         }
 
         ctx.restore();

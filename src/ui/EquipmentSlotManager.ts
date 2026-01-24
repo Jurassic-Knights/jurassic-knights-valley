@@ -4,6 +4,10 @@
  * 
  * Owner: UI Engineer
  */
+
+import { GameInstance } from '../core/Game';
+import { Logger } from '../core/Logger';
+
 class EquipmentSlotManager {
     /**
      * Equip an item from inventory to appropriate slot

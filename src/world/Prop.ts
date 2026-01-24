@@ -42,8 +42,7 @@ class Prop extends Entity {
             if (path) {
                 // Check if we already started loading this specific instance's image to avoid spam
                 if (!this._img) {
-                    this._img = new Image();
-                    this._img.src = path;
+                    this._img = AssetLoader.createImage(path);
                 }
                 if (this._img.complete && this._img.naturalWidth) {
                     img = this._img;

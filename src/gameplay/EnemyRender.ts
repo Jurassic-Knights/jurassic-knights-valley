@@ -45,16 +45,14 @@ Enemy.prototype._loadSprite = function () {
 
     Logger.info(`[Enemy] Loading sprite: ${assetKey} -> ${path}`);
 
-    this._sprite = new Image();
-    this._sprite.onload = () => {
+    this._sprite = AssetLoader.createImage(path, () => {
         this._spriteLoaded = true;
         Logger.info(`[Enemy] Sprite loaded: ${assetKey}`);
-    };
+    });
     this._sprite.onerror = (e) => {
         Logger.error(`[Enemy] Failed to load sprite: ${assetKey}, path: ${path}`, e);
         this._spriteLoaded = false;
     };
-    this._sprite.src = path;
 };
 
 /**

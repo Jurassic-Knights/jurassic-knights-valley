@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { visualizer } from 'rollup-plugin-visualizer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { dashboardApiPlugin } from './tools/dashboard/src/api-server';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,26 +22,36 @@ export default defineConfig({
             '@data': path.resolve(__dirname, './src/data'),
             '@audio': path.resolve(__dirname, './src/audio'),
             '@entities': path.resolve(__dirname, './src/entities'),
+            '@dashboard': path.resolve(__dirname, './tools/dashboard/src'),
         },
     },
+
+    // Plugins
+    plugins: [
+        // Dashboard API - handles /api/* and /images/* routes
+        dashboardApiPlugin(),
+    ],
 
     // Dev server config
     server: {
         port: 5173,
-        strictPort: true, // Fail if 5173 is in use (don't pick another)
-        open: true, // Auto-open browser
-        cors: true, // Enable CORS for JSON fetching
+        strictPort: true,
+        open: true,
+        cors: true,
     },
 
     // Build config for production
     build: {
         outDir: 'dist',
         assetsDir: 'assets',
-        minify: true, // Enable minification for production
-        sourcemap: true, // Keep sourcemaps for debugging
+        minify: true,
+        sourcemap: true,
         rollupOptions: {
+            input: {
+                main: path.resolve(__dirname, 'index.html'),
+                dashboard: path.resolve(__dirname, 'tools/dashboard/index.html'),
+            },
             plugins: [
-                // Bundle size analyzer - generates stats.html after build
                 visualizer({
                     filename: 'dist/stats.html',
                     open: false,

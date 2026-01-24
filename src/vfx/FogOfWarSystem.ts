@@ -34,13 +34,8 @@ const FogOfWarSystem = {
                 Logger.info('[FogOfWarSystem] Fog texture loaded');
             });
         } else {
-            // Fallback for initialization order
-            this.fogTexture = new Image();
-            this.fogTexture.onload = () => {
-                this.textureLoaded = true;
-                Logger.info('[FogOfWarSystem] Fog texture loaded (fallback)');
-            };
-            this.fogTexture.src = 'assets/images/vfx/fog_of_war.png';
+            // Fallback for initialization order - still try AssetLoader path
+            Logger.warn('[FogOfWarSystem] AssetLoader not ready, fog texture may not load');
         }
 
         if (EventBus && GameConstants) {

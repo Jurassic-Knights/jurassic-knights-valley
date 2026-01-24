@@ -69,8 +69,7 @@ class WorldRenderer {
             if (!this._zoneImages[assetId]) {
                 const bgPath = assetLoader.getImagePath(assetId);
                 if (bgPath) {
-                    this._zoneImages[assetId] = new Image();
-                    this._zoneImages[assetId].src = bgPath;
+                    this._zoneImages[assetId] = assetLoader.createImage(bgPath);
                 }
             }
         }
@@ -128,12 +127,10 @@ class WorldRenderer {
         if (!this._baseLayerImg && assetLoader) {
             const path = assetLoader.getImagePath(bgId);
             if (path && !path.includes('PH.png')) {
-                this._baseLayerImg = new Image();
-                this._baseLayerImg.onload = () => {
+                this._baseLayerImg = assetLoader.createImage(path, () => {
                     this._baseLayerLoaded = true;
                     this.backgroundPattern = null; // Reset to recreate pattern
-                };
-                this._baseLayerImg.src = path;
+                });
             }
         }
 
@@ -230,8 +227,7 @@ class WorldRenderer {
                 if (!this._zoneImages[assetId]) {
                     const bgPath = assetLoader.getImagePath(assetId);
                     if (bgPath) {
-                        this._zoneImages[assetId] = new Image();
-                        this._zoneImages[assetId].src = bgPath;
+                        this._zoneImages[assetId] = assetLoader.createImage(bgPath);
                     }
                 }
 

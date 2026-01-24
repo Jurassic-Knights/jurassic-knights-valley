@@ -18,6 +18,37 @@ const AssetLoader = {
     cache: new Map(),
     basePath: 'assets/',
 
+    // Threshold for white pixel detection (250-255 catches near-white)
+    WHITE_THRESHOLD: 250,
+
+    /**
+     * Remove white background from an image
+     * Used as fallback when _clean.png doesn't exist
+     * @param {HTMLImageElement} img - Source image
+     * @returns {HTMLCanvasElement} - Canvas with transparent background
+     */
+    _removeWhiteBackground(img: HTMLImageElement): HTMLCanvasElement {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        const threshold = this.WHITE_THRESHOLD;
+
+        for (let i = 0; i < data.length; i += 4) {
+            // If R, G, B are all >= threshold, make transparent
+            if (data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold) {
+                data[i + 3] = 0; // Set alpha to 0
+            }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+        return canvas;
+    },
+
     // Static registry for non-entity assets only
     staticAssets: {
         // UI Resource Icons
@@ -320,13 +351,15 @@ const AssetLoader = {
 
     /**
      * Create an image element with fallback chain
+     * Automatically removes white backgrounds from all images
      * @param {string} src - Primary image source path
      * @param {function} onLoad - Optional callback when loaded
      * @returns {HTMLImageElement}
      */
-    createImage(src, onLoad) {
+    createImage(src: string, onLoad?: () => void): HTMLImageElement {
         const img = new Image();
         const fallback = this.getOriginalPath(src);
+        const self = this;
 
         img.onerror = () => {
             if (fallback && img.src !== fallback) {
@@ -336,17 +369,32 @@ const AssetLoader = {
             }
         };
 
-        if (onLoad) img.onload = onLoad;
+        img.onload = function () {
+            // Skip processing for data URLs (already processed) and placeholder
+            if (img.src.startsWith('data:') || img.src.includes('PH.png')) {
+                if (onLoad) onLoad();
+                return;
+            }
+
+            // Remove white background from ALL images
+            const processed = self._removeWhiteBackground(img);
+            // Replace image source with processed canvas data
+            img.src = processed.toDataURL('image/png');
+            // Don't retrigger onload for the data URL (handled by startsWith check above)
+            if (onLoad) onLoad();
+        };
+
         img.src = src;
         return img;
     },
 
     /**
      * Preload an image and cache it
+     * If image is an _original file (no _clean exists), removes white background
      * @param {string} id - Asset ID
-     * @returns {Promise<HTMLImageElement>}
+     * @returns {Promise<HTMLImageElement | HTMLCanvasElement>}
      */
-    preloadImage(id) {
+    preloadImage(id: string): Promise<HTMLImageElement | HTMLCanvasElement> {
         const path = this.getImagePath(id);
 
         if (this.cache.has(path)) {
@@ -355,8 +403,15 @@ const AssetLoader = {
 
         return new Promise((resolve) => {
             const img = this.createImage(path, () => {
-                this.cache.set(path, img);
-                resolve(img);
+                // If loading an _original file, remove white background
+                if (path.includes('_original')) {
+                    const processed = this._removeWhiteBackground(img);
+                    this.cache.set(path, processed);
+                    resolve(processed);
+                } else {
+                    this.cache.set(path, img);
+                    resolve(img);
+                }
             });
         });
     },

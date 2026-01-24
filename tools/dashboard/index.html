@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Dashboard (Modular)</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Asset Dashboard (Vite + HMR)</title>
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
     <header>
-        <h1>🦖 Asset Dashboard <span class="server-badge">TypeScript</span></h1>
+        <h1>🦖 Asset Dashboard <span class="server-badge">Vite + HMR</span></h1>
         <div class="controls">
             <button id="btnTemplates" class="secondary" onclick="showTemplatesView()">📝 Templates</button>
             <button id="btnSyncToGame" class="secondary" onclick="syncAssetsToGame()" style="background:#4caf50;">🔄
@@ -92,59 +92,8 @@
         <div class="modal-info" id="modalInfo"></div>
     </div>
 
-    <!-- Modular SFX System -->
-    <script src="/src/audio/SFX_Core.js"></script>
-    <script src="/src/audio/SFX_UI.js"></script>
-    <script src="/src/audio/SFX_Resources.js"></script>
-    <script src="/src/audio/SFX_Enemies.js"></script>
-    <script src="/src/audio/SFX_Dino_T1_01.js"></script>
-    <script src="/src/audio/SFX_Dino_T1_02.js"></script>
-    <script src="/src/audio/SFX_Dino_T1_03.js"></script>
-    <script src="/src/audio/SFX_Dino_T1_04.js"></script>
-    <script src="/src/audio/SFX_Dino_T2_01.js"></script>
-    <script src="/src/audio/SFX_Dino_T2_02.js"></script>
-    <script src="/src/audio/SFX_Dino_T2_03.js"></script>
-    <script src="/src/audio/SFX_Dino_T2_04.js"></script>
-    <script src="/src/audio/SFX_Dino_T2_05.js"></script>
-    <script src="/src/audio/SFX_Dino_T3_01.js"></script>
-    <script src="/src/audio/SFX_Dino_T3_02.js"></script>
-    <script src="/src/audio/SFX_Dino_T3_03.js"></script>
-    <script src="/src/audio/SFX_Dino_T3_04.js"></script>
-    <script src="/src/audio/SFX_Dino_T4_01.js"></script>
-    <script src="/src/audio/SFX_Dino_T4_02.js"></script>
-    <script src="/src/audio/SFX_Dino_T4_03.js"></script>
-    <script src="/src/audio/SFX_Herbivores.js"></script>
-    <script src="/src/audio/SFX_Saurian_T1_01.js"></script>
-    <script src="/src/audio/SFX_Saurian_T1_02.js"></script>
-    <script src="/src/audio/SFX_Saurian_T1_03.js"></script>
-    <script src="/src/audio/SFX_Saurian_T2_01.js"></script>
-    <script src="/src/audio/SFX_Saurian_T2_02.js"></script>
-    <script src="/src/audio/SFX_Saurian_T2_03.js"></script>
-    <script src="/src/audio/SFX_Saurian_T3_01.js"></script>
-    <script src="/src/audio/SFX_Saurian_T3_02.js"></script>
-    <script src="/src/audio/SFX_Saurian_T3_03.js"></script>
-    <script src="/src/audio/SFX_Saurian_T3_04.js"></script>
-    <script src="/src/audio/SFX_Saurian_T4_01.js"></script>
-    <script src="/src/audio/SFX_Saurian_T4_02.js"></script>
-    <script src="/src/audio/SFX_Human_T1_01.js"></script>
-    <script src="/src/audio/SFX_Human_T1_02.js"></script>
-    <script src="/src/audio/SFX_Human_T1_03.js"></script>
-    <script src="/src/audio/SFX_Human_T2_01.js"></script>
-    <script src="/src/audio/SFX_Human_T2_02.js"></script>
-    <script src="/src/audio/SFX_Human_T2_03.js"></script>
-    <script src="/src/audio/SFX_Human_T3_01.js"></script>
-    <script src="/src/audio/SFX_Human_T3_02.js"></script>
-    <script src="/src/audio/SFX_Human_T3_03.js"></script>
-    <script src="/src/audio/SFX_Human_T4_01.js"></script>
-    <script src="/src/audio/SFX_Human_T4_02.js"></script>
-    <script src="/src/audio/SFX_Human_T4_03.js"></script>
-    <script src="/src/audio/ProceduralSFX.js"></script>
-
-    <!-- Config -->
-    <script src="/src/config/EquipmentStatsConfig.js"></script>
-
-    <!-- Dashboard Bundle (TypeScript compiled) -->
-    <script src="dist/dashboard.js"></script>
+    <!-- Vite handles TypeScript directly - no pre-compilation needed -->
+    <script type="module" src="./src/main.ts"></script>
 </body>
 
 </html>
