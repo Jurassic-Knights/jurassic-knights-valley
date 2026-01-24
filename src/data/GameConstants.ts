@@ -307,7 +307,11 @@ const GameConstants = {
         ENEMY_RESPAWNED: 'ENEMY_RESPAWNED', // { enemy, biomeId, groupId, waveId }
 
         // Loot System
-        LOOT_DROPPED: 'LOOT_DROPPED' // { x, y, drops, totalItems }
+        LOOT_DROPPED: 'LOOT_DROPPED', // { x, y, drops, totalItems }
+
+        // Generic Entity Events (used by AI system)
+        ENTITY_DAMAGED: 'ENTITY_DAMAGED', // { entity, damage, source }
+        ENTITY_DIED: 'ENTITY_DIED' // { entity, killer }
     }
 };
 

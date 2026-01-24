@@ -15,7 +15,7 @@ import { EventBus } from '../../../core/EventBus';
 import { GameConstants } from '../../../data/GameConstants';
 import { BiomeConfig } from '../../../data/BiomeConfig';
 import { EntityTypes } from '../../../config/EntityTypes';
-import { Game } from '../../../core/Game';
+import { GameInstance } from '../../../core/Game';
 import { Registry } from '../../../core/Registry';
 
 
@@ -53,7 +53,7 @@ const EnemyAI = {
      */
     updateWander(enemy, dt) {
         // Check for hero aggro
-        const hero = entityManager?.getByType('Hero')?.[0] || Game?.hero;
+        const hero = entityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
         if (hero && !hero.isDead && this.canSee(enemy, hero)) {
             enemy.target = hero;
             enemy.state = 'chase';
