@@ -7,11 +7,11 @@
  * Owner: VFX Specialist
  */
 
-// Ambient declarations for global dependencies
-declare const RenderConfig: any;
-declare const VFXController: any;
-declare const LightingSystem: any;
-declare const Registry: any;
+import { RenderConfig } from '../config/RenderConfig';
+import { VFXController } from './VFXController';
+import { LightingSystem } from './LightingSystem';
+import { Registry } from '../core/Registry';
+
 
 const ProjectileVFX = {
     // Active projectiles

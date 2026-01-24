@@ -2,6 +2,9 @@
  * SFX_Dino_Therizinosaurus - T2_04 Therizinosaurus Sound Handlers
  * Massive claws, bizarre predator
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t2_04: function () {
@@ -50,8 +53,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Therizinosaurus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

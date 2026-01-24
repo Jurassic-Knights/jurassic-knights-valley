@@ -6,6 +6,9 @@
 
 // Globals: Logger, UIManager, VFXController, AudioManager, Registry are declared in global.d.ts
 
+import { Logger } from '../core/Logger';
+import { Registry } from '../core/Registry';
+
 class QuestManagerService {
     // Property declarations
     activeQuest: any;
@@ -63,6 +66,7 @@ class QuestManagerService {
         if (!questConfig) {
             Logger.info('[QuestManager] No more quests!');
             this.activeQuest = null;
+            const UIManager = Registry?.get('UIManager');
             if (UIManager) UIManager.hideQuestPanel();
             return;
         }
@@ -114,7 +118,9 @@ class QuestManagerService {
         Logger.info('[QuestManager] Quest Complete!');
 
         // VFX: Quest Complete Popup
-        if (VFXController && UIManager) {
+        const VFXController = Registry?.get('VFXController');
+        const UIManagerVFX = Registry?.get('UIManager');
+        if (VFXController && UIManagerVFX) {
             // Find UI element for Quest Panel to explode it
             const panel = document.getElementById('ui-quest-panel');
             if (panel && VFXController.triggerUIExplosion) {
@@ -123,6 +129,7 @@ class QuestManagerService {
         }
 
         // SFX
+        const AudioManager = Registry?.get('AudioManager');
         if (AudioManager) {
             AudioManager.playSFX('sfx_ui_unlock'); // Reusing unlock sound
         }
@@ -138,11 +145,21 @@ class QuestManagerService {
      * Update UI elements
      */
     updateUI(animate = false) {
+        const UIManager = Registry?.get('UIManager');
         if (!UIManager) return;
         UIManager.updateQuest(this.activeQuest, animate);
     }
 }
 
-QuestManager = new QuestManagerService();
+// Ambient declarations for not-yet-migrated modules
+
+
+
+
+
+const QuestManager = new QuestManagerService();
 if (Registry) Registry.register('QuestManager', QuestManager);
+
+export { QuestManager, QuestManagerService };
+
 

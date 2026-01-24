@@ -8,19 +8,18 @@
  * Owner: UI Engineer
  */
 
-// Ambient declarations for global dependencies
-declare const GameConstants: any;
-declare const UIManager: any;
-declare const Logger: any;
-declare const EquipmentSlotManager: any;
-declare const GameInstance: any;
-declare const EventBus: any;
-declare const EntityLoader: any;
-declare const EquipmentUIRenderer: any;
-declare const AssetLoader: any;
-declare const EntityRegistry: any;
-declare const HeroRenderer: any;
-declare const Registry: any;
+import { GameConstants } from '../data/GameConstants';
+import { UIManager } from './UIManager';
+import { Logger } from '../core/Logger';
+import { EquipmentSlotManager } from './EquipmentSlotManager';
+import { EventBus } from '../core/EventBus';
+import { EntityLoader } from '../entities/EntityLoader';
+import { EquipmentUIRenderer } from './EquipmentUIRenderer';
+import { AssetLoader } from '../core/AssetLoader';
+import { HeroRenderer } from '../rendering/HeroRenderer';
+import { Registry } from '../core/Registry';
+import { GameInstance } from '../core/Game';
+import { EntityRegistry } from '../entities/EntityLoader';
 
 class EquipmentUI {
     // Property declarations

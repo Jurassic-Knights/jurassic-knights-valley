@@ -172,6 +172,8 @@ const ProgressBarRenderer = {
     }
 };
 
+import { Registry } from '../core/Registry';
+Registry.register('ProgressBarRenderer', ProgressBarRenderer);
 
 // ES6 Module Export
 export { ProgressBarRenderer };

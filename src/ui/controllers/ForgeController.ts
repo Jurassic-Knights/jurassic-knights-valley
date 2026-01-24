@@ -2,13 +2,12 @@
  * ForgePanel - Manages the Forge (Crafting) UI
  */
 import { UIPanel } from '../core/UIPanel';
+import { CraftingManager } from '../../gameplay/CraftingManager';
+import { AudioManager } from '../../audio/AudioManager';
+import { AssetLoader } from '../../core/AssetLoader';
+import { Registry } from '../../core/Registry';
 
-// Ambient declarations for global dependencies
-declare const CraftingManager: any;
-declare const AudioManager: any;
-declare const AssetLoader: any;
-declare const Registry: any;
-declare let ForgeController: any;
+
 
 class ForgePanel extends UIPanel {
     // Property declarations
@@ -267,6 +266,7 @@ class ForgePanel extends UIPanel {
 }
 
 // Global hook
-ForgeController = new ForgePanel();
+const ForgeController = new ForgePanel();
 if (Registry) Registry.register('ForgeController', ForgeController);
 
+export { ForgeController, ForgePanel };

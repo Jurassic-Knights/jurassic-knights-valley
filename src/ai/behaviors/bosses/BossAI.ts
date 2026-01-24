@@ -9,12 +9,16 @@
  * Owner: AI System
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const AudioManager: any;
-declare const BaseAI: any;
-declare const EnemyAI: any;
+import { Logger } from '../../../core/Logger';
+import { EventBus } from '../../../core/EventBus';
+import { AudioManager } from '../../../audio/AudioManager';
+import { BaseAI } from '../BaseAI';
+import { EnemyAI } from '../enemies/EnemyAI';
+import { Registry } from '../../../core/Registry';
+
+
+// Unmapped modules - need manual import
+
 
 const BossAI = {
     /**

@@ -2,6 +2,9 @@
  * SFX_Saurian_VelociraptorRider - T1_01 Swift soldier, sword-wielder
  * Raptor snarl + sword draw, metal gear click
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t1_01: function () {

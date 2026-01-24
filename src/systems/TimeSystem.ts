@@ -9,10 +9,11 @@
  * - Emits time-based events for other systems to consume
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const GameConstants: any;
-declare const EventBus: any;
+import { Logger } from '../core/Logger';
+import { GameConstants } from '../data/GameConstants';
+import { EventBus } from '../core/EventBus';
+import { Registry } from '../core/Registry';
+
 
 class TimeSystem {
     // Property declarations
@@ -233,5 +234,8 @@ class TimeSystem {
 
 // Create singleton and export
 const timeSystem = new TimeSystem();
+
+// Register at module load time
+Registry.register('TimeSystem', timeSystem);
 
 export { TimeSystem, timeSystem };

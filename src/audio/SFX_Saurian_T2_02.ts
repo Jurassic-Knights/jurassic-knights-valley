@@ -2,6 +2,9 @@
  * SFX_Saurian_ParasaurolophusHerald - T2_02 War horn, ranged
  * Distinctive war horn call from crest
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t2_02: function () {

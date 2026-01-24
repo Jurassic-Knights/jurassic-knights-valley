@@ -7,8 +7,8 @@
  * Owner: Performance Tools
  */
 
-// Ambient declarations
-declare const Logger: any;
+import { Logger } from '../core/Logger';
+
 
 const RenderProfiler = {
     timing: null,

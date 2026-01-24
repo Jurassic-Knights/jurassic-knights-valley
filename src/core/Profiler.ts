@@ -5,13 +5,21 @@
  * Toggle with F3 key or ENV.SHOW_FPS.
  */
 
-// Ambient declarations
-declare const ENV: any;
-declare const Logger: any;
-declare const EntityManager: any;
-declare const VFXController: any;
-declare const IslandManager: any;
-declare const Game: any;
+import { Logger } from './Logger';
+import { entityManager } from './EntityManager';
+import { VFXController } from '../vfx/VFXController';
+import { IslandManager } from '../world/IslandManager';
+import { Game } from './Game';
+import { Registry } from './Registry';
+
+
+
+// ENV fallback for runtime flags (in production this would be injected)
+const ENV: any = {
+    SHOW_FPS: false,
+    DEBUG: false
+};
+
 
 const Profiler = {
     enabled: false,
@@ -106,8 +114,8 @@ const Profiler = {
             }
 
             // Get entity count
-            if (EntityManager) {
-                this.entityCount = EntityManager.getAll().length;
+            if (entityManager) {
+                this.entityCount = entityManager.getAll().length;
             }
 
             // Get VFX/particle count

@@ -6,6 +6,8 @@
  * Owner: Gameplay Designer
  */
 
+import { Logger } from '../core/Logger';
+
 const IslandUpgrades = {
     // Upgrade data per island (keyed by island grid position)
     islands: {},
@@ -31,6 +33,11 @@ const IslandUpgrades = {
      * Initialize upgrade data for all islands
      */
     init(islands) {
+        // Defensive: ensure islands is an iterable array
+        if (!islands || !Array.isArray(islands)) {
+            Logger.warn('[IslandUpgrades] init called with invalid islands parameter, skipping');
+            return;
+        }
         for (const island of islands) {
             const key = `${island.gridX}_${island.gridY}`;
             this.islands[key] = {
@@ -158,6 +165,8 @@ const IslandUpgrades = {
     }
 };
 
+import { Registry } from '../core/Registry';
+Registry.register('IslandUpgrades', IslandUpgrades);
 
 // ES6 Module Export
 export { IslandUpgrades };

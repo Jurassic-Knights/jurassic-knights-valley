@@ -7,6 +7,9 @@
  * Large sauropods use earth-shaking bass
  */
 
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         // ===== T1_01 IGUANODON - Thumb spike, bulky herbivore =====
@@ -408,7 +411,5 @@
 
     if (SFX) {
         SFX.register(handlers);
-        Logger.info('[SFX_Herbivores] Registered 50 high-fidelity sounds (10 herbivores × 5)');
     }
 })();
-

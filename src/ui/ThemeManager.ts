@@ -4,9 +4,13 @@
  * to the UI elements at runtime.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const UI_THEME: any;
+import { Logger } from '../core/Logger';
+
+// UI_THEME is optional config - default to empty object
+const UI_THEME: any = {};
+// Runtime variable for TextureAligner access
+let UI_THEME_RUNTIME: any = {};
+
 
 class ThemeManagerService {
     // Property declarations

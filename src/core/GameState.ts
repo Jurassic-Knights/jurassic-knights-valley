@@ -5,11 +5,11 @@
  * Decouples UI from Entities.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const Registry: any;
+import { Logger } from './Logger';
+import { EventBus } from './EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { Registry } from './Registry';
+
 
 class GameState {
     data: {

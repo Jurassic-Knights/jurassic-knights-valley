@@ -6,14 +6,17 @@
  * Owner: Director (engine), Gameplay Designer (values)
  */
 import { Entity } from '../core/Entity';
+import { Tween } from '../animation/Tween';
+import { VFXController } from '../vfx/VFXController';
+import { ResourceRenderer } from '../rendering/ResourceRenderer';
+import { EntityConfig } from '../config/EntityConfig';
+import { Resource } from './Resource';
+import { EntityTypes } from '../config/EntityTypes';
+import { Registry } from '../core/Registry';
 
-// Ambient declarations for not-yet-migrated modules
-declare const EntityConfig: any;
-declare const EntityTypes: any;
-declare const Resource: any;
-declare const Tween: any;
-declare const VFXController: any;
-declare const ResourceRenderer: any;
+
+// Unmapped modules - need manual import
+
 
 class DroppedItem extends Entity {
     // Item identity

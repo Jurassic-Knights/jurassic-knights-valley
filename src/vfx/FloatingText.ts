@@ -6,6 +6,8 @@
  *
  * Owner: VFX Specialist
  */
+import { Registry } from '../core/Registry';
+
 class FloatingText {
     text: string;
     x: number;

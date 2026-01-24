@@ -2,6 +2,9 @@
  * SFX_Human_Leutnant - T4_02 Elite officer
  * Elite commanding voice
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t4_02: function () {

@@ -9,6 +9,9 @@
  *
  * Owner: VFX Specialist
  */
+import { Logger } from '../core/Logger';
+import { Registry } from '../core/Registry';
+
 class LightingSystemClass {
     lights: any[];
     ctx: CanvasRenderingContext2D | null;
@@ -22,7 +25,6 @@ class LightingSystemClass {
 
     init(game: any) {
         this.game = game;
-        if (Registry) Registry.register('LightingSystem', this);
         Logger.info('[LightingSystem] Initialized');
     }
 
@@ -117,6 +119,9 @@ class LightingSystemClass {
 
 // Create Singleton instance
 const LightingSystem = new LightingSystemClass();
+
+// Register at module load time
+Registry.register('LightingSystem', LightingSystem);
 
 // ES6 Module Export
 export { LightingSystem };

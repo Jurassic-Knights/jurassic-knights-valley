@@ -4,6 +4,13 @@
  *
  * Owner: Gameplay Designer
  */
+import { Registry } from '../core/Registry';
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+
+// Helper to access Events from GameConstants
+const Events = GameConstants.Events;
 const ProgressionSystem = {
     init(game) {
         this.game = game;
@@ -13,7 +20,7 @@ const ProgressionSystem = {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(Events.ENEMY_KILLED, (data) => this.onEnemyKilled(data));
+            EventBus.on(Events.ENEMY_DIED, (data) => this.onEnemyKilled(data));
         }
     },
 
@@ -38,7 +45,7 @@ const ProgressionSystem = {
 
         // Emit XP gain event
         if (EventBus) {
-            EventBus.emit(Events.XP_GAINED, {
+            EventBus.emit('XP_GAINED', {
                 hero,
                 amount,
                 total: stats.xp,
@@ -97,6 +104,8 @@ const ProgressionSystem = {
         }
 
         // VFX
+        const VFXController = Registry?.get('VFXController');
+        const VFXConfig = Registry?.get('VFXConfig');
         if (VFXController && VFXConfig) {
             VFXController.playForeground(
                 hero.x,
@@ -111,6 +120,7 @@ const ProgressionSystem = {
         }
 
         // SFX
+        const AudioManager = Registry?.get('AudioManager');
         if (AudioManager) {
             AudioManager.playSFX('sfx_level_up');
         }

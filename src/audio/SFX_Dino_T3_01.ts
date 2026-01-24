@@ -2,6 +2,9 @@
  * SFX_Dino_Carnotaurus - T3_01 Carnotaurus Sound Handlers
  * Horned bull predator
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t3_01: function () {
@@ -59,8 +62,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Carnotaurus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

@@ -8,9 +8,31 @@
  * Owner: Director
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare let EntityRegistry: any;
+import { Logger } from '../core/Logger';
+import { Registry } from '../core/Registry';
+import manifest from './manifest';
+
+// Pre-import all entity modules using Vite's import.meta.glob (eager mode)
+// This allows synchronous access to all entity data at runtime
+// @ts-expect-error - import.meta.glob is Vite-specific, not in standard TS types
+const entityModules: Record<string, { default: any }> = import.meta.glob(
+    [
+        './enemies/*.ts',
+        './bosses/*.ts',
+        './nodes/*.ts',
+        './resources/*.ts',
+        './items/*.ts',
+        './equipment/*.ts',
+        './equipment/**/*.ts',
+        './npcs/*.ts',
+        './environment/*.ts',
+        './hero/*.ts'
+    ],
+    { eager: true }
+);
+
+// EntityRegistry - populated by EntityLoader.load()
+let EntityRegistry: any = {};
 
 const EntityLoader = {
     loaded: false,
@@ -62,28 +84,26 @@ const EntityLoader = {
     async load() {
         if (this.loaded) return true;
 
-        EntityRegistry = {
-            enemies: {},
-            bosses: {},
-            nodes: {},
-            resources: {},
-            items: {},
-            equipment: {},
-            npcs: {},
-            environment: {},
-            hero: {},  // Hero skins registry (hero_t1_01, etc.)
-            defaults: this.defaults
-        };
+        // IMPORTANT: Modify properties instead of reassigning EntityRegistry
+        // This preserves the object reference for modules that already imported it
+        EntityRegistry.enemies = {};
+        EntityRegistry.bosses = {};
+        EntityRegistry.nodes = {};
+        EntityRegistry.resources = {};
+        EntityRegistry.items = {};
+        EntityRegistry.equipment = {};
+        EntityRegistry.npcs = {};
+        EntityRegistry.environment = {};
+        EntityRegistry.hero = {};  // Hero skins registry (hero_t1_01, etc.)
+        EntityRegistry.defaults = this.defaults;
 
         try {
-            // Load entity manifest (lists all available entity files)
-            const manifestResp = await fetch(this.basePath + 'manifest.json');
-            if (manifestResp.ok) {
-                const manifest = await manifestResp.json();
+            // Load entity manifest from imported module
+            if (manifest && (manifest.enemies || manifest.hero)) {
                 await this.loadFromManifest(manifest);
             } else {
                 // Fallback: try to load known categories
-                Logger.warn('[EntityLoader] No manifest.json found, using fallback');
+                Logger.warn('[EntityLoader] No manifest data found, using fallback');
                 await this.loadCategory('enemies');
                 await this.loadCategory('bosses');
                 await this.loadHero();
@@ -144,56 +164,92 @@ const EntityLoader = {
     },
 
     /**
-     * Load a generic entity JSON file into the correct registry category
+     * Load a generic entity TypeScript module into the correct registry category
+     * Uses pre-loaded entityModules from Vite's import.meta.glob
      */
     async loadGenericEntity(category, id) {
         try {
-            // Determine the file path - weapons are in subfolders by subtype
-            let filePath = `${this.basePath}${category}/${id}.json`;
+            // Build the module path key to lookup in pre-loaded entityModules
+            let modulePath: string;
 
-            // For equipment, check if it's a weapon and route to subfolder
+            // For equipment weapons, route to subfolder
             if (category === 'equipment' && id.startsWith('weapon_')) {
                 const subtype = this.getWeaponSubtype(id);
                 if (subtype) {
-                    filePath = `${this.basePath}${category}/weapons/${subtype}/${id}.json`;
+                    modulePath = `./${category}/weapons/${subtype}/${id}.ts`;
+                } else {
+                    modulePath = `./${category}/${id}.ts`;
                 }
             }
-
-            // For equipment, check if it's a tool and route to subfolder
-            if (category === 'equipment' && id.startsWith('tool_')) {
+            // For equipment tools, route to subfolder
+            else if (category === 'equipment' && id.startsWith('tool_')) {
                 const toolType = this.getToolType(id);
                 if (toolType) {
-                    filePath = `${this.basePath}${category}/tools/${toolType}/${id}.json`;
+                    modulePath = `./${category}/tools/${toolType}/${id}.ts`;
+                } else {
+                    modulePath = `./${category}/${id}.ts`;
                 }
             }
-
-            const resp = await fetch(filePath);
-            if (!resp.ok) return null;
-
-            const data = await resp.json();
-
-            // For enemies/bosses, use processEntity for backward compatibility
-            if (category === 'enemies' || category === 'bosses') {
-                return this.loadEntity(category, id);
+            else {
+                modulePath = `./${category}/${id}.ts`;
             }
 
-            // For other categories, store directly with minimal processing
-            const entity = {
-                ...data,
-                _sourceFile: `${id}.json`
-            };
-
-            // Ensure registry category exists
-            if (!EntityRegistry[category]) {
-                EntityRegistry[category] = {};
+            // Lookup from pre-loaded modules
+            const module = entityModules[modulePath];
+            if (!module) {
+                // Try without subfolder for equipment items that might be in root
+                if (category === 'equipment') {
+                    const fallbackPath = `./${category}/${id}.ts`;
+                    const fallbackModule = entityModules[fallbackPath];
+                    if (fallbackModule) {
+                        const data = fallbackModule.default;
+                        return this.storeEntity(category, id, data);
+                    }
+                }
+                Logger.warn(`[EntityLoader] Module not found: ${modulePath}`);
+                return null;
             }
 
-            EntityRegistry[category][id] = entity;
-            return entity;
+            const data = module.default;
+            return this.storeEntity(category, id, data);
         } catch (e) {
             Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
             return null;
         }
+    },
+
+    /**
+     * Store entity data in the registry with proper processing
+     */
+    storeEntity(category: string, id: string, data: any) {
+        if (!data) {
+            Logger.warn(`[EntityLoader] No default export in ${category}/${id}`);
+            return null;
+        }
+
+        // For enemies/bosses, use processEntity for backward compatibility
+        if (category === 'enemies' || category === 'bosses') {
+            const entity = this.processEntity(data, category);
+            if (!EntityRegistry[category]) {
+                EntityRegistry[category] = {};
+            }
+            EntityRegistry[category][id] = entity;
+            return entity;
+        }
+
+        // For other categories, store directly with minimal processing
+        const entity = {
+            ...data,
+            _sourceFile: `${id}.ts`
+        };
+
+        // Ensure registry category exists
+        if (!EntityRegistry[category]) {
+            EntityRegistry[category] = {};
+        }
+
+        EntityRegistry[category][id] = entity;
+        return entity;
     },
 
     /**
@@ -418,4 +474,6 @@ const EntityLoader = {
     }
 };
 
-export { EntityLoader };
+if (Registry) Registry.register('EntityLoader', EntityLoader);
+
+export { EntityLoader, EntityRegistry };

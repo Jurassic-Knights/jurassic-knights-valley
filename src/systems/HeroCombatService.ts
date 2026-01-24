@@ -5,17 +5,19 @@
  * Owner: HeroCombatService
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const InputSystem: any;
-declare const EntityManager: any;
-declare const GameConstants: any;
-declare const EntityTypes: any;
-declare const AudioManager: any;
-declare const ProjectileVFX: any;
-declare const VFXConfig: any;
-declare const FloatingTextManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { entityManager } from '../core/EntityManager';
+import { GameConstants } from '../data/GameConstants';
+import { AudioManager } from '../audio/AudioManager';
+import { ProjectileVFX } from '../vfx/ProjectileVFX';
+import { VFXConfig } from '../data/VFXConfig';
+import { FloatingTextManager } from '../vfx/FloatingText';
+import { Registry } from '../core/Registry';
+import { InputSystem } from '../input/InputSystem';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Unmapped modules - need manual import
+
 
 const HeroCombatService = {
     game: null as any,
@@ -73,7 +75,7 @@ const HeroCombatService = {
      * @returns {Entity|null}
      */
     findTarget(hero) {
-        if (!EntityManager) return null;
+        if (!entityManager) return null;
 
         let target = null;
         let minDistSq = Infinity;
@@ -82,7 +84,7 @@ const HeroCombatService = {
         // Check Enemies (HIGHEST Priority)
         const enemyTypes = ['Enemy', 'Boss'];
         for (const enemyType of enemyTypes) {
-            const candidates = EntityManager.getByType(enemyType);
+            const candidates = entityManager.getByType(enemyType);
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.isDead) continue;
 
@@ -100,7 +102,7 @@ const HeroCombatService = {
 
         // Check Dinosaurs (Second Priority)
         if (!target) {
-            const candidates = EntityManager.getInRadius(hero.x, hero.y, scanRange, 'Dinosaur');
+            const candidates = entityManager.getInRadius(hero.x, hero.y, scanRange, 'Dinosaur');
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.state === 'dead') continue;
 
@@ -117,7 +119,7 @@ const HeroCombatService = {
         // Check Resources (Lowest Priority, mining)
         if (!target) {
             const miningRange = hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE;
-            const candidates = EntityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
+            const candidates = entityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.state === 'depleted') continue;
 

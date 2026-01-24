@@ -5,10 +5,11 @@
  * Owner: UI Engineer
  */
 
-// Ambient declarations
-declare const GameInstance: any;
-declare const AssetLoader: any;
-declare const EntityRegistry: any;
+import { AssetLoader } from '../core/AssetLoader';
+import { GameInstance } from '../core/Game';
+import { EntityRegistry } from '../entities/EntityLoader';
+import { Registry } from '../core/Registry';
+
 
 class EquipmentUIRenderer {
     /**

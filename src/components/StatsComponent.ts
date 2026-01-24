@@ -10,6 +10,10 @@
  * - Attack (03-hero-stats)
  * - Level/XP (03-hero-stats)
  */
+import { Component } from '../core/Component';
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
 class StatsComponent extends Component {
     constructor(parent: any, config: any = {}) {
         super(parent);

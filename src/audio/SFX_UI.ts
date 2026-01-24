@@ -2,8 +2,8 @@
  * SFX_UI - User Interface Sounds
  */
 
-// Ambient declarations
-declare const SFX: any;
+import { SFX } from './SFX_Core';
+import { Logger } from '../core/Logger';
 
 (function () {
     const handlers = {

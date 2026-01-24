@@ -7,18 +7,17 @@
  * Owner: VFX Specialist
  */
 
-// Ambient declarations
-declare const VFX_Templates: any;
-declare const VFX_Categories: any;
-declare const VFX_Sequences: any;
-declare const Logger: any;
+import { Logger } from '../core/Logger';
+import { VFX_Templates } from './VFX_Templates';
+import { VFX_Categories } from './VFX_Categories';
+import { VFX_Sequences } from './VFX_Sequences';
 
 // Create unified VFXConfig
 const VFXConfig = {
-    // Templates from VFX_Templates.js
+    // Templates from VFX_Templates.ts
     TEMPLATES: VFX_Templates || {},
 
-    // Sequences from VFX_Sequences.js
+    // Sequences from VFX_Sequences.ts
     SEQUENCES: VFX_Sequences || {},
 
     // Domain-specific categories
@@ -31,10 +30,4 @@ const VFXConfig = {
     PROJECTILES: VFX_Categories?.PROJECTILES || {}
 };
 
-// Export
-if (typeof window !== 'undefined') {
-    (window as any).VFXConfig = VFXConfig;
-}
-
-// ES6 Module Export
 export { VFXConfig };

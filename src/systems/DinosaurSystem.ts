@@ -3,18 +3,23 @@
  * Handles AI, Movement, and Animation updates for all Dinosaurs.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const EntityManager: any;
-declare const EntityTypes: any;
-declare const AudioManager: any;
-declare const VFXController: any;
-declare const VFXConfig: any;
-declare const SpawnManager: any;
-declare const GameConstants: any;
-declare const BaseCreature: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { entityManager } from '../core/EntityManager';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+import { spawnManager } from './SpawnManager';
+import { GameConstants } from '../data/GameConstants';
+import { Registry } from '../core/Registry';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Unmapped modules - need manual import
+declare const BaseCreature: any; // TODO: Add proper import
+
+// Unmapped modules - need manual import
+ // TODO: Add proper import
+
 
 class DinosaurSystem {
     game: any = null;
@@ -68,8 +73,8 @@ class DinosaurSystem {
     }
 
     update(dt) {
-        if (!EntityManager) return;
-        const dinos = EntityManager.getByType('Dinosaur');
+        if (!entityManager) return;
+        const dinos = entityManager.getByType('Dinosaur');
         for (const dino of dinos) {
             if (dino.active) {
                 this.updateDino(dino, dt);
@@ -95,7 +100,7 @@ class DinosaurSystem {
 
                 // Drop loot directly using SpawnManager (same pattern as Resource.js)
                 // This bypasses the complex LootSystem chain and works on file:// protocol
-                if (SpawnManager && dino.lootTable && Array.isArray(dino.lootTable)) {
+                if (spawnManager && dino.lootTable && Array.isArray(dino.lootTable)) {
                     for (const entry of dino.lootTable) {
                         // Roll chance (0-1 format)
                         if (Math.random() > (entry.chance || 1)) continue;
@@ -112,7 +117,7 @@ class DinosaurSystem {
                         }
 
                         // Spawn the drop directly
-                        SpawnManager.spawnDrop(dino.x, dino.y, entry.item, amount);
+                        spawnManager.spawnDrop(dino.x, dino.y, entry.item, amount);
                     }
                 }
             }

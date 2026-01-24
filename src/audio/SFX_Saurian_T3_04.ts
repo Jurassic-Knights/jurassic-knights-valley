@@ -2,6 +2,9 @@
  * SFX_Saurian_WarbandChieftain - T3_04 Heavy armored saurian
  * Commanding war cry
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t3_04: function () {

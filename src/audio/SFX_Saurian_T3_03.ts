@@ -2,6 +2,9 @@
  * SFX_Saurian_AnkylosaurusSiege - T3_03 Artillery unit
  * Heavy armored grunt + mechanical sound
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t3_03: function () {

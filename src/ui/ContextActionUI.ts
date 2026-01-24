@@ -5,14 +5,15 @@
  * Handles the floating context action button (REST, FORGE, UNLOCK, SHOP).
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const AssetLoader: any;
-declare const AudioManager: any;
-declare const ForgeController: any;
-declare const MerchantUI: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { AssetLoader } from '../core/AssetLoader';
+import { AudioManager } from '../audio/AudioManager';
+import { MerchantUI } from './MerchantUI';
+// ForgeController accessed via Registry to avoid circular dependency
+import { Registry } from '../core/Registry';
+
 
 class ContextActionService {
     // Property declarations
@@ -119,9 +120,10 @@ class ContextActionService {
                 if (E && EventBus) EventBus.emit(E.REQUEST_REST);
                 break;
             case 'forge':
-                if (ForgeController) {
-                    ForgeController.render('dashboard');
-                    ForgeController.open();
+                const forgeCtrl = Registry?.get('ForgeController');
+                if (forgeCtrl) {
+                    forgeCtrl.render('dashboard');
+                    forgeCtrl.open();
                 }
                 break;
             case 'unlock':

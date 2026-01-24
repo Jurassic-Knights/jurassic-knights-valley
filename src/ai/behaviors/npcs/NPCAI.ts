@@ -9,8 +9,8 @@
  * Owner: AI System
  */
 
-// Ambient declarations
-declare const EventBus: any;
+import { EventBus } from '../../../core/EventBus';
+
 
 const NPCAI = {
     /**

@@ -7,19 +7,25 @@
  */
 import { Entity } from '../core/Entity';
 import { Logger } from '../core/Logger';
+import { AssetLoader } from '../core/AssetLoader';
+import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { EntityRegistry } from '../entities/EntityLoader';
+import { EntityConfig } from '../config/EntityConfig';
+import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
+import { EntityTypes } from '../config/EntityTypes';
+import { SpeciesScaleConfig } from '../config/SpeciesScaleConfig';
+import { HealthComponent } from '../components/HealthComponent';
+import { StatsComponent } from '../components/StatsComponent';
+import { AIComponent } from '../components/AIComponent';
+import { Registry } from '../core/Registry';
 
-// Ambient declarations for not-yet-migrated modules
-declare const BaseCreature: any;
-declare const EntityRegistry: any;
-declare const SpeciesScaleConfig: any;
-declare const EntityTypes: any;
-declare const HealthComponent: any;
-declare const StatsComponent: any;
-declare const AIComponent: any;
-declare const AssetLoader: any;
-declare const IslandUpgrades: any;
-declare const EntityConfig: any;
-declare const DinosaurRenderer: any;
+// Unmapped modules - need manual import
+declare const BaseCreature: any; // TODO: Add proper import
+
+
+// Unmapped modules - need manual import
+ // TODO: Add proper import
+
 
 class Dinosaur extends Entity {
     // Entity type and identity

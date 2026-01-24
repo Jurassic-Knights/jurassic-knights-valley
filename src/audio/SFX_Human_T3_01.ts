@@ -2,6 +2,9 @@
  * SFX_Human_MachineGunner - T3_01 Heavy weapons, slow
  * Deep grunt + weapon ready
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t3_01: function () {

@@ -7,16 +7,17 @@
  * Owner: Level Architect
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const Resource: any;
-declare const Dinosaur: any;
-declare const GameRenderer: any;
-declare const GameConstants: any;
-declare const EntityManager: any;
-declare const IslandUpgrades: any;
-declare const IslandManager: any;
-declare const EntityConfig: any;
+import { Logger } from '../../core/Logger';
+import { Dinosaur } from '../../gameplay/Dinosaur';
+import { GameRenderer } from '../../core/GameRenderer';
+import { GameConstants } from '../../data/GameConstants';
+import { entityManager } from '../../core/EntityManager';
+import { IslandUpgrades } from '../../gameplay/IslandUpgrades';
+import { IslandManager } from '../../world/IslandManager';
+import { Resource } from '../../gameplay/Resource';
+import { EntityConfig } from '../../config/EntityConfig';
+import { Registry } from '../../core/Registry';
+
 
 class ResourceSpawner {
     spawnManager: any;
@@ -48,7 +49,7 @@ class ResourceSpawner {
                         y: y
                     });
 
-                    if (EntityManager) EntityManager.add(gold);
+                    if (entityManager) entityManager.add(gold);
                 }
                 Logger.info(`[ResourceSpawner] Spawned ${goldCount} gold on home island`);
             }
@@ -120,7 +121,7 @@ class ResourceSpawner {
                 islandGridY: island.gridY
             });
 
-            if (EntityManager) EntityManager.add(resource);
+            if (entityManager) entityManager.add(resource);
         }
 
         Logger.info(
@@ -204,7 +205,7 @@ class ResourceSpawner {
                 islandGridY: island.gridY
             });
 
-            if (EntityManager) EntityManager.add(dino);
+            if (entityManager) entityManager.add(dino);
         }
 
         Logger.info(`[ResourceSpawner] Spawned ${count} dinosaurs on ${island.name}`);
@@ -261,7 +262,7 @@ class ResourceSpawner {
                 islandGridX: home.gridX,
                 islandGridY: home.gridY
             });
-            if (EntityManager) EntityManager.add(tree);
+            if (entityManager) entityManager.add(tree);
             placedTrees.push({ x, y });
         };
 

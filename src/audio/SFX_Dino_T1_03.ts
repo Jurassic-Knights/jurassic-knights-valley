@@ -2,6 +2,9 @@
  * SFX_Dino_Oviraptor - T1_03 Oviraptor Sound Handlers
  * Beaked, feathered, bird-like predator
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t1_03: function () {
@@ -77,8 +80,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Oviraptor] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

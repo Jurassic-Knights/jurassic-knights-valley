@@ -7,10 +7,12 @@
  * Owner: Rendering System
  */
 
-// Ambient declarations for global dependencies
-declare const EnvironmentRenderer: any;
-declare const GameRenderer: any;
-declare const EntityTypes: any;
+import { GameRenderer } from '../core/GameRenderer';
+import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Unmapped modules - need manual import
+
 
 const ShadowRenderer = {
     simpleShadows: false,

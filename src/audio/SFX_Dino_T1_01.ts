@@ -2,6 +2,8 @@
  * SFX_Dino_Compsognathus - T1_01 Compsognathus Sound Handlers
  * Turkey-sized, quick, chirpy predator
  */
+import { SFX } from './SFX_Core';
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t1_01: function () {
@@ -85,7 +87,5 @@
 
     if (SFX) {
         SFX.register(handlers);
-        Logger.info('[SFX_Dino_Compsognathus] Registered 5 sounds');
     }
 })();
-

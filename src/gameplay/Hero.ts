@@ -4,19 +4,22 @@
  * Owner: Director (engine), Gameplay Designer (stats)
  */
 import { Entity } from '../core/Entity';
+import { RenderConfig } from '../config/RenderConfig';
+import { EquipmentManager } from '../systems/EquipmentManager';
+import { GameConstants } from '../data/GameConstants';
+import { EntityRegistry } from '../entities/EntityLoader';
+import { GameInstance } from '../core/Game';
+import { EntityTypes } from '../config/EntityTypes';
+import { HealthComponent } from '../components/HealthComponent';
+import { InventoryComponent } from '../components/InventoryComponent';
+import { CombatComponent } from '../components/CombatComponent';
+import { StatsComponent } from '../components/StatsComponent';
+import { HeroDefaults } from '../config/HeroDefaults';
+import { Registry } from '../core/Registry';
 
-// Ambient declarations for not-yet-migrated modules
-declare const EntityTypes: any;
-declare const RenderConfig: any;
-declare const HealthComponent: any;
-declare const InventoryComponent: any;
-declare const CombatComponent: any;
-declare const StatsComponent: any;
-declare const EquipmentManager: any;
-declare const HeroDefaults: any;
-declare const GameConstants: any;
-declare const EntityRegistry: any;
-declare const GameInstance: any;
+
+// Unmapped modules - need manual import
+
 
 class Hero extends Entity {
     // Class properties
@@ -110,7 +113,7 @@ class Hero extends Entity {
             this.equipment = new EquipmentManager(this);
 
             // Equip default items from HeroDefaults config
-            if (HeroDefaults && GameConstants.Equipment) {
+            if (HeroDefaults && GameConstants.Equipment && EntityRegistry?.equipment) {
                 for (const [slot, entityId] of Object.entries(HeroDefaults.equipment)) {
                     if (entityId && EntityRegistry.equipment[entityId as string]) {
                         this.equipment.equip(slot, EntityRegistry.equipment[entityId as string]);

@@ -4,17 +4,17 @@
  * Decouples logic from Game.js.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const EntityManager: any;
-declare const SpawnManager: any;
-declare const IslandManager: any;
-declare const AudioManager: any;
-declare const QuestManager: any;
-declare const VFXTriggerService: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { entityManager } from '../core/EntityManager';
+import { spawnManager } from './SpawnManager';
+import { IslandManager } from '../world/IslandManager';
+import { AudioManager } from '../audio/AudioManager';
+import { QuestManager } from '../gameplay/QuestManager';
+import { VFXTriggerService } from './VFXTriggerService';
+import { Registry } from '../core/Registry';
+
 
 class InteractionSystem {
     game: any = null;
@@ -37,10 +37,10 @@ class InteractionSystem {
     }
 
     update(dt) {
-        if (!EntityManager || !this.game.hero) return;
+        if (!entityManager || !this.game.hero) return;
 
         const hero = this.game.hero;
-        const items = EntityManager.getByType('DroppedItem');
+        const items = entityManager.getByType('DroppedItem');
 
         for (const item of items) {
             if (!item.active) continue;
@@ -66,8 +66,8 @@ class InteractionSystem {
      */
     updateSpatialTriggers(hero) {
         // Merchant Button
-        if (SpawnManager && EventBus) {
-            const nearbyMerchant = SpawnManager.getMerchantNearHero(hero);
+        if (spawnManager && EventBus) {
+            const nearbyMerchant = spawnManager.getMerchantNearHero(hero);
             EventBus.emit(GameConstants.Events.INTERACTION_OPPORTUNITY, {
                 type: 'merchant',
                 target: nearbyMerchant,
@@ -120,7 +120,7 @@ class InteractionSystem {
 
         // Deactivate
         item.active = false;
-        if (EntityManager) EntityManager.remove(item);
+        if (entityManager) entityManager.remove(item);
 
         // Events & Feedback
         if (EventBus) {
@@ -135,12 +135,12 @@ class InteractionSystem {
      * Trigger global magnet effect
      */
     triggerMagnet() {
-        if (!this.game.hero || !EntityManager) return;
+        if (!this.game.hero || !entityManager) return;
 
         // Check cooldown or resource cost if applicable (currently free/event based)
 
         let count = 0;
-        const items = EntityManager.getByType('DroppedItem');
+        const items = entityManager.getByType('DroppedItem');
         for (const item of items) {
             if (item.active && !item.isMagnetized) {
                 item.magnetize(this.game.hero);

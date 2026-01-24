@@ -5,17 +5,17 @@
  * Replaces the legacy Economy.js object literal.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const GameState: any;
-declare const IslandManager: any;
-declare const IslandUpgrades: any;
-declare const AudioManager: any;
-declare const VFXTriggerService: any;
-declare const SpawnManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { GameState } from '../core/State';
+import { IslandManager } from '../world/IslandManager';
+import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXTriggerService } from './VFXTriggerService';
+import { spawnManager } from './SpawnManager';
+import { Registry } from '../core/Registry';
+
 
 class EconomySystem {
     game: any = null;

@@ -5,6 +5,15 @@
  * - Overlay: Procedural pixelated noise for detail and movement
  */
 
+import { Registry } from '../core/Registry';
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { IslandManager } from '../world/IslandManager';
+
+// Helper to get AssetLoader from Registry (avoid circular dependency)
+const getAssetLoader = () => Registry?.get('AssetLoader');
+
 const FogOfWarSystem = {
     islands: new Map(),
     fogTexture: null,
@@ -17,6 +26,7 @@ const FogOfWarSystem = {
         Logger.info('[FogOfWarSystem] Initialized');
 
         // Load the fog texture via AssetLoader (fallback chain enabled)
+        const AssetLoader = getAssetLoader();
         if (AssetLoader) {
             const fogPath = AssetLoader.getImagePath('vfx_fog_of_war');
             this.fogTexture = AssetLoader.createImage(fogPath, () => {

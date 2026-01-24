@@ -2,6 +2,9 @@
  * SFX_Dino_Tyrannosaur - T4_02 Tyrannosaur Matriarch Sound Handlers
  * Massive T-Rex boss
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t4_02: function () {
@@ -101,8 +104,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Tyrannosaur] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

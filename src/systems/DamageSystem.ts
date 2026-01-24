@@ -6,16 +6,18 @@
  * Work Package: 06-damage-system.md
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const EntityTypes: any;
-declare const FloatingTextManager: any;
-declare const VFXController: any;
-declare const VFXConfig: any;
-declare const AudioManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { FloatingTextManager } from '../vfx/FloatingText';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+import { AudioManager } from '../audio/AudioManager';
+import { Registry } from '../core/Registry';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Unmapped modules - need manual import
+
 
 const DamageSystem = {
     game: null as any,

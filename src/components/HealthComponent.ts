@@ -1,7 +1,16 @@
 /**
  * HealthComponent - Manages Health and Death
  */
+import { Component } from '../core/Component';
+import { Registry } from '../core/Registry';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+
 class HealthComponent extends Component {
+    maxHealth: number;
+    health: number;
+    isDead: boolean;
+
     constructor(parent: any, config: any = {}) {
         super(parent);
         this.maxHealth = config.maxHealth || 100;

@@ -5,9 +5,14 @@
  * Only loaded in development/debug mode.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const html2canvas: any;
+import { Logger } from '../core/Logger';
+
+// Unmapped modules - need manual import
+declare const html2canvas: any; // TODO: Add proper import
+
+// Unmapped modules - need manual import
+ // TODO: Add proper import
+
 
 const UICapture = {
     /**

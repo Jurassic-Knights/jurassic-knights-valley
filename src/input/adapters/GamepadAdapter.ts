@@ -2,9 +2,8 @@
  * GamepadAdapter - Maps Gamepad inputs to Input State
  */
 
-// Ambient declarations
-declare const InputSystem: any;
-declare const Logger: any;
+import { Logger } from '../../core/Logger';
+import { InputSystem } from '../InputSystem';
 
 class GamepadAdapter {
     gamepadIndex: number | null;

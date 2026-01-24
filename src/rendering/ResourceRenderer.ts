@@ -3,17 +3,16 @@
  * Handles rendering for all resources.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EnvironmentRenderer: any;
-declare const MaterialLibrary: any;
-declare const ProgressBarRenderer: any;
-declare const AssetLoader: any;
-declare const EntityConfig: any;
-declare const Resource: any;
-declare const ColorPalette: any;
-declare const Registry: any;
-declare const EntityRegistry: any;
+import { Logger } from '../core/Logger';
+import { MaterialLibrary } from '../vfx/MaterialLibrary';
+import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
+import { AssetLoader } from '../core/AssetLoader';
+import { Registry } from '../core/Registry';
+import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { EntityConfig } from '../config/EntityConfig';
+import { Resource } from '../gameplay/Resource';
+import { ColorPalette } from '../config/ColorPalette';
+import { EntityRegistry } from '../entities/EntityLoader';
 
 class ResourceRendererService {
     constructor() {

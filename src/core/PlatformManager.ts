@@ -4,6 +4,7 @@
  *
  * Owner: Director
  */
+import { Logger } from './Logger';
 
 const PlatformManager = {
     // Platform modes
@@ -153,6 +154,8 @@ const PlatformManager = {
     }
 };
 
+import { Registry } from './Registry';
+Registry.register('PlatformManager', PlatformManager);
 
 // ES6 Module Export
 export { PlatformManager };

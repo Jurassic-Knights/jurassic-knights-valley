@@ -13,9 +13,9 @@
  * Owner: VFX Specialist
  */
 
-// Ambient declarations for global dependencies
-declare const VFXController: any;
-declare const Registry: any;
+import { VFXController } from './VFXController';
+import { Registry } from '../core/Registry';
+
 
 const MeleeTrailVFX = {
     // Active trail points per weapon slot

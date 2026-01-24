@@ -4,11 +4,12 @@
  * Owner: Director
  */
 
-// Ambient declarations for not-yet-migrated modules
-declare const RenderConfig: any;
-declare const EnvironmentRenderer: any;
-declare const MaterialLibrary: any;
-declare const AssetLoader: any;
+import { RenderConfig } from '../config/RenderConfig';
+import { MaterialLibrary } from '../vfx/MaterialLibrary';
+import { AssetLoader } from './AssetLoader';
+import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
+import { Registry } from './Registry';
+
 
 class Entity {
     // Class properties

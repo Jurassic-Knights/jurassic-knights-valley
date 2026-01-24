@@ -9,21 +9,20 @@
  * Owner: UI Artist
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const PlatformManager: any;
-declare const ResponsiveManager: any;
-declare const AudioManager: any;
-declare const UICapture: any;
-declare const ContextActionUI: any;
-declare const GameConstants: any;
-declare const EventBus: any;
-declare const GameInstance: any;
-declare const GameState: any;
-declare const VFXController: any;
-declare const LayoutStrategies: any;
-declare const AssetLoader: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { PlatformManager } from '../core/PlatformManager';
+import { ResponsiveManager } from '../core/ResponsiveManager';
+import { AudioManager } from '../audio/AudioManager';
+import { ContextActionUI } from './ContextActionUI';
+import { GameConstants } from '../data/GameConstants';
+import { EventBus } from '../core/EventBus';
+import { GameState } from '../core/State';
+import { VFXController } from '../vfx/VFXController';
+import { AssetLoader } from '../core/AssetLoader';
+import { Registry } from '../core/Registry';
+import { UICapture } from './UICapture';
+import { GameInstance } from '../core/Game';
+import { LayoutStrategies } from './responsive/LayoutStrategies';
 
 class UIManagerService {
     // Property declarations

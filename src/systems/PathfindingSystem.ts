@@ -7,11 +7,11 @@
  * Owner: AI Systems
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const GameConstants: any;
-declare const IslandManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { GameConstants } from '../data/GameConstants';
+import { IslandManager } from '../world/IslandManager';
+import { Registry } from '../core/Registry';
+
 
 class PathfindingSystem {
     game: any = null;

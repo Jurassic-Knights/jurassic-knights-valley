@@ -5,9 +5,6 @@
  * Owner: Gameplay Designer
  */
 
-// Ambient declarations for global dependencies
-declare const TileMap: any;
-declare const RocksData: any;
 
 const Mining = {
     rocks: new Map<string, any>(),

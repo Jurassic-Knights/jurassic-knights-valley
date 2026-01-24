@@ -10,12 +10,12 @@
  * Owner: UI Engineer
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const UIManager: any;
-declare const BiomeManager: any;
-declare const EntityManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { UIManager } from './UIManager';
+import { BiomeManager } from '../world/BiomeManager';
+import { entityManager } from '../core/EntityManager';
+import { Registry } from '../core/Registry';
+
 
 class MinimapSystem {
     // Property declarations
@@ -339,8 +339,8 @@ class MinimapSystem {
         }
 
         // Draw enemies as red dots
-        if (EntityManager) {
-            const enemies = EntityManager.getByType('Enemy');
+        if (entityManager) {
+            const enemies = entityManager.getByType('Enemy');
             ctx.fillStyle = '#F44336';
             for (const enemy of enemies) {
                 if (!enemy.active || enemy.isDead) continue;
@@ -352,7 +352,7 @@ class MinimapSystem {
             }
 
             // Draw bosses
-            const bosses = EntityManager.getByType('Boss');
+            const bosses = entityManager.getByType('Boss');
             for (const boss of bosses) {
                 if (!boss.active || boss.isDead) continue;
                 const pos = toCanvas(boss.x, boss.y);

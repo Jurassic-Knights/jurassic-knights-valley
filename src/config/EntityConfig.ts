@@ -12,8 +12,8 @@
  * - npc: NPC defaults
  */
 
-// Ambient declarations
-declare const Registry: any;
+import { Registry } from '../core/Registry';
+
 
 const EntityConfig = {
     // ============================================

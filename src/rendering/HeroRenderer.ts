@@ -5,18 +5,20 @@
  * Uses RenderConfig for constants.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EntityRegistry: any;
-declare const RenderConfig: any;
-declare const ColorPalette: any;
-declare const MaterialLibrary: any;
-declare const AssetLoader: any;
-declare const EnvironmentRenderer: any;
-declare const EntityTypes: any;
-declare const EntityManager: any;
-declare const WeaponRenderer: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { RenderConfig } from '../config/RenderConfig';
+import { MaterialLibrary } from '../vfx/MaterialLibrary';
+import { AssetLoader } from '../core/AssetLoader';
+import { entityManager } from '../core/EntityManager';
+import { WeaponRenderer } from './WeaponRenderer';
+import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
+import { ColorPalette } from '../config/ColorPalette';
+import { EnvironmentRenderer } from './EnvironmentRenderer';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Unmapped modules - need manual import
+
 
 class HeroRendererSystem {
     // Cached image properties
@@ -444,7 +446,7 @@ class HeroRendererSystem {
         let hasNearbyEnemy = false;
 
         // Check all entities for hostile enemies within range
-        const allEntities = EntityManager?.getAll?.() || [];
+        const allEntities = entityManager?.getAll?.() || [];
         for (const entity of allEntities) {
             if (!entity.active) continue;
 

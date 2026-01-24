@@ -3,14 +3,13 @@
  * Handles state updates and respawning for all resources.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EntityManager: any;
-declare const AudioManager: any;
-declare const EntityRegistry: any;
-declare const VFXController: any;
-declare const VFXConfig: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { entityManager } from '../core/EntityManager';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
 
 class ResourceSystem {
     game: any = null;
@@ -24,8 +23,8 @@ class ResourceSystem {
     }
 
     update(dt) {
-        if (!EntityManager) return;
-        const resources = EntityManager.getByType('Resource');
+        if (!entityManager) return;
+        const resources = entityManager.getByType('Resource');
         for (const res of resources) {
             if (res.active) {
                 this.updateResource(res, dt);

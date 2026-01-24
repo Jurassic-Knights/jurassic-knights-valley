@@ -2,6 +2,9 @@
  * SFX_Human_TrenchKnight - T1_03 Melee, plate armor
  * Deep warrior cry + sword draw
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t1_03: function () {

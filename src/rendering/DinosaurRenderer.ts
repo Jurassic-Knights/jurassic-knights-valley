@@ -3,12 +3,11 @@
  * Handles rendering for all dinosaurs.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EnvironmentRenderer: any;
-declare const MaterialLibrary: any;
-declare const ProgressBarRenderer: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { MaterialLibrary } from '../vfx/MaterialLibrary';
+import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
+import { Registry } from '../core/Registry';
+import { EnvironmentRenderer } from './EnvironmentRenderer';
 
 class DinosaurRendererService {
     constructor() {

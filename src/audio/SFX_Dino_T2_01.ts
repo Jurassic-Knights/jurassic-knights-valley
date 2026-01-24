@@ -2,6 +2,9 @@
  * SFX_Dino_Pachycephalosaurus - T2_01 Pachycephalosaurus Sound Handlers
  * War beast with battering ram head
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t2_01: function () {
@@ -83,8 +86,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Pachycephalosaurus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

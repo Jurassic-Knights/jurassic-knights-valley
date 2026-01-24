@@ -6,6 +6,17 @@
  * Owner: Director
  */
 
+import { Logger } from './Logger';
+import { Registry } from './Registry';
+import { GameConstants } from '../data/GameConstants';
+import { ShadowRenderer } from '../rendering/ShadowRenderer';
+import { EntityRenderService } from '../rendering/EntityRenderService';
+import { RenderProfiler } from '../rendering/RenderProfiler';
+import { GridRenderer } from '../rendering/GridRenderer';
+import { DebugOverlays } from '../rendering/DebugOverlays';
+import { HomeOutpostRenderer } from '../rendering/HomeOutpostRenderer';
+
+
 const GameRenderer = {
     canvas: null,
     ctx: null,

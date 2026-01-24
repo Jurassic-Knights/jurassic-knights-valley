@@ -2,6 +2,9 @@
  * SFX_Dino_Dilophosaurus - T1_02 Dilophosaurus Sound Handlers
  * Twin crests, spitting hiss predator
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t1_02: function () {
@@ -101,8 +104,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Dilophosaurus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

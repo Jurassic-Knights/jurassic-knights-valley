@@ -5,8 +5,9 @@
  * Items, nodes, progression, crafting, environment, etc.
  */
 
-// Ambient declarations
-declare const SFX_Modules: any;
+
+import { SFX } from './SFX_Core';
+
 
 (function () {
     const Shared = {

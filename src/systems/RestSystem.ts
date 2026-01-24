@@ -9,14 +9,14 @@
  * 5. Saves Game.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const AudioManager: any;
-declare const VFXController: any;
-declare const GameState: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '../vfx/VFXController';
+import { GameState } from '../core/State';
+import { Registry } from '../core/Registry';
+
 
 class RestSystem {
     game: any = null;

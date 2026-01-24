@@ -8,10 +8,11 @@
  * - Emits WEATHER_CHANGE events
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { Registry } from '../core/Registry';
+
 
 class WeatherSystem {
     // Property declarations
@@ -125,5 +126,8 @@ class WeatherSystem {
 
 // Create singleton and export
 const weatherSystem = new WeatherSystem();
+
+// Register at module load time (before Game.init looks for it)
+Registry.register('WeatherSystem', weatherSystem);
 
 export { WeatherSystem, weatherSystem };

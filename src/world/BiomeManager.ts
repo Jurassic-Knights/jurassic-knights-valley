@@ -7,10 +7,10 @@
  * Uses polygon boundaries for natural-looking biome shapes.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const RoadsData: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { RoadsData } from '../data/RoadsData';
+import { Registry } from '../core/Registry';
+
 
 const BiomeManager = {
     // Biome IDs

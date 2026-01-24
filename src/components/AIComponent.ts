@@ -8,6 +8,8 @@
  * - Timers: Wander timers, decision intervals
  * - Navigation: Wander direction, pathing data
  */
+import { Component } from '../core/Component';
+import { Logger } from '../core/Logger';
 class AIComponent extends Component {
     constructor(parent: any, config: any = {}) {
         super(parent);

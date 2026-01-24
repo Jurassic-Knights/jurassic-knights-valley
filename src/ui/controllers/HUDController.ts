@@ -5,11 +5,11 @@
  * Listens to EventBus updates.
  */
 
-// Ambient declarations
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const Registry: any;
+import { Logger } from '../../core/Logger';
+import { EventBus } from '../../core/EventBus';
+import { GameConstants } from '../../data/GameConstants';
+import { Registry } from '../../core/Registry';
+
 
 class HUDControllerClass {
     constructor() {

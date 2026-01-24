@@ -2,6 +2,9 @@
  * SFX_Human_Halberdier - T2_03 Heavy melee, full plate
  * Armored warrior shout
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t2_03: function () {

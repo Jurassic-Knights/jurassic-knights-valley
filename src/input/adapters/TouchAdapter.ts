@@ -2,8 +2,6 @@
  * TouchAdapter - Maps Touch/Joystick inputs to Input State
  */
 
-// Ambient declarations
-declare const InputSystem: any;
 
 class TouchAdapter {
     joystick: { active: boolean; startX: number; startY: number; currentX: number; currentY: number; maxRadius: number };

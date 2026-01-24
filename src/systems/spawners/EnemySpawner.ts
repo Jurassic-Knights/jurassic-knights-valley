@@ -7,12 +7,11 @@
  * Owner: Combat System
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const Enemy: any;
-declare const BiomeConfig: any;
-declare const EntityManager: any;
-declare const EntityTypes: any;
+import { Logger } from '../../core/Logger';
+import { entityManager } from '../../core/EntityManager';
+import { BiomeConfig } from '../../data/BiomeConfig';
+import { EntityTypes } from '../../config/EntityTypes';
+import { Enemy } from '../../gameplay/EnemyCore';
 
 class EnemySpawner {
     private spawnManager: any;
@@ -202,8 +201,8 @@ class EnemySpawner {
                 forceNormal: options.forceNormal || false
             });
 
-            if (EntityManager) {
-                EntityManager.add(enemy);
+            if (entityManager) {
+                entityManager.add(enemy);
             }
 
             enemies.push(enemy);
@@ -298,11 +297,11 @@ class EnemySpawner {
      * Get all enemies in a specific biome
      */
     getEnemiesInBiome(biomeId) {
-        if (!EntityManager) return [];
+        if (!entityManager) return [];
 
         const enemies = [
-            ...EntityManager.getByType(EntityTypes.ENEMY_DINOSAUR),
-            ...EntityManager.getByType(EntityTypes.ENEMY_SOLDIER)
+            ...entityManager.getByType(EntityTypes.ENEMY_DINOSAUR),
+            ...entityManager.getByType(EntityTypes.ENEMY_SOLDIER)
         ];
 
         return enemies.filter((e) => e.biomeId === biomeId && !e.isDead);
@@ -316,8 +315,8 @@ class EnemySpawner {
 
         for (const enemy of enemies) {
             enemy.active = false;
-            if (EntityManager) {
-                EntityManager.remove(enemy);
+            if (entityManager) {
+                entityManager.remove(enemy);
             }
         }
 

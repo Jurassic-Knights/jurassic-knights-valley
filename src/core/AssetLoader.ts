@@ -7,6 +7,13 @@
  * Owner: Director
  */
 
+import { Logger } from './Logger';
+import { EntityRegistry } from '../entities/EntityLoader';
+import { VFXController } from '../vfx/VFXController';
+import { Registry } from './Registry';
+
+// VFXController accessed lazily to avoid circular imports
+
 const AssetLoader = {
     cache: new Map(),
     basePath: 'assets/',
@@ -56,7 +63,10 @@ const AssetLoader = {
 
         // Buildings (building_[type]_[tier] convention)
         "building_residential_01": "images/buildings/building_residential_01_clean.png",
-        "building_industrial_01": "images/buildings/building_industrial_01_clean.png"
+        "building_industrial_01": "images/buildings/building_industrial_01_clean.png",
+
+        // Fallback tools
+        "tool_t1_01": "images/equipment/tools/tool_t1_01_original.png"
     },
 
     /**
@@ -373,6 +383,7 @@ const AssetLoader = {
 };
 
 // Export for global access
+if (Registry) Registry.register('AssetLoader', AssetLoader);
 
 // ES6 Module Export
 export { AssetLoader };

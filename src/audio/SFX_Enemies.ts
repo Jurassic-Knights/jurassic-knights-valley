@@ -3,6 +3,9 @@
  * Used for unmapped enemy IDs and generic enemy sound triggers
  */
 
+import { SFX } from './SFX_Core';
+import { Logger } from '../core/Logger';
+
 (function () {
     const handlers = {
         // Generic dino sounds
@@ -75,7 +78,6 @@
         },
 
         sfx_enemy_hurt: function () {
-            // Alias to dino_hurt
             const t = SFX.ctx.currentTime;
             const osc = SFX.ctx.createOscillator();
             osc.type = 'sawtooth';
@@ -118,7 +120,6 @@
         },
 
         sfx_pack_aggro: function () {
-            // Multiple overlapping growls
             for (let i = 0; i < 3; i++) {
                 setTimeout(() => {
                     const t = SFX.ctx.currentTime;
@@ -142,13 +143,11 @@
 
         sfx_pterodactyl_swoop: function () {
             const t = SFX.ctx.currentTime;
-            // Whooshing wind
             const { filter } = SFX.playNoise(0.5, 0.05, 0.4, 0.3, 2000);
             filter.frequency.setValueAtTime(500, t);
             filter.frequency.exponentialRampToValueAtTime(2000, t + 0.25);
             filter.frequency.exponentialRampToValueAtTime(500, t + 0.5);
 
-            // Screech
             const osc = SFX.ctx.createOscillator();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(600, t + 0.1);
@@ -171,4 +170,3 @@
         Logger.info('[SFX_Enemies] Registered 11 sounds');
     }
 })();
-

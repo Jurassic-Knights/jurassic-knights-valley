@@ -4,16 +4,15 @@
  * Decoupled from the Hero class data container.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const VFXController: any;
-declare const VFXConfig: any;
-declare const IslandManager: any;
-declare const BiomeManager: any;
-declare const HeroCombatService: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+import { IslandManager } from '../world/IslandManager';
+import { BiomeManager } from '../world/BiomeManager';
+import { Registry } from '../core/Registry';
+import { HeroCombatService } from './HeroCombatService';
 
 class HeroSystem {
     // Property declarations

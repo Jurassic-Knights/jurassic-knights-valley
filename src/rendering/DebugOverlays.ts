@@ -7,8 +7,8 @@
  * Owner: Development Tools
  */
 
-// Ambient declarations
-declare const GameConstants: any;
+import { GameConstants } from '../data/GameConstants';
+
 
 const DebugOverlays = {
     /**

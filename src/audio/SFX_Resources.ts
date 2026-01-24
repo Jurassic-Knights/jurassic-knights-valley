@@ -2,6 +2,9 @@
  * SFX_Resources - Combat and Resource Sounds
  */
 
+import { SFX } from './SFX_Core';
+import { Logger } from '../core/Logger';
+
 (function () {
     const handlers = {
         // Combat
@@ -45,14 +48,12 @@
         },
 
         sfx_hero_impact_flesh: function () {
-            // Meaty thud for hitting organic targets
             SFX.playNoise(0.1, 0.005, 0.1, 0.3, 600);
             SFX.playTone(60, 0.12, 'sine', 0.25, 0.01, 0.1);
             setTimeout(() => SFX.playNoise(0.05, 0.01, 0.04, 0.1, 300), 30);
         },
 
         sfx_hero_step: function () {
-            // Heavy bootstep on dirt/mud
             const pitchVariation = 0.9 + Math.random() * 0.2;
             SFX.playNoise(0.08, 0.001, 0.07, 0.15, 400 * pitchVariation);
             SFX.playTone(50 * pitchVariation, 0.06, 'sine', 0.1, 0.005, 0.05);
@@ -101,24 +102,19 @@
 
         // Collect/Break
         sfx_resource_collect: function () {
-            // Each pickup creates its own isolated audio graph to prevent blending
-            // Random offset (0-400ms) spreads bulk pickups into distinct cascading pops
             const randomOffset = Math.random() * 400;
 
             setTimeout(() => {
                 if (!SFX.ctx) return;
 
-                // Much wider frequency range (80-200Hz) so each is clearly different
                 const baseFreq = 80 + Math.random() * 120;
 
-                // Create isolated gain node for THIS sound only
                 const soundGain = SFX.ctx.createGain();
                 soundGain.gain.setValueAtTime(0, SFX.ctx.currentTime);
                 soundGain.gain.linearRampToValueAtTime(0.4, SFX.ctx.currentTime + 0.01);
                 soundGain.gain.linearRampToValueAtTime(0, SFX.ctx.currentTime + 0.1);
                 soundGain.connect(SFX.masterGain);
 
-                // First pop
                 const osc1 = SFX.ctx.createOscillator();
                 osc1.type = 'triangle';
                 osc1.frequency.value = baseFreq;
@@ -126,7 +122,6 @@
                 osc1.start();
                 osc1.stop(SFX.ctx.currentTime + 0.1);
 
-                // Second higher pop (40ms later)
                 setTimeout(() => {
                     if (!SFX.ctx) return;
                     const soundGain2 = SFX.ctx.createGain();
@@ -137,7 +132,7 @@
 
                     const osc2 = SFX.ctx.createOscillator();
                     osc2.type = 'triangle';
-                    osc2.frequency.value = baseFreq * 1.8; // Higher harmonic
+                    osc2.frequency.value = baseFreq * 1.8;
                     osc2.connect(soundGain2);
                     osc2.start();
                     osc2.stop(SFX.ctx.currentTime + 0.12);
@@ -220,7 +215,6 @@
         },
 
         sfx_rest_melody: function () {
-            // Gentle rest sound
             SFX.playTone(262, 0.3, 'triangle', 0.2, 0.05, 0.25);
             setTimeout(() => SFX.playTone(330, 0.3, 'triangle', 0.15, 0.05, 0.25), 150);
             setTimeout(() => SFX.playTone(392, 0.4, 'triangle', 0.15, 0.05, 0.35), 300);
@@ -232,4 +226,3 @@
         Logger.info('[SFX_Resources] Registered 19 sounds');
     }
 })();
-

@@ -8,13 +8,14 @@
  */
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { EntityConfig } from '../config/EntityConfig';
+import { EntityTypes } from '../config/EntityTypes';
+import { BiomeConfig } from '../data/BiomeConfig';
 
-// Ambient declarations for not-yet-migrated modules
-declare const Enemy: any;
-declare const EntityConfig: any;
-declare const EntityTypes: any;
-declare const BiomeConfig: any;
-declare const GameConstants: any;
+import { Enemy } from './EnemyCore';
+import { Registry } from '../core/Registry';
+
 
 class Boss extends Enemy {
     /**

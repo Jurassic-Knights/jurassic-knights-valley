@@ -10,22 +10,24 @@
  * Owner: Director / Level Architect
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const EntityManager: any;
-declare const GameState: any;
-declare const IslandManager: any;
-declare const IslandUpgrades: any;
-declare const PropSpawner: any;
-declare const ResourceSpawner: any;
-declare const EnemySpawner: any;
-declare const DropSpawner: any;
-declare const PropConfig: any;
-declare const Hero: any;
-declare const Merchant: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { entityManager } from '../core/EntityManager';
+import { GameState } from '../core/State';
+import { IslandManager } from '../world/IslandManager';
+import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { Hero } from '../gameplay/Hero';
+import { Registry } from '../core/Registry';
+import { PropSpawner } from './spawners/PropSpawner';
+import { ResourceSpawner } from './spawners/ResourceSpawner';
+import { EnemySpawner } from './spawners/EnemySpawner';
+import { DropSpawner } from './spawners/DropSpawner';
+import { Merchant } from '../gameplay/Merchant';
+import { PropConfig } from '../data/PropConfig';
+
+// Unmapped modules - need manual import
+
 
 class SpawnManagerService {
     private game: any;
@@ -134,8 +136,8 @@ class SpawnManagerService {
                 gameRenderer.setHero(hero);
             }
 
-            EntityManager.add(hero);
-            Logger.info(`[SpawnManager] Hero added. Total: ${EntityManager.getAll().length}`);
+            entityManager.add(hero);
+            Logger.info(`[SpawnManager] Hero added. Total: ${entityManager.getAll().length}`);
 
             hero.inventory.gold = GameState.get('gold') || 0;
 
@@ -191,7 +193,7 @@ class SpawnManagerService {
             });
 
             this.merchants.push(merchant);
-            EntityManager.add(merchant);
+            entityManager.add(merchant);
         }
 
         Logger.info(`[SpawnManager] Spawned ${this.merchants.length} merchants`);
@@ -244,7 +246,7 @@ class SpawnManagerService {
         const targetCount = IslandUpgrades?.getResourceSlots?.(gridX, gridY) || 1;
 
         if (island.category === 'dinosaur') {
-            const allDinos = EntityManager.getByType('Dinosaur');
+            const allDinos = entityManager.getByType('Dinosaur');
             const currentCount = allDinos.filter(
                 (d: any) => d.islandGridX === gridX && d.islandGridY === gridY
             ).length;
@@ -256,7 +258,7 @@ class SpawnManagerService {
             return;
         }
 
-        const allResources = EntityManager.getByType('Resource');
+        const allResources = entityManager.getByType('Resource');
         const currentResources = allResources.filter(
             (res: any) => res.islandGridX === gridX && res.islandGridY === gridY
         );
@@ -269,7 +271,7 @@ class SpawnManagerService {
             for (let i = currentResources.length - 1; i >= 0; i--) {
                 const res = currentResources[i];
                 res.active = false;
-                EntityManager.remove(res);
+                entityManager.remove(res);
                 toRemove--;
                 if (toRemove <= 0) break;
             }
@@ -277,7 +279,7 @@ class SpawnManagerService {
     }
 
     updateIslandRespawnTimers(gridX: number, gridY: number): void {
-        const resources = EntityManager.getByType('Resource');
+        const resources = entityManager.getByType('Resource');
         for (const res of resources) {
             if (res.islandGridX === gridX && res.islandGridY === gridY) {
                 if (typeof res.recalculateRespawnTimer === 'function') {
@@ -286,7 +288,7 @@ class SpawnManagerService {
             }
         }
 
-        const dinosaurs = EntityManager.getByType('Dinosaur');
+        const dinosaurs = entityManager.getByType('Dinosaur');
         for (const dino of dinosaurs) {
             if (dino.islandGridX === gridX && dino.islandGridY === gridY) {
                 if (typeof dino.recalculateRespawnTimer === 'function') {
@@ -363,6 +365,7 @@ class SpawnManagerService {
 
 // Create singleton instance
 const spawnManager = new SpawnManagerService();
+if (Registry) Registry.register('SpawnManager', spawnManager);
 
 // ES6 Module Export
 export { SpawnManagerService, spawnManager };

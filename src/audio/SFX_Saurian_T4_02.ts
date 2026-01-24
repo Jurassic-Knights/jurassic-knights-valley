@@ -2,6 +2,9 @@
  * SFX_Saurian_Warlord - T4_02 Elite boss saurian
  * Massive threatening roar
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t4_02: function () {

@@ -4,10 +4,10 @@
  * Extracted from GameRenderer to improve modularity.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const GameRenderer: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { GameRenderer } from '../core/GameRenderer';
+import { Registry } from '../core/Registry';
+
 
 class WorldRenderer {
     game: any = null;

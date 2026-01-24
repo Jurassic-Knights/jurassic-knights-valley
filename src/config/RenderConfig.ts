@@ -5,8 +5,8 @@
  * Organized by Entity Type.
  */
 
-// Ambient declarations
-declare const Registry: any;
+import { Registry } from '../core/Registry';
+
 
 const RenderConfig = {
     Hero: {

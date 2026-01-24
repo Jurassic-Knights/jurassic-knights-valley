@@ -113,5 +113,8 @@ class State {
 // Create singleton
 const GameState = new State();
 
+import { Registry } from './Registry';
+Registry.register('GameState', GameState);
+
 // ES6 Module Export
 export { State, GameState };

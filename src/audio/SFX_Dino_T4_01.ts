@@ -2,6 +2,9 @@
  * SFX_Dino_FrostRaptor - T4_01 Frost Raptor Sound Handlers
  * Ice-themed predator
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t4_01: function () {
@@ -44,8 +47,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_FrostRaptor] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

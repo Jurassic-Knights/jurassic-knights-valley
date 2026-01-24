@@ -2,6 +2,9 @@
  * SFX_Dino_Pachyrhinosaurus - T2_03 Pachyrhinosaurus Sound Handlers
  * Bony frill zone dino
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t2_03: function () {
@@ -39,8 +42,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Pachyrhinosaurus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

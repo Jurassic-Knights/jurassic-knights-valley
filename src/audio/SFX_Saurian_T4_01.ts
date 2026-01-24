@@ -2,6 +2,9 @@
  * SFX_Saurian_TRexGeneral - T4_01 Boss saurian
  * Earth-shaking bass, terrifying commanding roar
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t4_01: function () {

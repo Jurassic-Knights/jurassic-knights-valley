@@ -3,9 +3,8 @@
  * Refactored to generic key tracking.
  */
 
-// Ambient declarations
-declare const InputSystem: any;
-declare const Logger: any;
+import { Logger } from '../../core/Logger';
+import { inputSystem } from '../InputSystem';
 
 class KeyboardAdapter {
     heldKeys: Set<string>;
@@ -57,8 +56,8 @@ class KeyboardAdapter {
     }
 }
 
-if (InputSystem) {
-    InputSystem.registerAdapter(new KeyboardAdapter());
+if (inputSystem) {
+    inputSystem.registerAdapter(new KeyboardAdapter());
     Logger.info('[KeyboardAdapter] Registered');
 }
 

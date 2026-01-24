@@ -7,9 +7,11 @@
  * - Layout State Management
  */
 
-// Ambient declarations for global dependencies
-declare const UIManager: any;
-declare const Logger: any;
+import { UIManager } from '../UIManager';
+import { Logger } from '../../core/Logger';
+import { Registry } from '../../core/Registry';
+
+
 
 class UIPanel {
     // Property declarations

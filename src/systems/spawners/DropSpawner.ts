@@ -7,11 +7,12 @@
  * Owner: Loot System
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const DroppedItem: any;
-declare const EntityManager: any;
-declare const IslandManager: any;
+import { Logger } from '../../core/Logger';
+import { entityManager } from '../../core/EntityManager';
+import { IslandManager } from '../../world/IslandManager';
+import { DroppedItem } from '../../gameplay/DroppedItem';
+import { Registry } from '../../core/Registry';
+
 
 class DropSpawner {
     spawnManager: any;
@@ -41,7 +42,7 @@ class DropSpawner {
 
         drop.flyTo(targetX, targetY);
 
-        if (EntityManager) EntityManager.add(drop);
+        if (entityManager) entityManager.add(drop);
 
         Logger.info(`[DropSpawner] Spawned drop: ${resourceType} x${amount} at ${x},${y}`);
     }
@@ -50,7 +51,7 @@ class DropSpawner {
      * Spawn an item crafted by the player (flying out from Forge)
      */
     spawnCraftedItem(x: number, y: number, type: string, options: any = {}) {
-        if (!DroppedItem || !EntityManager) return;
+        if (!DroppedItem || !entityManager) return;
 
         const { amount = 1, icon = null } = options as { amount?: number; icon?: any };
 
@@ -63,7 +64,7 @@ class DropSpawner {
             minPickupTime: 0.5
         });
 
-        EntityManager.add(drop);
+        entityManager.add(drop);
 
         let tx, ty;
 

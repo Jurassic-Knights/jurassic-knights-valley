@@ -2,6 +2,9 @@
  * SFX_Human_Hauptmann - T4_03 Elite commander
  * Powerful commanding presence
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t4_03: function () {

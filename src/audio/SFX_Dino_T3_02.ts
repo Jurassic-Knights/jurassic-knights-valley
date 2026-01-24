@@ -2,6 +2,9 @@
  * SFX_Dino_DesertStalker - T3_02 Desert Stalker Sound Handlers
  * Sand raptor boss
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t3_02: function () {
@@ -26,8 +29,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_DesertStalker] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

@@ -5,10 +5,15 @@
  * Owner: Gameplay Designer
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const GameState: any;
-declare const CropsData: any;
+import { Logger } from '../core/Logger';
+import { GameState } from '../core/State';
+
+// Unmapped modules - need manual import
+declare const CropsData: any; // TODO: Add proper import
+
+// Unmapped modules - need manual import
+ // TODO: Add proper import
+
 
 const Farming = {
     crops: new Map<string, any>(),

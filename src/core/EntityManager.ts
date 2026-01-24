@@ -7,9 +7,10 @@
  */
 import { Logger } from './Logger';
 import { Quadtree } from './Quadtree';
+import { GameRenderer } from './GameRenderer';
+import { Registry } from './Registry';
 
 // Ambient declaration for not-yet-migrated module
-declare const GameRenderer: any;
 
 class EntityManagerService {
     private game: any = null;
@@ -178,6 +179,7 @@ class EntityManagerService {
 
 // Create singleton instance
 const entityManager = new EntityManagerService();
+if (Registry) Registry.register('EntityManager', entityManager);
 
 // ES6 Module Export
 export { EntityManagerService, entityManager };

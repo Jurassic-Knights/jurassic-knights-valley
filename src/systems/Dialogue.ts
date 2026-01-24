@@ -5,9 +5,9 @@
  * Owner: Lore Writer (dialogue content), UI Artist (display)
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const GameState: any;
+import { Logger } from '../core/Logger';
+import { GameState } from '../core/State';
+
 
 const DialogueSystem = {
     dialogues: {} as Record<string, any>,

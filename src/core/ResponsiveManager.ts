@@ -5,6 +5,9 @@
  * Owner: Director
  */
 
+import { Logger } from './Logger';
+import { Registry } from './Registry';
+
 const ResponsiveManager = {
     // Breakpoints matching css/layout.css
     breakpoints: {
@@ -118,6 +121,7 @@ const ResponsiveManager = {
 };
 
 // Export for global access
+if (Registry) Registry.register('ResponsiveManager', ResponsiveManager);
 
 // ES6 Module Export
 export { ResponsiveManager };

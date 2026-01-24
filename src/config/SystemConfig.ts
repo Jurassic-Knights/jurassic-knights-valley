@@ -9,8 +9,8 @@
 const SystemConfig = [
     // --- 0. Infrastructure (Pre-Boot) ---
     { global: 'ResponsiveManager', priority: -10, init: true },
-    { global: 'AssetLoader', priority: -5, init: true, isAsync: true }, // Await this
-    { global: 'EntityLoader', priority: -4, init: true, isAsync: true }, // Load entities.json
+    { global: 'EntityLoader', priority: -6, init: true, isAsync: true }, // Load entities FIRST
+    { global: 'AssetLoader', priority: -5, init: true, isAsync: true },  // Then preload images
     { global: 'PlatformManager', priority: -1, init: true },
 
     // --- 0.5 Time & Environment ---
@@ -51,7 +51,6 @@ const SystemConfig = [
     { global: 'HomeBase', priority: 30, init: true },
     { global: 'VFXController', priority: 31, init: true },
     { global: 'FogOfWarSystem', priority: 31, init: true }, // Rolling cloud fog
-    { global: 'ProgressBarRenderer', priority: 32, init: false }, // Helper
     { global: 'ProgressBarRenderer', priority: 32, init: false }, // Helper
     { global: 'WorldRenderer', priority: 32, init: true }, // Static World
     { global: 'RoadRenderer', priority: 32, init: true }, // Spline roads

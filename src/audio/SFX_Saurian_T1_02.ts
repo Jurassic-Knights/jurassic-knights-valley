@@ -2,6 +2,9 @@
  * SFX_Saurian_OviraptorScout - T1_02 Fast, dual blades
  * Quick chirp + blade sound
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t1_02: function () {

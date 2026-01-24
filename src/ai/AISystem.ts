@@ -7,15 +7,19 @@
  * Owner: AI System
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EntityManager: any;
-declare const EntityTypes: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const EnemyAI: any;
-declare const BossAI: any;
-declare const NPCAI: any;
+import { Logger } from '../core/Logger';
+import { entityManager } from '../core/EntityManager';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { EntityTypes } from '../config/EntityTypes';
+import { EnemyAI } from './behaviors/enemies/EnemyAI';
+import { BossAI } from './behaviors/bosses/BossAI';
+import { NPCAI } from './behaviors/npcs/NPCAI';
+import { Registry } from '../core/Registry';
+
+
+// Unmapped modules - need manual import
+
 
 class AISystem {
     private game: any = null;

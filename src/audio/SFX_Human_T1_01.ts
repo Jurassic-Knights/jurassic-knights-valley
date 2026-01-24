@@ -2,6 +2,9 @@
  * SFX_Human_Conscript - T1_01 Basic recruit, tattered
  * Muffled shout through mask
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t1_01: function () {

@@ -13,7 +13,7 @@
  */
 
 // Ambient declarations for global dependencies
-declare let Logger: any;
+import { Logger } from '../core/Logger';
 
 const SFX = {
     ctx: null,

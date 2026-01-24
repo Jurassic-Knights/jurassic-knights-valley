@@ -5,25 +5,24 @@
  */
 import { Logger } from './Logger';
 import { Registry } from './Registry';
+import { GameConstants } from '../data/GameConstants';
+import { EntityLoader } from '../entities/EntityLoader';
+import { entityManager } from './EntityManager';
+import { GameState } from './State';
+import { Hero } from '../gameplay/Hero';
+// IslandManager singleton from barrel file (ensures proper prototype extension order)
+import { IslandManager } from '../world/IslandManager';
+import { GameRenderer } from './GameRenderer';
 
-// Ambient declarations for not-yet-migrated modules
-declare const GameConstants: any;
-declare const EntityLoader: any;
-declare const entityManager: any;
-declare const GameState: any;
-declare const Hero: any;
-declare const IslandManager: any;
-declare const CameraService: any;
-declare const GameRenderer: any;
-declare const worldZoneManager: any;
-declare const persistenceManager: any;
-declare const EventBus: any;
-declare const SystemConfig: any;
-declare const Tween: any;
-declare const IslandUpgrades: any;
-declare const MerchantUI: any;
-declare const EntityManager: any;
-declare const VFXController: any;
+// Modules that don't exist yet - use ambient declarations
+import { EventBus } from './EventBus';
+import { SystemConfig } from '../config/SystemConfig';
+import { Tween } from '../animation/Tween';
+import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { MerchantUI } from '../ui/MerchantUI';
+import { VFXController } from '../vfx/VFXController';
+// REMOVED: CameraService, worldZoneManager, persistenceManager - modules don't exist
+
 
 class Game {
     private isRunning: boolean = false;
@@ -61,6 +60,17 @@ class Game {
     async init() {
         Logger.info('[Game] Initializing...');
 
+        // Debug helper - writes status to loading screen for headless debugging
+        const debugStatus = (msg: string) => {
+            const loading = document.getElementById('loading');
+            if (loading) {
+                const p = loading.querySelector('p');
+                if (p) p.textContent = msg;
+            }
+            console.log('[Game Debug]', msg);
+        };
+        debugStatus('Starting initialization...');
+
         // 1. Sort Systems by Priority
         // This ensures AssetLoader (-5) runs before GameRenderer (33)
         if (!SystemConfig) {
@@ -72,36 +82,56 @@ class Game {
 
         // 2. Bootloader Loop (Init Phase)
         Logger.info(`[Game] Booting ${sortedSystems.length} systems...`);
+        debugStatus(`Booting ${sortedSystems.length} systems...`);
 
         for (const config of sortedSystems) {
             const name = config.global;
-            let sys = Registry ? Registry.get(name) : window[name];
-            if (!sys) sys = window[name]; // Fallback
+            let sys;
 
-            if (!sys) {
-                // Logger.warn(`[Game] System not found: ${name}`);
-                continue;
-            }
+            try {
+                debugStatus(`Loading: ${name}`);
 
-            // Initialization
-            if (config.init) {
-                if (typeof sys.init === 'function') {
-                    // Check for Async
-                    if (config.isAsync) {
-                        Logger.info(`[Game] Awaiting async init: ${name}`);
-                        await sys.init(this);
-                    } else {
-                        sys.init(this);
-                    }
-                    Logger.info(`[Game] Initialized ${name}`);
+                // Special case: Use directly imported singletons to avoid module duplication issues
+                // The Registry/window lookup can return a different module instance due to Vite bundling
+                if (name === 'IslandManager') {
+                    sys = IslandManager;
                 } else {
-                    Logger.warn(`[Game] System ${name} missing init() method`);
+                    sys = Registry ? Registry.get(name) : (window as any)[name];
+                    if (!sys) sys = (window as any)[name]; // Fallback
                 }
-            }
 
-            // Register for Update Loop
-            if (typeof sys.update === 'function') {
-                this.systems.push(sys);
+                if (!sys) {
+                    Logger.warn(`[Game] System not found: ${name}`);
+                    debugStatus(`MISSING: ${name}`);
+                    continue;
+                }
+
+                // Initialization
+                if (config.init) {
+                    if (typeof sys.init === 'function') {
+                        // Check for Async
+                        if (config.isAsync) {
+                            Logger.info(`[Game] Awaiting async init: ${name}`);
+                            debugStatus(`Awaiting: ${name}...`);
+                            await sys.init(this);
+                        } else {
+                            sys.init(this);
+                        }
+                        Logger.info(`[Game] Initialized ${name}`);
+                        debugStatus(`OK: ${name}`);
+                    } else {
+                        Logger.warn(`[Game] System ${name} missing init() method`);
+                    }
+                }
+
+                // Register for Update Loop
+                if (typeof sys.update === 'function') {
+                    this.systems.push(sys);
+                }
+            } catch (err) {
+                Logger.error(`[Game] CRITICAL: Failed to initialize ${name}:`, err);
+                debugStatus(`ERROR: ${name} - ${(err as Error).message}`);
+                console.error(`[Game] CRITICAL: ${name} init failed - Stack:`, err);
             }
         }
 
@@ -111,7 +141,7 @@ class Game {
         if (Tween && !this.systems.includes(Tween)) this.systems.push(Tween);
 
         // IslandUpgrades (Requires IslandManager data, so init here or in start phase)
-        if (IslandUpgrades && IslandManager) {
+        if (IslandUpgrades && IslandManager && IslandManager.islands) {
             // Check if IslandUpgrades was already init in loop?
             // Currently SystemConfig says init:false for it because it needs args.
             IslandUpgrades.init(IslandManager.islands);
@@ -256,13 +286,13 @@ class Game {
         }
 
         // 2. Update Entities (via EntityManager)
-        if (EntityManager) {
+        if (entityManager) {
             if (profile) {
                 const start = performance.now();
-                EntityManager.update?.(dt);
+                entityManager.update?.(dt);
                 profile.entityManager = (profile.entityManager || 0) + (performance.now() - start);
             } else {
-                EntityManager.update?.(dt);
+                entityManager.update?.(dt);
             }
         }
     }

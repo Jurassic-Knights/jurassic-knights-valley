@@ -2,6 +2,9 @@
  * SFX_Human_Sturmtruppen - T2_01 Assault armor, SMG
  * Aggressive assault cry
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t2_01: function () {

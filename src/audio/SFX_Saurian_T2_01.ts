@@ -2,6 +2,9 @@
  * SFX_Saurian_DeinonychusLancer - T2_01 Lance cavalry
  * Aggressive raptor screech + lance ready
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t2_01: function () {

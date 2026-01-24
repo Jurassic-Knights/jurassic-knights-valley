@@ -5,15 +5,14 @@
  * Owner: SFX Engineer
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const ProceduralSFX: any;
-declare const EnvironmentRenderer: any;
-declare const WeatherSystem: any;
-declare const AssetLoader: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { ProceduralSFX } from './ProceduralSFX';
+import { WeatherSystem } from '../systems/WeatherSystem';
+import { AssetLoader } from '../core/AssetLoader';
+import { Registry } from '../core/Registry';
+import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
 
 const AudioManager = {
     context: null as AudioContext | null,

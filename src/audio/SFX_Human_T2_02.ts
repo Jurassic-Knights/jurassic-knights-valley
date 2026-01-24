@@ -1,6 +1,9 @@
 /**
  * SFX_Human_Crossbowman - T2_02 Ranged, visor helmet
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t2_02: function () {

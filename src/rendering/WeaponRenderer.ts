@@ -7,10 +7,10 @@
  * Owner: Director
  */
 
-// Ambient declarations for global dependencies
-declare const RenderConfig: any;
-declare const MeleeTrailVFX: any;
-declare const AssetLoader: any;
+import { RenderConfig } from '../config/RenderConfig';
+import { MeleeTrailVFX } from '../vfx/MeleeTrailVFX';
+import { AssetLoader } from '../core/AssetLoader';
+
 
 const WeaponRenderer = {
     // Image caches

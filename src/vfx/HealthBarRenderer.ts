@@ -7,8 +7,9 @@
  * Owner: VFX Specialist
  */
 
+import { ProgressBarRenderer } from './ProgressBarRenderer';
+
 // Ambient declaration for global dependency
-declare const ProgressBarRenderer: any;
 
 const HealthBarRenderer = {
     /**

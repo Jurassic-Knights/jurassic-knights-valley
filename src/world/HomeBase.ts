@@ -7,16 +7,20 @@
  * Owner: Level Architect
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const GameRenderer: any;
-declare const GameConstants: any;
-declare const IslandManager: any;
-declare const AssetLoader: any;
-declare const EntityManager: any;
-declare const EventBus: any;
-declare const CraftingUI: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { GameRenderer } from '../core/GameRenderer';
+import { GameConstants } from '../data/GameConstants';
+import { IslandManager } from './IslandManager';
+import { AssetLoader } from '../core/AssetLoader';
+import { entityManager } from '../core/EntityManager';
+import { EventBus } from '../core/EventBus';
+import { Registry } from '../core/Registry';
+declare const CraftingUI: any; // Module doesn't exist yet
+
+// CraftingUI module doesn't exist yet
+// entityManager instance is imported, but we also need the EntityManager reference for static access
+const EntityManager = entityManager;
+
 
 const HomeBase = {
     treeBorderWidth: 100,

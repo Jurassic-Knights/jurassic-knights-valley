@@ -2,6 +2,9 @@
  * SFX_Saurian_TriceratopsShieldbearer - T1_03 Tank with shield
  * Deep horn + shield clang
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t1_03: function () {

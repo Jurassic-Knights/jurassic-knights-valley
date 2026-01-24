@@ -2,6 +2,9 @@
  * SFX_Dino_Ankylosaurus - T3_03 Ankylosaurus Sound Handlers
  * Armored tank
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t3_03: function () {
@@ -42,8 +45,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Ankylosaurus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

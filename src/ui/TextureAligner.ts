@@ -450,5 +450,6 @@ class TextureAlignerService {
     }
 }
 
-TextureAligner = new TextureAlignerService();
+const TextureAligner = new TextureAlignerService();
 
+export { TextureAlignerService, TextureAligner };

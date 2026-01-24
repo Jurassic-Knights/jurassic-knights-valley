@@ -7,10 +7,10 @@
  * Owner: VFX Artist
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const VFXController: any;
-declare const VFXConfig: any;
+import { Logger } from '../core/Logger';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+
 
 const VFXTriggerService = {
     /**

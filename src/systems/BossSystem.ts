@@ -10,15 +10,17 @@
  * Work Package: 09-boss-system.md
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const BiomeConfig: any;
-declare const EntityConfig: any;
-declare const EntityManager: any;
-declare const Boss: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { entityManager } from '../core/EntityManager';
+import { Registry } from '../core/Registry';
+import { EntityConfig } from '../config/EntityConfig';
+import { BiomeConfig } from '../data/BiomeConfig';
+import { Boss } from '../gameplay/Boss';
+
+// Unmapped modules - need manual import
+
 
 class BossSystem {
     game: any = null;
@@ -88,8 +90,8 @@ class BossSystem {
         });
 
         // Register with EntityManager
-        if (EntityManager) {
-            EntityManager.add(boss);
+        if (entityManager) {
+            entityManager.add(boss);
         }
 
         // Track

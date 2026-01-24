@@ -5,17 +5,21 @@
  * States: WANDER, CHASE, ATTACK, LEASH_RETURN
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const EntityManager: any;
-declare const Events: any;
-declare const EntityTypes: any;
-declare const GameConstants: any;
-declare const AudioManager: any;
-declare const VFXController: any;
-declare const VFXConfig: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { entityManager } from '../core/EntityManager';
+import { GameConstants } from '../data/GameConstants';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+import { Registry } from '../core/Registry';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Events from GameConstants
+const Events = GameConstants.Events;
+
+// Unmapped modules - need manual import
+
 
 class EnemySystem {
     game: any = null;
@@ -37,8 +41,8 @@ class EnemySystem {
     }
 
     update(dt) {
-        if (!EntityManager) return;
-        const enemies = EntityManager.getByType('Enemy');
+        if (!entityManager) return;
+        const enemies = entityManager.getByType('Enemy');
         const hero = this.game?.hero;
 
         for (const enemy of enemies) {
@@ -121,9 +125,9 @@ class EnemySystem {
      * Alert pack members when one enemy aggros
      */
     alertPackMembers(aggroEnemy, target) {
-        if (!EntityManager) return;
+        if (!entityManager) return;
 
-        const enemies = EntityManager.getByType('Enemy');
+        const enemies = entityManager.getByType('Enemy');
         const alertRadius = GameConstants?.Biome?.PACK_ALERT_RADIUS || 300;
 
         for (const enemy of enemies) {

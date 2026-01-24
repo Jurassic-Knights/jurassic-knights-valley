@@ -14,17 +14,19 @@
  */
 import { Entity } from '../core/Entity';
 import { Logger } from '../core/Logger';
+import { EntityConfig } from '../config/EntityConfig';
+import { BiomeConfig } from '../data/BiomeConfig';
+import { EntityTypes } from '../config/EntityTypes';
+import { SpeciesScaleConfig } from '../config/SpeciesScaleConfig';
+import { HealthComponent } from '../components/HealthComponent';
+import { StatsComponent } from '../components/StatsComponent';
+import { CombatComponent } from '../components/CombatComponent';
+import { AIComponent } from '../components/AIComponent';
+import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
+import { Registry } from '../core/Registry';
 
-// Ambient declarations for not-yet-migrated modules
-declare const EntityConfig: any;
-declare const BiomeConfig: any;
-declare const EntityTypes: any;
-declare const SpeciesScaleConfig: any;
-declare const HealthComponent: any;
-declare const StatsComponent: any;
-declare const CombatComponent: any;
-declare const AIComponent: any;
-declare const EnemyAI: any;
+// Unmapped modules - need manual import
+
 
 class Enemy extends Entity {
     // Identity

@@ -2,6 +2,9 @@
  * SFX_Saurian_StegosaurusHeavy - T3_02 Tank with flail
  * Deep rumble + plate rattle + weapon ready
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t3_02: function () {

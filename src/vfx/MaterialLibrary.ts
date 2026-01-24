@@ -16,6 +16,10 @@
  * Owner: VFX Specialist
  */
 
+import { Registry } from '../core/Registry';
+import { AssetLoader } from '../core/AssetLoader';
+import { Logger } from '../core/Logger';
+
 const MaterialLibrary = {
     cache: new Map(),
 

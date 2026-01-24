@@ -2,6 +2,9 @@
  * SFX_Human_Sniper - T3_03 Long range specialist
  * Quiet, focused hunter
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t3_03: function () {

@@ -7,11 +7,11 @@
  * Owner: Graphics Engineer
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const AssetLoader: any;
-declare const BiomeManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { AssetLoader } from '../core/AssetLoader';
+import { BiomeManager } from '../world/BiomeManager';
+import { Registry } from '../core/Registry';
+
 
 class RoadRenderer {
     game: any = null;

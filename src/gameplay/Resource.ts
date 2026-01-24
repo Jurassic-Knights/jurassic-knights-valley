@@ -6,17 +6,19 @@
  * Owner: Director (engine), Gameplay Designer (values), Lore Writer (names)
  */
 import { Entity } from '../core/Entity';
+import { IslandManager } from '../world/IslandManager';
+import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '../vfx/VFXController';
+import { spawnManager } from '../systems/SpawnManager';
+import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
+import { EntityConfig } from '../config/EntityConfig';
+import { EntityTypes } from '../config/EntityTypes';
+import { Registry } from '../core/Registry';
 
-// Ambient declarations for not-yet-migrated modules
-declare const BaseResource: any;
-declare const EntityConfig: any;
-declare const EntityTypes: any;
-declare const IslandManager: any;
-declare const IslandUpgrades: any;
-declare const AudioManager: any;
-declare const VFXController: any;
-declare const SpawnManager: any;
-declare const ProgressBarRenderer: any;
+// Unmapped modules - need manual import
+declare const BaseResource: any; // TODO: Add proper import
+
 
 class Resource extends Entity {
     // Resource identity
@@ -203,8 +205,8 @@ class Resource extends Entity {
             this.respawnTimer = this.maxRespawnTime;
 
             // Trigger Drop
-            if (SpawnManager) {
-                SpawnManager.spawnDrop(this.x, this.y, this.resourceType, this.amount);
+            if (spawnManager) {
+                spawnManager.spawnDrop(this.x, this.y, this.resourceType, this.amount);
             }
 
             return true; // Yield loot

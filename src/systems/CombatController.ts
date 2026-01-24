@@ -7,11 +7,13 @@
  * Owner: Gameplay Engineer
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EntityManager: any;
-declare const HeroSystem: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { entityManager } from '../core/EntityManager';
+import { Registry } from '../core/Registry';
+import { heroSystem } from './HeroSystem';
+
+// Reference entityManager as EntityManager for global usage pattern
+const EntityManager = entityManager;
 
 class CombatController {
     game: any = null;
@@ -28,7 +30,6 @@ class CombatController {
     init(game: any) {
         this.game = game;
         Logger.info('[CombatController] Initialized');
-        if (Registry) Registry.register('CombatController', this);
     }
 
     /**
@@ -128,8 +129,8 @@ class CombatController {
 
             // Execute attack (Delegated to HeroSystem)
             let destroyed = false;
-            if (HeroSystem) {
-                destroyed = HeroSystem.tryAttack(hero, closestTarget);
+            if (heroSystem) {
+                destroyed = heroSystem.tryAttack(hero, closestTarget);
             }
 
             if (destroyed) {
@@ -155,5 +156,8 @@ class CombatController {
 
 // Create singleton and export
 const combatController = new CombatController();
+
+// Register at module load time
+Registry.register('CombatController', combatController);
 
 export { CombatController, combatController };

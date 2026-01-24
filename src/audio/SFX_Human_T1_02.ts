@@ -2,6 +2,9 @@
  * SFX_Human_Rifleman - T1_02 Infantry, bolt-action
  * Muffled battle cry
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t1_02: function () {

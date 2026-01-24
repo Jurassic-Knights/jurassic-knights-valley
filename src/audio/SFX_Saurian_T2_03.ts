@@ -2,6 +2,9 @@
  * SFX_Saurian_PachycephalosaurusCharger - T2_03 Headbutt attacker
  * Charging grunt
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t2_03: function () {

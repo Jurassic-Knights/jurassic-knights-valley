@@ -5,16 +5,15 @@
  * Owner: VFX Specialist
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const ParticleSystem: any;
-declare const Registry: any;
-declare const ProjectileVFX: any;
-declare const MeleeTrailVFX: any;
-declare const FloatingTextManager: any;
-declare const VFXConfig: any;
-declare const GameRenderer: any;
-declare const FloatingText: any;
+import { Logger } from '../core/Logger';
+import { ParticleSystem } from './ParticleSystem';
+import { Registry } from '../core/Registry';
+import { ProjectileVFX } from './ProjectileVFX';
+import { MeleeTrailVFX } from './MeleeTrailVFX';
+import { FloatingTextManager, FloatingText } from './FloatingText';
+import { VFXConfig } from '../data/VFXConfig';
+import { GameRenderer } from '../core/GameRenderer';
+
 
 class VFXSystem {
     // Property declarations
@@ -49,7 +48,6 @@ class VFXSystem {
 
         this.initialized = true;
         Logger.info('[VFXSystem] Initialized');
-        if (Registry) Registry.register('VFXController', this);
     }
 
     /**
@@ -213,7 +211,7 @@ class VFXSystem {
             const viewport = {
                 x: GameRenderer.viewport.x,
                 y: GameRenderer.viewport.y,
-                scale: GameRenderer.viewport.scale,
+                scale: 1, // GameRenderer doesn't use scale, always 1:1
                 screenX: 0,
                 screenY: 0
             };
@@ -294,5 +292,8 @@ class VFXSystem {
 
 // Export Singleton
 const VFXController = new VFXSystem();
+
+// Register at module load time
+Registry.register('VFXController', VFXController);
 
 export { VFXSystem, VFXController };

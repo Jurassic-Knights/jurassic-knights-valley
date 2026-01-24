@@ -2,6 +2,9 @@
  * SFX_Human_Feldwebel - T4_01 Sergeant, officer
  * Commanding officer shout
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t4_01: function () {

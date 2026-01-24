@@ -9,10 +9,11 @@
  * Owner: Core Infrastructure
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { Registry } from '../core/Registry';
+
 
 class InputSystem {
     // game reference stored via init()
@@ -130,4 +131,5 @@ class InputSystem {
 
 // Create and export singleton instance
 const inputSystem = new InputSystem();
+if (Registry) Registry.register('InputSystem', inputSystem);
 export { InputSystem, inputSystem };

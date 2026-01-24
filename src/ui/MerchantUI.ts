@@ -2,12 +2,14 @@
  * MerchantPanel - Controller for merchant purchase modal
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const UIPanel: any;
-declare const EventBus: any;
-declare const IslandUpgrades: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { Registry } from '../core/Registry';
+
+// Unmapped modules - need manual import
+import { UIPanel } from './core/UIPanel';
+
 
 class MerchantPanel extends UIPanel {
     // Property declarations

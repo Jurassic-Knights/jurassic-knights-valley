@@ -7,8 +7,6 @@
  * Owner: Gameplay Designer
  */
 
-// Ambient declarations
-declare const EntityRegistry: any;
 
 const HeroDefaults = {
     // Default equipment by slot (use entity IDs from src/entities/equipment/)

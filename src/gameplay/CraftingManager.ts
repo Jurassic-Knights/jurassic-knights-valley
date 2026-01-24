@@ -8,6 +8,21 @@
  * - Finished items must be claimed (or auto-added, for now auto-add/notify)
  */
 
+import { Logger } from '../core/Logger';
+import { Registry } from '../core/Registry';
+import { EventBus } from '../core/EventBus';
+import { GameState } from '../core/State';
+import { GameInstance } from '../core/Game';
+import { UIManager } from '../ui/UIManager';
+import { spawnManager as SpawnManager } from '../systems/SpawnManager';
+import { IslandManager } from '../world/IslandManager';
+
+// Unmapped modules - need manual import
+declare const EconomySystem: any; // TODO: Add proper import
+
+// EconomySystem is circular - use declare
+
+
 const CraftingManager = {
     // Configuration
     maxSlots: 12,

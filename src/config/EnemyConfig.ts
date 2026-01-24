@@ -5,8 +5,6 @@
  * This file provides lookup helpers and combat defaults only.
  */
 
-// Ambient declarations
-declare const EntityRegistry: any;
 
 const EnemyConfig = {
     defaults: {

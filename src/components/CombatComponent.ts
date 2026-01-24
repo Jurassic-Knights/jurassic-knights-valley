@@ -1,7 +1,18 @@
 /**
  * CombatComponent - Manages Attack Stats and Cooldowns
  */
+import { Component } from '../core/Component';
+import { Registry } from '../core/Registry';
+import { EventBus } from '../core/EventBus';
+
 class CombatComponent extends Component {
+    damage: number;
+    rate: number;
+    range: number;
+    staminaCost: number;
+    cooldownTimer: number;
+    canAttack: boolean;
+
     constructor(parent: any, config: any = {}) {
         super(parent);
         this.damage = config.damage || 10;

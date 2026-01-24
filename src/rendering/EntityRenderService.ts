@@ -5,17 +5,19 @@
  * Owner: EntityRenderService
  */
 
-// Ambient declarations
-declare const EntityManager: any;
-declare const EntityTypes: any;
-declare const Registry: any;
+import { entityManager } from '../core/EntityManager';
+import { Registry } from '../core/Registry';
+import { EntityTypes } from '../config/EntityTypes';
+
+// Unmapped modules - need manual import
+
 
 const EntityRenderService = {
     // GC Optimization: Pre-allocated array for Y-sorting
     _sortableEntities: [],
 
     /**
-     * Collect visible entities from EntityManager and Y-sort them
+     * Collect visible entities from entityManager and Y-sort them
      * @param {object} visibleBounds - {left, top, right, bottom, width, height}
      * @returns {array} Sorted array of active entities
      */
@@ -23,7 +25,7 @@ const EntityRenderService = {
         const sortableEntities = this._sortableEntities;
         sortableEntities.length = 0; // Clear without deallocation
 
-        if (!EntityManager) return sortableEntities;
+        if (!entityManager) return sortableEntities;
 
         // Add padding to prevent culling objects partially on screen
         const bounds = {
@@ -33,7 +35,7 @@ const EntityRenderService = {
             height: visibleBounds.height + 400
         };
 
-        const allEntities = EntityManager.queryRect(bounds);
+        const allEntities = entityManager.queryRect(bounds);
 
         // Filter active entities
         for (const e of allEntities) {

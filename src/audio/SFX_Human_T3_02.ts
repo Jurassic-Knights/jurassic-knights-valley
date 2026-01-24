@@ -2,6 +2,9 @@
  * SFX_Human_Flametrooper - T3_02 Fire attacker, heavy armor
  * Deep muffled shout + pilot light hiss
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_human_t3_02: function () {

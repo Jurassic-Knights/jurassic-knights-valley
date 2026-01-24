@@ -5,6 +5,11 @@
  * Methods: updateAnimation, _loadSprite, render, renderHealthBar, renderThreatIndicator
  */
 
+import { Enemy } from './EnemyCore';
+import { Entity } from '../core/Entity';
+import { AssetLoader } from '../core/AssetLoader';
+import { Logger } from '../core/Logger';
+
 /**
  * Update animation frame
  */

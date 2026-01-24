@@ -4,16 +4,17 @@
  * Owner: Director
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const IslandManager: any;
-declare const GameInstance: any;
-declare const PlatformManager: any;
-declare const GameRenderer: any;
-declare const TimeSystem: any;
-declare const GameConstants: any;
-declare const EventBus: any;
-declare const WeatherSystem: any;
+import { Logger } from '../core/Logger';
+import { IslandManager } from '../world/IslandManager';
+import { PlatformManager } from '../core/PlatformManager';
+import { GameRenderer } from '../core/GameRenderer';
+import { TimeSystem } from '../systems/TimeSystem';
+import { GameConstants } from '../data/GameConstants';
+import { EventBus } from '../core/EventBus';
+import { WeatherSystem } from '../systems/WeatherSystem';
+import { GameInstance } from '../core/Game';
+import { Registry } from '../core/Registry';
+
 
 const DebugUI = {
     container: null as HTMLElement | null,
@@ -280,6 +281,9 @@ const DebugUI = {
         }
     }
 };
+
+// Register with Registry
+if (Registry) Registry.register('DebugUI', DebugUI);
 
 // ES6 Module Export
 export { DebugUI };

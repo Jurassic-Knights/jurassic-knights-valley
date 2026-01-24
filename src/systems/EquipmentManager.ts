@@ -6,11 +6,10 @@
  * Owner: Gameplay Engineer
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const EquipmentSlotsConfig: any;
-declare const SetBonusesConfig: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { SetBonusesConfig } from '../config/SetBonusesConfig';
+import { EquipmentSlotsConfig } from '../config/EquipmentSlotsConfig';
 
 class EquipmentManager {
     owner: any;

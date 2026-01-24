@@ -2,6 +2,9 @@
  * SFX_Saurian_AllosaurusGunner - T3_01 Ranged, machine gun
  * Powerful roar + gun ready
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_saurian_t3_01: function () {

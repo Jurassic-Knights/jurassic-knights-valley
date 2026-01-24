@@ -1,6 +1,11 @@
 /**
  * InventoryComponent - Manages Entity Inventory
  */
+import { Component } from '../core/Component';
+import { Registry } from '../core/Registry';
+import { GameState } from '../core/State';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
 class InventoryComponent extends Component {
     constructor(parent: any, config: any = {}) {
         super(parent);

@@ -5,14 +5,13 @@
  * Layout matches EquipmentUI: header, tabs (sub-filters), grid, footer (categories).
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const UIManager: any;
-declare const EventBus: any;
-declare const AssetLoader: any;
-declare const EntityRegistry: any;
-declare const GameInstance: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+// UIManager accessed via Registry to avoid circular dependency
+import { EventBus } from '../core/EventBus';
+import { AssetLoader } from '../core/AssetLoader';
+import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
+import { GameInstance } from '../core/Game';
 
 class InventoryPanel {
     // Property declarations
@@ -29,6 +28,14 @@ class InventoryPanel {
         } else {
             this._init();
         }
+    }
+
+    /**
+     * Public init() for SystemConfig bootloader compatibility.
+     * Actual initialization is handled in constructor via _init().
+     */
+    init() {
+        // No-op: already initialized in constructor
     }
 
     _init() {
@@ -52,8 +59,9 @@ class InventoryPanel {
         this._createContainer();
 
         // Register with UIManager for fullscreen exclusivity
-        if (UIManager && UIManager.registerFullscreenUI) {
-            UIManager.registerFullscreenUI(this);
+        const uiMgr = Registry?.get('UIManager');
+        if (uiMgr && uiMgr.registerFullscreenUI) {
+            uiMgr.registerFullscreenUI(this);
         }
 
         // Listen for inventory updates
@@ -114,8 +122,9 @@ class InventoryPanel {
 
     open() {
         // Close other fullscreen UIs first
-        if (UIManager && UIManager.closeOtherFullscreenUIs) {
-            UIManager.closeOtherFullscreenUIs(this);
+        const uiMgr = Registry?.get('UIManager');
+        if (uiMgr && uiMgr.closeOtherFullscreenUIs) {
+            uiMgr.closeOtherFullscreenUIs(this);
         }
 
         // Swap footer buttons to inventory mode

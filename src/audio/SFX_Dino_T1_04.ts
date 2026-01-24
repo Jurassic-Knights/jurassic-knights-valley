@@ -2,6 +2,9 @@
  * SFX_Dino_Gallimimus - T1_04 Gallimimus Sound Handlers
  * Ostrich-like, fast runner
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t1_04: function () {
@@ -53,8 +56,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_Gallimimus] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

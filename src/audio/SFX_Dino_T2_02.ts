@@ -2,6 +2,9 @@
  * SFX_Dino_PackAlpha - T2_02 Pack Alpha Sound Handlers
  * Battle-worn raptor boss
  */
+import { SFX } from './SFX_Core';
+
+
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t2_02: function () {
@@ -83,8 +86,6 @@
     };
 
     if (SFX) {
-        SFX.register(handlers);
-        Logger.info('[SFX_Dino_PackAlpha] Registered 5 sounds');
-    }
+        SFX.register(handlers);    }
 })();
 

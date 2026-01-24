@@ -5,12 +5,12 @@
  * across the screen to add life to the world.
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const AssetLoader: any;
-declare const GameRenderer: any;
-declare const AudioManager: any;
-declare const Registry: any;
+import { Logger } from '../core/Logger';
+import { AssetLoader } from '../core/AssetLoader';
+import { GameRenderer } from '../core/GameRenderer';
+import { AudioManager } from '../audio/AudioManager';
+import { Registry } from '../core/Registry';
+
 
 class AmbientCreature {
     type: string;

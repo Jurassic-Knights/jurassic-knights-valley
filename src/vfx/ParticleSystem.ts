@@ -5,9 +5,9 @@
  * Owner: VFX Specialist
  */
 
-// Ambient declarations for global dependencies
-declare const GameRenderer: any;
-declare const ParticleRenderer: any;
+import { GameRenderer } from '../core/GameRenderer';
+import { ParticleRenderer } from './ParticleRenderer';
+
 
 const ParticleSystem = {
     particles: [] as any[],

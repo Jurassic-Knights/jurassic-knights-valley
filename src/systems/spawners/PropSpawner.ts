@@ -7,12 +7,16 @@
  * Owner: Level Architect
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const Prop: any;
-declare const PropConfig: any;
-declare const GameConstants: any;
-declare const EntityManager: any;
+import { Logger } from '../../core/Logger';
+import { Prop } from '../../world/Prop';
+import { GameConstants } from '../../data/GameConstants';
+import { entityManager } from '../../core/EntityManager';
+import { PropConfig } from '../../data/PropConfig';
+import { Registry } from '../../core/Registry';
+
+
+// Unmapped modules - need manual import
+
 
 class PropSpawner {
     // Property declarations
@@ -206,7 +210,7 @@ class PropSpawner {
             islandGridX: island.gridX,
             islandGridY: island.gridY
         });
-        if (EntityManager) EntityManager.add(prop);
+        if (entityManager) entityManager.add(prop);
     }
 }
 

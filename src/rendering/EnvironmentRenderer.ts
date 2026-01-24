@@ -7,13 +7,12 @@
  * - Weather Particles (Rain, Snow, Fog)
  */
 
-// Ambient declarations for global dependencies
-declare const Logger: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const RainVFX: any;
-declare const SnowVFX: any;
-declare const ProceduralSFX: any;
+import { Logger } from '../core/Logger';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { ProceduralSFX } from '../audio/ProceduralSFX';
+import { RainVFX } from '../vfx/weather/RainVFX';
+import { SnowVFX } from '../vfx/weather/SnowVFX';
 
 class EnvironmentRenderer {
     // Canvas references
@@ -440,5 +439,8 @@ class EnvironmentRenderer {
 
 // Create singleton and export
 const environmentRenderer = new EnvironmentRenderer();
+
+import { Registry } from '../core/Registry';
+Registry.register('EnvironmentRenderer', environmentRenderer);
 
 export { EnvironmentRenderer, environmentRenderer };

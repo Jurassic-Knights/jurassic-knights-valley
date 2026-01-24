@@ -4,9 +4,11 @@
  * Handles DOM reparenting and state management
  */
 
-// Ambient declarations
-declare const Logger: any;
-declare const InventoryUI: any;
+import { Logger } from '../../core/Logger';
+import { InventoryUI } from '../InventoryUI';
+import { Registry } from '../../core/Registry';
+
+
 
 class BaseLayout {
     ui: any;

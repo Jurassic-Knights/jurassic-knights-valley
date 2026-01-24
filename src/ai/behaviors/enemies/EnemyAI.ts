@@ -9,14 +9,18 @@
  * Owner: Combat System
  */
 
-// Ambient declarations for global dependencies
-declare const EntityManager: any;
-declare const Game: any;
-declare const AudioManager: any;
-declare const EventBus: any;
-declare const GameConstants: any;
-declare const BiomeConfig: any;
-declare const EntityTypes: any;
+import { entityManager } from '../../../core/EntityManager';
+import { AudioManager } from '../../../audio/AudioManager';
+import { EventBus } from '../../../core/EventBus';
+import { GameConstants } from '../../../data/GameConstants';
+import { BiomeConfig } from '../../../data/BiomeConfig';
+import { EntityTypes } from '../../../config/EntityTypes';
+import { Game } from '../../../core/Game';
+import { Registry } from '../../../core/Registry';
+
+
+// Unmapped modules - need manual import
+
 
 const EnemyAI = {
     /**
@@ -49,7 +53,7 @@ const EnemyAI = {
      */
     updateWander(enemy, dt) {
         // Check for hero aggro
-        const hero = EntityManager?.getByType('Hero')?.[0] || Game?.hero;
+        const hero = entityManager?.getByType('Hero')?.[0] || Game?.hero;
         if (hero && !hero.isDead && this.canSee(enemy, hero)) {
             enemy.target = hero;
             enemy.state = 'chase';
@@ -177,15 +181,15 @@ const EnemyAI = {
      * Trigger pack aggro for group members
      */
     triggerPackAggro(enemy, target) {
-        if (!EntityManager || !enemy.groupId) return;
+        if (!entityManager || !enemy.groupId) return;
 
         const packRadius =
             BiomeConfig?.patrolDefaults?.packAggroRadius ||
             GameConstants?.Biome?.PACK_AGGRO_RADIUS ||
             150;
 
-        const enemies = EntityManager.getByType(EntityTypes.ENEMY_DINOSAUR).concat(
-            EntityManager.getByType(EntityTypes.ENEMY_SOLDIER)
+        const enemies = entityManager.getByType(EntityTypes.ENEMY_DINOSAUR).concat(
+            entityManager.getByType(EntityTypes.ENEMY_SOLDIER)
         );
 
         for (const other of enemies) {

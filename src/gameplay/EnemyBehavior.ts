@@ -7,6 +7,23 @@
  *          triggerPackAggro, die, respawn
  */
 
+import { Enemy } from './EnemyCore';
+import { Logger } from '../core/Logger';
+import { entityManager as EntityManager } from '../core/EntityManager';
+import { EventBus } from '../core/EventBus';
+import { GameConstants } from '../data/GameConstants';
+import { BiomeConfig } from '../data/BiomeConfig';
+import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '../vfx/VFXController';
+import { VFXConfig } from '../data/VFXConfig';
+import { IslandManager } from '../world/IslandManager';
+import { EntityTypes } from '../config/EntityTypes';
+import { spawnManager as SpawnManager } from '../systems/SpawnManager';
+import { Game } from '../core/Game';
+
+import { pathfindingSystem as PathfindingSystem } from '../systems/PathfindingSystem';
+
+// PathfindingSystem may not exist, declare as optional
 /**
  * Move along a calculated A* path to destination
  */

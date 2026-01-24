@@ -5,6 +5,13 @@
  * Owner: Director
  */
 
+import { Logger } from './core/Logger';
+// Import all systems first to ensure they register with Registry before Game.init()
+import './SystemLoader';
+import { GameInstance } from './core/Game';
+
+console.log('[Main] All modules imported successfully');
+
 (async function main() {
     Logger.info('=== Jurassic Knights: Valley ===');
 
@@ -58,4 +65,3 @@
         }
     }
 })();
-
