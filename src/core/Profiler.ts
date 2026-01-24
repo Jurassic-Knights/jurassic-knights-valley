@@ -9,7 +9,7 @@ import { Logger } from './Logger';
 import { entityManager } from './EntityManager';
 import { VFXController } from '../vfx/VFXController';
 import { IslandManager } from '../world/IslandManager';
-import { Game } from './Game';
+import { GameInstance } from './Game';
 import { Registry } from './Registry';
 
 
@@ -124,16 +124,16 @@ const Profiler = {
             }
 
             // Get current zone
-            if (IslandManager && Game?.hero) {
-                const hero = Game.hero;
+            if (IslandManager && GameInstance?.hero) {
+                const hero = GameInstance.hero;
                 const island = IslandManager.getIslandAt?.(hero.x, hero.y);
                 this.currentZone = island?.name || 'Unknown';
             }
 
             // Get hero position
-            if (Game?.hero) {
-                this.heroPos.x = Math.round(Game.hero.x);
-                this.heroPos.y = Math.round(Game.hero.y);
+            if (GameInstance?.hero) {
+                this.heroPos.x = Math.round(GameInstance.hero.x);
+                this.heroPos.y = Math.round(GameInstance.hero.y);
             }
 
             this.render();

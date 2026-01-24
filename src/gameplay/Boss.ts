@@ -18,6 +18,14 @@ import { Registry } from '../core/Registry';
 
 
 class Boss extends Enemy {
+    // Boss property declarations
+    isBoss: boolean = true;
+    bossType: string = 'unknown_boss';
+    bossName: string = 'Unknown Boss';
+    abilities: any[] = [];
+    glowColor: string = '#FF4500';
+    scale: number = 1.2;
+
     /**
      * Create a boss entity
      * @param {object} config - Boss configuration

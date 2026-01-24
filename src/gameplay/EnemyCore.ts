@@ -381,6 +381,13 @@ class Enemy extends Entity {
     updateAnimation(_dt: number): void {
         // Implementation in EnemyBehavior.ts via prototype
     }
+
+    /**
+     * Die method (stub - implemented in EnemyBehavior.ts prototype extension)
+     */
+    die(_killer: any = null): void {
+        // Implementation in EnemyBehavior.ts via prototype
+    }
 }
 
 // ES6 Module Export
