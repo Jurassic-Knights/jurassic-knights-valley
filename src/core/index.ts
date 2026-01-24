@@ -12,7 +12,7 @@ export { Logger } from './Logger';
 export { Registry } from './Registry';
 export { EventBus } from './EventBus';
 export { Component } from './Component';
-export type { IEntity } from './Component';
+export type { IEntity } from '../types/core';
 
 // Asset management
 export { AssetLoader } from './AssetLoader';
