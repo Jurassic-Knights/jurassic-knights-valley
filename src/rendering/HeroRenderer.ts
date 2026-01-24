@@ -106,7 +106,7 @@ class HeroRendererSystem {
         // Health Bar (above hero) - Use ColorPalette
         const healthY = hero.y - hero.height / 2 - 18;
         const healthPercent = Math.max(0, Math.min(1, hero.health / hero.maxHealth));
-        const colors = ColorPalette || {};
+        const colors = ColorPalette;
 
         this.drawBar(
             ctx,
