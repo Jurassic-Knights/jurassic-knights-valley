@@ -8,7 +8,7 @@
  * Owner: UI Engineer
  */
 
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { UIManager } from './UIManager';
 import { Logger } from '../core/Logger';
 import { EquipmentSlotManager } from './EquipmentSlotManager';
@@ -20,19 +20,21 @@ import { HeroRenderer } from '../rendering/HeroRenderer';
 import { Registry } from '../core/Registry';
 import { GameInstance } from '../core/Game';
 import { EntityRegistry } from '../entities/EntityLoader';
+import { HeroSkinSelector } from './HeroSkinSelector';
+import type { EquipmentItem } from '../types/ui';
 
 class EquipmentUI {
     // Property declarations
     isOpen: boolean;
     selectedMode: string;
     selectedCategory: string;
-    selectedItem: any;
+    selectedItem: EquipmentItem | null;
     container: HTMLElement | null;
-    cachedEquipment: any[];
+    cachedEquipment: EquipmentItem[];
     lastClickedItemId: string | null;
     lastClickTime: number;
     slotSelectionMode: boolean;
-    pendingEquipItem: any;
+    pendingEquipItem: EquipmentItem | null;
     targetEquipSet: number;
     originalFooterConfigs: any;
     slots: string[];
@@ -150,20 +152,22 @@ class EquipmentUI {
 
         // Hero portrait click - open skin selector
         if (target.closest('.equip-character')) {
-            this._openHeroSkinSelector();
+            HeroSkinSelector.setContainer(this.container);
+            HeroSkinSelector.open();
             return;
         }
 
         // Hero skin selector modal - select skin
         const skinOption = target.closest('.hero-skin-option');
         if (skinOption?.dataset.skinId) {
-            this._selectHeroSkin(skinOption.dataset.skinId);
+            const charSprite = this.container?.querySelector('.character-sprite') as HTMLElement | null;
+            HeroSkinSelector.selectSkin(skinOption.dataset.skinId, charSprite);
             return;
         }
 
         // Hero skin selector close
         if (target.closest('.hero-skin-modal-close') || target.closest('.hero-skin-modal-backdrop')) {
-            this._closeHeroSkinSelector();
+            HeroSkinSelector.close();
             return;
         }
 
@@ -541,11 +545,7 @@ class EquipmentUI {
         if (item && nameEl) {
             nameEl.textContent = item.name;
             if (statsRow) {
-                let statsHtml = '';
-                if (item.stats?.damage) statsHtml += `<div class="summary-stat"><span class="stat-icon">??</span> DMG <span>+${item.stats.damage}</span></div>`;
-                if (item.stats?.armor) statsHtml += `<div class="summary-stat"><span class="stat-icon">???</span> ARM <span>+${item.stats.armor}</span></div>`;
-                if (item.stats?.speed) statsHtml += `<div class="summary-stat"><span class="stat-icon">??</span> SPD <span>+${item.stats.speed}</span></div>`;
-                statsRow.innerHTML = statsHtml || '<div class="summary-stat empty">Double-tap to equip</div>';
+                statsRow.innerHTML = EquipmentUIRenderer.renderItemStats(item);
             }
             this.container.querySelector('.equip-summary-bar')?.classList.add('has-item');
             this.container.querySelector('.equip-summary-bar')?.classList.remove('empty');
@@ -591,157 +591,6 @@ class EquipmentUI {
                 this.container.querySelector('.equip-summary-bar')?.classList.remove('empty');
             }
         }
-    }
-
-    // ============================================
-    // HERO SKIN SELECTOR
-    // ============================================
-
-    /**
-     * Open the hero skin selector modal
-     */
-    _openHeroSkinSelector() {
-        // Get available hero skins from EntityRegistry
-        const heroSkins = this._getAvailableHeroSkins();
-        const currentSkin = this._getCurrentHeroSkin();
-
-        // Create modal HTML
-        const modalHtml = `
-            <div class="hero-skin-modal-backdrop"></div>
-            <div class="hero-skin-modal">
-                <button class="hero-skin-modal-close">?</button>
-                <div class="hero-skin-modal-title">Select Hero Skin</div>
-                <div class="hero-skin-grid">
-                    ${heroSkins.map(skin => `
-                        <div class="hero-skin-option ${skin.id === currentSkin ? 'selected' : ''}" data-skin-id="${skin.id}">
-                            <div class="hero-skin-image" data-icon-id="${skin.id}"></div>
-                            <div class="hero-skin-name">${skin.name}</div>
-                        </div>
-                    `).join('')}
-                    ${heroSkins.length === 0 ? '<div class="hero-skin-empty">No hero skins available</div>' : ''}
-                </div>
-            </div>
-        `;
-
-        // Append to container
-        const modalContainer = document.createElement('div');
-        modalContainer.id = 'hero-skin-selector';
-        modalContainer.className = 'hero-skin-selector-overlay';
-        modalContainer.innerHTML = modalHtml;
-        this.container.appendChild(modalContainer);
-
-        // Load skin images
-        this._loadHeroSkinImages(modalContainer);
-    }
-
-    /**
-     * Close the hero skin selector modal
-     */
-    _closeHeroSkinSelector() {
-        const modal = this.container.querySelector('#hero-skin-selector');
-        if (modal) {
-            modal.remove();
-        }
-    }
-
-    /**
-     * Select a hero skin
-     * @param {string} skinId - The skin ID to select
-     */
-    _selectHeroSkin(skinId) {
-        // Save to hero or localStorage
-        const hero = GameInstance?.hero;
-        if (hero) {
-            hero.selectedSkin = skinId;
-        }
-        // Also save to localStorage for persistence
-        localStorage.setItem('heroSelectedSkin', skinId);
-
-        // Update the character sprite in the UI
-        const charSprite = this.container.querySelector('.character-sprite');
-        if (charSprite) {
-            // Get the image path from EntityRegistry
-            const skinData = EntityRegistry?.hero?.[skinId];
-            let path = null;
-            if (skinData?.files?.clean) {
-                path = 'assets/' + skinData.files.clean;
-            } else if (skinData?.files?.original) {
-                path = 'assets/' + skinData.files.original;
-            }
-            if (path) {
-                (charSprite as HTMLElement).style.backgroundImage = `url(${path})`;
-                (charSprite as HTMLElement).style.backgroundSize = 'cover';
-                (charSprite as HTMLElement).style.backgroundPosition = 'center';
-            }
-        }
-
-        // Update HeroRenderer to use new skin
-        if (HeroRenderer) {
-            HeroRenderer.setSkin(skinId);
-        }
-
-        // Emit event for other systems
-        if (EventBus) {
-            EventBus.emit('HERO_SKIN_CHANGED', { skinId });
-        }
-
-        // Close modal
-        this._closeHeroSkinSelector();
-    }
-
-    /**
-     * Get available hero skins from EntityRegistry
-     * @returns {Array} Array of {id, name, files} objects
-     */
-    _getAvailableHeroSkins() {
-        // Try to get from EntityRegistry
-        if (EntityRegistry?.hero) {
-            return Object.values(EntityRegistry.hero).map((skin: any) => ({
-                id: skin.id,
-                name: skin.name || skin.id,
-                files: skin.files
-            }));
-        }
-        // Fallback: just return empty array
-        return [];
-    }
-
-    /**
-     * Get the currently selected hero skin
-     * @returns {string} Current skin ID
-     */
-    _getCurrentHeroSkin() {
-        // Check hero first
-        const hero = GameInstance?.hero;
-        if (hero?.selectedSkin) {
-            return hero.selectedSkin;
-        }
-        // Check localStorage
-        return localStorage.getItem('heroSelectedSkin') || 'hero_t1_01';
-    }
-
-    /**
-     * Load hero skin images in the modal
-     * @param {HTMLElement} container - Modal container
-     */
-    _loadHeroSkinImages(container) {
-        const skinImages = container.querySelectorAll('.hero-skin-image[data-icon-id]');
-        skinImages.forEach(el => {
-            const iconId = el.dataset.iconId;
-            // Get image path from EntityRegistry (no leading slash)
-            let path = null;
-            const skinData = EntityRegistry?.hero?.[iconId];
-            if (skinData?.files?.clean) {
-                path = 'assets/' + skinData.files.clean;
-            } else if (skinData?.files?.original) {
-                path = 'assets/' + skinData.files.original;
-            }
-            if (path) {
-                el.style.backgroundImage = `url(${path})`;
-                el.style.backgroundSize = 'cover';
-                el.style.backgroundPosition = 'center';
-            }
-        });
     }
 }
 

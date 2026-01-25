@@ -7,7 +7,7 @@
 
 import { Logger } from '../../core/Logger';
 import { EventBus } from '../../core/EventBus';
-import { GameConstants } from '../../data/GameConstants';
+import { GameConstants, getConfig } from '../../data/GameConstants';
 import { Registry } from '../../core/Registry';
 
 
@@ -20,15 +20,15 @@ class HUDControllerClass {
     initListeners() {
         if (!EventBus) return;
 
-        EventBus.on(GameConstants.Events.HERO_STAMINA_CHANGE, (data: any) => this.updateStamina(data));
-        EventBus.on(GameConstants.Events.HERO_HEALTH_CHANGE, (data: any) => this.updateHealth(data));
-        EventBus.on(GameConstants.Events.INVENTORY_UPDATED, (data: any) => this.updateResources(data));
-        EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: any) =>
+        EventBus.on(GameConstants.Events.HERO_STAMINA_CHANGE, (data: { current: number; max: number }) => this.updateStamina(data));
+        EventBus.on(GameConstants.Events.HERO_HEALTH_CHANGE, (data: { current: number; max: number }) => this.updateHealth(data));
+        EventBus.on(GameConstants.Events.INVENTORY_UPDATED, (data: { resources?: Record<string, number>; gold?: number }) => this.updateResources(data));
+        EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: { isHome: boolean }) =>
             this.updateRestButton(data)
         );
     }
 
-    updateStamina(data: any) {
+    updateStamina(data: { current: number; max: number }) {
         // Update new resolve bar (below quest)
         const fill = document.getElementById('resolve-fill');
         const text = document.getElementById('resolve-text');
@@ -38,14 +38,14 @@ class HUDControllerClass {
         if (text) text.textContent = `${Math.floor(data.current)} / ${Math.floor(data.max)}`;
     }
 
-    updateHealth(data: any) {
+    updateHealth(data: { current: number; max: number }) {
         const bar = document.getElementById('health-bar');
         const text = document.getElementById('health-text');
         if (bar) bar.style.width = `${(data.current / data.max) * 100}%`;
         if (text) text.textContent = String(Math.floor(data.current));
     }
 
-    updateRestButton(data: any) {
+    updateRestButton(data: { isHome: boolean }) {
         const btn = document.getElementById('btn-rest');
         if (btn) btn.style.display = data.isHome ? 'flex' : 'none';
 

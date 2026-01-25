@@ -9,15 +9,13 @@
 
 import { Logger } from '../core/Logger';
 import { GameRenderer } from '../core/GameRenderer';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { IslandManager } from './IslandManager';
 import { AssetLoader } from '../core/AssetLoader';
 import { entityManager } from '../core/EntityManager';
 import { EventBus } from '../core/EventBus';
 import { Registry } from '../core/Registry';
-declare const CraftingUI: any; // Module doesn't exist yet
 
-// CraftingUI module doesn't exist yet
 // entityManager instance is imported, but we also need the EntityManager reference for static access
 const EntityManager = entityManager;
 
@@ -86,13 +84,7 @@ const HomeBase = {
         // Trees are now spawned by SpawnManager.spawnHomeIslandTrees()
         Logger.info('[HomeBase]', 'Initialized (trees spawned via SpawnManager)');
 
-        // Bind Forge Button
-        const btn = document.getElementById('btn-open-craft');
-        if (btn) {
-            btn.onclick = () => {
-                if (CraftingUI) CraftingUI.open();
-            };
-        }
+        // Forge Button binding removed - CraftingUI not implemented
     },
 
     update(dt) {
@@ -105,7 +97,7 @@ const HomeBase = {
         if (bounds) {
             const centerX = bounds.x + bounds.width / 2;
             const centerY = bounds.y + bounds.height / 2;
-            const restRadius = GameConstants.Interaction.REST_AREA_RADIUS;
+            const restRadius = getConfig().Interaction.REST_AREA_RADIUS;
 
             const dx = hero.x - centerX;
             const dy = hero.y - centerY;
@@ -114,12 +106,13 @@ const HomeBase = {
             const wasAtHome = this._heroAtHome || false;
             const isAtHome = dist < restRadius;
 
+            // ALWAYS sync the hero state with current radius check
+            hero.isAtHomeOutpost = isAtHome;
+
             if (isAtHome && !wasAtHome) {
-                hero.isAtHomeOutpost = true;
                 if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
                 Logger.debug('[HomeBase]', 'Hero entered rest area');
             } else if (!isAtHome && wasAtHome) {
-                hero.isAtHomeOutpost = false;
                 if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
                 Logger.debug('[HomeBase]', 'Hero exited rest area');
             }
@@ -134,7 +127,7 @@ const HomeBase = {
             const dist = Math.sqrt(dx * dx + dy * dy);
 
             const wasAtForge = this._heroAtForge || false;
-            const isAtForge = dist < GameConstants.Interaction.FORGE_AREA_RADIUS;
+            const isAtForge = dist < getConfig().Interaction.FORGE_AREA_RADIUS;
 
             if (isAtForge && !wasAtForge) {
                 if (EventBus) EventBus.emit(GameConstants.Events.FORGE_ENTERED);

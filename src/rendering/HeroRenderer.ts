@@ -16,6 +16,7 @@ import { EntityRegistry } from '../entities/EntityLoader';
 import { ColorPalette } from '../config/ColorPalette';
 import { environmentRenderer } from './EnvironmentRenderer';
 import { EntityTypes } from '../config/EntityTypes';
+import { getWeaponStats } from '../data/GameConfig';
 
 // Unmapped modules - need manual import
 
@@ -531,9 +532,9 @@ class HeroRendererSystem {
         // Check if using 2H weapon (only show one circle)
         const is2H = hand1Item?.gripType === '2-hand';
 
-        // Get ranges
-        const hand1Range = hand1Item?.stats?.range || 0;
-        const hand2Range = (!is2H && hand2Item?.stats?.range) || 0;
+        // Get ranges using additive model (base from config + entity bonus)
+        const hand1Range = hand1Item ? getWeaponStats(hand1Item).range : 0;
+        const hand2Range = (!is2H && hand2Item) ? getWeaponStats(hand2Item).range : 0;
 
         // Determine which is inner (smaller range = thicker line)
         if (hand1Range && hand2Range) {

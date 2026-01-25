@@ -10,15 +10,16 @@ import { VFXController } from '../vfx/VFXController';
 import { VFXConfig } from '../data/VFXConfig';
 import { Registry } from '../core/Registry';
 import { EntityRegistry } from '../entities/EntityLoader';
+import type { IGame } from '../types/core.d';
 
 class ResourceSystem {
-    game: any = null;
+    game: IGame | null = null;
 
     constructor() {
         Logger.info('[ResourceSystem] Initialized');
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
     }
 

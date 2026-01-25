@@ -6,7 +6,7 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { entityManager } from '../core/EntityManager';
 import { spawnManager } from './SpawnManager';
 import { IslandManager } from '../world/IslandManager';
@@ -15,16 +15,17 @@ import { QuestManager } from '../gameplay/QuestManager';
 import { VFXTriggerService } from './VFXTriggerService';
 import { Registry } from '../core/Registry';
 
+import type { IGame } from '../types/core.d';
 
 class InteractionSystem {
-    game: any = null;
+    game: IGame | null = null;
     magnetActiveCount: number = 0;
 
     constructor() {
         Logger.info('[InteractionSystem] Constructed');
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
         Logger.info('[InteractionSystem] Initialized');

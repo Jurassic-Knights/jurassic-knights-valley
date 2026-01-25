@@ -8,7 +8,7 @@
  */
 
 import { Logger } from '../core/Logger';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { IslandManager } from '../world/IslandManager';
 import { Registry } from '../core/Registry';
 

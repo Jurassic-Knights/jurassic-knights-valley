@@ -69,6 +69,27 @@ const AssetLoader = {
         "ui_icon_speech_bubble": "images/ui/ui_icon_speech_bubble_original.png",
         "ui_icon_swap": "images/ui/ui_icon_swap_original.png",
 
+        // Equipment/Inventory Mode Icons
+        "ui_icon_armor": "images/ui/ui_icon_armor_original.png",
+        "ui_icon_sword": "images/ui/ui_icon_weapon_original.png",
+        "ui_icon_pickaxe": "images/ui/ui_icon_tool_original.png",
+        "ui_icon_close": "images/ui/ui_icon_back_original.png",
+        "ui_icon_crafting": "images/ui/ui_icon_items_original.png",
+        "ui_icon_resources": "images/ui/ui_icon_resources_original.png",
+        "ui_icon_equip": "images/ui/ui_icon_equip_original.png",
+
+        // Stat Icons (for equipment UI display)
+        "stat_damage": "images/ui/stat_damage_original.png",
+        "stat_attack_speed": "images/ui/stat_attack_speed_original.png",
+        "stat_range": "images/ui/stat_range_original.png",
+        "stat_crit_chance": "images/ui/stat_crit_chance_original.png",
+        "stat_crit_damage": "images/ui/stat_crit_damage_original.png",
+        "stat_armor": "images/ui/stat_armor_original.png",
+        "stat_health": "images/ui/stat_health_original.png",
+        "stat_stamina": "images/ui/stat_stamina_original.png",
+        "stat_speed": "images/ui/stat_speed_original.png",
+        "stat_efficiency": "images/ui/stat_efficiency_original.png",
+
         // VFX Textures
         "vfx_fog": "images/vfx/fog.png",
         "vfx_fog_of_war": "images/vfx/fog_of_war.png",

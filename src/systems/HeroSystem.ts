@@ -6,26 +6,28 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { VFXController } from '../vfx/VFXController';
 import { VFXConfig } from '../data/VFXConfig';
 import { IslandManager } from '../world/IslandManager';
 import { BiomeManager } from '../world/BiomeManager';
 import { Registry } from '../core/Registry';
 import { HeroCombatService } from './HeroCombatService';
+import type { IGame, IEntity } from '../types/core.d';
+import type { ParticleOptions } from '../types/vfx';
 
 class HeroSystem {
     // Property declarations
-    game: any = null;
-    hero: any = null;
+    game: IGame | null = null;
+    hero: IEntity | null = null;
     inputMove: { x: number; y: number } = { x: 0, y: 0 };
     isAttacking: boolean = false;
     lastHomeState: boolean = false;
-    _dustConfig: any;
-    _islandManager: any;
-    _homeBase: any;
-    _gameRenderer: any;
-    _vfxController: any;
+    _dustConfig: ParticleOptions;
+    _islandManager: any; // Uses specific methods like isBlocked, getHomeIsland
+    _homeBase: any; // Uses isBlockedByTrees
+    _gameRenderer: any; // Uses worldWidth, worldHeight
+    _vfxController: any; // Uses playBackground
     _lastStaminaEmit: number = 0;
 
     constructor() {
@@ -47,7 +49,7 @@ class HeroSystem {
         Logger.info('[HeroSystem] Initialized');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         // Assume single hero for now, but design allows for multiple
         this.hero = game.hero;
@@ -61,13 +63,13 @@ class HeroSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(GameConstants.Events.INPUT_MOVE, (vec: any) => {
+            EventBus.on(GameConstants.Events.INPUT_MOVE, (vec: { x: number; y: number }) => {
                 this.inputMove = vec;
             });
             // Attack events could be handled here too
 
             // Death handler (06-damage-system)
-            EventBus.on(GameConstants.Events.HERO_DIED, (data: any) => this.onHeroDied(data));
+            EventBus.on(GameConstants.Events.HERO_DIED, (data: { hero: IEntity }) => this.onHeroDied(data));
         }
     }
 

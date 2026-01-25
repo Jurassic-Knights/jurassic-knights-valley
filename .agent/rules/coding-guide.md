@@ -13,8 +13,14 @@ trigger: always_on
 **Goal:** Ensure scalable, maintainable, and verifiable game development.
 
 ### Changelog
+- **v1.2 (2026-01-24)**: Added **CRITICAL** hot-reload rule - NEVER restart server to fix problems.
 - **v1.1 (2026-01-08)**: Added `EntityTypes` constants. All registries now embedded in AssetLoader.js.
 - **v1.0 (2026-01-04)**: Initial principles.
+
+## 0. CRITICAL: Hot-Reload Development
+*   **NEVER restart the dev server to fix problems.** All code is hot-reload via Vite HMR.
+*   When you edit a file, Vite automatically reloads it. The server only needs restart if package.json or vite.config.ts changes.
+*   If something seems broken after a code change, the issue is in the code - do NOT attempt to restart the server.
 
 ## 1. Core Architecture (ECS & Composition)
 *   **Composition over Inheritance:** Use Components to define *what an entity has* rather than Inheritance to define *what it is*.

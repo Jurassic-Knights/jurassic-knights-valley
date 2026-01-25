@@ -5,7 +5,7 @@
  */
 import { Logger } from './Logger';
 import { Registry } from './Registry';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EntityLoader } from '../entities/EntityLoader';
 import { entityManager } from './EntityManager';
 import { GameState } from './State';

@@ -7,7 +7,7 @@
  * Owner: Development Tools
  */
 
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 
 
 const DebugOverlays = {

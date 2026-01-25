@@ -10,7 +10,7 @@
 import { Logger } from '../core/Logger';
 import { entityManager } from '../core/EntityManager';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EntityTypes } from '../config/EntityTypes';
 import { EnemyAI } from './behaviors/enemies/EnemyAI';
 import { BossAI } from './behaviors/bosses/BossAI';

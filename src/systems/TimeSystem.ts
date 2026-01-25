@@ -10,14 +10,13 @@
  */
 
 import { Logger } from '../core/Logger';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
 import { Registry } from '../core/Registry';
 
 
 class TimeSystem {
     // Property declarations
-    config: any;
     game: any = null;
     totalTime: number = 0;
     dayTime: number = 0.5;
@@ -30,8 +29,13 @@ class TimeSystem {
     overrideTime: number | null = null;
     overrideSeason: string | null = null;
 
+    // Dynamic getter for config - always reads live values
+    get config() {
+        return { ...GameConstants.Time, ...getConfig().Time };
+    }
+
     constructor() {
-        this.config = GameConstants.Time;
+        // Config is now a getter, no initialization needed
     }
 
     init(game) {

@@ -12,7 +12,7 @@
 import { entityManager } from '../../../core/EntityManager';
 import { AudioManager } from '../../../audio/AudioManager';
 import { EventBus } from '../../../core/EventBus';
-import { GameConstants } from '../../../data/GameConstants';
+import { GameConstants, getConfig } from '../../../data/GameConstants';
 import { BiomeConfig } from '../../../data/BiomeConfig';
 import { EntityTypes } from '../../../config/EntityTypes';
 import { GameInstance } from '../../../core/Game';
@@ -74,7 +74,10 @@ const EnemyAI = {
                 y: enemy.spawnY + Math.sin(angle) * dist
             };
             enemy.wanderTimer = 0;
-            enemy.wanderInterval = 3000 + Math.random() * 2000;
+            // Read wander timers from config for live tuning
+            const wanderMin = (getConfig() as any).AI?.WANDER_TIMER_MIN || 2000;
+            const wanderMax = (getConfig() as any).AI?.WANDER_TIMER_MAX || 5000;
+            enemy.wanderInterval = wanderMin + Math.random() * (wanderMax - wanderMin);
         }
 
         if (enemy.wanderTarget) {
@@ -183,10 +186,10 @@ const EnemyAI = {
     triggerPackAggro(enemy, target) {
         if (!entityManager || !enemy.groupId) return;
 
-        const packRadius =
+        // Read pack aggro radius from config for live tuning
+        const packRadius = (getConfig() as any).AI?.PACK_AGGRO_RADIUS ||
             BiomeConfig?.patrolDefaults?.packAggroRadius ||
-            GameConstants?.Biome?.PACK_AGGRO_RADIUS ||
-            150;
+            300;
 
         const enemies = entityManager.getByType(EntityTypes.ENEMY_DINOSAUR).concat(
             entityManager.getByType(EntityTypes.ENEMY_SOLDIER)

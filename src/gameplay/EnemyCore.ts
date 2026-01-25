@@ -24,6 +24,7 @@ import { CombatComponent } from '../components/CombatComponent';
 import { AIComponent } from '../components/AIComponent';
 import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
 import { Registry } from '../core/Registry';
+import { getConfig } from '../data/GameConstants';
 
 // Unmapped modules - need manual import
 
@@ -213,23 +214,23 @@ class Enemy extends Entity {
         this.groupId = config.groupId || null; // Links enemies in same group
         this.waveId = config.waveId || null; // For respawn wave tracking
 
-        // Patrol Area (spawn location + wander radius)
+        // Patrol Area (spawn location + wander radius) - read from GameConfig.AI
         this.spawnX = config.x || 0;
         this.spawnY = config.y || 0;
         this.patrolRadius =
             finalConfig.patrolRadius ||
+            (getConfig() as any).AI?.PATROL_AREA_RADIUS ||
             BiomeConfig.patrolDefaults?.areaRadius ||
-            BiomeConfig.Biome?.PATROL_AREA_RADIUS ||
             300;
         this.leashDistance =
             finalConfig.leashDistance ||
+            (getConfig() as any).AI?.LEASH_DISTANCE ||
             BiomeConfig.patrolDefaults?.leashDistance ||
-            BiomeConfig.Biome?.LEASH_DISTANCE ||
             500;
         this.aggroRange =
             finalConfig.aggroRange ||
+            (getConfig() as any).AI?.AGGRO_RANGE ||
             BiomeConfig.patrolDefaults?.aggroRange ||
-            BiomeConfig.Biome?.AGGRO_RANGE ||
             200;
 
         // Combat Stats
@@ -359,7 +360,9 @@ class Enemy extends Entity {
      */
     canSee(hero: any) {
         if (!hero || this.isDead) return false;
-        return this.distanceTo(hero) <= this.aggroRange;
+        // Use dynamic config for live updates
+        const aggroRange = (getConfig() as any).AI?.AGGRO_RANGE || this.aggroRange;
+        return this.distanceTo(hero) <= aggroRange;
     }
 
     /**

@@ -7,7 +7,7 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { AssetLoader } from '../core/AssetLoader';
 import { AudioManager } from '../audio/AudioManager';
 import { MerchantUI } from './MerchantUI';

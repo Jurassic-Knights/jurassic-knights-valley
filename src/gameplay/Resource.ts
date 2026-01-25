@@ -16,9 +16,6 @@ import { EntityConfig } from '../config/EntityConfig';
 import { EntityTypes } from '../config/EntityTypes';
 import { Registry } from '../core/Registry';
 
-// Unmapped modules - need manual import
-declare const BaseResource: any; // TODO: Add proper import
-
 
 class Resource extends Entity {
     // Resource identity
@@ -48,15 +45,14 @@ class Resource extends Entity {
      * @param {object} config
      */
     constructor(config: any = {}) {
-        // 1. Load Config from EntityRegistry (nodes or resources) or BaseResource fallback
-        const defaults = (typeof BaseResource !== 'undefined' && BaseResource) ? BaseResource : {};
+        // 1. Load Config from EntityRegistry (nodes or resources)
         const typeConfig =
             EntityConfig.nodes?.[config.resourceType] ||
             EntityConfig.resources?.[config.resourceType] ||
             {};
 
         // Merge
-        const finalConfig = { ...defaults, ...typeConfig, ...config };
+        const finalConfig = { ...typeConfig, ...config };
 
         super({
             entityType: EntityTypes.RESOURCE,
@@ -135,7 +131,7 @@ class Resource extends Entity {
      * @param {Hero} hero
      * @returns {boolean}
      */
-    isInRange(hero: any) {
+    isInRange(hero: { x: number; y: number }) {
         return this.active && this.state === 'ready' && this.distanceTo(hero) < this.interactRadius;
     }
 

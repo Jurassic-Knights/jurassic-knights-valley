@@ -6,9 +6,8 @@ import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { Registry } from '../core/Registry';
-
-// Unmapped modules - need manual import
 import { UIPanel } from './core/UIPanel';
+import type { Merchant } from '../types/ui';
 
 
 class MerchantPanel extends UIPanel {
@@ -71,7 +70,7 @@ class MerchantPanel extends UIPanel {
             });
 
             // Interaction Event
-            EventBus.on('INTERACTION_OPPORTUNITY', (data: any) => {
+            EventBus.on('INTERACTION_OPPORTUNITY', (data: { type: string; target?: Merchant; visible?: boolean }) => {
                 const { type, target, visible } = data;
                 if (type === 'merchant') {
                     if (visible && target) {

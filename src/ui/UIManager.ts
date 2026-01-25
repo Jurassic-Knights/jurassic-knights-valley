@@ -23,14 +23,16 @@ import { Registry } from '../core/Registry';
 import { UICapture } from './UICapture';
 import { GameInstance } from '../core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
+import type { Island } from '../types/world';
+import type { UIPanelConfig } from '../types/ui';
 
 class UIManagerService {
     // Property declarations
     initialized: boolean = false;
-    currentUnlockTarget: any = null;
-    panels: Map<string, any> = new Map();
-    fullscreenUIs: Set<any> = new Set();
-    currentStrategy: any = null;
+    currentUnlockTarget: Island | null = null;
+    panels: Map<string, UIPanelConfig> = new Map();
+    fullscreenUIs: Set<UIPanelConfig> = new Set();
+    currentStrategy: { apply?(container: HTMLElement): void; enter?(): void; exit?(): void } | null = null;
 
     constructor() {
         Logger.debug('[UIManager]', 'Constructed');
@@ -41,10 +43,10 @@ class UIManagerService {
 
         // Listen for platform changes
         if (PlatformManager) {
-            PlatformManager.on('modechange', (config: any) => this.onPlatformChange(config));
+            PlatformManager.on('modechange', (config: { mode: string }) => this.onPlatformChange(config));
             this.onPlatformChange(PlatformManager.getConfig());
         } else if (ResponsiveManager) {
-            ResponsiveManager.on('change', (data: any) => this.onResponsiveChange(data));
+            ResponsiveManager.on('change', (data: { breakpoint: string }) => this.onResponsiveChange(data));
         }
 
         this.createUnlockPrompt();
@@ -108,7 +110,7 @@ class UIManagerService {
         // EventBus Listeners
         if (EventBus && GameConstants) {
             const E = GameConstants.Events;
-            EventBus.on(E.UI_FADE_SCREEN, (data: any) => this.fadeInOut(data ? data.onMidpoint : null));
+            EventBus.on(E.UI_FADE_SCREEN, (data: { onMidpoint?: () => void } | null) => this.fadeInOut(data ? data.onMidpoint : null));
         }
 
         this.initialized = true;
@@ -151,7 +153,7 @@ class UIManagerService {
         prompt.querySelector('.unlock-btn')?.addEventListener('click', () => this.tryUnlock());
     }
 
-    showUnlockPrompt(island: any) {
+    showUnlockPrompt(island: Island) {
         if (this.currentUnlockTarget === island) return;
 
         this.currentUnlockTarget = island;
@@ -161,7 +163,7 @@ class UIManagerService {
         const nameEl = prompt.querySelector('.unlock-island-name');
         const costEl = prompt.querySelector('.cost-amount');
         if (nameEl) nameEl.textContent = island.name;
-        if (costEl) costEl.textContent = island.unlockCost;
+        if (costEl) costEl.textContent = String(island.unlockCost);
 
         const gold = GameState ? GameState.get('gold') || 0 : 0;
         const btn = prompt.querySelector('.unlock-btn') as HTMLButtonElement | null;
@@ -346,17 +348,17 @@ class UIManagerService {
     async autoCapture() {
         return UICapture?.autoCapture();
     }
-    async captureElement(s: any, f: any) {
+    async captureElement(s: string, f: string) {
         return UICapture?.captureElement(s, f);
     }
     async captureAllZones() {
         return UICapture?.captureAllZones();
     }
 
-    showContextAction(type: any, data: any) {
+    showContextAction(type: string, data: Record<string, unknown>) {
         ContextActionUI?.show(type, data);
     }
-    hideContextAction(type: any) {
+    hideContextAction(type: string) {
         ContextActionUI?.hide(type);
     }
     executeContextAction() {

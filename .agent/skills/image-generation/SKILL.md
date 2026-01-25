@@ -136,14 +136,16 @@ sprite of [DROP DESCRIPTION], game item asset, stoneshard style, high fidelity p
 
 ### Equipment (Weapons, Armor, Tools)
 > **IMPORTANT**: Weapons MUST be flat horizontal (like lying on a table) - NOT isometric
+> **EPIC DESIGN**: Weapons should look EPIC, HULKING, VIDEO GAME-WORTHY but grounded in realism
+> **Fusion Elements**: Medieval craftsmanship + WWI industrial brutality + Dinosaur integration (30-40%)
 ```
-icon of [EQUIPMENT DESCRIPTION], game ui asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, legendary unique ornate appearance, rusty, gritty, weathered, flat horizontal laying position facing right, profile view, no angle, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
+icon of [EQUIPMENT DESCRIPTION], game ui asset, stoneshard style, high fidelity pixel art, medieval and WWI fusion aesthetic, legendary unique ornate appearance, battle-worn detail, exaggerated proportions, rusty, gritty, weathered, flat horizontal laying position facing right, profile view, no angle, isolated on white background, no text, no letters, no particles, no VFX, no smoke, no fire
 ```
 
 ### UI Icons
-> May include text/letters if meaningful
+> May include text/letters if meaningful. NO FRAMES - use 'icon' not 'button'
 ```
-icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconography, isolated on white background
+icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconography, pixelated texture, rusted iron, isolated on white background
 ```
 
 ### Props (World Objects)

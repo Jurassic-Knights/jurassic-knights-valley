@@ -2,8 +2,10 @@
  * BodyTypeConfig - Scale multipliers for different body types
  * 
  * Used by entity renderers to apply consistent scaling based on bodyType field.
- * shadowScale and hitboxScale automatically derive from scale.
+ * Reads from GameConfig.BodyTypes for live dashboard updates.
  */
+
+import { getConfig } from '../data/GameConstants';
 
 export const BodyTypeConfig: Record<string, { scale: number }> = {
     muscle: { scale: 1.25 },
@@ -13,11 +15,26 @@ export const BodyTypeConfig: Record<string, { scale: number }> = {
 };
 
 /**
- * Get scale for a body type
+ * Get scale for a body type (reads from config dynamically)
  * @param bodyType - The body type string
  * @returns Scale multiplier (defaults to 1.0 if not found)
  */
 export function getBodyTypeScale(bodyType: string | undefined): number {
     if (!bodyType) return 1.0;
+    // Read from live config first, fallback to static
+    const configTypes = (getConfig() as any).BodyTypes;
+    if (configTypes && configTypes[bodyType]) {
+        return configTypes[bodyType].scale ?? 1.0;
+    }
     return BodyTypeConfig[bodyType]?.scale ?? 1.0;
+}
+
+// Vite HMR - update in place without reload
+if (import.meta.hot) {
+    import.meta.hot.accept((newModule) => {
+        if (newModule) {
+            Object.assign(BodyTypeConfig, newModule.BodyTypeConfig);
+            console.log('[HMR] BodyTypeConfig updated');
+        }
+    });
 }

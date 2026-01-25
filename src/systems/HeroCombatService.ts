@@ -7,7 +7,7 @@
 
 import { Logger } from '../core/Logger';
 import { entityManager } from '../core/EntityManager';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
 import { ProjectileVFX } from '../vfx/ProjectileVFX';
 import { VFXConfig } from '../data/VFXConfig';
@@ -15,6 +15,7 @@ import { FloatingTextManager } from '../vfx/FloatingText';
 import { Registry } from '../core/Registry';
 import { inputSystem } from '../input/InputSystem';
 import { EntityTypes } from '../config/EntityTypes';
+import { getWeaponStats } from '../data/GameConfig';
 
 // Unmapped modules - need manual import
 
@@ -79,7 +80,12 @@ const HeroCombatService = {
 
         let target = null;
         let minDistSq = Infinity;
-        const scanRange = hero.stats?.getAttackRange?.() || GameConstants.Combat.DEFAULT_GUN_RANGE;
+
+        // Compute scan range as max of equipped weapon ranges using getWeaponStats
+        const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
+        const hand1Range = activeWeapons.mainHand ? getWeaponStats(activeWeapons.mainHand).range : 0;
+        const hand2Range = activeWeapons.offHand ? getWeaponStats(activeWeapons.offHand).range : 0;
+        const scanRange = Math.max(hand1Range, hand2Range, getConfig().Combat.DEFAULT_MINING_RANGE || 125);
 
         // Check Enemies (HIGHEST Priority)
         const enemyTypes = ['Enemy', 'Boss'];
@@ -118,7 +124,7 @@ const HeroCombatService = {
 
         // Check Resources (Lowest Priority, mining)
         if (!target) {
-            const miningRange = hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE;
+            const miningRange = hero.miningRange || getConfig().Combat.DEFAULT_MINING_RANGE;
             const candidates = entityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.state === 'depleted') continue;
@@ -171,12 +177,14 @@ const HeroCombatService = {
         const hand1Item = activeWeapons.mainHand;
         const hand2Item = activeWeapons.offHand;
         const activeSlots = hero.equipment?.getActiveWeaponSlots?.() || { mainHand: 'hand1', offHand: 'hand2' };
-        const hand1Range = hero.stats?.getWeaponRange?.(activeSlots.mainHand) || 80;
-        const hand2Range = hero.stats?.getWeaponRange?.(activeSlots.offHand) || 80;
+
+        // Use getWeaponStats for consistent range (base + bonus)
+        const hand1Range = hand1Item ? getWeaponStats(hand1Item).range : 80;
+        const hand2Range = hand2Item ? getWeaponStats(hand2Item).range : 80;
 
         // For non-combat (mining), use mining range
         if (!isRangedTarget) {
-            const miningRange = hero.miningRange || GameConstants.Combat.DEFAULT_MINING_RANGE;
+            const miningRange = hero.miningRange || getConfig().Combat.DEFAULT_MINING_RANGE;
             if (dist > miningRange) return false;
         }
 
@@ -208,7 +216,8 @@ const HeroCombatService = {
 
         // Hand1 Attack
         if (hand1InRange) {
-            const weaponDmg = hand1Item.stats?.damage || (combat?.damage || GameConstants.Combat.DEFAULT_DAMAGE);
+            const weaponStats = getWeaponStats(hand1Item);
+            const weaponDmg = weaponStats.damage;
             totalDmg += weaponDmg;
 
             // VFX: Per-weapon muzzle flash
@@ -224,7 +233,8 @@ const HeroCombatService = {
 
         // Hand2 Attack  
         if (hand2InRange) {
-            const weaponDmg = hand2Item.stats?.damage || (combat?.damage || GameConstants.Combat.DEFAULT_DAMAGE);
+            const weaponStats = getWeaponStats(hand2Item);
+            const weaponDmg = weaponStats.damage;
             totalDmg += weaponDmg;
 
             // VFX: Per-weapon muzzle flash
@@ -240,7 +250,7 @@ const HeroCombatService = {
 
         // Fallback for non-ranged targets (mining)
         if (!isRangedTarget) {
-            totalDmg = combat ? combat.damage : GameConstants.Combat.DEFAULT_DAMAGE;
+            totalDmg = combat ? combat.damage : getConfig().Combat.DEFAULT_DAMAGE;
             if (AudioManager) {
                 AudioManager.playSFX('sfx_hero_swing');
             }

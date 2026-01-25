@@ -7,7 +7,7 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { GameState } from '../core/State';
 import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';

@@ -9,7 +9,7 @@ import { IslandManager } from '../world/IslandManager';
 import { PlatformManager } from '../core/PlatformManager';
 import { GameRenderer } from '../core/GameRenderer';
 import { timeSystem } from '../systems/TimeSystem';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
 import { weatherSystem } from '../systems/WeatherSystem';
 import { GameInstance } from '../core/Game';
@@ -111,7 +111,7 @@ const DebugUI = {
         advanceBtn.onclick = () => {
             if (timeSystem) {
                 // Force advance time
-                const secondsPerDay = GameConstants.Time.REAL_SECONDS_PER_GAME_DAY;
+                const secondsPerDay = getConfig().Time.REAL_SECONDS_PER_GAME_DAY;
                 timeSystem.totalTime += secondsPerDay;
                 timeSystem.handleNewDay(); // Manually trigger logic to ensure events fire
             }

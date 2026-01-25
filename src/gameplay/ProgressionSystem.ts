@@ -7,7 +7,7 @@
 import { Registry } from '../core/Registry';
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 
 // Helper to access Events from GameConstants
 const Events = GameConstants.Events;

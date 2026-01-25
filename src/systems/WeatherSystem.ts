@@ -10,24 +10,25 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { Registry } from '../core/Registry';
+import type { IGame } from '../types/core.d';
 
 
 class WeatherSystem {
     // Property declarations
-    game: any = null;
+    game: IGame | null = null;
     currentWeather: string = 'CLEAR';
     currentSeason: string = 'SPRING';
     nextChangeCheck: number = 0;
-    config: any;
+    config: typeof GameConstants.Weather;
     overrideEnabled: boolean = false;
 
     constructor() {
         this.config = GameConstants.Weather;
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
 
         // Subscribe to events

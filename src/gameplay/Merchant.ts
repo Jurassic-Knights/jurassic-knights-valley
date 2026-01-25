@@ -10,6 +10,7 @@ import { EntityConfig } from '../config/EntityConfig';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { EntityTypes } from '../config/EntityTypes';
 import { Registry } from '../core/Registry';
+import { getConfig } from '../data/GameConstants';
 
 
 // Unmapped modules - need manual import
@@ -66,7 +67,9 @@ class Merchant extends Entity {
      */
     isInRange(hero: any) {
         if (!this.active || !hero) return false;
-        return this.distanceTo(hero) < this.interactRadius;
+        // Read from config for live dashboard updates
+        const radius = (getConfig() as any).Interaction?.MERCHANT_RADIUS || this.interactRadius;
+        return this.distanceTo(hero) < radius;
     }
 
     /**

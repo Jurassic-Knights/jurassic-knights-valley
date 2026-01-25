@@ -106,10 +106,21 @@ button.decline {
     font-size: 0.85rem;
 }
 
-.stat.pending .stat-value { color: var(--accent-yellow); }
-.stat.approved .stat-value { color: var(--accent-green); }
-.stat.declined .stat-value { color: var(--accent); }
-.stat.clean .stat-value { color: #64b5f6; }
+.stat.pending .stat-value {
+    color: var(--accent-yellow);
+}
+
+.stat.approved .stat-value {
+    color: var(--accent-green);
+}
+
+.stat.declined .stat-value {
+    color: var(--accent);
+}
+
+.stat.clean .stat-value {
+    color: #64b5f6;
+}
 
 /* Sticky Filter Bar */
 .sticky-bar {
@@ -194,9 +205,17 @@ main {
     position: relative;
 }
 
-.asset-card.declined { opacity: 0.5; }
-.asset-card.approved { box-shadow: 0 0 0 3px var(--accent-green); }
-.asset-card.pending { box-shadow: 0 0 0 2px var(--accent-yellow); }
+.asset-card.declined {
+    opacity: 0.5;
+}
+
+.asset-card.approved {
+    box-shadow: 0 0 0 3px var(--accent-green);
+}
+
+.asset-card.pending {
+    box-shadow: 0 0 0 2px var(--accent-yellow);
+}
 
 .asset-image {
     width: 100%;
@@ -226,11 +245,30 @@ main {
     text-transform: uppercase;
 }
 
-.status-pending { background: var(--accent-yellow); color: #000; }
-.status-approved { background: var(--accent-green); color: #000; }
-.status-declined { background: var(--accent); color: #fff; }
-.status-clean { background: #64b5f6; color: #000; }
-.status-unknown { background: var(--text-dim); color: #000; }
+.status-pending {
+    background: var(--accent-yellow);
+    color: #000;
+}
+
+.status-approved {
+    background: var(--accent-green);
+    color: #000;
+}
+
+.status-declined {
+    background: var(--accent);
+    color: #fff;
+}
+
+.status-clean {
+    background: #64b5f6;
+    color: #000;
+}
+
+.status-unknown {
+    background: var(--text-dim);
+    color: #000;
+}
 
 .prompt-preview {
     font-size: 0.65rem;
@@ -270,7 +308,9 @@ main {
     flex-direction: column;
 }
 
-.modal.active { display: flex; }
+.modal.active {
+    display: flex;
+}
 
 .modal img {
     max-width: 90%;
@@ -313,7 +353,9 @@ main {
     font-size: 0.85rem;
 }
 
-.modal-toggle:hover { background: var(--accent); }
+.modal-toggle:hover {
+    background: var(--accent);
+}
 
 /* Comparison View */
 .comparison-view {
@@ -343,8 +385,13 @@ main {
     margin-top: 0.5rem;
 }
 
-.comparison-panel.original .comparison-label { color: var(--accent-yellow); }
-.comparison-panel.clean .comparison-label { color: var(--accent-green); }
+.comparison-panel.original .comparison-label {
+    color: var(--accent-yellow);
+}
+
+.comparison-panel.clean .comparison-label {
+    color: var(--accent-green);
+}
 
 /* Utilities */
 .loading {
@@ -413,6 +460,33 @@ main {
 .section-description {
     color: var(--text-dim);
     font-size: 0.8rem;
+    flex: 1;
+}
+
+.section-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.section-actions button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--text-dim);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.section-actions .btn-reset:hover {
+    border-color: var(--accent-yellow);
+    color: var(--accent-yellow);
+}
+
+.section-actions .btn-save-defaults:hover {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
 }
 
 .section-fields {

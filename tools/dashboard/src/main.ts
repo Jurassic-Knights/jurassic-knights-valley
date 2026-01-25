@@ -266,6 +266,36 @@ Object.assign(window, {
 });
 
 // ============================================
+// EQUIPMENT STATS CONFIG
+// Defines ALL stats for each equipment category
+// ============================================
+
+window.EquipmentStatsConfig = {
+    categories: ['offense', 'defense', 'utility'],
+    getStatsByCategory: (category: string) => {
+        const stats: Record<string, Array<{ key: string; label: string; icon: string; type: string; default: number | boolean }>> = {
+            offense: [
+                { key: 'damage', label: 'Damage', icon: 'stat_damage', type: 'number', default: 0 },
+                { key: 'attackSpeed', label: 'Attack Speed', icon: 'stat_attack_speed', type: 'number', default: 1.0 },
+                { key: 'range', label: 'Range', icon: 'stat_range', type: 'number', default: 0 },
+                { key: 'critChance', label: 'Crit Chance', icon: 'stat_crit_chance', type: 'number', default: 0 },
+                { key: 'critDamage', label: 'Crit Damage', icon: 'stat_crit_damage', type: 'number', default: 1.5 },
+            ],
+            defense: [
+                { key: 'armor', label: 'Armor', icon: 'stat_armor', type: 'number', default: 0 },
+                { key: 'health', label: 'Health', icon: 'stat_health', type: 'number', default: 0 },
+                { key: 'stamina', label: 'Stamina', icon: 'stat_stamina', type: 'number', default: 0 },
+                { key: 'speed', label: 'Speed', icon: 'stat_speed', type: 'number', default: 0 },
+            ],
+            utility: [
+                { key: 'efficiency', label: 'Efficiency', icon: 'stat_efficiency', type: 'number', default: 1.0 },
+            ],
+        };
+        return stats[category] || [];
+    },
+};
+
+// ============================================
 // INITIALIZATION
 // ============================================
 

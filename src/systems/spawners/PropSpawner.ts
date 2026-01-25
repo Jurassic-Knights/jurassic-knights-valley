@@ -10,6 +10,7 @@
 import { Logger } from '../../core/Logger';
 import { Prop } from '../../world/Prop';
 import { GameConstants } from '../../data/GameConstants';
+import { getConfig } from '../../data/GameConfig';
 import { entityManager } from '../../core/EntityManager';
 import { PropConfig } from '../../data/PropConfig';
 import { Registry } from '../../core/Registry';
@@ -88,7 +89,7 @@ class PropSpawner {
     }
 
     spawnFoliage(island, foliageList, spawnedProps) {
-        const C = GameConstants.Spawning.PROPS;
+        const C = getConfig().Spawning.PROPS;
         const islandManager = this.spawnManager.game?.getSystem('IslandManager');
         const gap = islandManager?.waterGap || 50;
 
@@ -137,7 +138,7 @@ class PropSpawner {
     }
 
     spawnScatteredItems(island, itemList, spawnedProps) {
-        const C = GameConstants.Spawning.PROPS;
+        const C = getConfig().Spawning.PROPS;
         const islandManager = this.spawnManager.game?.getSystem('IslandManager');
         const gap = islandManager?.waterGap || 50;
 

@@ -9,7 +9,7 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { ProceduralSFX } from '../audio/ProceduralSFX';
 import { RainVFX } from '../vfx/weather/RainVFX';
 import { SnowVFX } from '../vfx/weather/SnowVFX';

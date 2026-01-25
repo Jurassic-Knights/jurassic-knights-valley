@@ -252,17 +252,18 @@ function buildEquipmentStatsHtml(item: AssetItem, fileName: string): string {
             const currentValue = (itemStats as Record<string, unknown>)[stat.key];
             const hasValue = currentValue !== undefined && currentValue !== stat.default;
             const displayValue = currentValue ?? stat.default;
+            const iconPath = `/images/ui/${stat.icon}_original.png`;
 
             if (stat.type === 'boolean') {
                 const isChecked = displayValue === true;
                 html += `<div style="display:flex; align-items:center; gap:4px; padding:4px 8px; background:${hasValue ? '#2a2a2a' : '#222'}; border-radius:4px; opacity:${hasValue ? '1' : '0.6'};" title="${stat.label}">
-                    <span style="font-size:1rem;">${stat.icon}</span>
+                    <img src="${iconPath}" alt="${stat.label}" style="width:20px; height:20px; object-fit:contain;">
                     <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="updateItemStat('${currentCategoryName}', '${fileName}', '${item.id}', '${stat.key}', this.checked)" style="width:16px; height:16px; cursor:pointer;">
                     <span style="font-size:0.65rem; color:var(--text-dim);">${stat.label}</span>
                 </div>`;
             } else {
                 html += `<div style="display:flex; align-items:center; gap:4px; padding:4px 8px; background:${hasValue ? '#2a2a2a' : '#222'}; border-radius:4px; opacity:${hasValue ? '1' : '0.6'};" title="${stat.label}">
-                    <span style="font-size:1rem;">${stat.icon}</span>
+                    <img src="${iconPath}" alt="${stat.label}" style="width:20px; height:20px; object-fit:contain;">
                     <input type="number" value="${displayValue}" step="0.1" onchange="updateItemStat('${currentCategoryName}', '${fileName}', '${item.id}', '${stat.key}', parseFloat(this.value) || 0)" style="width:55px; padding:3px; font-size:0.8rem; background:#333; color:var(--text); border:1px solid ${hasValue ? '#555' : '#333'}; border-radius:3px; text-align:center;">
                 </div>`;
             }

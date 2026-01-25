@@ -10,33 +10,34 @@ import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '../vfx/VFXController';
 import { VFXConfig } from '../data/VFXConfig';
 import { spawnManager } from './SpawnManager';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { Registry } from '../core/Registry';
 import { EntityTypes } from '../config/EntityTypes';
+import type { IGame, IEntity } from '../types/core.d';
 
-// Unmapped modules - need manual import
-declare const BaseCreature: any; // TODO: Add proper import
+// Bounds padding constant (was from BaseCreature)
+const BOUNDS_PADDING = 30;
 
-// Unmapped modules - need manual import
- // TODO: Add proper import
-
+// Event data interfaces
+interface EntityDamageEvent { entity: IEntity; amount: number; source?: IEntity }
+interface EntityDeathEvent { entity: IEntity; killer?: IEntity }
 
 class DinosaurSystem {
-    game: any = null;
+    game: IGame | null = null;
 
     constructor() {
         Logger.info('[DinosaurSystem] Initialized');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
     }
 
     initListeners() {
         if (EventBus) {
-            EventBus.on('ENTITY_DAMAGED', (data: any) => this.onEntityDamaged(data));
-            EventBus.on('ENTITY_DIED', (data: any) => this.onEntityDied(data));
+            EventBus.on('ENTITY_DAMAGED', (data: EntityDamageEvent) => this.onEntityDamaged(data));
+            EventBus.on('ENTITY_DIED', (data: EntityDeathEvent) => this.onEntityDied(data));
         }
     }
 
@@ -159,7 +160,7 @@ class DinosaurSystem {
 
         // Bounds Check - use config value for padding
         if (dino.islandBounds) {
-            const padding = BaseCreature?.boundsPadding || 30;
+            const padding = BOUNDS_PADDING;
             if (
                 nextX < dino.islandBounds.x + padding ||
                 nextX > dino.islandBounds.x + dino.islandBounds.width - padding

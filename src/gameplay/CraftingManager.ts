@@ -17,10 +17,7 @@ import { UIManager } from '../ui/UIManager';
 import { spawnManager as SpawnManager } from '../systems/SpawnManager';
 import { IslandManager } from '../world/IslandManager';
 
-// Unmapped modules - need manual import
-declare const EconomySystem: any; // TODO: Add proper import
-
-// EconomySystem is circular - use declare
+import { economySystem as EconomySystem } from '../systems/EconomySystem';
 
 
 const CraftingManager = {

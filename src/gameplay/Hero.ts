@@ -6,7 +6,7 @@
 import { Entity } from '../core/Entity';
 import { RenderConfig } from '../config/RenderConfig';
 import { EquipmentManager } from '../systems/EquipmentManager';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EntityRegistry } from '../entities/EntityLoader';
 import { GameInstance } from '../core/Game';
 import { EntityTypes } from '../config/EntityTypes';
@@ -27,8 +27,6 @@ class Hero extends Entity {
     equipment: any;
     isAtHomeOutpost: boolean;
     locked: boolean;
-    miningRange: number;
-    gunRange: number;
     prevX: number;
     prevY: number;
     footstepTimer: number;
@@ -98,7 +96,7 @@ class Hero extends Entity {
         // Stats (New Phase 17, expanded 03-hero-stats)
         if (StatsComponent) {
             this.components.stats = new StatsComponent(this, {
-                speed: finalConfig.speed || 1400,
+                speed: finalConfig.speed || getConfig().Hero.SPEED,
                 maxStamina: finalConfig.maxStamina || 100,
                 stamina: finalConfig.stamina, // Defaults to max
                 // Combat Stats (03-hero-stats)
@@ -119,7 +117,7 @@ class Hero extends Entity {
             this.equipment = new EquipmentManager(this);
 
             // Equip default items from HeroDefaults config
-            if (HeroDefaults && GameConstants.Equipment && EntityRegistry?.equipment) {
+            if (HeroDefaults && getConfig().Equipment && EntityRegistry?.equipment) {
                 for (const [slot, entityId] of Object.entries(HeroDefaults.equipment)) {
                     if (entityId && EntityRegistry.equipment[entityId as string]) {
                         this.equipment.equip(slot, EntityRegistry.equipment[entityId as string]);
@@ -140,11 +138,7 @@ class Hero extends Entity {
         this.locked = false;
         this.active = true;
 
-        // Ranges
-        this.miningRange =
-            finalConfig.attack && finalConfig.attack.range ? finalConfig.attack.range.default : 125;
-        this.gunRange =
-            finalConfig.attack && finalConfig.attack.range ? finalConfig.attack.range.gun : 450;
+        // Ranges are now read dynamically via getters below
 
         // Visual State (Used by HeroRenderer/HeroSystem)
         this.prevX = this.x;
@@ -180,12 +174,14 @@ class Hero extends Entity {
         if (this.components.inventory) this.components.inventory.items = val;
     }
 
-    // Stats
+    // Stats - Read directly from global GameConstants for HMR reactivity
     get speed() {
-        return this.components.stats ? this.components.stats.speed : 700;
+        // Use getConfig() helper for HMR-safe access
+        return getConfig().Hero?.SPEED ?? 1400;
     }
     set speed(val) {
-        if (this.components.stats) this.components.stats.speed = val;
+        // Speed is now controlled by GameConstants, this setter is for backwards compatibility
+        console.warn('[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED');
     }
 
     get stamina() {
@@ -228,6 +224,15 @@ class Hero extends Entity {
     // Stats component accessor (for HeroCombatService etc)
     get stats() {
         return this.components.stats;
+    }
+
+    // Combat ranges - read from config for HMR reactivity
+    get miningRange() {
+        return getConfig().Combat?.DEFAULT_MINING_RANGE ?? 1250;
+    }
+
+    get gunRange() {
+        return getConfig().Combat?.DEFAULT_GUN_RANGE ?? 800;
     }
 
     /**

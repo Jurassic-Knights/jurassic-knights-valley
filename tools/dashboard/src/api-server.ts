@@ -19,6 +19,7 @@ const TOOLS_DIR = path.resolve(BASE_DIR, 'tools');
 const IMAGES_DIR = path.resolve(BASE_DIR, 'assets/images');
 const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
 const GAME_CONSTANTS_PATH = path.resolve(BASE_DIR, 'src/data/GameConstants.ts');
+const GAME_CONFIG_PATH = path.resolve(BASE_DIR, 'src/data/GameConfig.ts');
 const BODY_TYPE_CONFIG_PATH = path.resolve(BASE_DIR, 'src/config/BodyTypeConfig.ts');
 
 // ============================================
@@ -64,8 +65,8 @@ function readTsEntity(filepath: string): EntityData | null {
         // Extract JSON object from: export default { ... } satisfies ...
         let match = content.match(/export\s+default\s+(\{[\s\S]*\})\s*satisfies/);
         if (!match) {
-            // Try simpler pattern: export default { ... };
-            match = content.match(/export\s+default\s+(\{[\s\S]*\});?\s*$/);
+            // Try simpler pattern: export default { ... }; (with possible newline before ;)
+            match = content.match(/export\s+default\s+(\{[\s\S]*\})\s*;?\s*$/);
         }
 
         if (!match) return null;
@@ -191,6 +192,9 @@ function getManifest(): { categories: Record<string, { name: string; count: numb
 }
 
 function getCategoryData(category: string): { files: Record<string, EntityData[]>; category: string; entities: EntityData[] } {
+    if (!category) {
+        return { files: {}, category: category || 'unknown', entities: [] };
+    }
     const catDir = path.join(ENTITIES_DIR, category);
 
     if (!fs.existsSync(catDir)) {
@@ -375,6 +379,7 @@ interface ConfigSection {
 
 interface GameConfig {
     Core: ConfigSection;
+    Hero: ConfigSection;
     Combat: ConfigSection;
     Interaction: ConfigSection;
     Time: ConfigSection;
@@ -384,22 +389,39 @@ interface GameConfig {
     Spawning: ConfigSection;
     UnlockCosts: number[];
     BodyTypes: Record<string, { scale: number }>;
+    WeaponDefaults: Record<string, { range: number; damage: number; attackSpeed: number }>;
 }
 
-function parseGameConstants(): Partial<GameConfig> {
-    const content = fs.readFileSync(GAME_CONSTANTS_PATH, 'utf-8');
+function extractSectionContent(content: string, section: string): string | null {
+    const sectionStart = content.indexOf(`${section}:`);
+    if (sectionStart === -1) return null;
+    const openBrace = content.indexOf('{', sectionStart);
+    if (openBrace === -1) return null;
+    let depth = 1, pos = openBrace + 1;
+    while (depth > 0 && pos < content.length) {
+        if (content[pos] === '{') depth++;
+        else if (content[pos] === '}') depth--;
+        pos++;
+    }
+    if (depth !== 0) return null;
+    return content.substring(openBrace + 1, pos - 1);
+}
+
+function parseGameConfig(): Partial<GameConfig> {
+    if (!fs.existsSync(GAME_CONFIG_PATH)) return {};
+    const content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
     const result: Partial<GameConfig> = {};
 
-    // Extract each section using regex
-    const sections = ['Core', 'Combat', 'Interaction', 'Time', 'Weather', 'AI', 'Biome', 'Spawning'];
+    // Extract each section from GameConfig.ts (tunable values only)
+    const sections = ['Hero', 'Combat', 'Interaction', 'AI', 'Spawning', 'Time', 'BodyTypes', 'WeaponDefaults'];
 
     for (const section of sections) {
-        const regex = new RegExp(`${section}:\\s*\\{([^}]+(?:\\{[^}]*\\}[^}]*)*)\\}`, 's');
-        const match = content.match(regex);
-        if (match) {
+        const sectionContent = extractSectionContent(content, section);
+
+        if (sectionContent) {
             try {
                 // Convert to valid JSON
-                let jsonStr = '{' + match[1] + '}';
+                let jsonStr = '{' + sectionContent + '}';
                 // Remove comments
                 jsonStr = jsonStr.replace(/\/\/.*$/gm, '');
                 // Add quotes to keys
@@ -410,17 +432,6 @@ function parseGameConstants(): Partial<GameConfig> {
             } catch {
                 console.log(`[Config] Failed to parse section: ${section}`);
             }
-        }
-    }
-
-    // Parse UnlockCosts array
-    const unlockMatch = content.match(/UnlockCosts:\s*\[([\s\S]*?)\]/);
-    if (unlockMatch) {
-        try {
-            const numbers = unlockMatch[1].replace(/\/\/.*$/gm, '').match(/\d+/g);
-            result.UnlockCosts = numbers ? numbers.map(Number) : [];
-        } catch {
-            console.log('[Config] Failed to parse UnlockCosts');
         }
     }
 
@@ -443,20 +454,21 @@ function parseBodyTypeConfig(): Record<string, { scale: number }> {
 }
 
 function getConfig(): GameConfig {
-    const gameConstants = parseGameConstants();
-    const bodyTypes = parseBodyTypeConfig();
+    const config = parseGameConfig();
 
     return {
-        Core: gameConstants.Core || {},
-        Combat: gameConstants.Combat || {},
-        Interaction: gameConstants.Interaction || {},
-        Time: gameConstants.Time || {},
-        Weather: gameConstants.Weather || {},
-        AI: gameConstants.AI || {},
-        Biome: gameConstants.Biome || {},
-        Spawning: gameConstants.Spawning || {},
-        UnlockCosts: gameConstants.UnlockCosts || [],
-        BodyTypes: bodyTypes
+        Core: {},
+        Hero: config.Hero || {},
+        Combat: config.Combat || {},
+        Interaction: config.Interaction || {},
+        Time: config.Time || {},
+        Weather: {},
+        AI: config.AI || {},
+        Biome: {},
+        Spawning: config.Spawning || {},
+        UnlockCosts: [],
+        BodyTypes: config.BodyTypes || {},
+        WeaponDefaults: config.WeaponDefaults || {}
     };
 }
 
@@ -465,6 +477,7 @@ function updateConfigValue(
     key: string,
     value: unknown
 ): { success: boolean; message?: string; error?: string } {
+    console.log(`[Config] updateConfigValue called: section='${section}', key='${key}', value='${value}'`);
     try {
         if (section === 'BodyTypes') {
             // Update BodyTypeConfig.ts
@@ -473,19 +486,86 @@ function updateConfigValue(
             content = content.replace(regex, `$1${value}$3`);
             fs.writeFileSync(BODY_TYPE_CONFIG_PATH, content);
             console.log(`[Config] Updated BodyTypes.${key} = ${value}`);
+        } else if (section === 'WeaponDefaults') {
+            // Handle nested weapon keys like 'sword.range'
+            let content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
+            const [weaponType, stat] = key.split('.');
+            const keyRegex = new RegExp(`(${weaponType}:\\s*\\{[^}]*${stat}:\\s*)([\\d.]+)`, 'g');
+            content = content.replace(keyRegex, `$1${value}`);
+            fs.writeFileSync(GAME_CONFIG_PATH, content);
+            console.log(`[Config] Updated WeaponDefaults.${key} = ${value}`);
         } else {
-            // Update GameConstants.ts
-            let content = fs.readFileSync(GAME_CONSTANTS_PATH, 'utf-8');
+            // Update GameConfig.ts
+            let content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
 
             // Match the key within the section
-            const sectionRegex = new RegExp(`(${section}:\\s*\\{[\\s\\S]*?)(${key}:\\s*)([^,\\n}]+)`, 'g');
-            content = content.replace(sectionRegex, `$1$2${JSON.stringify(value).replace(/"/g, '')}`);
+            const keyRegex = new RegExp(`(${key}:\\s*)([^,\\n]+)`, 'g');
+            content = content.replace(keyRegex, `$1${value}`);
 
-            fs.writeFileSync(GAME_CONSTANTS_PATH, content);
+            fs.writeFileSync(GAME_CONFIG_PATH, content);
             console.log(`[Config] Updated ${section}.${key} = ${value}`);
         }
 
         return { success: true, message: `Updated ${section}.${key}` };
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+}
+
+function resetConfigSection(section: string): { success: boolean; message?: string; error?: string } {
+    console.log(`[Config] Resetting section: ${section}`);
+    try {
+        let content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
+
+        // Find the section in DEFAULTS and copy values to the live config
+        const defaultsMatch = content.match(new RegExp(`DEFAULTS\\s*=\\s*\\{[\\s\\S]*?${section}:\\s*\\{([^}]+)\\}`));
+        if (!defaultsMatch) {
+            return { success: false, error: `Section ${section} not found in DEFAULTS` };
+        }
+
+        // Parse default values
+        const defaultContent = defaultsMatch[1];
+        const keyValuePairs = defaultContent.matchAll(/(\w+):\s*([^,\n]+)/g);
+
+        for (const match of keyValuePairs) {
+            const key = match[1];
+            const defaultValue = match[2].trim();
+            // Update live section with default value
+            const keyRegex = new RegExp(`(${section}:[\\s\\S]*?${key}:\\s*)([^,\\n]+)`, 'g');
+            content = content.replace(keyRegex, `$1${defaultValue}`);
+        }
+
+        fs.writeFileSync(GAME_CONFIG_PATH, content);
+        return { success: true, message: `Reset ${section} to defaults` };
+    } catch (error) {
+        return { success: false, error: String(error) };
+    }
+}
+
+function saveConfigDefaults(section: string): { success: boolean; message?: string; error?: string } {
+    console.log(`[Config] Saving ${section} as new defaults`);
+    try {
+        let content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
+
+        // Find current values in the live section
+        const sectionContent = extractSectionContent(content, section);
+        if (!sectionContent) {
+            return { success: false, error: `Section ${section} not found` };
+        }
+
+        // Parse current values and update DEFAULTS
+        const keyValuePairs = sectionContent.matchAll(/(\w+):\s*([^,\n}]+)/g);
+
+        for (const match of keyValuePairs) {
+            const key = match[1];
+            const currentValue = match[2].trim();
+            // Update DEFAULTS section with current value
+            const defaultKeyRegex = new RegExp(`(DEFAULTS\\s*=[\\s\\S]*?${section}:[\\s\\S]*?${key}:\\s*)([^,\\n}]+)`, 'g');
+            content = content.replace(defaultKeyRegex, `$1${currentValue}`);
+        }
+
+        fs.writeFileSync(GAME_CONFIG_PATH, content);
+        return { success: true, message: `Saved ${section} as new defaults` };
     } catch (error) {
         return { success: false, error: String(error) };
     }
@@ -603,6 +683,12 @@ export function dashboardApiPlugin() {
                                 data.key as string,
                                 data.value
                             ));
+                        }
+                        if (apiPath === '/api/reset_config_section') {
+                            return sendJson(res, resetConfigSection(data.section as string));
+                        }
+                        if (apiPath === '/api/save_config_defaults') {
+                            return sendJson(res, saveConfigDefaults(data.section as string));
                         }
                     }
 

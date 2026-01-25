@@ -10,6 +10,7 @@ interface ConfigSection {
 
 interface GameConfig {
     Core: ConfigSection;
+    Hero: ConfigSection;
     Combat: ConfigSection;
     Interaction: ConfigSection;
     Time: ConfigSection;
@@ -21,15 +22,16 @@ interface GameConfig {
     BodyTypes: Record<string, { scale: number }>;
 }
 
-// Section display names and descriptions
+// Section display names and descriptions (tunable sections from GameConfig.ts)
 const SECTION_META: Record<string, { name: string; description: string }> = {
-    Core: { name: 'Core', description: 'Game core settings' },
-    Combat: { name: 'Combat', description: 'Combat and weapon settings' },
+    Hero: { name: 'Hero', description: 'Hero stats (speed, health)' },
+    Combat: { name: 'Combat', description: 'Combat ranges and damage' },
     Interaction: { name: 'Interaction', description: 'Interaction radii' },
-    Time: { name: 'Time', description: 'Day/night cycle settings' },
     AI: { name: 'AI', description: 'Enemy AI behavior' },
-    Biome: { name: 'Biome', description: 'Biome and spawning settings' },
-    BodyTypes: { name: 'Body Types', description: 'Scale multipliers by body type' }
+    Spawning: { name: 'Spawning', description: 'Spawn settings' },
+    Time: { name: 'Time', description: 'Day/night cycle' },
+    BodyTypes: { name: 'Body Types', description: 'Scale multipliers' },
+    WeaponDefaults: { name: 'Weapon Defaults', description: 'Base stats by weapon type' }
 };
 
 let currentConfig: GameConfig | null = null;
@@ -67,6 +69,10 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                 <div class="section-header">
                     <h3>${meta.name}</h3>
                     <span class="section-description">${meta.description}</span>
+                    <div class="section-actions">
+                        <button class="btn-reset" data-section="${sectionKey}" title="Reset to defaults">↺ Reset</button>
+                        <button class="btn-save-defaults" data-section="${sectionKey}" title="Save current values as new defaults">💾 Save Defaults</button>
+                    </div>
                 </div>
                 <div class="section-fields" data-section="${sectionKey}"></div>
             `;
@@ -77,6 +83,17 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                 // Special rendering for body types
                 for (const [bodyType, data] of Object.entries(sectionData as Record<string, { scale: number }>)) {
                     fieldsContainer.appendChild(createField(sectionKey, bodyType, data.scale, 'number'));
+                }
+            } else if (sectionKey === 'WeaponDefaults') {
+                // Special rendering for weapon defaults (nested objects with range/damage/attackSpeed)
+                for (const [weaponType, stats] of Object.entries(sectionData as Record<string, { range: number; damage: number; attackSpeed: number }>)) {
+                    const weaponDiv = document.createElement('div');
+                    weaponDiv.className = 'weapon-type-group';
+                    weaponDiv.innerHTML = `<label class="weapon-type-label">${weaponType}</label>`;
+                    weaponDiv.appendChild(createField(sectionKey, `${weaponType}.range`, stats.range, 'number'));
+                    weaponDiv.appendChild(createField(sectionKey, `${weaponType}.damage`, stats.damage, 'number'));
+                    weaponDiv.appendChild(createField(sectionKey, `${weaponType}.attackSpeed`, stats.attackSpeed, 'number'));
+                    fieldsContainer.appendChild(weaponDiv);
                 }
             } else if (typeof sectionData === 'object' && !Array.isArray(sectionData)) {
                 // Regular section
@@ -89,6 +106,45 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
 
             sectionsContainer.appendChild(sectionEl);
         }
+
+        // Wire up Reset and Save Defaults buttons
+        container.querySelectorAll('.btn-reset').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const section = (btn as HTMLElement).dataset.section;
+                if (!confirm(`Reset ${section} to default values?`)) return;
+
+                const response = await fetch('/api/reset_config_section', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ section })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    renderConfigView(container); // Refresh UI
+                } else {
+                    alert('Reset failed: ' + result.error);
+                }
+            });
+        });
+
+        container.querySelectorAll('.btn-save-defaults').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const section = (btn as HTMLElement).dataset.section;
+                if (!confirm(`Save current ${section} values as new defaults?`)) return;
+
+                const response = await fetch('/api/save_config_defaults', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ section })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Defaults saved!');
+                } else {
+                    alert('Save failed: ' + result.error);
+                }
+            });
+        });
 
     } catch (error) {
         container.innerHTML = `<div class="error">Error: ${error}</div>`;

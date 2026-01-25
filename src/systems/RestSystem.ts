@@ -11,21 +11,22 @@
 
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '../vfx/VFXController';
 import { GameState } from '../core/State';
 import { Registry } from '../core/Registry';
 
+import type { IGame } from '../types/core.d';
 
 class RestSystem {
-    game: any = null;
+    game: IGame | null = null;
 
     constructor() {
         Logger.info('[RestSystem] Constructed');
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
         Logger.info('[RestSystem] Initialized');

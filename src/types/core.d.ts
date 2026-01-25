@@ -107,8 +107,26 @@ export interface IEntity {
     stamina?: number;
     /** Maximum stamina */
     maxStamina?: number;
-    /** Equipment system reference */
+    /** Equipment system reference (has getStatBonus, getSlot methods) */
     equipment?: any;
+    /** Whether entity is at home outpost */
+    isAtHomeOutpost?: boolean;
+    /** Whether entity is locked (cannot move) */
+    locked?: boolean;
+    /** Previous X position for movement delta */
+    prevX?: number;
+    /** Previous Y position for movement delta */
+    prevY?: number;
+    /** Movement speed */
+    speed?: number;
+    /** Input move vector (for hero) */
+    inputMove?: { x: number; y: number };
+    /** Footstep timer for VFX */
+    footstepTimer?: number;
+    /** Footstep interval for VFX */
+    footstepInterval?: number;
+    /** Component container for health, etc. */
+    components?: { health?: { respawn(): void } } & Record<string, unknown>;
 }
 
 /**

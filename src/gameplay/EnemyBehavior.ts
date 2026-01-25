@@ -11,7 +11,7 @@ import { Enemy } from './EnemyCore';
 import { Logger } from '../core/Logger';
 import { entityManager as EntityManager } from '../core/EntityManager';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { BiomeConfig } from '../data/BiomeConfig';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '../vfx/VFXController';

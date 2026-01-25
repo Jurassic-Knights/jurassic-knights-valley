@@ -8,7 +8,7 @@
 import { Registry } from '../core/Registry';
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { IslandManager } from '../world/IslandManager';
 
 // Helper to get AssetLoader from Registry (avoid circular dependency)

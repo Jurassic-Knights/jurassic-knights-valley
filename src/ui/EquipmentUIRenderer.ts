@@ -65,10 +65,7 @@ class EquipmentUIRenderer {
                 <div class="equip-summary-bar ${item ? 'has-item' : 'empty'}">
                     <div class="item-preview-name">${itemName}</div>
                     <div class="item-stats-row">
-                        ${itemDamage ? `<div class="summary-stat"><span class="stat-icon">??</span> DMG <span>+${itemDamage}</span></div>` : ''}
-                        ${itemArmor ? `<div class="summary-stat"><span class="stat-icon">???</span> ARM <span>+${itemArmor}</span></div>` : ''}
-                        ${itemSpeed ? `<div class="summary-stat"><span class="stat-icon">??</span> SPD <span>+${itemSpeed}</span></div>` : ''}
-                        ${!item ? '<div class="summary-stat empty">Double-tap to equip</div>' : ''}
+                        ${item ? EquipmentUIRenderer.renderItemStats(item) : '<div class="summary-stat empty">Double-tap to equip</div>'}
                     </div>
                 </div>
 
@@ -306,6 +303,70 @@ class EquipmentUIRenderer {
                 skinEl.style.backgroundPosition = 'center';
             }
         }
+    }
+
+    /**
+     * Render all stats for an equipment item with icons
+     * Shows ALL relevant stats (including 0 values) for the item type
+     * @param {EquipmentItem} item - Equipment item
+     * @returns {string} HTML string
+     */
+    static renderItemStats(item) {
+        if (!item?.stats) {
+            return '<div class="summary-stat empty">No stats</div>';
+        }
+
+        const stats = item.stats;
+        const type = item.type || item.sourceFile;
+
+        // Define stats to show based on equipment type
+        type StatDef = { key: string; label: string; iconId: string };
+        let relevantStats: StatDef[] = [];
+
+        if (type === 'weapon' || item.weaponType) {
+            // Weapon stats
+            relevantStats = [
+                { key: 'damage', label: 'DMG', iconId: 'stat_damage' },
+                { key: 'attackSpeed', label: 'SPD', iconId: 'stat_attack_speed' },
+                { key: 'range', label: 'RNG', iconId: 'stat_range' },
+                { key: 'critChance', label: 'CRT%', iconId: 'stat_crit_chance' },
+                { key: 'critDamage', label: 'CRT×', iconId: 'stat_crit_damage' },
+            ];
+        } else if (type === 'armor' || ['head', 'body', 'chest', 'hands', 'legs', 'feet'].includes(item.slot)) {
+            // Armor stats
+            relevantStats = [
+                { key: 'armor', label: 'ARM', iconId: 'stat_armor' },
+                { key: 'health', label: 'HP', iconId: 'stat_health' },
+                { key: 'stamina', label: 'STA', iconId: 'stat_stamina' },
+                { key: 'speed', label: 'SPD', iconId: 'stat_speed' },
+            ];
+        } else if (type === 'tool' || item.slot === 'tool') {
+            // Tool stats
+            relevantStats = [
+                { key: 'efficiency', label: 'EFF', iconId: 'stat_efficiency' },
+            ];
+        } else {
+            // Generic - show any stats present
+            return Object.entries(stats)
+                .map(([key, val]) => `<div class="summary-stat"><span>${key}</span> <span>${val}</span></div>`)
+                .join('');
+        }
+
+        // Render each stat with icon - mobile first: 32px icons, large text
+        return `<div class="stats-grid" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:space-around; align-items:center; padding:4px 0;">
+            ${relevantStats.map(stat => {
+            const value = stats[stat.key] ?? 0;
+            const iconPath = AssetLoader?.getImagePath?.(stat.iconId) || '';
+            const prefix = value > 0 ? '+' : '';
+            return `
+                    <div class="summary-stat" title="${stat.label}" style="display:flex; flex-direction:column; align-items:center; gap:2px; min-width:48px;">
+                        <img class="stat-icon-img" src="${iconPath}" alt="${stat.label}" style="width:32px;height:32px;object-fit:contain;">
+                        <span style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">${stat.label}</span>
+                        <span style="font-size:1.1rem; font-weight:bold; color:#fff;">${prefix}${value}</span>
+                    </div>
+                `;
+        }).join('')}
+        </div>`;
     }
 }
 

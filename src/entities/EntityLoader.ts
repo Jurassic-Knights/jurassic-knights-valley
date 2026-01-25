@@ -14,7 +14,6 @@ import manifest from './manifest';
 
 // Pre-import all entity modules using Vite's import.meta.glob (eager mode)
 // This allows synchronous access to all entity data at runtime
-// @ts-expect-error - import.meta.glob is Vite-specific, not in standard TS types
 const entityModules: Record<string, { default: any }> = import.meta.glob(
     [
         './enemies/*.ts',

@@ -11,6 +11,7 @@ import { Logger } from '../../core/Logger';
 import { Dinosaur } from '../../gameplay/Dinosaur';
 import { GameRenderer } from '../../core/GameRenderer';
 import { GameConstants } from '../../data/GameConstants';
+import { getConfig } from '../../data/GameConfig';
 import { entityManager } from '../../core/EntityManager';
 import { IslandUpgrades } from '../../gameplay/IslandUpgrades';
 import { IslandManager } from '../../world/IslandManager';
@@ -38,7 +39,7 @@ class ResourceSpawner {
             const home = islandManager.getHomeIsland();
             const bounds = islandManager.getPlayableBounds(home);
             if (home && bounds) {
-                const goldCount = GameConstants.Spawning.HOME_GOLD_COUNT;
+                const goldCount = getConfig().Spawning.HOME_GOLD_COUNT;
                 const padding = GameConstants.UI.PROP_SPAWN_PADDING;
                 for (let i = 0; i < goldCount; i++) {
                     const x = bounds.x + padding + Math.random() * (bounds.width - padding * 2);

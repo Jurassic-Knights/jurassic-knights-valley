@@ -8,35 +8,37 @@
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
 import { entityManager } from '../core/EntityManager';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '../vfx/VFXController';
 import { VFXConfig } from '../data/VFXConfig';
 import { Registry } from '../core/Registry';
 import { EntityTypes } from '../config/EntityTypes';
+import type { IGame, IEntity } from '../types/core.d';
 
 // Events from GameConstants
 const Events = GameConstants.Events;
 
-// Unmapped modules - need manual import
+// Event data interface
+interface EntityEvent { entity: IEntity; amount?: number; killer?: IEntity }
 
 
 class EnemySystem {
-    game: any = null;
+    game: IGame | null = null;
 
     constructor() {
         Logger.info('[EnemySystem] Initialized');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
     }
 
     initListeners() {
         if (EventBus) {
-            EventBus.on('ENTITY_DAMAGED', (data: any) => this.onEntityDamaged(data));
-            EventBus.on('ENTITY_DIED', (data: any) => this.onEntityDied(data));
+            EventBus.on('ENTITY_DAMAGED', (data: EntityEvent) => this.onEntityDamaged(data));
+            EventBus.on('ENTITY_DIED', (data: EntityEvent) => this.onEntityDied(data));
         }
     }
 

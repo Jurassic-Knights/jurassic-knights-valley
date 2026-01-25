@@ -4,7 +4,7 @@
 import { Component } from '../core/Component';
 import { Registry } from '../core/Registry';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 
 class HealthComponent extends Component {
     maxHealth: number;
@@ -13,9 +13,19 @@ class HealthComponent extends Component {
 
     constructor(parent: any, config: any = {}) {
         super(parent);
-        this.maxHealth = config.maxHealth || 100;
+        // For hero, read from config; for others, use provided value
+        const defaultMax = parent.id === 'hero' ? getConfig().Hero?.MAX_HEALTH || 100 : 100;
+        this.maxHealth = config.maxHealth || defaultMax;
         this.health = config.health || this.maxHealth;
         this.isDead = false;
+    }
+
+    // Dynamic getter for hero max health (reads from config each call)
+    getMaxHealth(): number {
+        if (this.parent.id === 'hero') {
+            return getConfig().Hero?.MAX_HEALTH || this.maxHealth;
+        }
+        return this.maxHealth;
     }
 
     takeDamage(amount: number) {

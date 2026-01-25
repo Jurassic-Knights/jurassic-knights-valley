@@ -8,7 +8,7 @@
 
 import { Logger } from './Logger';
 import { Registry } from './Registry';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { EntityRenderService } from '../rendering/EntityRenderService';
 import { RenderProfiler } from '../rendering/RenderProfiler';

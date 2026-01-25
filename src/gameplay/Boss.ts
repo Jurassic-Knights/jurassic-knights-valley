@@ -8,7 +8,7 @@
  */
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EntityConfig } from '../config/EntityConfig';
 import { EntityTypes } from '../config/EntityTypes';
 import { BiomeConfig } from '../data/BiomeConfig';

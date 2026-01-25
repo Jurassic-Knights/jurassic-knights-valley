@@ -15,6 +15,7 @@ import { UIManager } from './UIManager';
 import { BiomeManager } from '../world/BiomeManager';
 import { entityManager } from '../core/EntityManager';
 import { Registry } from '../core/Registry';
+import type { IGame } from '../types/core.d';
 
 
 class MinimapSystem {
@@ -50,7 +51,7 @@ class MinimapSystem {
         Logger.info('[MinimapSystem] Constructed');
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
 
         // Cache DOM elements
@@ -248,7 +249,7 @@ class MinimapSystem {
                 if (!polygon || polygon.length < 3) continue;
 
                 // Convert polygon points to canvas coords
-                const points = polygon.map((p: any) => toCanvas(p.x, p.y));
+                const points = polygon.map((p: { x: number; y: number }) => toCanvas(p.x, p.y));
 
                 // Draw filled polygon
                 ctx.fillStyle = biome.color + '60'; // Semi-transparent

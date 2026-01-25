@@ -13,7 +13,8 @@
 import { Component } from '../core/Component';
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
+import { getWeaponStats } from '../data/GameConfig';
 class StatsComponent extends Component {
     type: string = 'StatsComponent';
     speed: number = 100;
@@ -72,7 +73,9 @@ class StatsComponent extends Component {
     }
 
     getSpeed(multiplier: number = 1) {
-        return this.speed * multiplier;
+        // Always read from config for live updates
+        const configSpeed = getConfig().Hero?.SPEED || this.speed;
+        return configSpeed * multiplier;
     }
 
     getXPForLevel(targetLevel: number) {
@@ -106,16 +109,18 @@ class StatsComponent extends Component {
     }
 
     getAttackRange() {
-        const baseRange = 80;
+        // Base hand range + equipment bonuses
+        const baseRange = getConfig().Combat?.DEFAULT_MINING_RANGE || 80;
         const equipBonus = this.parent.equipment?.getStatBonus('range') || 0;
         return baseRange + equipBonus;
     }
 
     getWeaponRange(slotId: string) {
-        const baseRange = 80;
+        // Use additive model: base + entity bonus
         const item = this.parent.equipment?.getSlot?.(slotId);
-        if (!item) return baseRange;
-        return item.stats?.range || baseRange;
+        if (!item) return getConfig().Combat?.DEFAULT_MINING_RANGE || 80;
+        const stats = getWeaponStats(item);
+        return stats.range;
     }
 
     getAttackRate() {
@@ -126,7 +131,8 @@ class StatsComponent extends Component {
     }
 
     getDamageReduction(incomingDamage: number) {
-        const reduction = this.getDefense() / (this.getDefense() + 100);
+        const divisor = getConfig().Combat?.ARMOR_FORMULA_DIVISOR || 100;
+        const reduction = this.getDefense() / (this.getDefense() + divisor);
         return Math.floor(incomingDamage * (1 - reduction));
     }
 

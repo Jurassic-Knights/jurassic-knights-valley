@@ -13,22 +13,24 @@ import { MeleeTrailVFX } from './MeleeTrailVFX';
 import { FloatingTextManager, FloatingText } from './FloatingText';
 import { VFXConfig } from '../data/VFXConfig';
 import { GameRenderer } from '../core/GameRenderer';
+import type { IGame } from '../types/core.d';
+import type { ParticleOptions, VFXSequence } from '../types/vfx';
 
 
 class VFXSystem {
     // Property declarations
-    game: any = null;
-    bgParticles: any = null;
-    fgParticles: any = null;
-    texts: any[] = [];
-    activeSequences: any[] = [];
+    game: IGame | null = null;
+    bgParticles: typeof ParticleSystem | null = null;
+    fgParticles: typeof ParticleSystem | null = null;
+    texts: FloatingText[] = [];
+    activeSequences: Array<{ name?: string; x: number; y: number; elapsed: number; cues: Array<{ time: number; type: string; options?: ParticleOptions }>; options?: ParticleOptions }> = [];
     initialized: boolean = false;
 
     constructor() {
         Logger.info('[VFXSystem] Constructed');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         // Initialize dual-layer canvas system
         // Note: ParticleSystem is expected to be a global or imported class
@@ -304,7 +306,7 @@ class VFXSystem {
     /**
      * Trigger UI progress sparks effect (for upgrade/progress animations)
      */
-    triggerUIProgressSparks(x: number, y: number, _config: any = {}) {
+    triggerUIProgressSparks(x: number, y: number, _config: ParticleOptions = {}) {
         this.playForeground(x, y, {
             type: 'spark',
             color: '#FFD700',

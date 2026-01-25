@@ -8,11 +8,12 @@
  */
 
 import { Logger } from '../core/Logger';
-import { GameConstants } from '../data/GameConstants';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { WorldData } from '../data/WorldData';
 import { GameState } from '../core/State';
 import { EventBus } from '../core/EventBus';
 import { BiomeManager } from './BiomeManager';
+import type { Island, Bridge, WalkableZoneWithId, CollisionBlockWithMeta, PlayableBounds } from '../types/world';
 
 
 class IslandManagerService {
@@ -30,9 +31,9 @@ class IslandManagerService {
     wallPadBottom: number;
     unlockCosts: number[];
     cellSize: number = 0;
-    islands: any[] = [];
-    walkableZones: any[] = [];
-    collisionBlocks: any[] = [];
+    islands: Island[] = [];
+    walkableZones: WalkableZoneWithId[] = [];
+    collisionBlocks: CollisionBlockWithMeta[] = [];
 
     constructor() {
         // Grid configuration
@@ -53,7 +54,7 @@ class IslandManagerService {
         this.wallPadBottom = GameConstants.World.WALL_PAD_BOTTOM;
 
         // Unlock costs by grid position
-        this.unlockCosts = GameConstants.UnlockCosts;
+        this.unlockCosts = getConfig().UnlockCosts;
 
         // State
         this.cellSize = 0;
@@ -314,7 +315,7 @@ class IslandManagerService {
     /**
      * Check if hero is in a trigger zone for unlocking
      */
-    getUnlockTrigger(x: number, y: number): any {
+    getUnlockTrigger(x: number, y: number): Island | null {
         for (const zone of this.walkableZones) {
             if (zone.type === 'bridge') {
                 if (
@@ -381,7 +382,7 @@ class IslandManagerService {
     /**
      * Get bridge at position (if any)
      */
-    getBridgeAt(x: number, y: number): any {
+    getBridgeAt(x: number, y: number): Bridge | null {
         const bridges = this.getBridges();
         for (const bridge of bridges) {
             if (
@@ -399,8 +400,8 @@ class IslandManagerService {
     /**
      * Get all bridge definitions
      */
-    getBridges(): any[] {
-        const bridges: any[] = [];
+    getBridges(): Bridge[] {
+        const bridges: Bridge[] = [];
         const halfBridge = this.bridgeWidth / 2;
         const islandCenter = this.islandSize / 2;
         const overlap = 25;
@@ -489,7 +490,7 @@ class IslandManagerService {
     /**
      * Get island by grid coordinates
      */
-    getIslandByGrid(gridX: number, gridY: number): any {
+    getIslandByGrid(gridX: number, gridY: number): Island | undefined {
         return this.islands.find((i) => i.gridX === gridX && i.gridY === gridY);
     }
 
@@ -533,7 +534,7 @@ class IslandManagerService {
     /**
      * Get playable bounds for an island (inside walls)
      */
-    getPlayableBounds(island: any): any {
+    getPlayableBounds(island: Island | null | undefined): PlayableBounds | null {
         if (!island) return null;
         return {
             x: island.worldX + this.wallWidth,
@@ -566,7 +567,7 @@ class IslandManagerService {
     /**
      * Get the island at world coordinates
      */
-    getIslandAt(x: number, y: number): any {
+    getIslandAt(x: number, y: number): Island | null {
         for (const island of this.islands) {
             if (
                 x >= island.worldX &&
@@ -583,7 +584,7 @@ class IslandManagerService {
     /**
      * Get the home island
      */
-    getHomeIsland(): any {
+    getHomeIsland(): Island | undefined {
         return this.islands.find((i) => i.type === 'home');
     }
 

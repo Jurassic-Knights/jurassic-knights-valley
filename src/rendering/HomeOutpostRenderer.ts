@@ -7,6 +7,8 @@
  * Owner: Rendering System
  */
 
+import { getConfig } from '../data/GameConstants';
+
 const HomeOutpostRenderer = {
     /**
      * Draw home outpost at center of home island
@@ -29,7 +31,7 @@ const HomeOutpostRenderer = {
             }
         }
 
-        const radius = 200;
+        const radius = getConfig().Interaction?.REST_AREA_RADIUS ?? 400;
 
         // Outer glow
         ctx.beginPath();

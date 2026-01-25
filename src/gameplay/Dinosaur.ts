@@ -19,14 +19,6 @@ import { StatsComponent } from '../components/StatsComponent';
 import { AIComponent } from '../components/AIComponent';
 import { Registry } from '../core/Registry';
 
-// Unmapped modules - need manual import
-declare const BaseCreature: any; // TODO: Add proper import
-
-
-// Unmapped modules - need manual import
-// TODO: Add proper import
-
-
 class Dinosaur extends Entity {
     // Entity type and identity
     dinoType: string = 'enemy_herbivore_t1_01';
@@ -57,22 +49,21 @@ class Dinosaur extends Entity {
     frameIndex: number = 0;
     frameTimer: number = 0;
     frameInterval: number = 200;
-    walkFrames: any[] = [];
+    walkFrames: HTMLImageElement[] = [];
     spriteId: string = '';
     _sprite: any = null;
     _spriteLoaded: boolean = false;
 
     constructor(config: any = {}) {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
-        const defaults = typeof BaseCreature !== 'undefined' ? BaseCreature : {};
 
         // Look up entity config from EntityRegistry using dinoType (e.g., 'enemy_herbivore_t1_01')
         const entityConfig = config.dinoType
             ? EntityRegistry.enemies?.[config.dinoType] || {}
             : {};
 
-        // Merge: Defaults < Entity JSON < Constructor
-        const finalConfig = { ...defaults, ...entityConfig, ...config };
+        // Merge: Entity JSON < Constructor
+        const finalConfig = { ...entityConfig, ...config };
 
         // Get size from SpeciesScaleConfig (runtime lookup by species)
         const sizeInfo = SpeciesScaleConfig.getSize(entityConfig, false) || { width: 150, height: 150 };

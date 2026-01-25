@@ -54,10 +54,16 @@ const GameConstants = {
         INITIAL_GOLD: 100000
     },
 
+    // Hero Settings
+    Hero: {
+        SPEED: 1400,
+        MAX_HEALTH: 1000
+    },
+
     // Combat Settings
     Combat: {
-        DEFAULT_GUN_RANGE: 800,
-        DEFAULT_MINING_RANGE: 1250,
+        DEFAULT_GUN_RANGE: 1000,
+        DEFAULT_MINING_RANGE: 125,
         DEFAULT_DAMAGE: 10,
         ATTACK_COOLDOWN: 0.5,
         DEFAULT_PATROL_RADIUS: 150,
@@ -318,3 +324,82 @@ const GameConstants = {
 
 // ES6 Module Export
 export { GameConstants };
+
+/**
+ * getConfig() - HMR-safe accessor for GameConstants
+ * 
+ * Use this instead of importing GameConstants directly to get
+ * hot-reloadable config values that update without page refresh.
+ * 
+ * Usage: const speed = getConfig().Hero.SPEED;
+ */
+export function getConfig(): typeof GameConstants {
+    // Get tunable values directly from GameConfig's HMR-updated window reference
+    // FIXED: Properly read the config object (was boolean short-circuit bug)
+    const tunables = (typeof window !== 'undefined' && window.__GAME_CONFIG__)
+        ? (window as any).__GAME_CONFIG__
+        : {};
+    const base = (typeof window !== 'undefined' && window.__GAME_CONSTANTS__)
+        ? window.__GAME_CONSTANTS__
+        : GameConstants;
+
+    // Deep merge WeaponDefaults (nested objects)
+    const mergedWeaponDefaults = { ...(base as any).WeaponDefaults };
+    if (tunables.WeaponDefaults) {
+        for (const weapon of Object.keys(tunables.WeaponDefaults)) {
+            mergedWeaponDefaults[weapon] = {
+                ...mergedWeaponDefaults[weapon],
+                ...tunables.WeaponDefaults[weapon]
+            };
+        }
+    }
+
+    // Build result with tunable sections reading DIRECTLY from tunables (not merging)
+    // This ensures HMR updates are always reflected
+    return {
+        ...base,
+        // For tunable sections: use tunables if they exist, otherwise fall back to base
+        Hero: tunables.Hero || base.Hero,
+        Combat: tunables.Combat || base.Combat,
+        Interaction: tunables.Interaction || base.Interaction,
+        AI: tunables.AI || base.AI,
+        Spawning: tunables.Spawning || base.Spawning,
+        Time: tunables.Time || base.Time,
+        BodyTypes: tunables.BodyTypes || (base as any).BodyTypes,
+        WeaponDefaults: mergedWeaponDefaults
+    } as typeof GameConstants;
+}
+
+// ============================================
+// VITE HMR - Hot reload without full page refresh
+// ============================================
+
+// Store GameConstants on window so it persists across HMR updates
+declare global {
+    interface Window {
+        __GAME_CONSTANTS__: typeof GameConstants;
+    }
+}
+
+// On first load, store reference. On HMR, update the stored reference.
+if (typeof window !== 'undefined') {
+    if (!window.__GAME_CONSTANTS__) {
+        window.__GAME_CONSTANTS__ = GameConstants;
+    } else {
+        // HMR update - merge new values into the persisted object
+        const persisted = window.__GAME_CONSTANTS__;
+        for (const key of Object.keys(GameConstants)) {
+            const typedKey = key as keyof typeof GameConstants;
+            if (typeof GameConstants[typedKey] === 'object' && !Array.isArray(GameConstants[typedKey])) {
+                Object.assign(persisted[typedKey], GameConstants[typedKey]);
+            } else {
+                (persisted as any)[typedKey] = GameConstants[typedKey];
+            }
+        }
+        console.log('[HMR] GameConstants updated in-place');
+    }
+}
+
+if (import.meta.hot) {
+    import.meta.hot.accept();
+}
