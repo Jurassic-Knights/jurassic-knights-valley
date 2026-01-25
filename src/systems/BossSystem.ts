@@ -15,7 +15,7 @@ import { EventBus } from '../core/EventBus';
 import { GameConstants, getConfig } from '../data/GameConstants';
 import { entityManager } from '../core/EntityManager';
 import { Registry } from '../core/Registry';
-import { EntityConfig } from '../config/EntityConfig';
+import { EntityRegistry } from '../entities/EntityLoader';
 import { BiomeConfig } from '../data/BiomeConfig';
 import { Boss } from '../gameplay/Boss';
 
@@ -71,7 +71,7 @@ class BossSystem {
         }
 
         // Get boss type config
-        const bossConfig = EntityConfig?.boss?.types?.[biome.bossId];
+        const bossConfig = EntityRegistry.bosses?.[biome.bossId];
         if (!bossConfig) {
             Logger.info(`[BossSystem] Boss type not found: ${biome.bossId}`);
             return null;

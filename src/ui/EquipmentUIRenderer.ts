@@ -265,13 +265,10 @@ class EquipmentUIRenderer {
      * @returns {string} Image path
      */
     static getSkinImagePath(skinId) {
-        const skinData = EntityRegistry?.hero?.[skinId];
-        if (skinData?.files?.clean) {
-            return 'assets/' + skinData.files.clean;
+        if (AssetLoader && AssetLoader.getImagePath) {
+            return AssetLoader.getImagePath(skinId);
         }
-        if (skinData?.files?.original) {
-            return 'assets/' + skinData.files.original;
-        }
+        // Fallback (should normally be handled by AssetLoader)
         return '';
     }
 

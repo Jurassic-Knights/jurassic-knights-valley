@@ -19,7 +19,7 @@ export default {
     "stats": {
         "health": "25",
         "damage": 3,
-        "speed": 100,
+        "speed": "100",
         "defense": 0
     },
     "combat": {

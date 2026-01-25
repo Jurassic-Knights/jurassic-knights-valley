@@ -23,6 +23,23 @@ import {
 import { renderCategoryView } from './categoryRenderer';
 
 // ============================================
+// BROADCAST CHANNEL
+// ============================================
+
+// Channel for sending updates to the game window
+const entityChannel = new BroadcastChannel('game-entity-updates');
+
+function broadcastUpdate(category: string, id: string, updates: Record<string, unknown>) {
+    console.log(`[Dashboard] Broadcasting update for ${category}/${id}`, updates);
+    entityChannel.postMessage({
+        type: 'ENTITY_UPDATE',
+        category,
+        id,
+        updates
+    });
+}
+
+// ============================================
 // API FUNCTIONS
 // ============================================
 
@@ -92,6 +109,7 @@ export async function updateCategoryStatus(
             }
             renderCategoryView();
             console.log(`[Dashboard] Updated ${itemId} status to ${newStatus}`);
+            broadcastUpdate(category, itemId, { status: newStatus, declineNote: note });
         } else {
             console.error('[Dashboard] Update failed:', result.error);
         }
@@ -130,6 +148,7 @@ export async function updateConsumedStatus(
             }
             renderCategoryView();
             console.log(`[Dashboard] Updated ${itemId} consumed status to ${newStatus}`);
+            broadcastUpdate(category, itemId, { consumedStatus: newStatus, consumedDeclineNote: note });
         } else {
             console.error('[Dashboard] Update failed:', result.error);
         }
@@ -166,6 +185,7 @@ export async function updateItemWeapon(
                 }
             }
             console.log(`[Dashboard] Updated ${itemId} weapon to ${newWeapon}`);
+            broadcastUpdate(category, itemId, { weaponType: newWeapon });
         }
     } catch (err) {
         console.error('[Dashboard] API error:', err);
@@ -201,6 +221,7 @@ export async function updateItemStat(
                 }
             }
             console.log(`[Dashboard] Updated ${itemId} stat ${statKey} to ${newValue}`);
+            broadcastUpdate(category, itemId, { [`stats.${statKey}`]: newValue });
         }
     } catch (err) {
         console.error('[Dashboard] API error:', err);
@@ -236,6 +257,7 @@ export async function updateItemField(
                 }
             }
             console.log(`[Dashboard] Updated ${itemId} field ${field}`);
+            broadcastUpdate(category, itemId, { [field]: value });
         }
     } catch (err) {
         console.error('[Dashboard] API error:', err);
@@ -271,6 +293,7 @@ export async function updateItemTier(
             }
             renderCategoryView();
             console.log(`[Dashboard] Updated ${itemId} tier to ${newTier}`);
+            broadcastUpdate(category, itemId, { tier: newTier });
         }
     } catch (err) {
         console.error('[Dashboard] API error:', err);
@@ -312,6 +335,7 @@ export async function updateDisplayField(
                 }
             }
             console.log(`[Dashboard] ✓ Updated ${itemId} display.${field} to ${value}`);
+            broadcastUpdate(category, itemId, { [`display.${field}`]: value });
         } else {
             console.error(`[Dashboard] ✗ Update failed:`, result.error || result);
         }
@@ -351,6 +375,7 @@ export async function updateWeaponMeta(
             }
             renderCategoryView();
             console.log(`[Dashboard] Updated ${itemId} ${field} to ${value}`);
+            broadcastUpdate(category, itemId, { [field]: value });
         }
     } catch (err) {
         console.error('[Dashboard] API error:', err);

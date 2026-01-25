@@ -124,6 +124,9 @@ class InventoryPanel {
     }
 
     open() {
+        // Safety: Force close filter wheel overlay
+        WeaponWheelInstance.close();
+
         // Close other fullscreen UIs first
         const uiMgr = Registry?.get('UIManager');
         if (uiMgr && uiMgr.closeOtherFullscreenUIs) {
@@ -366,6 +369,7 @@ class InventoryPanel {
         // Re-enable context button
         if (btnContext) {
             btnContext.classList.remove('inactive');
+            btnContext.onclick = null; // CLEAR HANDLER to prevent hijacking InventoryUI
         }
 
         // Show weapon swap button again

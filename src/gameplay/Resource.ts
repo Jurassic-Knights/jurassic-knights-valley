@@ -12,10 +12,10 @@ import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '../vfx/VFXController';
 import { spawnManager } from '../systems/SpawnManager';
 import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
-import { EntityConfig } from '../config/EntityConfig';
 import { GameConstants, getConfig } from '../data/GameConstants';
 import { EntityTypes } from '../config/EntityTypes';
 import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
 
 
 class Resource extends Entity {
@@ -47,9 +47,10 @@ class Resource extends Entity {
      */
     constructor(config: any = {}) {
         // 1. Load Config from EntityRegistry (nodes or resources)
+        // 1. Load Config from EntityRegistry (nodes or resources)
         const typeConfig =
-            EntityConfig.nodes?.[config.resourceType] ||
-            EntityConfig.resources?.[config.resourceType] ||
+            EntityRegistry.nodes?.[config.resourceType] ||
+            EntityRegistry.resources?.[config.resourceType] ||
             {};
 
         // Merge
@@ -179,7 +180,7 @@ class Resource extends Entity {
         if (this.health <= 0) {
             // SFX: Break - use config-driven sfxSuffix
             if (AudioManager) {
-                const typeConfig = EntityConfig.resources?.[this.resourceType] || {};
+                const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
                 const suffix = typeConfig.sfxSuffix || 'metal';
                 AudioManager.playSFX(`sfx_resource_break_${suffix}`);
             }
@@ -223,7 +224,7 @@ class Resource extends Entity {
         let newDuration = this.maxRespawnTime; // Default base
 
         // Base value lookup
-        const typeConfig = EntityConfig.resources?.[this.resourceType] || {};
+        const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
         const baseTime = typeConfig.respawnTime || 30;
 
         if (this.islandGridX !== undefined) {

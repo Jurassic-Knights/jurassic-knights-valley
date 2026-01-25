@@ -16,7 +16,7 @@ import { entityManager } from '../../core/EntityManager';
 import { IslandUpgrades } from '../../gameplay/IslandUpgrades';
 import { IslandManager } from '../../world/IslandManager';
 import { Resource } from '../../gameplay/Resource';
-import { EntityConfig } from '../../config/EntityConfig';
+import { EntityRegistry } from '../../entities/EntityLoader';
 import { Registry } from '../../core/Registry';
 
 
@@ -148,42 +148,6 @@ class ResourceSpawner {
             3: ['enemy_herbivore_t3_01', 'enemy_herbivore_t3_02']
         };
 
-        // Inline loot definitions matching entity JSON files (bypasses EntityLoader fetch)
-        const herbivoreLoot = {
-            enemy_herbivore_t1_01: [
-                { item: 'food_t1_02', chance: 1.0, amount: [1, 2] },
-                { item: 'leather_t1_01', chance: 0.3, amount: [1, 1] }
-            ],
-            enemy_herbivore_t1_02: [
-                { item: 'food_t1_02', chance: 1.0, amount: [1, 1] },
-                { item: 'leather_t1_01', chance: 0.2, amount: [1, 1] }
-            ],
-            enemy_herbivore_t1_03: [
-                { item: 'food_t1_02', chance: 1.0, amount: [1, 2] },
-                { item: 'leather_t1_01', chance: 0.25, amount: [1, 1] }
-            ],
-            enemy_herbivore_t2_01: [
-                { item: 'food_t2_01', chance: 1.0, amount: [1, 2] },
-                { item: 'leather_t2_01', chance: 0.35, amount: [1, 1] }
-            ],
-            enemy_herbivore_t2_02: [
-                { item: 'food_t2_01', chance: 1.0, amount: [1, 2] },
-                { item: 'leather_t2_01', chance: 0.3, amount: [1, 1] }
-            ],
-            enemy_herbivore_t2_03: [
-                { item: 'food_t2_01', chance: 1.0, amount: [1, 2] },
-                { item: 'leather_t2_01', chance: 0.3, amount: [1, 1] }
-            ],
-            enemy_herbivore_t3_01: [
-                { item: 'food_t3_01', chance: 1.0, amount: [1, 3] },
-                { item: 'leather_t3_01', chance: 0.4, amount: [1, 2] }
-            ],
-            enemy_herbivore_t3_02: [
-                { item: 'food_t3_01', chance: 1.0, amount: [1, 3] },
-                { item: 'leather_t3_01', chance: 0.35, amount: [1, 1] }
-            ]
-        };
-
         // Determine tier based on island position (row 1 = T1, row 2 = T2/T3)
         const tier = Math.min(3, Math.max(1, island.gridY));
 
@@ -200,7 +164,8 @@ class ResourceSpawner {
                 x: x,
                 y: y,
                 dinoType: dinoType,
-                lootTable: herbivoreLoot[dinoType] || herbivoreLoot['enemy_herbivore_t1_01'],
+                // Loot table now loaded from EntityRegistry (via JSON/TS files)
+                lootTable: EntityRegistry.enemies?.[dinoType]?.lootTable,
                 islandBounds: bounds,
                 islandGridX: island.gridX,
                 islandGridY: island.gridY
@@ -209,7 +174,7 @@ class ResourceSpawner {
             if (entityManager) entityManager.add(dino);
         }
 
-        Logger.info(`[ResourceSpawner] Spawned ${count} dinosaurs on ${island.name}`);
+        Logger.info(`[ResourceSpawner] Spawned ${count} dinosaurs on ${island.name} `);
     }
 
     /**
@@ -224,7 +189,9 @@ class ResourceSpawner {
         const bounds = IslandManager.getPlayableBounds(home);
         if (!bounds) return;
 
-        const treeConfig = EntityConfig?.resource?.types?.wood || {};
+        const treeConfig = EntityRegistry.nodes?.['node_woodcutting_t1_01'] ||
+            EntityRegistry.resources?.['node_woodcutting_t2_01'] ||
+            {};
         const treeSize = treeConfig.width || 140;
         const treeHalf = treeSize / 2;
         const inset = treeHalf + 10;

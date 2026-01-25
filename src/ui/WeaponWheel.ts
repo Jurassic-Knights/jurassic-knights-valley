@@ -55,11 +55,11 @@ export class WeaponWheel {
                 display: flex;
                 flex-direction: column-reverse; /* Bottom-up stacking */
                 align-items: center;
-                gap: 12px;
+                gap: 4px; /* Reduced from 12px */
                 z-index: 2001;
                 pointer-events: none; /* Let pointer pass through to detect elements via JS */
                 transform: translateX(-50%);
-                padding-bottom: 20px;
+                padding-bottom: 4px; /* Reduced from 20px */
                 width: auto;
                 min-width: 100px;
             }
@@ -74,15 +74,17 @@ export class WeaponWheel {
                 animation: slideUp 0.1s ease-out;
                 pointer-events: auto; /* Re-enable pointer events for buttons */
                 justify-content: center;
+                position: relative; /* Ensure ::after is relative to this row */
             }
             /* Connecting line (pseudo-element) */
             .tree-row::after {
                 content: '';
                 position: absolute;
-                bottom: -14px; /* Gap + border */
+                top: 100%; /* Start at bottom of row */
+                margin-top: 2px; /* Skip border (2px) */
                 left: 50%;
                 width: 2px;
-                height: 12px;
+                height: 4px; /* Match gap size exactly */
                 background: #ffd700;
                 transform: translateX(-50%);
                 opacity: 0.6;
@@ -264,7 +266,7 @@ export class WeaponWheel {
         if (this.anchor) {
             const rect = this.anchor.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
-            const bottomY = window.innerHeight - rect.top + 20;
+            const bottomY = window.innerHeight - rect.top + 8; // Reduced from 20
 
             this.treeContainer.style.left = `${centerX}px`;
             this.treeContainer.style.bottom = `${bottomY}px`;
@@ -332,11 +334,22 @@ export class WeaponWheel {
 
         // Verify if row matches these items
         if (row) {
-            const firstBtn = row.firstElementChild as HTMLElement;
-            // Check if first ID matches. If not, content changed (e.g. diff parent selected)
-            if (!firstBtn || firstBtn.dataset.id !== items[0].id) {
+            const children = Array.from(row.children) as HTMLElement[];
+
+            // Check if lengths match
+            if (children.length !== items.length) {
                 row.remove();
                 row = null as any;
+            } else {
+                // Check if ALL IDs match
+                const allMatch = items.every((item, index) => {
+                    return children[index].dataset.id === item.id;
+                });
+
+                if (!allMatch) {
+                    row.remove();
+                    row = null as any;
+                }
             }
         }
 

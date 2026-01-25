@@ -5,6 +5,7 @@
  * Owner: Gameplay Designer
  */
 import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
 import { GameConstants, getConfig } from '../data/GameConstants';
@@ -45,7 +46,7 @@ const ProgressionSystem = {
 
         // Emit XP gain event
         if (EventBus) {
-            EventBus.emit('XP_GAINED', {
+            EventBus.emit(Events.XP_GAINED, {
                 hero,
                 amount,
                 total: stats.xp,
@@ -83,7 +84,8 @@ const ProgressionSystem = {
         const health = hero.components?.health;
 
         // Stat increases per level (config-driven)
-        const perLevel = EntityConfig?.hero?.base?.levelBonuses || {
+        // Check hero registry (skin) or use defaults
+        const perLevel = EntityRegistry.hero?.['hero']?.levelBonuses || {
             maxHealth: 10,
             attack: 2,
             defense: 1,
@@ -132,8 +134,8 @@ const ProgressionSystem = {
      * Get XP required for specific level
      */
     getXPForLevel(level) {
-        const base = EntityConfig?.hero?.base?.xpToNextLevel || 100;
-        const scaling = EntityConfig?.hero?.base?.xpScaling || 1.5;
+        const base = EntityRegistry.hero?.['hero']?.xpToNextLevel || 100;
+        const scaling = EntityRegistry.hero?.['hero']?.xpScaling || 1.5;
         return Math.floor(base * Math.pow(scaling, level - 1));
     },
 

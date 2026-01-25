@@ -9,12 +9,12 @@
 import { Logger } from '../core/Logger';
 import { EventBus } from '../core/EventBus';
 import { GameConstants, getConfig } from '../data/GameConstants';
-import { EntityConfig } from '../config/EntityConfig';
 import { EntityTypes } from '../config/EntityTypes';
 import { BiomeConfig } from '../data/BiomeConfig';
 
 import { Enemy } from './EnemyCore';
 import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
 
 
 class Boss extends Enemy {
@@ -32,9 +32,10 @@ class Boss extends Enemy {
      */
     constructor(config: any = {}) {
         // Get boss config hierarchy: defaults -> type config -> instance config
-        const defaults = EntityConfig.boss?.defaults || {};
+        // Get boss config from EntityRegistry
+        const defaults = EntityRegistry.defaults?.boss || {};
         const typeConfig = config.bossType
-            ? EntityConfig.boss?.types?.[config.bossType] || {}
+            ? EntityRegistry.bosses?.[config.bossType] || {}
             : {};
 
         // Merge configs (instance overrides type overrides defaults)

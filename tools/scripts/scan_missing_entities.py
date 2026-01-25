@@ -38,7 +38,7 @@ def extract_asset_id(filename: str) -> str:
     # Remove extension
     name = Path(filename).stem
     # Remove status suffixes
-    for suffix in ['_original', '_clean', '_approved', '_declined', '_final']:
+    for suffix in ['_original', '_clean', '_approved', '_declined', '_final', '_consumed']:
         name = name.replace(suffix, '')
     return name
 

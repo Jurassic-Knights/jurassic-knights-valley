@@ -15,6 +15,7 @@
 import { Entity } from '../core/Entity';
 import { Logger } from '../core/Logger';
 import { EntityConfig } from '../config/EntityConfig';
+import { EntityRegistry } from '../entities/EntityLoader';
 import { BiomeConfig } from '../data/BiomeConfig';
 import { EntityTypes } from '../config/EntityTypes';
 import { SpeciesScaleConfig } from '../config/SpeciesScaleConfig';
@@ -115,7 +116,8 @@ class Enemy extends Entity {
         let typeConfig: any = {};
         if (config.enemyType) {
             // Priority 1: EntityRegistry (from entity JSONs via EntityLoader)
-            typeConfig =
+            // Check enemies first (includes bosses), then fallbacks
+            typeConfig = EntityRegistry.enemies?.[config.enemyType] ||
                 EntityConfig.get?.(config.enemyType) ||
                 // Fallback: Old EntityConfig paths (deprecated)
                 EntityConfig.enemy?.dinosaurs?.[config.enemyType] ||
@@ -141,10 +143,10 @@ class Enemy extends Entity {
                 xpReward: 3.0,
                 lootDrops: 3.0
             };
-            finalConfig.health = (finalConfig.health || 50) * mult.health;
-            finalConfig.maxHealth = (finalConfig.maxHealth || finalConfig.health) * mult.health;
-            finalConfig.damage = (finalConfig.damage || 5) * mult.damage;
-            finalConfig.xpReward = (finalConfig.xpReward || 10) * mult.xpReward;
+            finalConfig.health = (Number(finalConfig.health) || 50) * mult.health;
+            finalConfig.maxHealth = (Number(finalConfig.maxHealth) || finalConfig.health) * mult.health;
+            finalConfig.damage = (Number(finalConfig.damage) || 5) * mult.damage;
+            finalConfig.xpReward = (Number(finalConfig.xpReward) || 10) * mult.xpReward;
         }
 
         // Apply biome difficulty multipliers if biome specified
@@ -234,13 +236,13 @@ class Enemy extends Entity {
             200;
 
         // Combat Stats
-        this.health = finalConfig.health || 30;
-        this.maxHealth = finalConfig.maxHealth || this.health;
-        this.damage = finalConfig.damage || 5;
-        this.attackRate = finalConfig.attackRate || 1;
-        this.attackRange = finalConfig.attackRange || 100;
+        this.health = Number(finalConfig.health) || 30;
+        this.maxHealth = Number(finalConfig.maxHealth) || this.health;
+        this.damage = Number(finalConfig.damage) || 5;
+        this.attackRate = Number(finalConfig.attackRate) || 1;
+        this.attackRange = Number(finalConfig.attackRange) || 100;
         this.attackType = finalConfig.attackType || 'melee';
-        this.speed = finalConfig.speed || 80;
+        this.speed = Number(finalConfig.speed) || 80;
 
         // Rewards
         this.xpReward = finalConfig.xpReward || 10;

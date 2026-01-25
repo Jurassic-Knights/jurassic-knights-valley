@@ -10,7 +10,6 @@ import { Logger } from '../core/Logger';
 import { AssetLoader } from '../core/AssetLoader';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { EntityRegistry } from '../entities/EntityLoader';
-import { EntityConfig } from '../config/EntityConfig';
 import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
 import { EntityTypes } from '../config/EntityTypes';
 import { SpeciesScaleConfig } from '../config/SpeciesScaleConfig';
@@ -232,7 +231,7 @@ class Dinosaur extends Entity {
         if (!this.active || !hero) return false;
         if (this.state === 'dead') return false;
         // Use config value for interaction range
-        const range = (EntityConfig as any).interactionRange || 120;
+        const range = 120;
         return this.distanceTo(hero) < range;
     }
 

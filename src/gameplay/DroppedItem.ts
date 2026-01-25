@@ -9,11 +9,11 @@ import { Entity } from '../core/Entity';
 import { Tween } from '../animation/Tween';
 import { VFXController } from '../vfx/VFXController';
 import { ResourceRenderer } from '../rendering/ResourceRenderer';
-import { EntityConfig } from '../config/EntityConfig';
 import { Resource } from './Resource';
 import { EntityTypes } from '../config/EntityTypes';
 import { GameConstants, getConfig } from '../data/GameConstants';
 import { Registry } from '../core/Registry';
+import { EntityRegistry } from '../entities/EntityLoader';
 
 
 // Unmapped modules - need manual import
@@ -55,7 +55,13 @@ class DroppedItem extends Entity {
 
     constructor(config: any = {}) {
         // 1. Load Config
-        const defaults = EntityConfig ? EntityConfig.droppedItem.defaults : {};
+        // Defaults for dropped items
+        const defaults = {
+            gridSize: 0.75,
+            width: 96,
+            height: 96,
+            pickupRadius: 120
+        };
         const finalConfig = { ...defaults, ...config };
 
         super({
@@ -79,7 +85,7 @@ class DroppedItem extends Entity {
             Resource && Resource.COLORS ? Resource.COLORS[this.resourceType] : '#888888';
 
         // Determine rarity
-        const typeConfig = EntityConfig.resources?.[this.resourceType] || {};
+        const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
         this.rarity = typeConfig.rarity || 'common';
 
         this.rarityColor =

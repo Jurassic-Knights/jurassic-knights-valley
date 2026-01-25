@@ -125,8 +125,8 @@ class RestSystem {
 
         // Emit events for UI updates
         if (EventBus) {
-            EventBus.emit('HERO_HEALTH_CHANGE', { current: hero.health, max: hero.maxHealth });
-            EventBus.emit('HERO_STAMINA_CHANGE', { current: hero.stamina, max: hero.maxStamina });
+            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: hero.health, max: hero.maxHealth });
+            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, { current: hero.stamina, max: hero.maxStamina });
             // EventBus.emit('GAME_SAVED');
         }
     }

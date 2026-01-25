@@ -6,7 +6,6 @@
 import { Entity } from '../core/Entity';
 import { MaterialLibrary } from '../vfx/MaterialLibrary';
 import { AssetLoader } from '../core/AssetLoader';
-import { EntityConfig } from '../config/EntityConfig';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { EntityTypes } from '../config/EntityTypes';
 import { Registry } from '../core/Registry';
@@ -32,8 +31,13 @@ class Merchant extends Entity {
 
     constructor(config: any = {}) {
         // 1. Load Config
-        const defaults =
-            EntityConfig && EntityConfig.npc ? EntityConfig.npc.merchant?.defaults || {} : {};
+        const defaults = {
+            gridSize: 1.5,
+            width: 192,
+            height: 192,
+            interactRadius: 140,
+            color: '#8E44AD'
+        };
         const finalConfig = { ...defaults, ...config };
 
         super({

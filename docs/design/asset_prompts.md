@@ -276,7 +276,15 @@ icon of [EQUIPMENT DESCRIPTION], game ui asset, stoneshard style, high fidelity 
 
 ### UI Icons
 ```
-Pixel art icon of [UI ELEMENT]. Style: Compact, stubby proportions, wide shape. Material: Iron. Focus: Icon readability, maximized width for visibility. Isolated on white background.
+### UI Icons (Weapons & Tools)
+```
+Pixel art icon of [WEAPON/TOOL]. Orientation: Diagonal facing upwards-right (45 degrees). Shape: ULTRA-COMPACT, STUBBY. Squashed proportions, heavy weight. Material: Matte steel, battle-worn, NO RUST, NO HIGH SHINE. Functional, utilitarian metal. Focus: Heavy BLACK outline. Isolated on white background.
+```
+
+### UI Icons (Armor & Accessories)
+```
+Pixel art icon of [ITEM]. Orientation: 3/4 view facing forward. Shape: ULTRA-COMPACT, SQUASHED, CHUNKY. Width equals height (1:1 ratio). Material: Matte steel, battle-worn, NO RUST, NO HIGH SHINE. Functional, utilitarian metal. Focus: Heavy BLACK outline. Isolated on white background.
+```
 ```
 
 > Note: UI icons may include text/letters if meaningful for the icon purpose 

@@ -71,6 +71,7 @@ const AssetLoader = {
 
         // Equipment/Inventory Mode Icons
         "ui_icon_armor": "images/ui/ui_icon_armor_original.png",
+        "ui_icon_weapon": "images/ui/ui_icon_weapon_original.png",
 
         "ui_icon_pickaxe": "images/ui/ui_icon_tool_original.png",
         "ui_icon_close": "images/ui/ui_icon_back_original.png",

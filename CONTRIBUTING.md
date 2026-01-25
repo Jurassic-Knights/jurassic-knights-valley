@@ -1,5 +1,7 @@
 # Contributing to Jurassic Knights: Valley
 
+**Last Updated:** 2026-01-25
+
 Thank you for your interest in contributing!
 
 ## Development Setup

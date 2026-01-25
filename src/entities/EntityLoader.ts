@@ -31,7 +31,20 @@ const entityModules: Record<string, { default: any }> = import.meta.glob(
 );
 
 // EntityRegistry - populated by EntityLoader.load()
-let EntityRegistry: any = {};
+// Persistent across HMR updates
+declare global {
+    interface Window {
+        __ENTITY_REGISTRY__: any;
+    }
+}
+
+let EntityRegistry: any = (typeof window !== 'undefined' && window.__ENTITY_REGISTRY__)
+    ? window.__ENTITY_REGISTRY__
+    : {};
+
+if (typeof window !== 'undefined') {
+    window.__ENTITY_REGISTRY__ = EntityRegistry;
+}
 
 const EntityLoader = {
     loaded: false,
@@ -473,6 +486,143 @@ const EntityLoader = {
     }
 };
 
-if (Registry) Registry.register('EntityLoader', EntityLoader);
+// Export for global access
+if (Registry) {
+    if (Registry.get('EntityLoader')) {
+        // HMR: Force update the reference
+        Registry.services.set('EntityLoader', EntityLoader);
+        Logger.info('[EntityLoader] HMR: Updated registry reference');
+    } else {
+        Registry.register('EntityLoader', EntityLoader);
+    }
+}
 
 export { EntityLoader, EntityRegistry };
+
+// ============================================
+// VITE HMR - Hot reload without full page refresh
+// ============================================
+
+if (import.meta.hot) {
+    import.meta.hot.accept((newModule) => {
+        if (newModule) {
+            Logger.info('[HMR] EntityLoader updated');
+            // Re-run load to refresh data from new modules
+            // (Note: This relies on EntityRegistry being persistent in window)
+            newModule.EntityLoader.load();
+        }
+    });
+}
+
+// ============================================
+// BROADCAST LISTENERS - Live updates from Dashboard
+// ============================================
+
+import { entityManager } from '../core/EntityManager';
+
+if (typeof window !== 'undefined' && typeof BroadcastChannel !== 'undefined') {
+    const entityChannel = new BroadcastChannel('game-entity-updates');
+
+    entityChannel.onmessage = (event) => {
+        if (event.data && event.data.type === 'ENTITY_UPDATE') {
+            const { category, id, updates } = event.data;
+            handleEntityUpdate(category, id, updates);
+        }
+    };
+
+    Logger.info('[EntityLoader] Listening for dashboard updates');
+}
+
+/**
+ * Handle live entity updates from dashboard
+ * Applies changes directly to the registry and logs the update
+ */
+function handleEntityUpdate(category: string, configId: string, updates: Record<string, unknown>) {
+    // 1. Update Registry (Source of Truth for new spawns)
+    if (!EntityRegistry[category]) return;
+
+    const registryEntity = EntityRegistry[category][configId];
+    if (!registryEntity) {
+        Logger.warn(`[EntityLoader] Received update for unknown entity: ${category}/${configId}`);
+        return;
+    }
+
+    // Apply updates deeply to Registry
+    for (const [key, value] of Object.entries(updates)) {
+        if (key.includes('.')) {
+            const parts = key.split('.');
+            let target = registryEntity;
+            for (let i = 0; i < parts.length - 1; i++) {
+                if (!target[parts[i]]) target[parts[i]] = {};
+                target = target[parts[i]];
+            }
+            target[parts[parts.length - 1]] = value;
+        } else {
+            registryEntity[key] = value;
+        }
+    }
+
+    Logger.info(`[EntityLoader] Live update applied to Registry: ${category}/${configId}`);
+
+    // 2. Update Active Instances (Live patch)
+    if (!entityManager) return;
+
+    const activeEntities = entityManager.getAll();
+    let updatedCount = 0;
+
+    for (const entity of activeEntities) {
+        // Check if this entity uses the updated config
+        // Matches if any type identifier equals the configId
+        const matchesInfo =
+            (entity as any).enemyType === configId ||
+            (entity as any).dinoType === configId ||
+            (entity as any).bossType === configId ||
+            (entity as any).resourceType === configId ||
+            (entity as any).itemType === configId ||
+            (entity as any).spriteId === configId; // Fallback for simple props
+
+        if (!matchesInfo) continue;
+
+        // Apply updates to instance
+        for (const [key, value] of Object.entries(updates)) {
+            // Handle specific logic for stats to ensure safety
+            if (key === 'health' || key === 'maxHealth') {
+                const numVal = Number(value);
+                if (!isNaN(numVal)) {
+                    // Update max health
+                    if (key === 'maxHealth') (entity as any).maxHealth = numVal;
+                    // If updating base health in config, usually implies max health update too
+                    if (key === 'health') {
+                        // If entity was at full health, keep it at full health
+                        const wasFull = (entity as any).health >= ((entity as any).maxHealth || 0);
+                        (entity as any).health = numVal;
+                        // Determine if we should update maxHealth (often same in config)
+                        if (!(entity as any).maxHealth || (entity as any).maxHealth < numVal) {
+                            (entity as any).maxHealth = numVal;
+                        }
+                    }
+                }
+            }
+            // Handle deep stats object (e.g. stats.damage)
+            else if (key.startsWith('stats.')) {
+                const statName = key.split('.')[1];
+                const numVal = Number(value);
+                if (!isNaN(numVal)) {
+                    (entity as any)[statName] = numVal;
+                }
+            }
+            else {
+                // Direct property update (speed, damage, etc.)
+                // Filter out complex objects or arrays unless specific handler
+                if (typeof value !== 'object') {
+                    (entity as any)[key] = value;
+                }
+            }
+        }
+        updatedCount++;
+    }
+
+    if (updatedCount > 0) {
+        Logger.info(`[EntityLoader] Live updated ${updatedCount} active instances of ${configId}`);
+    }
+}

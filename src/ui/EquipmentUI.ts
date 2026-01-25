@@ -9,7 +9,6 @@
  */
 
 import { GameConstants, getConfig } from '../data/GameConstants';
-import { UIManager } from './UIManager';
 import { Logger } from '../core/Logger';
 import { EquipmentSlotManager } from './EquipmentSlotManager';
 import { EventBus } from '../core/EventBus';
@@ -120,8 +119,12 @@ class EquipmentUI {
         this._createContainer();
 
         // Register with UIManager for fullscreen exclusivity
-        if (UIManager && UIManager.registerFullscreenUI) {
-            UIManager.registerFullscreenUI(this);
+        const uiMgr = Registry.get('UIManager');
+        if (uiMgr && uiMgr.registerFullscreenUI) {
+            uiMgr.registerFullscreenUI(this);
+            Logger.info('[EquipmentUI] Registered with UIManager');
+        } else {
+            Logger.error('[EquipmentUI] Failed to register with UIManager');
         }
 
         Logger.info('[EquipmentUI] Initialized');
@@ -175,120 +178,19 @@ class EquipmentUI {
 
         // Weapon Wheel Trigger
         if (target.closest('#btn-open-wheel')) {
-            const rootCategories: any[] = [];
-
-            // Build Hierarchy based on Mode
-            if (this.selectedMode === 'weapon') {
-                // HIERARCHY: Grip → Type → Subtype (all 19 weapon subtypes)
-                rootCategories.push(
-                    { id: 'all', label: 'ALL' },
-                    {
-                        id: '1-hand',
-                        label: '1-HAND',
-                        children: [
-                            {
-                                id: 'melee',
-                                label: 'MELEE',
-                                children: [
-                                    { id: 'sword', label: 'SWORD' },
-                                    { id: 'axe', label: 'AXE' },
-                                    { id: 'mace', label: 'MACE' },
-                                    { id: 'knife', label: 'KNIFE' },
-                                    { id: 'flail', label: 'FLAIL' },
-                                    { id: 'shield', label: 'SHIELD' }
-                                ]
-                            },
-                            {
-                                id: 'ranged',
-                                label: 'RANGED',
-                                children: [
-                                    { id: 'pistol', label: 'PISTOL' },
-                                    { id: 'submachine_gun', label: 'SMG' }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        id: '2-hand',
-                        label: '2-HAND',
-                        children: [
-                            {
-                                id: 'melee',
-                                label: 'MELEE',
-                                children: [
-                                    { id: 'greatsword', label: 'GREATSWORD' },
-                                    { id: 'spear', label: 'SPEAR' },
-                                    { id: 'war_axe', label: 'WAR AXE' },
-                                    { id: 'war_hammer', label: 'HAMMER' },
-                                    { id: 'lance', label: 'LANCE' },
-                                    { id: 'halberd', label: 'HALBERD' }
-                                ]
-                            },
-                            {
-                                id: 'ranged',
-                                label: 'RANGED',
-                                children: [
-                                    { id: 'rifle', label: 'RIFLE' },
-                                    { id: 'machine_gun', label: 'MG' },
-                                    { id: 'shotgun', label: 'SHOTGUN' },
-                                    { id: 'sniper_rifle', label: 'SNIPER' },
-                                    { id: 'bazooka', label: 'BAZOOKA' },
-                                    { id: 'flamethrower', label: 'FLAME' }
-                                ]
-                            }
-                        ]
-                    }
-                );
-            } else if (this.selectedMode === 'armor') {
-                rootCategories.push(
-                    { id: 'all', label: 'ALL' },
-                    { id: 'head', label: 'HEAD' },
-                    { id: 'body', label: 'BODY' },
-                    { id: 'hands', label: 'HANDS' },
-                    { id: 'legs', label: 'LEGS' },
-                    { id: 'accessory', label: 'ACC.' }
-                );
-            } else {
-                // Tools
-                rootCategories.push(
-                    { id: 'all', label: 'ALL' },
-                    { id: 'mining', label: 'MINING' },
-                    { id: 'woodcutting', label: 'WOOD' },
-                    { id: 'harvesting', label: 'CROP' },
-                    { id: 'fishing', label: 'FISH' }
-                );
-            }
+            const rootCategories = this._getFilterHierarchy();
 
             WeaponWheelInstance.open(rootCategories, (path) => {
-                // Path is array of [Root, Child, Grandchild]
-                // We construct a composite filter or just use the Leaf ID if unique.
-                // For now, let's use the leaf ID + parent context if needed.
-
-                // Example: Melee -> 2-Hand. Path = [{id:'melee'}, {id:'2-hand'}]
-                // Filter logic needs to handle this.
-
-                // Simplified: Store the *entire path* or just the meaningful filter IDs.
-                // Let's store the Leaf ID as selectedCategory for now, 
-                // BUT we need to support composite filtering in _loadEquipment.
-
-                // Hack: Encode hierarchy into the 'selectedCategory' string? e.g. "melee+2-hand"
-                // Or update EquipmentUI to store activeFilterPath.
-
                 const leaf = path[path.length - 1];
-
                 if (path.length > 1) {
-                    // Composite selection
-                    // e.g. "melee" + "2-hand"
-                    // We can join them like "melee:2-hand"
                     this.selectedCategory = path.map(p => p.id).join(':');
                 } else {
                     this.selectedCategory = leaf.id;
                 }
-
                 Logger.info(`[EquipmentUI] Filter selected: ${this.selectedCategory}`);
                 this._loadEquipment();
                 this._render();
-            });
+            }, target.closest('#btn-open-wheel') as HTMLElement);
             return;
         }
 
@@ -392,9 +294,13 @@ class EquipmentUI {
     }
 
     open() {
+        // Safety: Force close filter wheel overlay if stuck
+        WeaponWheelInstance.close();
+
         // Close other fullscreen UIs first
-        if (UIManager && UIManager.closeOtherFullscreenUIs) {
-            UIManager.closeOtherFullscreenUIs(this);
+        const uiMgr = Registry.get('UIManager');
+        if (uiMgr && uiMgr.closeOtherFullscreenUIs) {
+            uiMgr.closeOtherFullscreenUIs(this);
         }
 
         // Sync targetEquipSet with hero's active weapon set
@@ -466,6 +372,8 @@ class EquipmentUI {
         // Swap to ARMOR button
         if (btnInventory) {
             btnInventory.dataset.footerOverride = 'equipment'; // Block original handler
+            btnInventory.style.zIndex = '10001';
+            btnInventory.style.position = 'relative';
             const label = btnInventory.querySelector('.btn-label');
             const icon = btnInventory.querySelector('.btn-icon');
             if (label) label.textContent = 'ARMOR';
@@ -474,26 +382,44 @@ class EquipmentUI {
                 (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_armor') || ''}')`;
             }
             btnInventory.classList.toggle('active', this.selectedMode === 'armor');
-            btnInventory.onclick = () => { this.selectedMode = 'armor'; this.selectedCategory = 'all'; this._loadEquipment(); this._render(); this._updateFooterActiveStates(); };
+            btnInventory.onclick = () => {
+                Logger.info('[EquipmentUI] Clicked ARMOR');
+                this.selectedMode = 'armor';
+                this.selectedCategory = 'all';
+                this._loadEquipment();
+                this._render();
+                this._updateFooterActiveStates();
+            };
         }
 
         // Swap to WEAPON button
         if (btnEquip) {
             btnEquip.dataset.footerOverride = 'equipment'; // Block original handler
+            btnEquip.style.zIndex = '10001';
+            btnEquip.style.position = 'relative';
             const label = btnEquip.querySelector('.btn-label');
             const icon = btnEquip.querySelector('.btn-icon');
             if (label) label.textContent = 'WEAPON';
             if (icon) {
-                (icon as HTMLElement).dataset.iconId = 'ui_icon_sword';
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_sword') || ''}')`;
+                (icon as HTMLElement).dataset.iconId = 'ui_icon_weapon';
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_weapon') || ''}')`;
             }
             btnEquip.classList.toggle('active', this.selectedMode === 'weapon');
-            btnEquip.onclick = () => { this.selectedMode = 'weapon'; this.selectedCategory = 'all'; this._loadEquipment(); this._render(); this._updateFooterActiveStates(); };
+            btnEquip.onclick = () => {
+                Logger.info('[EquipmentUI] Clicked WEAPON');
+                this.selectedMode = 'weapon';
+                this.selectedCategory = 'all';
+                this._loadEquipment();
+                this._render();
+                this._updateFooterActiveStates();
+            };
         }
 
         // Swap to TOOL button
         if (btnMap) {
             btnMap.dataset.footerOverride = 'equipment'; // Block original handler
+            btnMap.style.zIndex = '10001';
+            btnMap.style.position = 'relative';
             const label = btnMap.querySelector('.btn-label');
             const icon = btnMap.querySelector('.btn-icon');
             if (label) label.textContent = 'TOOL';
@@ -502,7 +428,14 @@ class EquipmentUI {
                 (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_pickaxe') || ''}')`;
             }
             btnMap.classList.toggle('active', this.selectedMode === 'tool');
-            btnMap.onclick = () => { this.selectedMode = 'tool'; this.selectedCategory = 'all'; this._loadEquipment(); this._render(); this._updateFooterActiveStates(); };
+            btnMap.onclick = () => {
+                Logger.info('[EquipmentUI] Clicked TOOL');
+                this.selectedMode = 'tool';
+                this.selectedCategory = 'all';
+                this._loadEquipment();
+                this._render();
+                this._updateFooterActiveStates();
+            };
         }
 
         // Swap to BACK button
@@ -537,79 +470,7 @@ class EquipmentUI {
             }
 
             btnContext.onclick = () => {
-                // Build same hierarchy as main wheel trigger
-                const rootCategories: any[] = [];
-
-                if (this.selectedMode === 'weapon') {
-                    // HIERARCHY: Grip → Type → Subtype (all 19 weapon subtypes)
-                    rootCategories.push(
-                        { id: 'all', label: 'ALL' },
-                        {
-                            id: '1-hand', label: '1-HAND',
-                            children: [
-                                {
-                                    id: 'melee', label: 'MELEE', children: [
-                                        { id: 'sword', label: 'SWORD' },
-                                        { id: 'axe', label: 'AXE' },
-                                        { id: 'mace', label: 'MACE' },
-                                        { id: 'knife', label: 'KNIFE' },
-                                        { id: 'flail', label: 'FLAIL' },
-                                        { id: 'shield', label: 'SHIELD' }
-                                    ]
-                                },
-                                {
-                                    id: 'ranged', label: 'RANGED', children: [
-                                        { id: 'pistol', label: 'PISTOL' },
-                                        { id: 'submachine_gun', label: 'SMG' }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            id: '2-hand', label: '2-HAND',
-                            children: [
-                                {
-                                    id: 'melee', label: 'MELEE', children: [
-                                        { id: 'greatsword', label: 'GREATSWORD' },
-                                        { id: 'spear', label: 'SPEAR' },
-                                        { id: 'war_axe', label: 'WAR AXE' },
-                                        { id: 'war_hammer', label: 'HAMMER' },
-                                        { id: 'lance', label: 'LANCE' },
-                                        { id: 'halberd', label: 'HALBERD' }
-                                    ]
-                                },
-                                {
-                                    id: 'ranged', label: 'RANGED', children: [
-                                        { id: 'rifle', label: 'RIFLE' },
-                                        { id: 'machine_gun', label: 'MG' },
-                                        { id: 'shotgun', label: 'SHOTGUN' },
-                                        { id: 'sniper_rifle', label: 'SNIPER' },
-                                        { id: 'bazooka', label: 'BAZOOKA' },
-                                        { id: 'flamethrower', label: 'FLAME' }
-                                    ]
-                                }
-                            ]
-                        }
-                    );
-                } else if (this.selectedMode === 'armor') {
-                    rootCategories.push(
-                        { id: 'all', label: 'ALL' },
-                        { id: 'head', label: 'HEAD' },
-                        { id: 'body', label: 'BODY' },
-                        { id: 'hands', label: 'HANDS' },
-                        { id: 'legs', label: 'LEGS' },
-                        { id: 'accessory', label: 'ACC.' }
-                    );
-                } else {
-                    // Tools
-                    rootCategories.push(
-                        { id: 'all', label: 'ALL' },
-                        { id: 'mining', label: 'MINING' },
-                        { id: 'woodcutting', label: 'WOOD' },
-                        { id: 'harvesting', label: 'CROP' },
-                        { id: 'fishing', label: 'FISH' }
-                    );
-                }
+                const rootCategories = this._getFilterHierarchy();
 
                 WeaponWheelInstance.open(rootCategories, (path) => {
                     const leaf = path[path.length - 1];
@@ -627,6 +488,85 @@ class EquipmentUI {
         // Hide weapon swap button while in equipment mode
         const btnSwap = document.getElementById('btn-weapon-swap');
         if (btnSwap) btnSwap.style.display = 'none';
+    }
+
+    /**
+     * Get hierarchy filter data based on selected mode
+     */
+    _getFilterHierarchy() {
+        Logger.info(`[EquipmentUI] _getFilterHierarchy: selectedMode=${this.selectedMode}`);
+        const rootCategories: any[] = [];
+
+        if (this.selectedMode === 'weapon') {
+            rootCategories.push(
+                { id: 'all', label: 'ALL' },
+                {
+                    id: '1-hand', label: '1-HAND',
+                    children: [
+                        {
+                            id: 'melee', label: 'MELEE', children: [
+                                { id: 'sword', label: 'SWORD' },
+                                { id: 'axe', label: 'AXE' },
+                                { id: 'mace', label: 'MACE' },
+                                { id: 'knife', label: 'KNIFE' },
+                                { id: 'flail', label: 'FLAIL' },
+                                { id: 'shield', label: 'SHIELD' }
+                            ]
+                        },
+                        {
+                            id: 'ranged', label: 'RANGED', children: [
+                                { id: 'pistol', label: 'PISTOL' },
+                                { id: 'submachine_gun', label: 'SMG' }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: '2-hand', label: '2-HAND',
+                    children: [
+                        {
+                            id: 'melee', label: 'MELEE', children: [
+                                { id: 'greatsword', label: 'GREATSWORD' },
+                                { id: 'spear', label: 'SPEAR' },
+                                { id: 'war_axe', label: 'WAR AXE' },
+                                { id: 'war_hammer', label: 'HAMMER' },
+                                { id: 'lance', label: 'LANCE' },
+                                { id: 'halberd', label: 'HALBERD' }
+                            ]
+                        },
+                        {
+                            id: 'ranged', label: 'RANGED', children: [
+                                { id: 'rifle', label: 'RIFLE' },
+                                { id: 'machine_gun', label: 'MG' },
+                                { id: 'shotgun', label: 'SHOTGUN' },
+                                { id: 'sniper_rifle', label: 'SNIPER' },
+                                { id: 'bazooka', label: 'BAZOOKA' },
+                                { id: 'flamethrower', label: 'FLAME' }
+                            ]
+                        }
+                    ]
+                }
+            );
+        } else if (this.selectedMode === 'armor') {
+            rootCategories.push(
+                { id: 'all', label: 'ALL' },
+                { id: 'head', label: 'HEAD' },
+                { id: 'body', label: 'BODY' },
+                { id: 'hands', label: 'HANDS' },
+                { id: 'legs', label: 'LEGS' },
+                { id: 'accessory', label: 'ACC.' }
+            );
+        } else {
+            // Tools
+            rootCategories.push(
+                { id: 'all', label: 'ALL' },
+                { id: 'mining', label: 'MINING' },
+                { id: 'woodcutting', label: 'WOOD' },
+                { id: 'harvesting', label: 'CROP' },
+                { id: 'fishing', label: 'FISH' }
+            );
+        }
+        return rootCategories;
     }
 
     /**
@@ -713,6 +653,7 @@ class EquipmentUI {
         // Re-enable context button
         if (btnContext) {
             btnContext.classList.remove('inactive');
+            btnContext.onclick = null; // Fix: Clear previous handler to avoid hijacking InventoryUI
         }
 
         // Show weapon swap button again

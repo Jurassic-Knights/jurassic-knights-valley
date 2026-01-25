@@ -1,5 +1,7 @@
 # Architecture Overview
 
+**Last Updated:** 2026-01-25
+
 ## System Architecture
 
 ```

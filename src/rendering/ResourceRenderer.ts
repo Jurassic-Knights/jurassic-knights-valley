@@ -9,7 +9,6 @@ import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
 import { AssetLoader } from '../core/AssetLoader';
 import { Registry } from '../core/Registry';
 import { environmentRenderer } from './EnvironmentRenderer';
-import { EntityConfig } from '../config/EntityConfig';
 import { Resource } from '../gameplay/Resource';
 import { ColorPalette } from '../config/ColorPalette';
 import { EntityRegistry } from '../entities/EntityLoader';

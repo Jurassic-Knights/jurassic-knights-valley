@@ -268,6 +268,7 @@ const GameConstants = {
         HERO_STAMINA_CHANGE: 'HERO_STAMINA_CHANGE', // {current, max}
         HERO_HOME_STATE_CHANGE: 'HERO_HOME_STATE_CHANGE', // {isHome}
         HERO_LEVEL_UP: 'HERO_LEVEL_UP', // {level, prevLevel} (03-hero-stats)
+        XP_GAINED: 'XP_GAINED', // {hero, amount, total, level}
 
         // Damage (06-damage-system)
         DAMAGE_DEALT: 'DAMAGE_DEALT', // { attacker, target, baseDamage, finalDamage, killed }
