@@ -245,6 +245,15 @@ const GameConstants = {
         }
     },
 
+    // Player Inventory Defaults
+    PlayerResources: {
+        INITIAL_GOLD: 100,
+        INITIAL_SCRAPS: 10,
+        INITIAL_MINERALS: 10,
+        INITIAL_WOOD: 10,
+        INITIAL_FOOD: 10
+    },
+
     // Centralized Event Keys (Data Principle: No String Literals)
     Events: {
         // Input
@@ -366,7 +375,8 @@ export function getConfig(): typeof GameConstants {
         Spawning: tunables.Spawning || base.Spawning,
         Time: tunables.Time || base.Time,
         BodyTypes: tunables.BodyTypes || (base as any).BodyTypes,
-        WeaponDefaults: mergedWeaponDefaults
+        WeaponDefaults: mergedWeaponDefaults,
+        PlayerResources: tunables.PlayerResources || (base as any).PlayerResources
     } as typeof GameConstants;
 }
 

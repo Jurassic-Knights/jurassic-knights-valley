@@ -278,8 +278,11 @@
 
 /* Selected Inventory Item */
 .inventory-item.selected {
-    border-color: #c9a050 !important;
-    box-shadow: 0 0 10px rgba(201, 160, 80, 0.5);
+    border-color: #ffd700 !important;
+    border-width: 3px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.2);
+    z-index: 5;
+    background: #332b10;
 }
 
 /* Equipped Slots */
@@ -352,8 +355,10 @@
 
 /* Selected equipped slot */
 .equip-slot.selected .slot-icon {
-    border-color: #c9a050 !important;
-    box-shadow: 0 0 10px rgba(201, 160, 80, 0.5);
+    border-color: #ffd700 !important;
+    border-width: 3px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.2);
+    z-index: 5;
 }
 
 .equip-slot:hover .slot-icon {

@@ -46,7 +46,7 @@ export function showLandingPage(): void {
     const container = document.getElementById('mainContent');
     if (!container) return;
 
-    const categories = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'nodes', 'hero'];
+    const categories = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'nodes', 'environment', 'ui', 'config', 'hero'];
 
     container.innerHTML = `
         <div style="padding:2rem; text-align:center;">

@@ -276,7 +276,7 @@ icon of [EQUIPMENT DESCRIPTION], game ui asset, stoneshard style, high fidelity 
 
 ### UI Icons
 ```
-standalone icon of [UI ELEMENT], game ui asset, stoneshard style, detailed pixel art iconography, icon only, no button, no frame, no container, no background panel, isolated on white background
+Pixel art icon of [UI ELEMENT]. Style: Compact, stubby proportions, wide shape. Material: Iron. Focus: Icon readability, maximized width for visibility. Isolated on white background.
 ```
 
 > Note: UI icons may include text/letters if meaningful for the icon purpose 
@@ -381,4 +381,66 @@ game environment background of [ZONE DESCRIPTION], high-fidelity pixel art, Ston
 | Approved | `{name}_approved_original.png` | `wood_approved_original.png` |
 | Declined | `{name}_declined_original.png` | `wood_declined_original.png` |
 | Production | `{name}_clean.png` | `wood_clean.png` |
+
+---
+
+## Prompt Sidecar Files (MANDATORY)
+
+> [!IMPORTANT]
+> **Every generated asset MUST have a corresponding prompt sidecar file.**
+> This enables exact regeneration and maintains reproducibility.
+
+### File Format
+
+When you generate an image, save the **exact prompt used** in a `.prompt.txt` file with the same base name:
+
+| Image File | Prompt Sidecar File |
+|------------|---------------------|
+| `ui_icon_sword_original.png` | `ui_icon_sword.prompt.txt` |
+| `enemy_raptor_t1_01_original.png` | `enemy_raptor_t1_01.prompt.txt` |
+| `stat_damage_original.png` | `stat_damage.prompt.txt` |
+
+### Sidecar File Contents
+
+The `.prompt.txt` file should contain **ONLY the exact prompt text** used for generation - no metadata, no formatting, just the raw prompt string.
+
+**Example** (`ui_icon_sword.prompt.txt`):
+```
+Pixel art icon of medieval longsword. Style: Compact, stubby proportions, wide shape. Material: Iron with leather grip, battle-worn. Focus: Icon readability, maximized width for visibility. Isolated on white background.
+```
+
+### Workflow
+
+1. **Generate image** using your prompt
+2. **Save the prompt** to `{asset_id}.prompt.txt` in the same folder as the image
+3. **Run scan script** - it will automatically read the sidecar file and populate the `prompt` field in the entity
+
+```bash
+# After adding new assets with prompt files
+python tools/scripts/scan_missing_entities.py --category ui
+```
+
+### Entity Field
+
+The scan script reads the sidecar file and populates the `prompt` field:
+
+```typescript
+export default {
+    id: "ui_icon_sword",
+    name: "Sword",
+    status: "pending",
+    sourceDescription: "Sword icon, detailed pixel art iconography",
+    prompt: "Pixel art icon of medieval longsword. Style: Compact...",  // From sidecar
+    files: {
+        original: "assets/images/ui/ui_icon_sword_original.png"
+    }
+} satisfies UIEntity;
+```
+
+### Benefits
+
+- **Exact regeneration** - Run the same prompt to get consistent results
+- **Version control** - Track prompt changes alongside image changes
+- **Batch operations** - Scripts can read prompts for bulk regeneration
+- **Dashboard visibility** - See and edit prompts directly in the dashboard
 

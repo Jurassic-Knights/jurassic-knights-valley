@@ -9,7 +9,8 @@
 
 import { Logger } from '../core/Logger';
 import { GameRenderer } from '../core/GameRenderer';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { GameConstants } from '../data/GameConstants';
+import { getConfig } from '../data/GameConfig';
 import { IslandManager } from './IslandManager';
 import { AssetLoader } from '../core/AssetLoader';
 import { entityManager } from '../core/EntityManager';

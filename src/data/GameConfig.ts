@@ -21,7 +21,7 @@ const DEFAULTS = {
         ARMOR_FORMULA_DIVISOR: 100
     },
     Interaction: {
-        REST_AREA_RADIUS: 900,
+        REST_AREA_RADIUS: 250,
         FORGE_AREA_RADIUS: 200,
         MERCHANT_RADIUS: 150,
         RESOURCE_PICKUP_RADIUS: 750,
@@ -49,6 +49,13 @@ const DEFAULTS = {
         REAL_SECONDS_PER_GAME_DAY: 300,
         DAYS_PER_SEASON: 7
     },
+    PlayerResources: {
+        INITIAL_GOLD: 10000,
+        INITIAL_SCRAPS: 20,
+        INITIAL_MINERALS: 10,
+        INITIAL_WOOD: 10,
+        INITIAL_FOOD: 10
+    },
     BodyTypes: {
         muscle: { scale: 1.25 },
         medium: { scale: 1.0 },
@@ -69,7 +76,7 @@ const DEFAULTS = {
         halberd: { range: 420, damage: 14, attackSpeed: 0.8 },
         greatsword: { range: 0, damage: 16, attackSpeed: 0.7 },
         // Ranged weapons
-        pistol: { range: 300, damage: 8, attackSpeed: 1.5 },
+        pistol: { range: 0, damage: 8, attackSpeed: 1.5 },
         rifle: { range: 600, damage: 12, attackSpeed: 0.8 },
         shotgun: { range: 300, damage: 20, attackSpeed: 0.6 },
         sniper_rifle: { range: 600, damage: 18, attackSpeed: 0.5 },
@@ -81,18 +88,20 @@ const DEFAULTS = {
 };
 
 // Current config values - starts as copy of defaults
+// On HMR reload, this module re-executes with new DEFAULTS, creating fresh GameConfig
 const GameConfig = JSON.parse(JSON.stringify(DEFAULTS));
 
 // Type for the config
 export type GameConfigType = typeof DEFAULTS;
 
 /**
- * getConfig() - HMR-safe accessor for tunable game values
+ * getConfig() - Returns current tunable game values
  * 
- * Use this instead of accessing GameConfig directly.
- * Values update in real-time when source file changes.
+ * Reads from window.__GAME_CONFIG__ which is updated by HMR.
+ * On first call before HMR runs, returns module-level GameConfig.
  */
 export function getConfig(): GameConfigType {
+    // Always read from window (HMR updates this)
     if (typeof window !== 'undefined' && window.__GAME_CONFIG__) {
         return window.__GAME_CONFIG__;
     }
@@ -187,6 +196,21 @@ if (typeof window !== 'undefined') {
 
 if (import.meta.hot) {
     import.meta.hot.accept();
+}
+
+// === BroadcastChannel for direct dashboard→game config updates ===
+// This bypasses file/HMR - dashboard sends updates directly to game window
+if (typeof window !== 'undefined' && typeof BroadcastChannel !== 'undefined') {
+    const configChannel = new BroadcastChannel('game-config-updates');
+    configChannel.onmessage = (event) => {
+        if (event.data && event.data.type === 'CONFIG_UPDATE') {
+            const { section, key, value } = event.data;
+            if (window.__GAME_CONFIG__ && window.__GAME_CONFIG__[section]) {
+                (window.__GAME_CONFIG__[section] as Record<string, unknown>)[key] = value;
+                console.log(`[Config] Live update: ${section}.${key} = ${value}`);
+            }
+        }
+    };
 }
 
 export { GameConfig, DEFAULTS };

@@ -7,6 +7,7 @@
 import { Logger } from '../core/Logger';
 import { GameRenderer } from '../core/GameRenderer';
 import { Registry } from '../core/Registry';
+import { getConfig } from '../data/GameConfig';
 
 
 class WorldRenderer {
@@ -374,7 +375,7 @@ class WorldRenderer {
 
         const centerX = home.worldX + home.width / 2;
         const centerY = home.worldY + home.height / 2;
-        const radius = 200;
+        const radius = getConfig().Interaction?.REST_AREA_RADIUS ?? 900;
 
         // Outer glow
         ctx.beginPath();

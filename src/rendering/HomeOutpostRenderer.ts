@@ -7,7 +7,7 @@
  * Owner: Rendering System
  */
 
-import { getConfig } from '../data/GameConstants';
+import { getConfig } from '../data/GameConfig';
 
 const HomeOutpostRenderer = {
     /**

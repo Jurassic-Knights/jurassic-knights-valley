@@ -4,20 +4,18 @@
  */
 
 export default {
-    "id":  "node_mining_t4_01",
-    "name":  "Gold Vein",
-    "sourceCategory":  "nodes",
-    "sourceFile":  "nodes",
-    "sprite":  "node_mining_t4_01",
-    "status":  "clean",
-    "files":  {
-                  "original":  "assets/images/nodes/node_mining_t4_01_original.png",
-                  "clean":  "assets/images/nodes/node_mining_t4_01_clean.png",
-                  "consumed_original":  "assets/images/nodes/node_mining_t4_01_consumed_original.png",
-                  "consumed_clean":  "assets/images/nodes/node_mining_t4_01_consumed_clean.png"
-              },
-    "type":  "ore",
-    "biome":  "tundra",
-    "nodeSubtype":  "mining",
-    "tier":  4
+    "id": "node_mining_t4_01",
+    "name": "Fossil Pile",
+    "sourceCategory": "nodes",
+    "sourceFile": "nodes",
+    "sprite": "node_mining_t4_01",
+    "status": "clean",
+    "files": {
+        "original": "assets/images/nodes/node_mining_t4_01_original.png",
+        "consumed_original": "assets/images/nodes/node_mining_t4_01_consumed_original.png"
+    },
+    "type": "ore",
+    "biome": "tundra",
+    "nodeSubtype": "mining",
+    "tier": 4
 };

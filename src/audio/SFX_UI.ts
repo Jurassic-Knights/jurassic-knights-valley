@@ -23,6 +23,11 @@ import { Logger } from '../core/Logger';
             osc.stop(SFX.ctx.currentTime + 0.04);
         },
 
+        sfx_ui_hover: function () {
+            // Subtle high-pitch tick
+            SFX.playTone(800, 0.03, 'sine', 0.1, 0.005, 0.02);
+        },
+
         sfx_ui_unlock: function () {
             SFX.playNoise(0.4, 0.05, 0.3, 0.2, 400);
             setTimeout(() => {

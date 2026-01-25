@@ -227,6 +227,18 @@ import { SFX } from './SFX_Core';
             };
         },
 
+        sfx_hero_hurt: function () {
+            // Alias for player hurt (Safe invocation)
+            return {
+                type: 'sine',
+                frequency: 200,
+                attack: 0.01,
+                decay: 0.2,
+                sweep: { end: 100, time: 0.15 },
+                volume: 0.4
+            };
+        },
+
         sfx_player_death: function () {
             // Player dies
             return {

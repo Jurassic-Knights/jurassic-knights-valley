@@ -42,10 +42,30 @@ const EntityRenderService = {
             if (e.active) sortableEntities.push(e);
         }
 
-        // Sort by Y position (bottom of sprite = y + height/2 for accurate depth)
+        // Helper to determine render layer priority
+        const getRenderLayer = (e: any) => {
+            if (e.entityType === EntityTypes.DROPPED_ITEM) return 2; // Top priority
+            if (e.entityType === EntityTypes.HERO || e.id === 'hero') return 1; // Middle priority (above nodes)
+            return 0; // Standard (nodes, enemies, etc.)
+        };
+
         sortableEntities.sort((a, b) => {
+            const layerA = getRenderLayer(a);
+            const layerB = getRenderLayer(b);
+
+            // Primary Sort: Layer Priority
+            if (layerA !== layerB) {
+                return layerA - layerB;
+            }
+
+            // Secondary Sort: Y Position (within same layer)
             const ay = a.y + (a.height ? a.height / 2 : 0);
             const by = b.y + (b.height ? b.height / 2 : 0);
+
+            // Stable sort for equal Y
+            if (Math.abs(ay - by) < 0.1) {
+                return a.id > b.id ? 1 : -1;
+            }
             return ay - by;
         });
 

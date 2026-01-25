@@ -71,12 +71,35 @@ const AssetLoader = {
 
         // Equipment/Inventory Mode Icons
         "ui_icon_armor": "images/ui/ui_icon_armor_original.png",
-        "ui_icon_sword": "images/ui/ui_icon_weapon_original.png",
+
         "ui_icon_pickaxe": "images/ui/ui_icon_tool_original.png",
         "ui_icon_close": "images/ui/ui_icon_back_original.png",
         "ui_icon_crafting": "images/ui/ui_icon_items_original.png",
         "ui_icon_resources": "images/ui/ui_icon_resources_original.png",
         "ui_icon_equip": "images/ui/ui_icon_equip_original.png",
+
+        // Filter Icons (Generated)
+        "ui_icon_sword": "images/ui/ui_icon_sword_original.png",
+        "ui_icon_axe": "images/ui/ui_icon_axe_original.png",
+        "ui_icon_mace": "images/ui/ui_icon_mace_original.png",
+        "ui_icon_spear": "images/ui/ui_icon_spear_original.png",
+        "ui_icon_knife": "images/ui/ui_icon_knife_original.png",
+        "ui_icon_dagger": "images/ui/ui_icon_knife_original.png", // Alias
+
+        "ui_icon_rifle": "images/ui/ui_icon_rifle_original.png",
+        "ui_icon_pistol": "images/ui/ui_icon_pistol_original.png",
+        "ui_icon_shotgun": "images/ui/ui_icon_shotgun_original.png",
+
+        "ui_icon_helmet": "images/ui/ui_icon_helmet_original.png",
+        "ui_icon_chest": "images/ui/ui_icon_chest_original.png",
+        "ui_icon_gloves": "images/ui/ui_icon_gloves_original.png",
+        "ui_icon_boots": "images/ui/ui_icon_boots_original.png",
+        "ui_icon_legs": "images/ui/ui_icon_boots_original.png", // Alias
+        "ui_icon_accessory": "images/ui/ui_icon_accessory_original.png",
+
+        "ui_icon_wood_axe": "images/ui/ui_icon_wood_axe_original.png",
+        "ui_icon_fishing": "images/ui/ui_icon_fishing_original.png",
+        "ui_icon_harvesting": "images/ui/ui_icon_harvesting_original.png",
 
         // Stat Icons (for equipment UI display)
         "stat_damage": "images/ui/stat_damage_original.png",

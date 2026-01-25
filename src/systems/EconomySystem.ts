@@ -169,11 +169,11 @@ class EconomySystem {
                     }
 
                     // Logic
-                    if (SpawnManager) {
+                    if (spawnManager) {
                         if (type === 'resourceSlots') {
-                            SpawnManager.refreshIslandResources(gridX, gridY);
+                            spawnManager.refreshIslandResources(gridX, gridY);
                         } else if (type === 'respawnTime') {
-                            SpawnManager.updateIslandRespawnTimers(gridX, gridY);
+                            spawnManager.updateIslandRespawnTimers(gridX, gridY);
                         }
                     }
 

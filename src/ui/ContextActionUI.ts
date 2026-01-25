@@ -22,6 +22,7 @@ class ContextActionService {
     label: HTMLElement | null = null;
     activeContext: string | null = null;
     contextData: any = null;
+    isSuspended: boolean = false;
 
     constructor() {
         // Properties initialized as class fields above
@@ -65,50 +66,47 @@ class ContextActionService {
         Logger.debug('[ContextActionUI]', 'Initialized');
     }
 
-    show(type, data = null) {
-        if (!this.btn) return;
+    suspend() {
+        this.isSuspended = true;
+        // Don't clear DOM here, let the overriding UI overwrite it.
+        // We just stop responding to game events.
+    }
 
+    resume() {
+        this.isSuspended = false;
+        // Restore our state
+        if (this.activeContext) {
+            this.show(this.activeContext, this.contextData);
+        } else {
+            this._clearDOM();
+        }
+    }
+
+    private _clearDOM() {
+        if (this.btn) this.btn.classList.remove('active');
+        if (this.icon) this.icon.style.backgroundImage = 'none';
+        if (this.label) this.label.textContent = '';
+    }
+
+    show(type, data = null) {
         this.activeContext = type;
         this.contextData = data;
-
-        const config = {
-            rest: { iconId: 'ui_icon_rest', label: 'REST' },
-            forge: { iconId: 'ui_icon_forge', label: 'FORGE' },
-            unlock: { iconId: 'ui_icon_lock', label: data ? `${data.unlockCost}G` : 'UNLOCK' },
-            merchant: { iconId: 'ui_icon_shop', label: 'SHOP' }
-        }[type] || { iconId: '', label: '' };
-
-        // Update Icon
-        if (this.icon && AssetLoader) {
-            const path = AssetLoader.getImagePath(config.iconId);
-            if (path) {
-                this.icon.style.backgroundImage = `url('${path}')`;
-                this.icon.style.backgroundSize = 'contain';
-            }
+        if (!this.isSuspended) {
+            this._updateDOM(type, data);
         }
-
-        // Update Label
-        if (this.label) this.label.textContent = config.label;
-
-        this.btn.classList.add('active');
-        Logger.debug('[ContextActionUI]', `Shown: ${type}`);
     }
 
     hide(type) {
         if (this.activeContext !== type) return;
-
         this.activeContext = null;
         this.contextData = null;
-
-        if (this.btn) this.btn.classList.remove('active');
-        if (this.icon) this.icon.style.backgroundImage = 'none';
-        if (this.label) this.label.textContent = '';
-
-        Logger.debug('[ContextActionUI]', `Hidden: ${type}`);
+        if (!this.isSuspended) {
+            this._clearDOM();
+        }
     }
 
     execute() {
-        if (!this.activeContext) return;
+        if (this.isSuspended || !this.activeContext) return;
 
         Logger.debug('[ContextActionUI]', `Executing: ${this.activeContext}`);
         if (AudioManager) AudioManager.playSFX('sfx_ui_click');
@@ -140,6 +138,34 @@ class ContextActionService {
                 break;
         }
     }
+
+    private _updateDOM(type, data) {
+        if (!this.btn) return;
+
+        const config = {
+            rest: { iconId: 'ui_icon_rest', label: 'REST' },
+            forge: { iconId: 'ui_icon_forge', label: 'FORGE' },
+            unlock: { iconId: 'ui_icon_lock', label: data ? `${data.unlockCost}G` : 'UNLOCK' },
+            merchant: { iconId: 'ui_icon_shop', label: 'SHOP' }
+        }[type] || { iconId: '', label: '' };
+
+        // Update Icon
+        if (this.icon && AssetLoader) {
+            const path = AssetLoader.getImagePath(config.iconId);
+            if (path) {
+                this.icon.style.backgroundImage = `url('${path}')`;
+                this.icon.style.backgroundSize = 'contain';
+            }
+        }
+
+        // Update Label
+        if (this.label) this.label.textContent = config.label;
+
+        this.btn.classList.add('active');
+        Logger.debug('[ContextActionUI]', `Shown: ${type}`);
+    }
+
+
 }
 
 // Create singleton and export

@@ -9,13 +9,16 @@
  * Owner: AI System
  */
 
+import { getConfig } from '../../data/GameConfig';
+
 const BaseAI = {
     /**
      * Check if entity can see target (within aggro range)
      */
     canSee(entity, target) {
         if (!target || entity.isDead) return false;
-        return this.distanceTo(entity, target) <= (entity.aggroRange || 200);
+        const range = entity.aggroRange || getConfig().AI?.AGGRO_RANGE || 500;
+        return this.distanceTo(entity, target) <= range;
     },
 
     /**
@@ -34,7 +37,8 @@ const BaseAI = {
         const dx = entity.x - entity.spawnX;
         const dy = entity.y - entity.spawnY;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        return dist <= (entity.leashDistance || 500);
+        const leash = entity.leashDistance || getConfig().AI?.LEASH_DISTANCE || 800;
+        return dist <= leash;
     },
 
     /**
@@ -78,7 +82,8 @@ const BaseAI = {
      */
     getRandomWanderTarget(entity) {
         const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * (entity.patrolRadius || 150) * 0.5;
+        const radius = entity.patrolRadius || getConfig().AI?.PATROL_AREA_RADIUS || 400;
+        const dist = Math.random() * radius * 0.5;
         return {
             x: entity.spawnX + Math.cos(angle) * dist,
             y: entity.spawnY + Math.sin(angle) * dist

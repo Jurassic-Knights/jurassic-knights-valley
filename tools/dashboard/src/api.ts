@@ -374,37 +374,7 @@ export async function remakeAsset(path: string, name: string, safeId: string): P
     }
 }
 
-export async function syncAssetsToGame(): Promise<void> {
-    try {
-        const btn = document.getElementById('btnSyncToGame') as HTMLButtonElement | null;
-        if (btn) {
-            btn.disabled = true;
-            btn.textContent = '🔄 Syncing...';
-        }
 
-        const response = await fetch('/api/sync_to_game', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({}),
-        });
-        const result = await response.json();
-
-        if (btn) {
-            btn.disabled = false;
-            btn.textContent = '🔄 Sync to Game';
-        }
-
-        if (result.success) {
-            console.log('[Dashboard] Sync complete:', result.message);
-            alert(`✓ ${result.message}`);
-        } else {
-            console.error('[Dashboard] Sync failed:', result.error);
-            alert(`✗ Sync failed: ${result.error}`);
-        }
-    } catch (err) {
-        console.error('[Dashboard] Sync error:', err);
-    }
-}
 
 export async function syncEntitiesToJson(): Promise<void> {
     try {

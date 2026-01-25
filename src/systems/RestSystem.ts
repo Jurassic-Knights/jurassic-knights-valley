@@ -44,7 +44,11 @@ class RestSystem {
 
         // Validation (Double check location)
         if (!hero.isAtHomeOutpost) {
-            Logger.warn('[RestSystem] Cannot rest outside home outpost');
+            Logger.warn('[RestSystem] Cannot rest outside home outpost', {
+                x: hero.x,
+                y: hero.y,
+                isAtHome: hero.isAtHomeOutpost
+            });
             return;
         }
 

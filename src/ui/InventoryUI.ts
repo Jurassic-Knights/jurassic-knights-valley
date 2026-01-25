@@ -12,6 +12,8 @@ import { AssetLoader } from '../core/AssetLoader';
 import { Registry } from '../core/Registry';
 import { EntityRegistry } from '../entities/EntityLoader';
 import { GameInstance } from '../core/Game';
+import { WeaponWheelInstance } from './WeaponWheel';
+import { ContextActionUI } from './ContextActionUI';
 
 class InventoryPanel {
     // Property declarations
@@ -109,7 +111,7 @@ class InventoryPanel {
         }
 
         // Type filter buttons (tabs)
-        const typeBtn = target.closest('.equip-tab[data-type]');
+        const typeBtn = target.closest('.btn-filter[data-type]');
         if (typeBtn?.dataset.type) {
             this.activeType = typeBtn.dataset.type;
             this._render();
@@ -152,6 +154,9 @@ class InventoryPanel {
      * ALL | ITEMS | (center disabled) | RESOURCES | BACK
      */
     _swapFooterToInventoryMode() {
+        // Suspend context actions (Rest, Forge, etc.)
+        if (ContextActionUI) ContextActionUI.suspend();
+
         const btnInventory = document.getElementById('btn-inventory');
         const btnEquip = document.getElementById('btn-equip');
         const btnMap = document.getElementById('btn-map');
@@ -236,10 +241,43 @@ class InventoryPanel {
             btnMagnet.onclick = () => this.close();
         }
 
-        // Disable context button while in inventory mode
+        // Context Button -> Filter Trigger
         if (btnContext) {
-            btnContext.classList.remove('active');
-            btnContext.classList.add('inactive');
+            btnContext.classList.remove('inactive');
+            btnContext.dataset.footerOverride = 'inventory';
+
+            const label = btnContext.querySelector('.btn-label') || btnContext.querySelector('#context-label');
+            const icon = btnContext.querySelector('.btn-icon') || btnContext.querySelector('#context-icon');
+
+            if (label) label.textContent = 'FILTER';
+            if (icon) {
+                const path = AssetLoader.getImagePath('ui_icon_settings');
+                if (path) {
+                    (icon as HTMLElement).style.backgroundImage = `url('${path}')`;
+                    (icon as HTMLElement).style.backgroundSize = 'contain';
+                }
+            }
+
+            btnContext.onclick = () => {
+                const subTypes = this.activeCategory === 'all'
+                    ? this.getAllSubTypes()
+                    : this.getSubTypes(this.activeCategory);
+
+                const menuItems = [
+                    { id: 'all', label: 'ALL', iconId: 'ui_icon_inventory' },
+                    ...subTypes.map(t => ({
+                        id: t as string,
+                        label: (t as string).toUpperCase(),
+                        iconId: `ui_icon_${t}`
+                    }))
+                ];
+
+                WeaponWheelInstance.open(menuItems, (path) => {
+                    const leaf = path[path.length - 1];
+                    this.activeType = leaf.id; // Just take leaf ID
+                    this._render();
+                }, btnContext);
+            };
         }
 
         // Hide weapon swap button while in inventory mode
@@ -335,6 +373,9 @@ class InventoryPanel {
         if (btnSwap) btnSwap.style.display = '';
 
         this.originalFooterConfigs = null;
+
+        // Resume context actions
+        if (ContextActionUI) ContextActionUI.resume();
     }
 
     /**
@@ -446,14 +487,8 @@ class InventoryPanel {
                 </div>
 
                 <!-- Sub-filter Tabs (at bottom) -->
-                <div class="equip-tabs">
-                    <button class="equip-tab ${this.activeType === 'all' ? 'active' : ''}" data-type="all">ALL</button>
-                    ${subTypes.map(type => `
-                        <button class="equip-tab ${this.activeType === type ? 'active' : ''}" data-type="${type}">
-                            ${type.toUpperCase()}
-                        </button>
-                    `).join('')}
-                </div>
+                <!-- Sub-filter Tabs REMOVED (Moved to Weapon Wheel) -->
+                <!-- <div class="equip-tabs" style="display:none;"></div> -->
             </div>
         `;
 

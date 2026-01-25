@@ -12,6 +12,7 @@ import { ResourceRenderer } from '../rendering/ResourceRenderer';
 import { EntityConfig } from '../config/EntityConfig';
 import { Resource } from './Resource';
 import { EntityTypes } from '../config/EntityTypes';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { Registry } from '../core/Registry';
 
 
@@ -66,7 +67,8 @@ class DroppedItem extends Entity {
 
         this.resourceType = config.resourceType || 'scraps_t1_01';
         this.amount = config.amount || 1;
-        this.pickupRadius = finalConfig.pickupRadius || 140;
+        this.pickupRadius =
+            finalConfig.pickupRadius || getConfig().Interaction?.DROPPED_ITEM_PICKUP_RADIUS || 50;
         this.customIcon = config.customIcon || null;
 
         // Visual pulse timer

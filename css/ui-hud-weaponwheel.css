@@ -1,0 +1,120 @@
+/**
+ * Weapon Wheel HUD
+ * Radial menu styles
+ */
+
+.weapon-wheel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    /* backdrop-filter: blur(4px); REMOVED per user request */
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.weapon-wheel-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.wheel-container {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    transform: scale(0.8);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.weapon-wheel-overlay.open .wheel-container {
+    transform: scale(1);
+}
+
+.wheel-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+}
+
+.sector-bg {
+    fill: #1a1a1a;
+    stroke: #333;
+    stroke-width: 2px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+/* Hover/Active States */
+.wheel-sector:hover .sector-bg,
+.wheel-sector.hover .sector-bg {
+    fill: #3a3a3a;
+    stroke: #ffd700;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+}
+
+.wheel-sector.selected .sector-bg {
+    fill: #2a2a1a;
+    stroke: #ffd700;
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.sector-icon {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+}
+
+.wheel-sector:hover .sector-icon,
+.wheel-sector.hover .sector-icon,
+.wheel-sector.selected .sector-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Center Info */
+.wheel-center-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+    background: radial-gradient(circle, #2a2a2a 0%, #1a1a1a 100%);
+    border: 2px solid #555;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.weapon-wheel-overlay.open .wheel-center-info {
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.wheel-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: #ffd700;
+    text-transform: uppercase;
+    line-height: 1.4;
+    padding: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+}

@@ -4,20 +4,17 @@
  */
 
 export default {
-    "id":  "node_mining_t2_02",
-    "name":  "Scrap Metal Pile",
-    "sourceCategory":  "nodes",
-    "sourceFile":  "nodes",
-    "sprite":  "node_mining_t2_02",
-    "status":  "clean",
-    "files":  {
-                  "original":  "assets/images/nodes/node_mining_t2_02_original.png",
-                  "clean":  "assets/images/nodes/node_mining_t2_02_clean.png",
-                  "consumed_original":  "assets/images/nodes/node_mining_t2_02_consumed_original.png",
-                  "consumed_clean":  "assets/images/nodes/node_mining_t2_02_consumed_clean.png"
-              },
-    "type":  "ore",
-    "biome":  "badlands",
-    "nodeSubtype":  "mining",
-    "tier":  2
+    "id": "node_mining_t2_02",
+    "name": "Red Stone Vein",
+    "sourceCategory": "nodes",
+    "sourceFile": "nodes",
+    "sprite": "node_mining_t2_02",
+    "status": "clean",
+    "files": {
+        "original": "assets/images/nodes/node_mining_t2_02_original.png"
+    },
+    "type": "ore",
+    "biome": "badlands",
+    "nodeSubtype": "mining",
+    "tier": 2
 };

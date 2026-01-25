@@ -68,7 +68,7 @@ const Components = {
      * Create a tab button for category filtering
      */
     tabButton(label, category, isActive = false) {
-        return `<button class="equip-tab ${isActive ? 'active' : ''}" data-category="${category}">${label}</button>`;
+        return `<button class="btn-filter ${isActive ? 'active' : ''}" data-category="${category}">${label}</button>`;
     },
 
     /**

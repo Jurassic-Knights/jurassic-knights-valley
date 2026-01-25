@@ -228,6 +228,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
     props: '🌲',
     vfx: '✨',
     audio: '🔊',
+    config: '⚙️',
     hero: '🛡️',
 };
 
@@ -245,6 +246,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
     props: '#8bc34a',
     vfx: '#e91e63',
     audio: '#9c27b0',
+    config: '#607d8b',
     hero: '#2196f3',
 };
 

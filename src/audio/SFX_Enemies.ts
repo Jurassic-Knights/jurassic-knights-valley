@@ -72,6 +72,38 @@ import { Logger } from '../core/Logger';
             SFX.playNoise(0.25, 0.05, 0.2, 0.15, 600);
         },
 
+        sfx_boss_aggro: function () {
+            const t = SFX.ctx.currentTime;
+
+            // Deep menacing roar
+            const osc = SFX.ctx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(80, t);
+            osc.frequency.linearRampToValueAtTime(120, t + 0.4);
+            osc.frequency.linearRampToValueAtTime(60, t + 1.2);
+
+            const sub = SFX.ctx.createOscillator();
+            sub.type = 'square';
+            sub.frequency.setValueAtTime(40, t);
+            sub.frequency.linearRampToValueAtTime(30, t + 1.2);
+
+            const gain = SFX.ctx.createGain();
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(SFX.TARGET_VOLUME, t + 0.2);
+            gain.gain.exponentialRampToValueAtTime(0.01, t + 1.2);
+
+            osc.connect(gain);
+            sub.connect(gain);
+            gain.connect(SFX.masterGain);
+
+            osc.start(t);
+            sub.start(t);
+            osc.stop(t + 1.3);
+            sub.stop(t + 1.3);
+
+            SFX.playNoise(1.2, 0.1, 1.0, 0.4, 100);
+        },
+
         sfx_enemy_attack: function () {
             SFX.playNoise(0.15, 0.01, 0.12, 0.25, 800);
             SFX.playTone(200, 0.15, 'sawtooth', 0.3, 0.01);

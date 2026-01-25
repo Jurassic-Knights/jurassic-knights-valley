@@ -139,7 +139,10 @@ class SpawnManagerService {
             entityManager.add(hero);
             Logger.info(`[SpawnManager] Hero added. Total: ${entityManager.getAll().length}`);
 
-            hero.inventory.gold = GameState.get('gold') || 0;
+            const savedGold = GameState.get('gold');
+            if (savedGold !== undefined && savedGold !== null) {
+                hero.inventory.gold = savedGold;
+            }
 
             Logger.info('[SpawnManager] Hero spawned at home island');
         } catch (err) {

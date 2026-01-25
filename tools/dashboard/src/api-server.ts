@@ -250,12 +250,53 @@ function getCategoryData(category: string): { files: Record<string, EntityData[]
     // Group by sourceFile for backward compatibility
     const files: Record<string, EntityData[]> = {};
     for (const entity of entities) {
+        injectImplicitData(entity, category);
         const sourceFile = (entity.sourceFile as string) || category;
         if (!files[sourceFile]) files[sourceFile] = [];
         files[sourceFile].push(entity);
     }
 
     return { files, category, entities };
+}
+
+function injectImplicitData(entity: EntityData, category: string) {
+    if (!entity.sfx) entity.sfx = {};
+    const sfx = entity.sfx as Record<string, string>;
+
+    // Nodes: mine, break, respawn
+    if (category === 'nodes') {
+        const id = entity.id || 'unknown';
+        if (!sfx.mine) sfx.mine = `sfx_mine_${id}`;
+        if (!sfx.break) sfx.break = `sfx_resource_break_${id}`;
+        if (!sfx.respawn) sfx.respawn = `sfx_respawn_${id}`;
+    }
+
+    // Items/Resources: pickup, drop
+    if (category === 'items' || category === 'resources') {
+        if (!sfx.pickup) sfx.pickup = 'sfx_resource_collect'; // Generic fallback
+        if (!sfx.drop) sfx.drop = 'sfx_item_drop_light';
+    }
+
+    // Equipment: equip, use
+    if (category === 'equipment') {
+        const isWeapon = entity.slot === 'weapon' || (entity.id && (entity.id as string).includes('tool'));
+        if (!sfx.equip) sfx.equip = isWeapon ? 'sfx_equip_weapon' : 'sfx_equip_armor';
+
+        if (isWeapon && !sfx.use) {
+            // Check for specific weapon type if available
+            const weaponType = (entity.weaponType as string) || 'sword';
+            sfx.use = `sfx_weapon_swing`; // Generic or specific based on type?
+            // Actually game uses sfx_hero_swing usually, but individual weapons might want overrides
+            // Let's suggest specific convention
+            if (!sfx.use) sfx.use = `sfx_weapon_swing_${weaponType}`;
+        }
+    }
+
+    // NPCs: greet, buy
+    if (category === 'npcs') {
+        if (!sfx.greet) sfx.greet = 'sfx_npc_greet';
+        if (!sfx.buy) sfx.buy = 'sfx_npc_buy';
+    }
 }
 
 function updateCategoryStatus(
@@ -390,6 +431,7 @@ interface GameConfig {
     UnlockCosts: number[];
     BodyTypes: Record<string, { scale: number }>;
     WeaponDefaults: Record<string, { range: number; damage: number; attackSpeed: number }>;
+    PlayerResources: ConfigSection;
 }
 
 function extractSectionContent(content: string, section: string): string | null {
@@ -413,7 +455,7 @@ function parseGameConfig(): Partial<GameConfig> {
     const result: Partial<GameConfig> = {};
 
     // Extract each section from GameConfig.ts (tunable values only)
-    const sections = ['Hero', 'Combat', 'Interaction', 'AI', 'Spawning', 'Time', 'BodyTypes', 'WeaponDefaults'];
+    const sections = ['Hero', 'Combat', 'Interaction', 'AI', 'Spawning', 'Time', 'BodyTypes', 'WeaponDefaults', 'PlayerResources'];
 
     for (const section of sections) {
         const sectionContent = extractSectionContent(content, section);
@@ -468,7 +510,8 @@ function getConfig(): GameConfig {
         Spawning: config.Spawning || {},
         UnlockCosts: [],
         BodyTypes: config.BodyTypes || {},
-        WeaponDefaults: config.WeaponDefaults || {}
+        WeaponDefaults: config.WeaponDefaults || {},
+        PlayerResources: config.PlayerResources || {}
     };
 }
 

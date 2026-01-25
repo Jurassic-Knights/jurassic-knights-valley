@@ -2,6 +2,7 @@
  * Entity: enemy_dinosaur_t1_01
  * Auto-generated. Edit in dashboard.
  */
+import type { EnemyEntity } from '@types/entities';
 
 export default {
     "id": "enemy_dinosaur_t1_01",
@@ -16,7 +17,7 @@ export default {
     "tier": 1,
     "biome": "grasslands",
     "stats": {
-        "health": 25,
+        "health": "25",
         "damage": 3,
         "speed": 100,
         "defense": 0
@@ -71,4 +72,4 @@ export default {
         "width": 128,
         "height": 128
     }
-};
+} satisfies EnemyEntity;

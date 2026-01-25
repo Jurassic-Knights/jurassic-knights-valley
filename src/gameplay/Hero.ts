@@ -67,15 +67,16 @@ class Hero extends Entity {
 
         // Inventory
         if (InventoryComponent) {
+            const resources = getConfig().PlayerResources;
             this.components.inventory = new InventoryComponent(this, {
                 capacity: 20,
                 items: {
-                    gold: finalConfig.gold || 0,
-                    scraps_t1_01: 10,
-                    minerals_t1_01: 10,
-                    minerals_t2_01: 10,
-                    wood_t1_01: 10,
-                    food_t1_01: 10
+                    gold: finalConfig.gold || resources.INITIAL_GOLD || 0,
+                    scraps_t1_01: resources.INITIAL_SCRAPS || 10,
+                    minerals_t1_01: resources.INITIAL_MINERALS || 10,
+                    minerals_t2_01: resources.INITIAL_MINERALS || 10,
+                    wood_t1_01: resources.INITIAL_WOOD || 10,
+                    food_t1_01: resources.INITIAL_FOOD || 10
                 }
             });
         }

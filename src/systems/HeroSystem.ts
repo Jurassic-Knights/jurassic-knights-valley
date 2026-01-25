@@ -228,15 +228,16 @@ class HeroSystem {
         }
 
         // Update interaction flags (Home Outpost)
-        if (islandManager) {
-            const home = islandManager.getHomeIsland();
-            if (home) {
-                const centerX = home.worldX + home.width / 2;
-                const centerY = home.worldY + home.height / 2;
-                const dist = Math.sqrt((hero.x - centerX) ** 2 + (hero.y - centerY) ** 2);
-                hero.isAtHomeOutpost = dist < 200;
-            }
-        }
+        // Handled by HomeBase.ts using GameConfig.Interaction.REST_AREA_RADIUS
+        // if (islandManager) {
+        //     const home = islandManager.getHomeIsland();
+        //     if (home) {
+        //         const centerX = home.worldX + home.width / 2;
+        //         const centerY = home.worldY + home.height / 2;
+        //         const dist = Math.sqrt((hero.x - centerX) ** 2 + (hero.y - centerY) ** 2);
+        //         hero.isAtHomeOutpost = dist < 200;
+        //     }
+        // }
     }
 
     updateCombat(dt, hero) {

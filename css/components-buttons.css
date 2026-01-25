@@ -84,3 +84,74 @@
 .btn-danger:hover {
     box-shadow: var(--shadow-md), 0 0 10px rgba(139, 32, 32, 0.8);
 }
+
+/* ========================================
+   FILTER/TAB BUTTONS
+   Reusable for Inventory, Equipment, Shops
+   ======================================== */
+/* ========================================
+   FILTER/TAB BUTTONS
+   Reusable for Inventory, Equipment, Shops
+   ======================================== */
+.btn-filter {
+    flex: 1;
+    min-height: 48px;
+    /* Taller for touch + visual weight */
+    padding: 0 8px;
+    background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+    border: 1px solid #111;
+    border-top: 1px solid #666;
+    /* Highlight top edge */
+    border-bottom: 2px solid #000;
+    /* Deep shadow bottom edge */
+    border-radius: 4px;
+    color: #888;
+    font-family: var(--font-display);
+    font-size: 11px;
+    /* Crisp readable size */
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    box-shadow: 0 4px 0 #1a1a1a;
+    /* 3D "Blocky" Depth */
+    position: relative;
+    margin-bottom: 4px;
+    /* Account for 3D shadow */
+}
+
+.btn-filter:hover {
+    background: linear-gradient(180deg, #5a5a5a 0%, #3a3a3a 100%);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #1a1a1a;
+}
+
+.btn-filter:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #1a1a1a;
+}
+
+.btn-filter.active {
+    background: linear-gradient(180deg, #d4af37 0%, #8b6914 100%);
+    /* Rich Gold Gradient */
+    color: #2a1a00;
+    /* Dark text for contrast on gold */
+    font-weight: 800;
+    border-top: 1px solid #ffe680;
+    border-bottom: 2px solid #5a3a00;
+    box-shadow: 0 2px 0 #3a2500, 0 0 15px rgba(212, 175, 55, 0.4);
+    /* Amber Glow */
+    transform: translateY(2px);
+    /* Remains "Pressed" */
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-filter.active:hover {
+    transform: translateY(1px);
+    box-shadow: 0 3px 0 #3a2500, 0 0 20px rgba(212, 175, 55, 0.6);
+}

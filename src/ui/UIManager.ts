@@ -23,6 +23,7 @@ import { Registry } from '../core/Registry';
 import { UICapture } from './UICapture';
 import { GameInstance } from '../core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
+import { HUDController } from './controllers/HUDController';
 import type { Island } from '../types/world';
 import type { UIPanelConfig } from '../types/ui';
 
@@ -40,6 +41,8 @@ class UIManagerService {
 
     init() {
         Logger.info('[UIManager]', 'Initializing...');
+        // Ensure HUDController is loaded
+        if (HUDController) Logger.debug('[UIManager] HUDController loaded');
 
         // Listen for platform changes
         if (PlatformManager) {

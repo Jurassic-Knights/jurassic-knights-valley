@@ -147,13 +147,16 @@ Enemy.prototype.updateWander = function (dt) {
 
     if (!this.wanderTarget || this.wanderTimer >= this.wanderInterval) {
         const angle = Math.random() * Math.PI * 2;
-        const dist = Math.random() * this.patrolRadius * 0.5;
+        const radius = this.patrolRadius || getConfig().AI?.PATROL_AREA_RADIUS || 400;
+        const dist = Math.random() * radius * 0.5;
         this.wanderTarget = {
             x: this.spawnX + Math.cos(angle) * dist,
             y: this.spawnY + Math.sin(angle) * dist
         };
         this.wanderTimer = 0;
-        this.wanderInterval = 3000 + Math.random() * 2000;
+        const minTime = getConfig().AI?.WANDER_TIMER_MIN || 2000;
+        const maxTime = getConfig().AI?.WANDER_TIMER_MAX || 5000;
+        this.wanderInterval = minTime + Math.random() * (maxTime - minTime);
     }
 
     if (this.wanderTarget) {

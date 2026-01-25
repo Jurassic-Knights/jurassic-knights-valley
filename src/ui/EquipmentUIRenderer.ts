@@ -62,10 +62,26 @@ class EquipmentUIRenderer {
                 </div>
 
                 <!-- Selected Item Stats Bar -->
-                <div class="equip-summary-bar ${item ? 'has-item' : 'empty'}">
-                    <div class="item-preview-name">${itemName}</div>
-                    <div class="item-stats-row">
-                        ${item ? EquipmentUIRenderer.renderItemStats(item) : '<div class="summary-stat empty">Double-tap to equip</div>'}
+                <div class="equip-summary-bar ${item ? 'has-item' : 'empty'}" style="width:100%; padding:0; background:rgba(0,0,0,0.5); display:flex; flex-direction:row; align-items:stretch; min-height:60px;">
+                    <div class="item-preview-name" style="
+                        font-size: 1.0rem; 
+                        font-weight: 800; 
+                        color: #ffc107; 
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 0 12px; 
+                        width: 30%; 
+                        background: rgba(255,193,7,0.1);
+                        border-right: 1px solid rgba(255,193,7,0.2);
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        box-sizing: border-box;
+                        text-align: center;
+                        line-height: 1.2;
+                    ">${itemName}</div>
+                    <div class="item-stats-row" style="flex:1; padding:4px 8px; box-sizing: border-box; display:flex; align-items:center;">
+                        ${item ? EquipmentUIRenderer.renderItemStats(item) : '<div class="summary-stat empty" style="width:100%; text-align:center; color:#666;">Double-tap to equip</div>'}
                     </div>
                 </div>
 
@@ -80,11 +96,8 @@ class EquipmentUIRenderer {
                 </div>
 
                 <!-- Category Tabs (filter buttons at bottom) -->
-                <div class="equip-tabs">
-                    ${ui.modeCategories[ui.selectedMode].map(cat => `
-                        <button class="equip-tab ${ui.selectedCategory === cat.id ? 'active' : ''}" data-category="${cat.id}">${cat.label}</button>
-                    `).join('')}
-                </div>
+                <!-- Moved to Action Button -->
+                <div class="equip-tabs"></div>
             </div>
         `;
     }
@@ -208,28 +221,8 @@ class EquipmentUIRenderer {
      * @returns {string} HTML string
      */
     static renderInventoryGrid(ui) {
-        let filtered = ui.cachedEquipment;
-
-        if (ui.selectedCategory !== 'all') {
-            // For weapon mode, filter by weaponType OR gripType
-            if (ui.selectedMode === 'weapon') {
-                if (ui.selectedCategory === '1-hand' || ui.selectedCategory === '2-hand') {
-                    filtered = ui.cachedEquipment.filter(e => e.gripType === ui.selectedCategory);
-                } else {
-                    filtered = ui.cachedEquipment.filter(e => e.weaponType === ui.selectedCategory);
-                }
-            }
-            // For armor mode, filter by slot
-            else if (ui.selectedMode === 'armor') {
-                filtered = ui.cachedEquipment.filter(e => e.slot === ui.selectedCategory);
-            }
-            // For tool mode, filter by toolSubtype
-            else {
-                filtered = ui.cachedEquipment.filter(e =>
-                    e.toolSubtype === ui.selectedCategory || e.slot === ui.selectedCategory
-                );
-            }
-        }
+        // cachedEquipment is already filtered by _loadEquipment based on mode + category + modifier
+        const filtered = ui.cachedEquipment;
 
         if (filtered.length === 0) {
             return '<div class="empty-inventory">No equipment available</div>';
@@ -352,17 +345,23 @@ class EquipmentUIRenderer {
                 .join('');
         }
 
-        // Render each stat with icon - mobile first: 32px icons, large text
-        return `<div class="stats-grid" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:space-around; align-items:center; padding:4px 0;">
+        // Render each stat with icon - fixed width grid, no layout shift
+        const statCount = relevantStats.length;
+        // Grid columns based on stat count: weapons=5, armor=4, tools=1
+        const gridCols = statCount <= 1 ? '1fr' : statCount <= 4 ? `repeat(${statCount}, 1fr)` : 'repeat(5, 1fr)';
+
+        return `<div class="stats-grid" style="display:grid; grid-template-columns:${gridCols}; gap:4px; width:100%; justify-items:center;">
             ${relevantStats.map(stat => {
             const value = stats[stat.key] ?? 0;
             const iconPath = AssetLoader?.getImagePath?.(stat.iconId) || '';
             const prefix = value > 0 ? '+' : '';
+            // Format value: show 1 decimal for decimals, integer otherwise
+            const displayVal = Number.isInteger(value) ? value : value.toFixed(1);
             return `
-                    <div class="summary-stat" title="${stat.label}" style="display:flex; flex-direction:column; align-items:center; gap:2px; min-width:48px;">
-                        <img class="stat-icon-img" src="${iconPath}" alt="${stat.label}" style="width:32px;height:32px;object-fit:contain;">
-                        <span style="font-size:0.7rem; color:#aaa; text-transform:uppercase;">${stat.label}</span>
-                        <span style="font-size:1.1rem; font-weight:bold; color:#fff;">${prefix}${value}</span>
+                    <div class="summary-stat" title="${stat.label}" style="display:flex; flex-direction:column; align-items:center; gap:0px; min-width:0; width:100%;">
+                        <img class="stat-icon-img" src="${iconPath}" alt="${stat.label}" style="width:24px;height:24px;object-fit:contain; margin-bottom:2px;">
+                        <span style="font-size:0.6rem; color:#888; text-transform:uppercase; white-space:nowrap; line-height:1;">${stat.label}</span>
+                        <span style="font-size:0.9rem; font-weight:bold; color:#fff; width:100%; text-align:center; white-space:nowrap;">${prefix}${displayVal}</span>
                     </div>
                 `;
         }).join('')}

@@ -100,6 +100,13 @@ import { Logger } from '../core/Logger';
             setTimeout(() => SFX.playTone(500, 0.08, 'sine', 0.08, 0.02, 0.06), 40);
         },
 
+        // Specific Node Aliases
+        sfx_mine_node_woodcutting_t1_01: function () {
+            // Dead tree - wood sound
+            SFX.playTone(150, 0.06, 'triangle', 0.2, 0.005, 0.05);
+            setTimeout(() => SFX.playNoise(0.08, 0.01, 0.07, 0.08, 800), 20);
+        },
+
         // Collect/Break
         sfx_resource_collect: function () {
             const randomOffset = Math.random() * 400;

@@ -13,6 +13,7 @@ import { VFXController } from '../vfx/VFXController';
 import { spawnManager } from '../systems/SpawnManager';
 import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
 import { EntityConfig } from '../config/EntityConfig';
+import { GameConstants, getConfig } from '../data/GameConstants';
 import { EntityTypes } from '../config/EntityTypes';
 import { Registry } from '../core/Registry';
 
@@ -75,7 +76,8 @@ class Resource extends Entity {
         }
 
         this.amount = finalConfig.amount || 1;
-        this.interactRadius = finalConfig.interactRadius || 145;
+        this.interactRadius =
+            finalConfig.interactRadius || getConfig().Combat?.DEFAULT_MINING_RANGE || 150;
 
         // Health system
         this.maxHealth = finalConfig.maxHealth || 30;

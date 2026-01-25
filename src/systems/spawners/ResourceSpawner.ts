@@ -236,15 +236,17 @@ class ResourceSpawner {
         const maxY = centerY;
 
         const centerX = bounds.x + bounds.width / 2;
-        const restAreaRadius = 330;
+        const restAreaRadius = getConfig().Interaction?.REST_AREA_RADIUS ?? 900;
 
         const isValidSpawnPoint = (x, y) => {
             const dx = x - centerX;
             const dy = y - centerY;
-            return Math.sqrt(dx * dx + dy * dy) >= restAreaRadius;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            // Add a small buffer (50px) to the exclusion zone so trees don't hug the line
+            return dist >= restAreaRadius + 50;
         };
 
-        const minSpacing = 50;
+        const minSpacing = getConfig().Spawning?.MIN_SPAWN_DISTANCE ?? 50;
         const placedTrees = [];
 
         const hasSpacing = (x, y) => {
@@ -268,7 +270,7 @@ class ResourceSpawner {
         };
 
         const targetTreeCount = 25;
-        const edgeSpacing = 100;
+        const edgeSpacing = getConfig().Spawning?.EDGE_SPACING ?? 100;
         const jitter = 25;
 
         // Phase 1: Edge trees (top)

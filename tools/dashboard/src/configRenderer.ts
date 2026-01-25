@@ -30,6 +30,7 @@ const SECTION_META: Record<string, { name: string; description: string }> = {
     AI: { name: 'AI', description: 'Enemy AI behavior' },
     Spawning: { name: 'Spawning', description: 'Spawn settings' },
     Time: { name: 'Time', description: 'Day/night cycle' },
+    PlayerResources: { name: 'Player Resources', description: 'Starting currency and materials' },
     BodyTypes: { name: 'Body Types', description: 'Scale multipliers' },
     WeaponDefaults: { name: 'Weapon Defaults', description: 'Base stats by weapon type' }
 };
@@ -191,6 +192,19 @@ function createField(section: string, key: string, value: unknown, type: 'number
                 input.classList.add('saved');
                 input.dataset.originalValue = String(newValue);
                 setTimeout(() => input.classList.remove('saved'), 1000);
+
+                // Send update directly to game window via BroadcastChannel
+                // This bypasses HMR - game receives update immediately
+                if (typeof BroadcastChannel !== 'undefined') {
+                    const configChannel = new BroadcastChannel('game-config-updates');
+                    configChannel.postMessage({
+                        type: 'CONFIG_UPDATE',
+                        section: input.dataset.section,
+                        key: input.dataset.key,
+                        value: newValue
+                    });
+                    configChannel.close();
+                }
             } else {
                 input.classList.remove('saving');
                 input.classList.add('error');
