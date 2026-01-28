@@ -14,6 +14,7 @@ import { MerchantUI } from './MerchantUI';
 // ForgeController accessed via Registry to avoid circular dependency
 import { Registry } from '@core/Registry';
 
+
 class ContextActionService {
     // Property declarations
     btn: HTMLElement | null = null;
@@ -116,14 +117,13 @@ class ContextActionService {
             case 'rest':
                 if (E && EventBus) EventBus.emit(E.REQUEST_REST);
                 break;
-            case 'forge': {
+            case 'forge':
                 const forgeCtrl = Registry?.get('ForgeController');
                 if (forgeCtrl) {
                     forgeCtrl.render('dashboard');
                     forgeCtrl.open();
                 }
                 break;
-            }
             case 'unlock':
                 if (this.contextData && E && EventBus) {
                     EventBus.emit(E.REQUEST_UNLOCK, {
@@ -164,6 +164,8 @@ class ContextActionService {
         this.btn.classList.add('active');
         Logger.debug('[ContextActionUI]', `Shown: ${type}`);
     }
+
+
 }
 
 // Create singleton and export
