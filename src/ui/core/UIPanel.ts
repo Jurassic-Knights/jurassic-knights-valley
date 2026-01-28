@@ -8,10 +8,8 @@
  */
 
 import { UIManager } from '../UIManager';
-import { Logger } from '../../core/Logger';
-import { Registry } from '../../core/Registry';
-
-
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
 
 class UIPanel {
     // Property declarations
@@ -111,8 +109,8 @@ class UIPanel {
     /**
      * Lifecycle hooks
      */
-    onOpen() { }
-    onClose() { }
+    onOpen() {}
+    onClose() {}
 
     /**
      * Apply a layout mode (called by LayoutStrategies)
@@ -178,7 +176,6 @@ class UIPanel {
         }
     }
 }
-
 
 // ES6 Module Export
 export { UIPanel };

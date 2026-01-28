@@ -1,21 +1,20 @@
-﻿/**
+/**
  * Entity: head_t2_04
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "head_t2_04",
-    "name":  "Desert Headwrap",
-    "sourceCategory":  "equipment",
-    "sourceFile":  "head",
-    "sprite":  "head_t2_04",
-    "status":  "pending",
-    "files":  {
-                  "original":  "images/equipment/armor/head/head_t2_04_original.png"
-              },
-    "type":  "weapon",
-    "slot":  "head",
-    "stats":  "+4 Armor, +Heat Resist",
-    "recipe":  "3x Plant Fiber"
-}
-;
+    id: 'head_t2_04',
+    name: 'Desert Headwrap',
+    sourceCategory: 'equipment',
+    sourceFile: 'head',
+    sprite: 'head_t2_04',
+    status: 'pending',
+    files: {
+        original: 'images/equipment/armor/head/head_t2_04_original.png'
+    },
+    type: 'weapon',
+    slot: 'head',
+    stats: '+4 Armor, +Heat Resist',
+    recipe: '3x Plant Fiber'
+};

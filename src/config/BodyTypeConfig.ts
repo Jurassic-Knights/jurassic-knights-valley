@@ -1,11 +1,11 @@
 /**
  * BodyTypeConfig - Scale multipliers for different body types
- * 
+ *
  * Used by entity renderers to apply consistent scaling based on bodyType field.
  * Reads from GameConfig.BodyTypes for live dashboard updates.
  */
 
-import { getConfig } from '../data/GameConstants';
+import { getConfig } from '@data/GameConstants';
 
 export const BodyTypeConfig: Record<string, { scale: number }> = {
     muscle: { scale: 1.25 },

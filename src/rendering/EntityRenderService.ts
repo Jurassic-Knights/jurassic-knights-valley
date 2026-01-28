@@ -1,16 +1,15 @@
-﻿/**
+/**
  * EntityRenderService - Handles entity collection, Y-sorting, and render dispatch
  *
  * Extracted from GameRenderer to reduce file size and improve maintainability.
  * Owner: EntityRenderService
  */
 
-import { entityManager } from '../core/EntityManager';
-import { Registry } from '../core/Registry';
-import { EntityTypes } from '../config/EntityTypes';
+import { entityManager } from '@core/EntityManager';
+import { Registry } from '@core/Registry';
+import { EntityTypes } from '@config/EntityTypes';
 
 // Unmapped modules - need manual import
-
 
 const EntityRenderService = {
     // GC Optimization: Pre-allocated array for Y-sorting

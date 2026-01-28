@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_icon_forge
  * Auto-generated from JSON.
  */

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ResourceSpawner - Handles resource and dinosaur spawning on islands
  *
  * Extracted from SpawnManager.js for modularity.
@@ -7,18 +7,18 @@
  * Owner: Level Architect
  */
 
-import { Logger } from '../../core/Logger';
+import { Logger } from '@core/Logger';
 import { Dinosaur } from '../../gameplay/Dinosaur';
-import { GameRenderer } from '../../core/GameRenderer';
-import { GameConstants } from '../../data/GameConstants';
-import { getConfig } from '../../data/GameConfig';
-import { entityManager } from '../../core/EntityManager';
+import { GameRenderer } from '@core/GameRenderer';
+import { GameConstants } from '@data/GameConstants';
+import { getConfig } from '@data/GameConfig';
+import { entityManager } from '@core/EntityManager';
 import { IslandUpgrades } from '../../gameplay/IslandUpgrades';
 import { IslandManager } from '../../world/IslandManager';
 import { Resource } from '../../gameplay/Resource';
-import { EntityRegistry } from '../../entities/EntityLoader';
-import { Registry } from '../../core/Registry';
-
+import { EntityRegistry } from '@entities/EntityLoader';
+import { Registry } from '@core/Registry';
+import { MathUtils } from '@core/MathUtils';
 
 class ResourceSpawner {
     spawnManager: any;
@@ -42,8 +42,10 @@ class ResourceSpawner {
                 const goldCount = getConfig().Spawning.HOME_GOLD_COUNT;
                 const padding = GameConstants.UI.PROP_SPAWN_PADDING;
                 for (let i = 0; i < goldCount; i++) {
-                    const x = bounds.x + padding + Math.random() * (bounds.width - padding * 2);
-                    const y = bounds.y + padding + Math.random() * (bounds.height - padding * 2);
+                    const x =
+                        bounds.x + padding + MathUtils.randomRange(0, bounds.width - padding * 2);
+                    const y =
+                        bounds.y + padding + MathUtils.randomRange(0, bounds.height - padding * 2);
                     const gold = new Resource({
                         resourceType: 'gold',
                         x: x,
@@ -189,7 +191,8 @@ class ResourceSpawner {
         const bounds = IslandManager.getPlayableBounds(home);
         if (!bounds) return;
 
-        const treeConfig = EntityRegistry.nodes?.['node_woodcutting_t1_01'] ||
+        const treeConfig =
+            EntityRegistry.nodes?.['node_woodcutting_t1_01'] ||
             EntityRegistry.resources?.['node_woodcutting_t2_01'] ||
             {};
         const treeSize = treeConfig.width || 140;

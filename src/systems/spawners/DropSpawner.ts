@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DropSpawner - Handles dropped item spawning
  *
  * Extracted from SpawnManager.js for modularity.
@@ -7,12 +7,11 @@
  * Owner: Loot System
  */
 
-import { Logger } from '../../core/Logger';
-import { entityManager } from '../../core/EntityManager';
+import { Logger } from '@core/Logger';
+import { entityManager } from '@core/EntityManager';
 import { IslandManager } from '../../world/IslandManager';
 import { DroppedItem } from '../../gameplay/DroppedItem';
-import { Registry } from '../../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 class DropSpawner {
     spawnManager: any;

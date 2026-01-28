@@ -1,70 +1,59 @@
-﻿/**
+/**
  * Entity: enemy_saurian_t2_02
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "enemy_saurian_t2_02",
-  "name": "Parasaurolophus Herald",
-  "sourceCategory": "enemies",
-  "sourceFile": "saurian",
-  "sprite": "saurian_t2_02",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/enemies/saurian_t2_02_original.png"
-  },
-  "tier": 2,
-  "biome": "tundra",
-  "stats": {
-    "health": 70,
-    "damage": 12,
-    "speed": 75,
-    "defense": 0
-  },
-  "combat": {
-    "attackRange": 300,
-    "attackRate": 1.2,
-    "aggroRange": 350,
-    "packAggro": true,
-    "attackType": "ranged"
-  },
-  "sfx": {
-    "spawn": "sfx_spawn_saurian_t2_02",
-    "death": "sfx_death_saurian_t2_02",
-    "hurt": "sfx_hurt_saurian_t2_02",
-    "aggro": "sfx_aggro_saurian_t2_02"
-  },
-  "spawning": {
-    "biomes": [
-      "tundra"
-    ],
-    "groupSize": [
-      1,
-      2
-    ],
-    "weight": 50,
-    "respawnTime": 30
-  },
-  "loot": [
-    {
-      "item": "bone_t2_01",
-      "chance": 0.6,
-      "amount": [
-        1,
-        2
-      ]
+    id: 'enemy_saurian_t2_02',
+    name: 'Parasaurolophus Herald',
+    sourceCategory: 'enemies',
+    sourceFile: 'saurian',
+    sprite: 'saurian_t2_02',
+    status: 'pending',
+    files: {
+        original: 'assets/images/enemies/saurian_t2_02_original.png'
     },
-    {
-      "item": "salvage_t1_02",
-      "chance": 0.4,
-      "amount": [
-        1,
-        1
-      ]
-    }
-  ],
-  "xpReward": 30,
-  "species": "Parasaurolophus",
-  "weaponType": "spear",
-  "role": "medium"
+    tier: 2,
+    biome: 'tundra',
+    stats: {
+        health: 70,
+        damage: 12,
+        speed: 75,
+        defense: 0
+    },
+    combat: {
+        attackRange: 300,
+        attackRate: 1.2,
+        aggroRange: 350,
+        packAggro: true,
+        attackType: 'ranged'
+    },
+    sfx: {
+        spawn: 'sfx_spawn_saurian_t2_02',
+        death: 'sfx_death_saurian_t2_02',
+        hurt: 'sfx_hurt_saurian_t2_02',
+        aggro: 'sfx_aggro_saurian_t2_02'
+    },
+    spawning: {
+        biomes: ['tundra'],
+        groupSize: [1, 2],
+        weight: 50,
+        respawnTime: 30
+    },
+    loot: [
+        {
+            item: 'bone_t2_01',
+            chance: 0.6,
+            amount: [1, 2]
+        },
+        {
+            item: 'salvage_t1_02',
+            chance: 0.4,
+            amount: [1, 1]
+        }
+    ],
+    xpReward: 30,
+    species: 'Parasaurolophus',
+    weaponType: 'spear',
+    role: 'medium'
 };

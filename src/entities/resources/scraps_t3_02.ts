@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: scraps_t3_02
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "scraps_t3_02",
-  "name": "Black Glass",
-  "sourceCategory": "resources",
-  "sourceFile": "scraps",
-  "sprite": "scraps_t3_02",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/resources/scraps_t3_02_original.png"
-  },
-  "tier": 3,
-  "stackable": true,
-  "type": "material"
+    id: 'scraps_t3_02',
+    name: 'Black Glass',
+    sourceCategory: 'resources',
+    sourceFile: 'scraps',
+    sprite: 'scraps_t3_02',
+    status: 'approved',
+    files: {
+        original: 'assets/images/resources/scraps_t3_02_original.png'
+    },
+    tier: 3,
+    stackable: true,
+    type: 'material'
 };

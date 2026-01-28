@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RoadRenderer - Renders spline roads with tiled textures
  *
  * Stretches a road tile image along Bezier spline curves.
@@ -7,11 +7,11 @@
  * Owner: Graphics Engineer
  */
 
-import { Logger } from '../core/Logger';
-import { AssetLoader } from '../core/AssetLoader';
+import { Logger } from '@core/Logger';
+import { AssetLoader } from '@core/AssetLoader';
 import { BiomeManager } from '../world/BiomeManager';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
+import { DOMUtils } from '@core/DOMUtils';
 
 class RoadRenderer {
     game: any = null;
@@ -53,9 +53,7 @@ class RoadRenderer {
      */
     createProceduralTile() {
         const size = this.tileSize;
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
+        const canvas = DOMUtils.createCanvas(size, size);
         const ctx = canvas.getContext('2d');
 
         // Base dirt color

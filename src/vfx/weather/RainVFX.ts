@@ -3,6 +3,8 @@
  * Handles high-velocity falling lines with screen wrapping.
  * Simulates world-space persistence by shifting particles opposite to camera movement.
  */
+import { MathUtils } from '@core/MathUtils';
+
 class RainVFX {
     active: boolean;
     particles: any[];
@@ -89,7 +91,7 @@ class RainVFX {
 
             // 3. Update Visual Vector (Align streak with velocity)
             // Normalize velocity vector
-            const mag = Math.sqrt(moveX * moveX + moveY * moveY);
+            const mag = MathUtils.distance(0, 0, moveX, moveY);
             // Effective visual length based on storm state
             const effectiveLen = p.len * lenScale;
 

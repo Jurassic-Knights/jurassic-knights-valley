@@ -10,11 +10,11 @@
  * - Attack (03-hero-stats)
  * - Level/XP (03-hero-stats)
  */
-import { Component } from '../core/Component';
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { getWeaponStats } from '../data/GameConfig';
+import { Component } from '@core/Component';
+import { Logger } from '@core/Logger';
+
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { getWeaponStats } from '@data/GameConfig';
 class StatsComponent extends Component {
     type: string = 'StatsComponent';
     speed: number = 100;
@@ -48,29 +48,7 @@ class StatsComponent extends Component {
         Logger.info(`[StatsComponent] Attached to ${parent.constructor.name}`);
     }
 
-    consumeStamina(amount: number) {
-        if (this.stamina >= amount) {
-            this.stamina -= amount;
-            if (this.parent.id === 'hero' && EventBus) {
-                EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
-                    current: this.stamina,
-                    max: this.maxStamina
-                });
-            }
-            return true;
-        }
-        return false;
-    }
-
-    restoreStamina(amount: number) {
-        this.stamina = Math.min(this.stamina + amount, this.maxStamina);
-        if (this.parent.id === 'hero' && EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
-                current: this.stamina,
-                max: this.maxStamina
-            });
-        }
-    }
+    // consumeStamina & restoreStamina moved to HeroSystem
 
     getSpeed(multiplier: number = 1) {
         // Always read from config for live updates

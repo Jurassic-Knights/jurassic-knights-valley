@@ -1,7 +1,7 @@
-﻿/**
+/**
  * Set Bonuses Configuration
  * Defines armor sets and their bonuses for wearing multiple pieces.
- * 
+ *
  * Format:
  * - pieces: Array of equipment IDs that belong to this set
  * - bonuses: Object mapping piece count to stat bonuses

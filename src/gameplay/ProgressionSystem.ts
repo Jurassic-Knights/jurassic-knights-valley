@@ -4,11 +4,11 @@
  *
  * Owner: Gameplay Designer
  */
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
 
 // Helper to access Events from GameConstants
 const Events = GameConstants.Events;

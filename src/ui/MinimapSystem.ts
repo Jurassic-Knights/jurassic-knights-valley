@@ -10,13 +10,13 @@
  * Owner: UI Engineer
  */
 
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 import { UIManager } from './UIManager';
 import { BiomeManager } from '../world/BiomeManager';
-import { entityManager } from '../core/EntityManager';
-import { Registry } from '../core/Registry';
+import { entityManager } from '@core/EntityManager';
+import { Registry } from '@core/Registry';
+import { DOMUtils } from '@core/DOMUtils';
 import type { IGame } from '../types/core.d';
-
 
 class MinimapSystem {
     // Property declarations
@@ -101,9 +101,9 @@ class MinimapSystem {
         // Check if controls already exist
         if (mapContent.querySelector('.minimap-zoom-controls')) return;
 
-        const controls = document.createElement('div');
-        controls.className = 'minimap-zoom-controls';
-        controls.style.cssText = `
+        const controls = DOMUtils.create('div', {
+            className: 'minimap-zoom-controls',
+            cssText: `
             position: absolute;
             bottom: 20px;
             right: 20px;
@@ -111,7 +111,8 @@ class MinimapSystem {
             flex-direction: column;
             gap: 8px;
             z-index: 10;
-        `;
+        `
+        });
 
         const btnStyle = `
             width: 40px;
@@ -129,9 +130,10 @@ class MinimapSystem {
             transition: background 0.2s;
         `;
 
-        const btnZoomIn = document.createElement('button');
-        btnZoomIn.textContent = '+';
-        btnZoomIn.style.cssText = btnStyle;
+        const btnZoomIn = DOMUtils.create('button', {
+            text: '+',
+            cssText: btnStyle
+        });
         btnZoomIn.addEventListener('click', () => this.zoomIn());
         btnZoomIn.addEventListener(
             'mouseenter',
@@ -142,9 +144,10 @@ class MinimapSystem {
             () => (btnZoomIn.style.background = 'rgba(255, 255, 255, 0.2)')
         );
 
-        const btnZoomOut = document.createElement('button');
-        btnZoomOut.textContent = '−';
-        btnZoomOut.style.cssText = btnStyle;
+        const btnZoomOut = DOMUtils.create('button', {
+            text: '−',
+            cssText: btnStyle
+        });
         btnZoomOut.addEventListener('click', () => this.zoomOut());
         btnZoomOut.addEventListener(
             'mouseenter',

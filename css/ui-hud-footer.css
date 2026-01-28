@@ -59,7 +59,7 @@
     box-shadow:
         0 2px 4px rgba(0, 0, 0, 0.5),
         inset 0 1px 2px rgba(255, 255, 255, 0.1);
-    border: 1px solid #14100C;
+    border: 1px solid #14100c;
 }
 
 .footer-bar::before {
@@ -130,19 +130,16 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background:
-        radial-gradient(circle at 30% 30%, #5D4930 0%, #3E2F1E 50%, #4A3825 100%);
+    background: radial-gradient(circle at 30% 30%, #5d4930 0%, #3e2f1e 50%, #4a3825 100%);
     border: 5px solid;
-    border-color: #C9A227;
+    border-color: #c9a227;
     box-shadow:
         /* Outer brass ring */
-        0 0 0 3px #8B6914,
+        0 0 0 3px #8b6914,
         0 5px 15px rgba(0, 0, 0, 0.8),
-        /* Inner leather inset */
-        inset 0 0 0 3px #2A1F15,
+        /* Inner leather inset */ inset 0 0 0 3px #2a1f15,
         inset 0 0 20px rgba(0, 0, 0, 0.9),
-        /* Brass highlight */
-        inset 0 -2px 0 rgba(212, 175, 55, 0.3);
+        /* Brass highlight */ inset 0 -2px 0 rgba(212, 175, 55, 0.3);
     z-index: 1;
     /* Behind side buttons */
     transition: all 0.2s cubic-bezier(0.3, 1.5, 0.5, 1);
@@ -160,23 +157,22 @@
     opacity: 0.5;
     filter: grayscale(100%) contrast(1.1);
     transform: scale(0.92);
-    border-color: #4A4545;
+    border-color: #4a4545;
     box-shadow:
-        0 0 0 3px #2A2828,
+        0 0 0 3px #2a2828,
         inset 0 8px 15px rgba(0, 0, 0, 0.95);
     cursor: not-allowed;
 }
 
 /* Active State - Glowing Brass */
 .action-btn.context-btn.active {
-    background:
-        radial-gradient(circle at 40% 40%, #6A5030 0%, #4A3825 60%, #3E2F1E 100%);
-    border-color: #D4AF37;
+    background: radial-gradient(circle at 40% 40%, #6a5030 0%, #4a3825 60%, #3e2f1e 100%);
+    border-color: #d4af37;
     box-shadow:
-        0 0 0 3px #C9A227,
+        0 0 0 3px #c9a227,
         0 0 25px rgba(212, 175, 55, 0.5),
         0 5px 15px rgba(0, 0, 0, 0.6),
-        inset 0 0 0 3px #3A2A18,
+        inset 0 0 0 3px #3a2a18,
         inset 0 0 15px rgba(0, 0, 0, 0.6);
     transform: scale(1.02);
     cursor: pointer;
@@ -184,23 +180,22 @@
 }
 
 @keyframes contextGlow {
-
     0%,
     100% {
         box-shadow:
-            0 0 0 3px #C9A227,
+            0 0 0 3px #c9a227,
             0 0 20px rgba(212, 175, 55, 0.4),
             0 5px 15px rgba(0, 0, 0, 0.6),
-            inset 0 0 0 3px #3A2A18,
+            inset 0 0 0 3px #3a2a18,
             inset 0 0 15px rgba(0, 0, 0, 0.6);
     }
 
     50% {
         box-shadow:
-            0 0 0 3px #D4AF37,
+            0 0 0 3px #d4af37,
             0 0 35px rgba(212, 175, 55, 0.7),
             0 5px 15px rgba(0, 0, 0, 0.6),
-            inset 0 0 0 3px #3A2A18,
+            inset 0 0 0 3px #3a2a18,
             inset 0 0 10px rgba(0, 0, 0, 0.5);
     }
 }
@@ -219,42 +214,42 @@
     0% {
         transform: scale(1.02);
         box-shadow:
-            0 0 0 3px #C9A227,
+            0 0 0 3px #c9a227,
             0 0 25px rgba(212, 175, 55, 0.5),
             0 5px 15px rgba(0, 0, 0, 0.6),
-            inset 0 0 0 3px #3A2A18,
+            inset 0 0 0 3px #3a2a18,
             inset 0 0 15px rgba(0, 0, 0, 0.6);
     }
 
     20% {
         transform: scale(0.9);
         box-shadow:
-            0 0 0 8px #FFD700,
+            0 0 0 8px #ffd700,
             0 0 50px rgba(255, 215, 0, 0.9),
             0 0 80px rgba(255, 165, 0, 0.6),
             0 5px 15px rgba(0, 0, 0, 0.6),
-            inset 0 0 0 3px #5A4A28,
+            inset 0 0 0 3px #5a4a28,
             inset 0 0 30px rgba(255, 200, 100, 0.4);
-        border-color: #FFD700;
+        border-color: #ffd700;
     }
 
     50% {
         transform: scale(1.08);
         box-shadow:
-            0 0 0 5px #D4AF37,
+            0 0 0 5px #d4af37,
             0 0 40px rgba(212, 175, 55, 0.7),
             0 5px 15px rgba(0, 0, 0, 0.6),
-            inset 0 0 0 3px #3A2A18,
+            inset 0 0 0 3px #3a2a18,
             inset 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
     100% {
         transform: scale(1.02);
         box-shadow:
-            0 0 0 3px #C9A227,
+            0 0 0 3px #c9a227,
             0 0 25px rgba(212, 175, 55, 0.5),
             0 5px 15px rgba(0, 0, 0, 0.6),
-            inset 0 0 0 3px #3A2A18,
+            inset 0 0 0 3px #3a2a18,
             inset 0 0 15px rgba(0, 0, 0, 0.6);
     }
 }
@@ -285,7 +280,7 @@
     font-size: 11px;
     color: var(--text-primary);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 1px;
     mix-blend-mode: overlay;
 }
@@ -295,22 +290,27 @@
     width: 80px;
     height: 80px;
     background:
-        /* Brown leather center */
-        linear-gradient(135deg, #5D4930 0%, #3E2F1E 50%, #4A3825 100%);
-    border: 4px solid #4A4545;
+        /* Brown leather center */ linear-gradient(
+        135deg,
+        #5d4930 0%,
+        #3e2f1e 50%,
+        #4a3825 100%
+    );
+    border: 4px solid #4a4545;
     /* Iron outer frame */
     border-radius: 6px;
     box-shadow:
         /* Outer iron frame depth */
-        0 4px 0 #2A2828,
+        0 4px 0 #2a2828,
         0 6px 8px rgba(0, 0, 0, 0.6),
-        /* Inner leather inset */
-        inset 0 0 0 3px #2A1F15,
+        /* Inner leather inset */ inset 0 0 0 3px #2a1f15,
         inset 0 0 15px rgba(0, 0, 0, 0.8),
-        /* Subtle highlight */
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        /* Subtle highlight */ inset 0 1px 0 rgba(255, 255, 255, 0.1);
     cursor: pointer;
-    transition: transform 0.08s, box-shadow 0.08s, filter 0.1s;
+    transition:
+        transform 0.08s,
+        box-shadow 0.08s,
+        filter 0.1s;
     position: relative;
     overflow: visible;
 }
@@ -323,14 +323,17 @@
     left: -6px;
     width: 20px;
     height: 20px;
-    background: linear-gradient(135deg, #C9A227 0%, #8B6914 50%, #D4AF37 100%);
+    background: linear-gradient(135deg, #c9a227 0%, #8b6914 50%, #d4af37 100%);
     clip-path: polygon(0 0, 100% 0, 100% 30%, 30% 30%, 30% 100%, 0 100%);
     border-radius: 3px 0 0 0;
     box-shadow:
-        1px 1px 0 #4A3C10,
+        1px 1px 0 #4a3c10,
         inset 1px 1px 0 rgba(255, 255, 255, 0.4);
     z-index: 10;
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s;
+    transition:
+        transform 0.15s ease-out,
+        box-shadow 0.15s ease-out,
+        filter 0.15s;
 }
 
 /* Brass corner brackets - bottom-right */
@@ -341,23 +344,26 @@
     right: -6px;
     width: 20px;
     height: 20px;
-    background: linear-gradient(315deg, #C9A227 0%, #8B6914 50%, #D4AF37 100%);
+    background: linear-gradient(315deg, #c9a227 0%, #8b6914 50%, #d4af37 100%);
     clip-path: polygon(100% 100%, 0 100%, 0 70%, 70% 70%, 70% 0, 100% 0);
     border-radius: 0 0 3px 0;
     box-shadow:
-        -1px -1px 0 #4A3C10,
+        -1px -1px 0 #4a3c10,
         inset -1px -1px 0 rgba(255, 255, 255, 0.4);
     z-index: 10;
-    transition: transform 0.15s ease-out, box-shadow 0.15s ease-out, filter 0.15s;
+    transition:
+        transform 0.15s ease-out,
+        box-shadow 0.15s ease-out,
+        filter 0.15s;
 }
 
 /* Hover - Lift & Glow + Corner brackets glow */
 .action-btn:hover {
     transform: translateY(-3px);
     box-shadow:
-        0 7px 0 #2A2828,
+        0 7px 0 #2a2828,
         0 12px 15px rgba(0, 0, 0, 0.5),
-        inset 0 0 0 3px #2A1F15,
+        inset 0 0 0 3px #2a1f15,
         inset 0 0 15px rgba(0, 0, 0, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
         0 0 15px rgba(201, 162, 39, 0.3);
@@ -379,9 +385,9 @@
 .action-btn.clicked {
     transform: translateY(4px);
     box-shadow:
-        0 0 0 #2A2828,
+        0 0 0 #2a2828,
         0 2px 5px rgba(0, 0, 0, 0.4),
-        inset 0 0 0 3px #1A120A,
+        inset 0 0 0 3px #1a120a,
         inset 0 5px 20px rgba(0, 0, 0, 0.9);
     filter: brightness(0.9);
 }
@@ -412,27 +418,27 @@
 @keyframes buttonPulse {
     0% {
         box-shadow:
-            0 0 0 #2A2828,
+            0 0 0 #2a2828,
             0 2px 5px rgba(0, 0, 0, 0.4),
-            inset 0 0 0 3px #1A120A,
+            inset 0 0 0 3px #1a120a,
             inset 0 5px 20px rgba(0, 0, 0, 0.9),
             0 0 0 0 rgba(201, 162, 39, 0.8);
     }
 
     50% {
         box-shadow:
-            0 0 0 #2A2828,
+            0 0 0 #2a2828,
             0 2px 5px rgba(0, 0, 0, 0.4),
-            inset 0 0 0 3px #1A120A,
+            inset 0 0 0 3px #1a120a,
             inset 0 5px 20px rgba(0, 0, 0, 0.9),
             0 0 25px 8px rgba(201, 162, 39, 0.6);
     }
 
     100% {
         box-shadow:
-            0 0 0 #2A2828,
+            0 0 0 #2a2828,
             0 2px 5px rgba(0, 0, 0, 0.4),
-            inset 0 0 0 3px #1A120A,
+            inset 0 0 0 3px #1a120a,
             inset 0 5px 20px rgba(0, 0, 0, 0.9),
             0 0 0 0 rgba(201, 162, 39, 0);
     }
@@ -480,7 +486,6 @@
 }
 
 @keyframes iconShake {
-
     0%,
     100% {
         transform: scale(1.05) rotate(0deg);
@@ -506,7 +511,9 @@
     filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.7));
     opacity: 1;
     transform: scale(1.05);
-    transition: transform 0.1s, filter 0.1s;
+    transition:
+        transform 0.1s,
+        filter 0.1s;
 }
 
 .action-btn:hover .btn-icon {
@@ -519,13 +526,9 @@
     left: 0;
     width: 100%;
     text-align: center;
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 14px;
-    font-weight: 800;
-    color: var(--text-primary);
-    text-shadow:
-        0 1px 2px rgba(0, 0, 0, 1),
-        0 0 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.5px;
     letter-spacing: 0.5px;
     pointer-events: none;
     z-index: 5;
@@ -550,7 +553,6 @@
 }
 
 @keyframes pulse-notification {
-
     0%,
     100% {
         transform: scale(1);
@@ -565,18 +567,21 @@
 
 /* Mini Icon Button (Weapon Swap) */
 .icon-btn-mini {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4A3825 0%, #2A1F15 100%);
-    border: 2px solid #6A5A48;
+    background: linear-gradient(135deg, #4a3825 0%, #2a1f15 100%);
+    border: 2px solid #6a5a48;
     box-shadow:
-        0 2px 0 #1A120A,
+        0 2px 0 #1a120a,
         0 3px 6px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.1),
         inset 0 0 10px rgba(0, 0, 0, 0.8);
     cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+    transition:
+        transform 0.1s,
+        box-shadow 0.1s,
+        border-color 0.1s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -585,9 +590,9 @@
 
 .icon-btn-mini:hover {
     transform: translateY(-2px);
-    border-color: #C9A227;
+    border-color: #c9a227;
     box-shadow:
-        0 4px 0 #1A120A,
+        0 4px 0 #1a120a,
         0 6px 10px rgba(0, 0, 0, 0.4),
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
         0 0 10px rgba(201, 162, 39, 0.3);
@@ -596,7 +601,7 @@
 .icon-btn-mini:active {
     transform: translateY(2px);
     box-shadow:
-        0 0 0 #1A120A,
+        0 0 0 #1a120a,
         0 1px 3px rgba(0, 0, 0, 0.6),
         inset 0 2px 8px rgba(0, 0, 0, 0.9);
 }
@@ -616,18 +621,21 @@
     bottom: 120px;
     /* Moved up to account for higher footer buttons */
     right: 20px;
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4A3825 0%, #2A1F15 100%);
-    border: 2px solid #6A5A48;
+    background: linear-gradient(135deg, #4a3825 0%, #2a1f15 100%);
+    border: 2px solid #6a5a48;
     box-shadow:
-        0 2px 0 #1A120A,
+        0 2px 0 #1a120a,
         0 4px 8px rgba(0, 0, 0, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.1),
         inset 0 0 10px rgba(0, 0, 0, 0.8);
     cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.1s, border-color 0.1s;
+    transition:
+        transform 0.1s,
+        box-shadow 0.1s,
+        border-color 0.1s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -637,9 +645,9 @@
 
 .floating-swap-btn:hover {
     transform: translateY(-2px);
-    border-color: #C9A227;
+    border-color: #c9a227;
     box-shadow:
-        0 4px 0 #1A120A,
+        0 4px 0 #1a120a,
         0 8px 12px rgba(0, 0, 0, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
         0 0 12px rgba(201, 162, 39, 0.4);
@@ -648,7 +656,7 @@
 .floating-swap-btn:active {
     transform: translateY(2px);
     box-shadow:
-        0 0 0 #1A120A,
+        0 0 0 #1a120a,
         0 1px 3px rgba(0, 0, 0, 0.6),
         inset 0 2px 8px rgba(0, 0, 0, 0.9);
 }

@@ -1,69 +1,58 @@
-﻿/**
+/**
  * Entity: enemy_dinosaur_t1_02
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "enemy_dinosaur_t1_02",
-  "name": "Dilophosaurus",
-  "sourceCategory": "enemies",
-  "sourceFile": "dinosaur",
-  "sprite": "dinosaur_t1_02",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/enemies/dinosaur_t1_02_original.png"
-  },
-  "tier": 1,
-  "biome": "grasslands",
-  "stats": {
-    "health": 40,
-    "damage": 8,
-    "speed": 85,
-    "defense": 0
-  },
-  "combat": {
-    "attackRange": 250,
-    "attackRate": 1.5,
-    "aggroRange": 200,
-    "packAggro": true,
-    "attackType": "ranged"
-  },
-  "sfx": {
-    "spawn": "sfx_spawn_dinosaur_t1_02",
-    "death": "sfx_death_dinosaur_t1_02",
-    "hurt": "sfx_hurt_dinosaur_t1_02",
-    "aggro": "sfx_aggro_dinosaur_t1_02"
-  },
-  "spawning": {
-    "biomes": [
-      "grasslands"
-    ],
-    "groupSize": [
-      1,
-      2
-    ],
-    "weight": 50,
-    "respawnTime": 30
-  },
-  "loot": [
-    {
-      "item": "food_t1_02",
-      "chance": 0.8,
-      "amount": [
-        1,
-        1
-      ]
+    id: 'enemy_dinosaur_t1_02',
+    name: 'Dilophosaurus',
+    sourceCategory: 'enemies',
+    sourceFile: 'dinosaur',
+    sprite: 'dinosaur_t1_02',
+    status: 'pending',
+    files: {
+        original: 'assets/images/enemies/dinosaur_t1_02_original.png'
     },
-    {
-      "item": "leather_t1_01",
-      "chance": 0.4,
-      "amount": [
-        1,
-        1
-      ]
-    }
-  ],
-  "xpReward": 15,
-  "species": "Dilophosaurus",
-  "weaponType": "bite"
+    tier: 1,
+    biome: 'grasslands',
+    stats: {
+        health: 40,
+        damage: 8,
+        speed: 85,
+        defense: 0
+    },
+    combat: {
+        attackRange: 250,
+        attackRate: 1.5,
+        aggroRange: 200,
+        packAggro: true,
+        attackType: 'ranged'
+    },
+    sfx: {
+        spawn: 'sfx_spawn_dinosaur_t1_02',
+        death: 'sfx_death_dinosaur_t1_02',
+        hurt: 'sfx_hurt_dinosaur_t1_02',
+        aggro: 'sfx_aggro_dinosaur_t1_02'
+    },
+    spawning: {
+        biomes: ['grasslands'],
+        groupSize: [1, 2],
+        weight: 50,
+        respawnTime: 30
+    },
+    loot: [
+        {
+            item: 'food_t1_02',
+            chance: 0.8,
+            amount: [1, 1]
+        },
+        {
+            item: 'leather_t1_01',
+            chance: 0.4,
+            amount: [1, 1]
+        }
+    ],
+    xpReward: 15,
+    species: 'Dilophosaurus',
+    weaponType: 'bite'
 };

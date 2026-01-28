@@ -10,7 +10,7 @@
     gap: var(--space-sm);
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--border-radius-md);
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-weight: 700;
     /* Bold punchy text per lore */
     font-size: var(--font-size-sm);
@@ -40,8 +40,7 @@
     box-shadow:
         var(--shadow-lg),
         0 0 12px rgba(212, 175, 55, 0.6),
-        /* Gold glow */
-        0 4px 0 var(--color-accent-bronze);
+        /* Gold glow */ 0 4px 0 var(--color-accent-bronze);
 }
 
 .btn-primary:active {
@@ -78,11 +77,15 @@
     background: linear-gradient(180deg, var(--color-danger) 0%, #5a1515 100%);
     color: var(--color-text-primary);
     border: var(--border-width) solid var(--status-danger);
-    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow:
+        var(--shadow-sm),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-danger:hover {
-    box-shadow: var(--shadow-md), 0 0 10px rgba(139, 32, 32, 0.8);
+    box-shadow:
+        var(--shadow-md),
+        0 0 10px rgba(139, 32, 32, 0.8);
 }
 
 /* ========================================
@@ -106,7 +109,7 @@
     /* Deep shadow bottom edge */
     border-radius: 4px;
     color: #888;
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: 11px;
     /* Crisp readable size */
     text-transform: uppercase;
@@ -144,7 +147,9 @@
     font-weight: 800;
     border-top: 1px solid #ffe680;
     border-bottom: 2px solid #5a3a00;
-    box-shadow: 0 2px 0 #3a2500, 0 0 15px rgba(212, 175, 55, 0.4);
+    box-shadow:
+        0 2px 0 #3a2500,
+        0 0 15px rgba(212, 175, 55, 0.4);
     /* Amber Glow */
     transform: translateY(2px);
     /* Remains "Pressed" */
@@ -153,5 +158,7 @@
 
 .btn-filter.active:hover {
     transform: translateY(1px);
-    box-shadow: 0 3px 0 #3a2500, 0 0 20px rgba(212, 175, 55, 0.6);
+    box-shadow:
+        0 3px 0 #3a2500,
+        0 0 20px rgba(212, 175, 55, 0.6);
 }

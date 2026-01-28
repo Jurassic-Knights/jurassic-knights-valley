@@ -1,22 +1,21 @@
-﻿/**
+/**
  * Resource - Collectible resource entity with health
  *
  * Per GDD: Player spends stamina to damage resource, depleting health to collect.
  *
  * Owner: Director (engine), Gameplay Designer (values), Lore Writer (names)
  */
-import { Entity } from '../core/Entity';
+import { Entity } from '@core/Entity';
 import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '../vfx/VFXController';
-import { spawnManager } from '../systems/SpawnManager';
-import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { EntityTypes } from '../config/EntityTypes';
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
-
+import { VFXController } from '@vfx/VFXController';
+import { spawnManager } from '@systems/SpawnManager';
+import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { EntityTypes } from '@config/EntityTypes';
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
 
 class Resource extends Entity {
     // Resource identity
@@ -65,11 +64,11 @@ class Resource extends Entity {
 
         this.resourceType = config.resourceType || 'scraps_t1_01';
 
-        // Extract nodeSubtype from config or parse from resourceType (node_mining_t1_01 → mining)
+        // Extract nodeSubtype from config or parse from resourceType (node_mining_t1_01 ? mining)
         if (finalConfig.nodeSubtype) {
             this.nodeSubtype = finalConfig.nodeSubtype;
         } else if (this.resourceType.startsWith('node_')) {
-            // Parse from ID like node_mining_t1_01 → mining
+            // Parse from ID like node_mining_t1_01 ? mining
             const match = this.resourceType.match(/^node_([a-z]+)_t\d/);
             this.nodeSubtype = match ? match[1] : 'mining';
         } else {

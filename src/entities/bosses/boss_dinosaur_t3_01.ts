@@ -1,71 +1,62 @@
-﻿/**
+/**
  * Entity: boss_dinosaur_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "boss_dinosaur_t3_01",
-  "name": "Desert Tyrant",
-  "sourceCategory": "bosses",
-  "sourceFile": "dinosaur",
-  "sprite": "dinosaur_t3_01",
-  "status": "pending",
-  "tier": 3,
-  "biome": "desert",
-  "stats": {
-    "health": 160,
-    "damage": 20,
-    "speed": 80,
-    "defense": 0
-  },
-  "combat": {
-    "attackRange": 100,
-    "attackRate": 1.5,
-    "aggroRange": 280,
-    "packAggro": true,
-    "attackType": "melee"
-  },
-  "sfx": {
-    "spawn": "sfx_spawn_dinosaur_t3_01",
-    "death": "sfx_death_dinosaur_t3_01",
-    "hurt": "sfx_hurt_dinosaur_t3_01",
-    "aggro": "sfx_aggro_dinosaur_t3_01"
-  },
-  "spawning": {
-    "biomes": [
-      "desert"
-    ],
-    "groupSize": [
-      1,
-      1
-    ],
-    "weight": 25,
-    "respawnTime": 60
-  },
-  "loot": [
-    {
-      "item": "minerals_t3_01",
-      "chance": 1.0,
-      "amount": [
-        2,
-        4
-      ]
+    id: 'boss_dinosaur_t3_01',
+    name: 'Desert Tyrant',
+    sourceCategory: 'bosses',
+    sourceFile: 'dinosaur',
+    sprite: 'dinosaur_t3_01',
+    status: 'pending',
+    tier: 3,
+    biome: 'desert',
+    stats: {
+        health: 160,
+        damage: 20,
+        speed: 80,
+        defense: 0
     },
-    {
-      "item": "leather_t3_01",
-      "chance": 0.8,
-      "amount": [
-        1,
-        2
-      ]
+    combat: {
+        attackRange: 100,
+        attackRate: 1.5,
+        aggroRange: 280,
+        packAggro: true,
+        attackType: 'melee'
+    },
+    sfx: {
+        spawn: 'sfx_spawn_dinosaur_t3_01',
+        death: 'sfx_death_dinosaur_t3_01',
+        hurt: 'sfx_hurt_dinosaur_t3_01',
+        aggro: 'sfx_aggro_dinosaur_t3_01'
+    },
+    spawning: {
+        biomes: ['desert'],
+        groupSize: [1, 1],
+        weight: 25,
+        respawnTime: 60
+    },
+    loot: [
+        {
+            item: 'minerals_t3_01',
+            chance: 1.0,
+            amount: [2, 4]
+        },
+        {
+            item: 'leather_t3_01',
+            chance: 0.8,
+            amount: [1, 2]
+        }
+    ],
+    xpReward: 90,
+    isBoss: true,
+    species: 'Allosaurus',
+    sourceDescription:
+        'Allosaurus, sand tan and bronze scales, riveted plate barding with commander insignia, towering predator, scarred hide',
+    description:
+        "The Desert Tyrant has established domain over the scorched dunes through methodical elimination of all competition. This ancient Allosaurus carries scars from a lifetime of supremacy, each mark a lesson taught to lesser predators. Those calculating eyes have watched military campaigns come and go while it endures.\n\nIron war-barding covers vital areas of its sand-colored hide, the armor inlaid with bronze patterns that seem almost ceremonial. Sun-bleached leather straps have been reinforced multiple times, the creature's handlers long since consumed. Campaign markers from a dozen regiments adorn the armor - trophies from defeated expeditions.\n\nMassive three-clawed feet leave impressions in desert sand that soldiers have learned to avoid. The killing claw on each foot has been sharpened against rock to razor keenness. When the Desert Tyrant hunts, nothing in its territory survives.",
+    files: {
+        original: 'images/bosses/boss_dinosaur_t3_01_original.png'
     }
-  ],
-  "xpReward": 90,
-  "isBoss": true,
-  "species": "Allosaurus",
-  "sourceDescription": "Allosaurus, sand tan and bronze scales, riveted plate barding with commander insignia, towering predator, scarred hide",
-  "description": "The Desert Tyrant has established domain over the scorched dunes through methodical elimination of all competition. This ancient Allosaurus carries scars from a lifetime of supremacy, each mark a lesson taught to lesser predators. Those calculating eyes have watched military campaigns come and go while it endures.\n\nIron war-barding covers vital areas of its sand-colored hide, the armor inlaid with bronze patterns that seem almost ceremonial. Sun-bleached leather straps have been reinforced multiple times, the creature's handlers long since consumed. Campaign markers from a dozen regiments adorn the armor - trophies from defeated expeditions.\n\nMassive three-clawed feet leave impressions in desert sand that soldiers have learned to avoid. The killing claw on each foot has been sharpened against rock to razor keenness. When the Desert Tyrant hunts, nothing in its territory survives.",
-  "files": {
-    "original": "images/bosses/boss_dinosaur_t3_01_original.png"
-  }
 };

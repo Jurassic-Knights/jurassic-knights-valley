@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_icon_settings
  * Auto-generated from JSON.
  */

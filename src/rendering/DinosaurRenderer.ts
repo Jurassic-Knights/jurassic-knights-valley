@@ -1,12 +1,12 @@
-﻿/**
+/**
  * DinosaurRenderer
  * Handles rendering for all dinosaurs.
  */
 
-import { Logger } from '../core/Logger';
-import { MaterialLibrary } from '../vfx/MaterialLibrary';
-import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
-import { Registry } from '../core/Registry';
+import { Logger } from '@core/Logger';
+import { MaterialLibrary } from '@vfx/MaterialLibrary';
+import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
+import { Registry } from '@core/Registry';
 import { environmentRenderer } from './EnvironmentRenderer';
 
 class DinosaurRendererService {

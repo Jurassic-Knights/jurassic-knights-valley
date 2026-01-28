@@ -1,32 +1,31 @@
-﻿/**
+/**
  * Entity: weapon_melee_greatsword_t1_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "weapon_melee_greatsword_t1_01",
-    "name":  "Scrap Claymore",
-    "description":  "A massive two-handed blade. Slow but devastating.",
-    "category":  "equipment",
-    "equipSlot":  "hand1",
-    "weaponType":  "melee",
-    "weaponSubtype":  "greatsword",
-    "tier":  1,
-    "rarity":  "common",
-    "stats":  {
-                  "damage":  15,
-                  "attackSpeed":  0.6,
-                  "range":  380
-              },
-    "recipe":  {
-                   "scraps_t1_01":  10,
-                   "wood_t1_01":  5
-               },
-    "sprite":  "weapon_melee_greatsword_t1_01",
-    "sourceFile":  "weapon",
-    "files":  {
-                  "original":  "images/equipment/weapons/greatsword/weapon_greatsword_t1_01_original.png"
-              },
-    "gripType":  "2-hand"
-}
-;
+    id: 'weapon_melee_greatsword_t1_01',
+    name: 'Scrap Claymore',
+    description: 'A massive two-handed blade. Slow but devastating.',
+    category: 'equipment',
+    equipSlot: 'hand1',
+    weaponType: 'melee',
+    weaponSubtype: 'greatsword',
+    tier: 1,
+    rarity: 'common',
+    stats: {
+        damage: 15,
+        attackSpeed: 0.6,
+        range: 380
+    },
+    recipe: {
+        scraps_t1_01: 10,
+        wood_t1_01: 5
+    },
+    sprite: 'weapon_melee_greatsword_t1_01',
+    sourceFile: 'weapon',
+    files: {
+        original: 'images/equipment/weapons/greatsword/weapon_greatsword_t1_01_original.png'
+    },
+    gripType: '2-hand'
+};

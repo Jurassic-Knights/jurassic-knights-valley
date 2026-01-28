@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EnemySpawner - Handles enemy spawning in open world biomes
  *
  * Extracted from SpawnManager.js for modularity.
@@ -7,10 +7,10 @@
  * Owner: Combat System
  */
 
-import { Logger } from '../../core/Logger';
-import { entityManager } from '../../core/EntityManager';
-import { BiomeConfig } from '../../data/BiomeConfig';
-import { EntityTypes } from '../../config/EntityTypes';
+import { Logger } from '@core/Logger';
+import { entityManager } from '@core/EntityManager';
+import { BiomeConfig } from '@data/BiomeConfig';
+import { EntityTypes } from '@config/EntityTypes';
 import { Enemy } from '../../gameplay/EnemyCore';
 
 class EnemySpawner {

@@ -6,7 +6,7 @@
  * Owner: Gameplay Designer
  */
 
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 
 const IslandUpgrades = {
     // Upgrade data per island (keyed by island grid position)
@@ -165,7 +165,7 @@ const IslandUpgrades = {
     }
 };
 
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 Registry.register('IslandUpgrades', IslandUpgrades);
 
 // ES6 Module Export

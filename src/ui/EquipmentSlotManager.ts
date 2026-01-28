@@ -1,12 +1,12 @@
 /**
  * EquipmentSlotManager - Slot and equip logic for EquipmentUI
  * Handles equipping, unequipping, slot selection, and 2-hand weapon logic.
- * 
+ *
  * Owner: UI Engineer
  */
 
-import { GameInstance } from '../core/Game';
-import { Logger } from '../core/Logger';
+import { GameInstance } from '@core/Game';
+import { Logger } from '@core/Logger';
 
 class EquipmentSlotManager {
     /**
@@ -21,7 +21,7 @@ class EquipmentSlotManager {
             return;
         }
 
-        const item = ui.cachedEquipment.find(e => e.id === itemId);
+        const item = ui.cachedEquipment.find((e) => e.id === itemId);
         if (!item) {
             Logger.warn(`[EquipmentSlotManager] Item not found: ${itemId}`);
             return;
@@ -31,7 +31,12 @@ class EquipmentSlotManager {
         let targetSlot = item.slot;
 
         // Weapons go to hand1/hand2 or hand1_alt/hand2_alt based on targetEquipSet
-        if (item.sourceFile === 'weapon' || item.sourceFile === 'signature' || item.slot === 'weapon' || item.weaponType) {
+        if (
+            item.sourceFile === 'weapon' ||
+            item.sourceFile === 'signature' ||
+            item.slot === 'weapon' ||
+            item.weaponType
+        ) {
             // Determine which slots to use based on targetEquipSet (1 or 2)
             const targetSet = ui.targetEquipSet || 1;
             const hand1Slot = targetSet === 2 ? 'hand1_alt' : 'hand1';
@@ -140,7 +145,9 @@ class EquipmentSlotManager {
         if (!ui.slotSelectionMode || !ui.pendingEquipItem) return false;
         if (slotId !== 'hand1' && slotId !== 'hand2') return false;
 
-        Logger.info(`[EquipmentSlotManager] Slot selection: equipping ${ui.pendingEquipItem.id} to ${slotId}`);
+        Logger.info(
+            `[EquipmentSlotManager] Slot selection: equipping ${ui.pendingEquipItem.id} to ${slotId}`
+        );
         const item = ui.pendingEquipItem;
         ui.slotSelectionMode = false;
         ui.pendingEquipItem = null;

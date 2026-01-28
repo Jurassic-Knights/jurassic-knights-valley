@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProjectileVFX - Spawns traveling projectile visual effects
  *
  * Creates actual projectiles that travel from gun tip to target.
@@ -7,11 +7,11 @@
  * Owner: VFX Specialist
  */
 
-import { RenderConfig } from '../config/RenderConfig';
+import { RenderConfig } from '@config/RenderConfig';
 import { VFXController } from './VFXController';
 import { LightingSystem } from './LightingSystem';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
+import { MathUtils } from '@core/MathUtils';
 
 const ProjectileVFX = {
     // Active projectiles
@@ -21,24 +21,110 @@ const ProjectileVFX = {
     // Realistic tracer-style bullets with proper speed/size ratios
     configs: {
         // Pistol: Quick, compact round
-        pistol: { color: '#FFF8DC', coreColor: '#FFFFFF', size: 3, speed: 1100, length: 15, glow: true, glowSize: 8 },
+        pistol: {
+            color: '#FFF8DC',
+            coreColor: '#FFFFFF',
+            size: 3,
+            speed: 1100,
+            length: 15,
+            glow: true,
+            glowSize: 8
+        },
         // Rifle: Longer tracer, faster
-        rifle: { color: '#FFD700', coreColor: '#FFFFFF', size: 4, speed: 1400, length: 28, glow: true, glowSize: 12 },
+        rifle: {
+            color: '#FFD700',
+            coreColor: '#FFFFFF',
+            size: 4,
+            speed: 1400,
+            length: 28,
+            glow: true,
+            glowSize: 12
+        },
         // Sniper: Long bright cyan tracer with trail
-        sniper_rifle: { color: '#00FFFF', coreColor: '#FFFFFF', size: 5, speed: 2000, length: 50, glow: true, glowSize: 15, trail: true },
-        sniperrifle: { color: '#00FFFF', coreColor: '#FFFFFF', size: 5, speed: 2000, length: 50, glow: true, glowSize: 15, trail: true }, // Legacy alias
+        sniper_rifle: {
+            color: '#00FFFF',
+            coreColor: '#FFFFFF',
+            size: 5,
+            speed: 2000,
+            length: 50,
+            glow: true,
+            glowSize: 15,
+            trail: true
+        },
+        sniperrifle: {
+            color: '#00FFFF',
+            coreColor: '#FFFFFF',
+            size: 5,
+            speed: 2000,
+            length: 50,
+            glow: true,
+            glowSize: 15,
+            trail: true
+        }, // Legacy alias
         // Shotgun: Multiple small pellets
-        shotgun: { color: '#FF6600', coreColor: '#FFFF00', size: 2, speed: 900, length: 10, pellets: 8, spread: 0.35, glow: true, glowSize: 6 },
+        shotgun: {
+            color: '#FF6600',
+            coreColor: '#FFFF00',
+            size: 2,
+            speed: 900,
+            length: 10,
+            pellets: 8,
+            spread: 0.35,
+            glow: true,
+            glowSize: 6
+        },
         // Machine gun: Rapid small rounds
-        machine_gun: { color: '#FFCC00', coreColor: '#FFFFFF', size: 3, speed: 1300, length: 18, glow: true, glowSize: 8 },
+        machine_gun: {
+            color: '#FFCC00',
+            coreColor: '#FFFFFF',
+            size: 3,
+            speed: 1300,
+            length: 18,
+            glow: true,
+            glowSize: 8
+        },
         // SMG: Even faster, smaller
-        submachine_gun: { color: '#FFE055', coreColor: '#FFFFFF', size: 2, speed: 1200, length: 12, glow: true, glowSize: 6 },
+        submachine_gun: {
+            color: '#FFE055',
+            coreColor: '#FFFFFF',
+            size: 2,
+            speed: 1200,
+            length: 12,
+            glow: true,
+            glowSize: 6
+        },
         // Flamethrower: Slow burning projectile
-        flamethrower: { color: '#FF4500', coreColor: '#FFFF00', size: 10, speed: 500, length: 20, fade: true, glow: true, glowSize: 20 },
+        flamethrower: {
+            color: '#FF4500',
+            coreColor: '#FFFF00',
+            size: 10,
+            speed: 500,
+            length: 20,
+            fade: true,
+            glow: true,
+            glowSize: 20
+        },
         // Bazooka: Large explosive round with smoke trail
-        bazooka: { color: '#FF3300', coreColor: '#FFFF00', size: 10, speed: 600, length: 35, glow: true, glowSize: 25, trail: true },
+        bazooka: {
+            color: '#FF3300',
+            coreColor: '#FFFF00',
+            size: 10,
+            speed: 600,
+            length: 35,
+            glow: true,
+            glowSize: 25,
+            trail: true
+        },
         // Fallback
-        default: { color: '#FFFFCC', coreColor: '#FFFFFF', size: 4, speed: 1100, length: 20, glow: true, glowSize: 10 }
+        default: {
+            color: '#FFFFCC',
+            coreColor: '#FFFFFF',
+            size: 4,
+            speed: 1100,
+            length: 20,
+            glow: true,
+            glowSize: 10
+        }
     },
 
     /**
@@ -54,7 +140,7 @@ const ProjectileVFX = {
         const dx = target.x - origin.x;
         const dy = target.y - origin.y;
         const angle = Math.atan2(dy, dx);
-        const distance = Math.sqrt(dx * dx + dy * dy);
+        const distance = MathUtils.distance(origin.x, origin.y, target.x, target.y);
 
         // Muzzle offset - distance from hero center to gun muzzle (top-right of weapon image)
         // After sprite rotation, the muzzle is aligned with the aim direction (baseAngle)
@@ -75,7 +161,7 @@ const ProjectileVFX = {
         // Calculate actual travel distance from muzzle to target
         const travelDx = target.x - muzzleX;
         const travelDy = target.y - muzzleY;
-        const travelDistance = Math.sqrt(travelDx * travelDx + travelDy * travelDy);
+        const travelDistance = MathUtils.distance(muzzleX, muzzleY, target.x, target.y);
 
         // Spawn muzzle flash
         this.spawnMuzzleFlash(muzzleX, muzzleY, angle, config);
@@ -85,7 +171,14 @@ const ProjectileVFX = {
             // Shotgun: multiple pellets with spread
             for (let i = 0; i < config.pellets; i++) {
                 const spreadAngle = angle + (Math.random() - 0.5) * config.spread;
-                this.createProjectile(muzzleX, muzzleY, spreadAngle, travelDistance, config, target);
+                this.createProjectile(
+                    muzzleX,
+                    muzzleY,
+                    spreadAngle,
+                    travelDistance,
+                    config,
+                    target
+                );
             }
         } else {
             // Single projectile
@@ -188,7 +281,7 @@ const ProjectileVFX = {
             speed: 2,
             lifetime: 400,
             size: 15,
-            angle: angle + Math.PI,  // Smoke drifts backward
+            angle: angle + Math.PI, // Smoke drifts backward
             spread: 0.8,
             alpha: 0.3,
             drag: 0.98,
@@ -219,12 +312,25 @@ const ProjectileVFX = {
             }
 
             // Submit light to LightingSystem (if active and glowing)
-            if (p.active && p.glow && LightingSystem && typeof LightingSystem.addLight === 'function') {
+            if (
+                p.active &&
+                p.glow &&
+                LightingSystem &&
+                typeof LightingSystem.addLight === 'function'
+            ) {
                 try {
                     const radius = 50 + (p.glowSize || p.size * 2) * 2;
                     // Elongation based on projectile length/size ratio
                     const elongation = 1.5; // Stretch 1.5x along direction
-                    LightingSystem.addLight(p.x, p.y, radius, p.color, p.alpha, p.angle, elongation);
+                    LightingSystem.addLight(
+                        p.x,
+                        p.y,
+                        radius,
+                        p.color,
+                        p.alpha,
+                        p.angle,
+                        elongation
+                    );
                 } catch (e) {
                     // Silently ignore lighting errors
                 }
@@ -232,7 +338,7 @@ const ProjectileVFX = {
 
             // Fade effect
             if (p.fade) {
-                p.alpha = 1.0 - (p.traveled / p.distance);
+                p.alpha = 1.0 - p.traveled / p.distance;
             }
 
             // Remove inactive projectiles
@@ -315,8 +421,6 @@ const ProjectileVFX = {
         }
     },
 
-
-
     /**
      * Get the weapon subtype from equipped weapon
      * Reads weaponSubtype field from entity, falls back to name inference
@@ -340,7 +444,8 @@ const ProjectileVFX = {
                 const name = (hand1.name || '').toLowerCase();
 
                 if (id.includes('shotgun') || name.includes('shotgun')) return 'shotgun';
-                if (id.includes('sniper') || name.includes('sniper') || name.includes('marksman')) return 'sniperrifle';
+                if (id.includes('sniper') || name.includes('sniper') || name.includes('marksman'))
+                    return 'sniperrifle';
                 if (id.includes('rifle') || name.includes('rifle')) return 'rifle';
                 if (id.includes('machine') || id.includes('smg')) return 'machine_gun';
                 if (id.includes('revolver') || name.includes('revolver')) return 'pistol';

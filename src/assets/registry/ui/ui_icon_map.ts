@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_icon_map
  * Auto-generated from JSON.
  */

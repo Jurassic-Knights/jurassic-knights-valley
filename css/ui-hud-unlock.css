@@ -11,7 +11,9 @@
     transform: translateX(-50%);
     z-index: 80;
     pointer-events: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
 }
 
 .unlock-prompt.hidden {
@@ -34,7 +36,7 @@
 }
 
 .unlock-island-name {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-lg);
     color: var(--color-text-primary);
     font-weight: bold;
@@ -44,7 +46,7 @@
 }
 
 .unlock-cost {
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-md);
     color: var(--color-text-gold);
     margin-bottom: 12px;
@@ -60,7 +62,7 @@
     border: 2px solid var(--gold-bright);
     border-radius: var(--border-radius-md);
     padding: 10px 32px;
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-sm);
     font-weight: bold;
     color: var(--bg-deepest);

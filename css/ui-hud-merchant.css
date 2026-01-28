@@ -13,8 +13,8 @@
     align-items: center;
     justify-content: center;
     padding: 14px 32px;
-    background: linear-gradient(180deg, #8E44AD 0%, #6C3483 100%);
-    border: 3px solid #9B59B6;
+    background: linear-gradient(180deg, #8e44ad 0%, #6c3483 100%);
+    border: 3px solid #9b59b6;
     border-radius: var(--border-radius-lg);
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.4),
@@ -40,7 +40,7 @@
 }
 
 .purchase-text {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-md);
     font-weight: bold;
     color: var(--text-primary);
@@ -50,7 +50,6 @@
 }
 
 @keyframes purchase-pulse {
-
     0%,
     100% {
         box-shadow:
@@ -93,7 +92,7 @@
 }
 
 .upgrade-label {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-sm);
     color: var(--color-text-primary);
     font-weight: bold;
@@ -101,14 +100,14 @@
 }
 
 .upgrade-level {
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 11px;
     color: var(--color-text-secondary);
 }
 
 .upgrade-btn {
-    background: linear-gradient(180deg, #8E44AD 0%, #6C3483 100%);
-    border: 2px solid #9B59B6;
+    background: linear-gradient(180deg, #8e44ad 0%, #6c3483 100%);
+    border: 2px solid #9b59b6;
     border-radius: var(--border-radius-sm);
     padding: 8px 16px;
     cursor: pointer;
@@ -127,7 +126,7 @@
 }
 
 .upgrade-cost {
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-sm);
     color: var(--text-primary);
     font-weight: bold;

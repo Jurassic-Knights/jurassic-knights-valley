@@ -1,35 +1,34 @@
-﻿/**
+/**
  * Entity: weapon_ranged_flamethrower_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "weapon_ranged_flamethrower_t3_01",
-    "name":  "Inferno Projector",
-    "description":  "A devastating flamethrower for mass destruction.",
-    "category":  "equipment",
-    "equipSlot":  "hand1",
-    "weaponType":  "ranged",
-    "weaponSubtype":  "flamethrower",
-    "tier":  3,
-    "rarity":  "rare",
-    "stats":  {
-                  "damage":  22,
-                  "attackSpeed":  10.0,
-                  "range":  280,
-                  "ammoCapacity":  100,
-                  "burnDamage":  8
-              },
-    "recipe":  {
-                   "scraps_t3_01":  22,
-                   "minerals_t2_01":  15,
-                   "bone_t1_01":  5
-               },
-    "sprite":  "weapon_ranged_flamethrower_t3_01",
-    "sourceFile":  "weapon",
-    "files":  {
-                  "original":  "images/equipment/weapons/flamethrower/weapon_flamethrower_t3_01_original.png"
-              },
-    "gripType":  "2-hand"
-}
-;
+    id: 'weapon_ranged_flamethrower_t3_01',
+    name: 'Inferno Projector',
+    description: 'A devastating flamethrower for mass destruction.',
+    category: 'equipment',
+    equipSlot: 'hand1',
+    weaponType: 'ranged',
+    weaponSubtype: 'flamethrower',
+    tier: 3,
+    rarity: 'rare',
+    stats: {
+        damage: 22,
+        attackSpeed: 10.0,
+        range: 280,
+        ammoCapacity: 100,
+        burnDamage: 8
+    },
+    recipe: {
+        scraps_t3_01: 22,
+        minerals_t2_01: 15,
+        bone_t1_01: 5
+    },
+    sprite: 'weapon_ranged_flamethrower_t3_01',
+    sourceFile: 'weapon',
+    files: {
+        original: 'images/equipment/weapons/flamethrower/weapon_flamethrower_t3_01_original.png'
+    },
+    gripType: '2-hand'
+};

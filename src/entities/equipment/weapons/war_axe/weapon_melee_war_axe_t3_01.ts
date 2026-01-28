@@ -1,34 +1,33 @@
-﻿/**
+/**
  * Entity: weapon_melee_war_axe_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "weapon_melee_war_axe_t3_01",
-    "name":  "Berserker\u0027s Chopper",
-    "description":  "A massive war axe for devastating cleaves.",
-    "category":  "equipment",
-    "equipSlot":  "hand1",
-    "weaponType":  "melee",
-    "weaponSubtype":  "war_axe",
-    "tier":  3,
-    "rarity":  "rare",
-    "stats":  {
-                  "damage":  42,
-                  "attackSpeed":  0.9,
-                  "range":  350,
-                  "armorPen":  8
-              },
-    "recipe":  {
-                   "scraps_t3_01":  18,
-                   "minerals_t2_01":  12,
-                   "bone_t1_01":  5
-               },
-    "sprite":  "weapon_melee_war_axe_t3_01",
-    "sourceFile":  "weapon",
-    "files":  {
-                  "original":  "images/equipment/weapons/war_axe/weapon_war_axe_t3_01_original.png"
-              },
-    "gripType":  "2-hand"
-}
-;
+    id: 'weapon_melee_war_axe_t3_01',
+    name: 'Berserker\u0027s Chopper',
+    description: 'A massive war axe for devastating cleaves.',
+    category: 'equipment',
+    equipSlot: 'hand1',
+    weaponType: 'melee',
+    weaponSubtype: 'war_axe',
+    tier: 3,
+    rarity: 'rare',
+    stats: {
+        damage: 42,
+        attackSpeed: 0.9,
+        range: 350,
+        armorPen: 8
+    },
+    recipe: {
+        scraps_t3_01: 18,
+        minerals_t2_01: 12,
+        bone_t1_01: 5
+    },
+    sprite: 'weapon_melee_war_axe_t3_01',
+    sourceFile: 'weapon',
+    files: {
+        original: 'images/equipment/weapons/war_axe/weapon_war_axe_t3_01_original.png'
+    },
+    gripType: '2-hand'
+};

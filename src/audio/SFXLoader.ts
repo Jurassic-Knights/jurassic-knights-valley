@@ -69,5 +69,5 @@ import './SFX_Saurian_T3_04';
 import './SFX_Saurian_T4_01';
 import './SFX_Saurian_T4_02';
 
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 Logger.info('[SFXLoader] All SFX categories registered');

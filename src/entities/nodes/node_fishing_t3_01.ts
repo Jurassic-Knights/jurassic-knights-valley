@@ -1,35 +1,32 @@
-﻿/**
+/**
  * Entity: node_fishing_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "node_fishing_t3_01",
-    "name":  "Ice Hole",
-    "sourceCategory":  "nodes",
-    "sourceFile":  "nodes",
-    "sprite":  "node_fishing_t3_01",
-    "status":  "pending",
-    "files":  {
-                  "original":  "assets/images/nodes/node_fishing_t3_01_original.png"
-              },
-    "type":  "ore",
-    "biome":  "tundra",
-    "sfx":  {
-                "hit":  "sfx_node_hit_stone",
-                "break":  "sfx_node_break_stone",
-                "respawn":  "sfx_node_respawn"
-            },
-    "drops":  [
-                  {
-                      "amount":  [
-                                     1,
-                                     3
-                                 ],
-                      "chance":  1,
-                      "item":  "minerals_t3_01"
-                  }
-              ],
-    "nodeSubtype":  "fishing",
-    "tier":  3
+    id: 'node_fishing_t3_01',
+    name: 'Ice Hole',
+    sourceCategory: 'nodes',
+    sourceFile: 'nodes',
+    sprite: 'node_fishing_t3_01',
+    status: 'pending',
+    files: {
+        original: 'assets/images/nodes/node_fishing_t3_01_original.png'
+    },
+    type: 'ore',
+    biome: 'tundra',
+    sfx: {
+        hit: 'sfx_node_hit_stone',
+        break: 'sfx_node_break_stone',
+        respawn: 'sfx_node_respawn'
+    },
+    drops: [
+        {
+            amount: [1, 3],
+            chance: 1,
+            item: 'minerals_t3_01'
+        }
+    ],
+    nodeSubtype: 'fishing',
+    tier: 3
 };

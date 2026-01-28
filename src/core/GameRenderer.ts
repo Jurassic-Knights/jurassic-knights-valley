@@ -8,14 +8,14 @@
 
 import { Logger } from './Logger';
 import { Registry } from './Registry';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { EntityRenderService } from '../rendering/EntityRenderService';
 import { RenderProfiler } from '../rendering/RenderProfiler';
 import { GridRenderer } from '../rendering/GridRenderer';
 import { DebugOverlays } from '../rendering/DebugOverlays';
 import { HomeOutpostRenderer } from '../rendering/HomeOutpostRenderer';
-
+import { DOMUtils } from './DOMUtils';
 
 const GameRenderer = {
     canvas: null,
@@ -81,7 +81,7 @@ const GameRenderer = {
         this.ctx = this.canvas.getContext('2d');
 
         // Create Shadow Buffer (Offscreen Canvas)
-        this.shadowCanvas = document.createElement('canvas');
+        this.shadowCanvas = DOMUtils.createCanvas();
         this.shadowCtx = this.shadowCanvas.getContext('2d');
         // Initial size sync
         this.resizeShadowBuffer();

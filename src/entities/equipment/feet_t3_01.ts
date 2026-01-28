@@ -1,21 +1,20 @@
-﻿/**
+/**
  * Entity: feet_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "feet_t3_01",
-    "name":  "Steel Boots",
-    "sourceCategory":  "equipment",
-    "sourceFile":  "feet",
-    "sprite":  "feet_t3_01",
-    "status":  "pending",
-    "files":  {
-                  "original":  "images/equipment/armor/feet/feet_t3_01_original.png"
-              },
-    "type":  "weapon",
-    "slot":  "feet",
-    "stats":  "+8 Armor",
-    "recipe":  "2x Steel Ingot + 1x Leather"
-}
-;
+    id: 'feet_t3_01',
+    name: 'Steel Boots',
+    sourceCategory: 'equipment',
+    sourceFile: 'feet',
+    sprite: 'feet_t3_01',
+    status: 'pending',
+    files: {
+        original: 'images/equipment/armor/feet/feet_t3_01_original.png'
+    },
+    type: 'weapon',
+    slot: 'feet',
+    stats: '+8 Armor',
+    recipe: '2x Steel Ingot + 1x Leather'
+};

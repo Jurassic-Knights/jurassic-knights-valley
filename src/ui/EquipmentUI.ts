@@ -1,26 +1,27 @@
 /**
  * EquipmentUI - Fullscreen equipment management screen (Core)
- * 
+ *
  * Delegates to:
  * - EquipmentUIRenderer: All HTML/template rendering
  * - EquipmentSlotManager: Equip/unequip/slot logic
- * 
+ *
  * Owner: UI Engineer
  */
 
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { Logger } from '../core/Logger';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { Logger } from '@core/Logger';
 import { EquipmentSlotManager } from './EquipmentSlotManager';
-import { EventBus } from '../core/EventBus';
-import { EntityLoader } from '../entities/EntityLoader';
+import { EventBus } from '@core/EventBus';
+import { EntityLoader } from '@entities/EntityLoader';
 import { EquipmentUIRenderer } from './EquipmentUIRenderer';
-import { AssetLoader } from '../core/AssetLoader';
+import { AssetLoader } from '@core/AssetLoader';
 import { HeroRenderer } from '../rendering/HeroRenderer';
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
+import { DOMUtils } from '@core/DOMUtils';
 import { WeaponWheelInstance } from './WeaponWheel';
 import { ContextActionUI } from './ContextActionUI';
-import { GameInstance } from '../core/Game';
-import { EntityRegistry } from '../entities/EntityLoader';
+import { GameInstance } from '@core/Game';
+import { EntityRegistry } from '@entities/EntityLoader';
 import { HeroSkinSelector } from './HeroSkinSelector';
 import type { EquipmentItem } from '../types/ui';
 
@@ -44,7 +45,7 @@ class EquipmentUI {
 
     constructor() {
         this.isOpen = false;
-        this.selectedMode = 'armor';  // armor, weapon, tool
+        this.selectedMode = 'armor'; // armor, weapon, tool
         this.selectedCategory = 'all';
         this.selectedItem = null;
         this.container = null;
@@ -66,8 +67,22 @@ class EquipmentUI {
 
         // Use centralized slot definitions from GameConstants
         const equipCfg = (GameConstants as any)?.Equipment || {};
-        this.slots = equipCfg.ALL_SLOTS || ['head', 'body', 'hands', 'legs', 'accessory', 'hand1', 'hand2', 'accessory2'];
-        this.toolSlots = equipCfg.TOOL_SLOTS || ['tool_mining', 'tool_woodcutting', 'tool_harvesting', 'tool_fishing'];
+        this.slots = equipCfg.ALL_SLOTS || [
+            'head',
+            'body',
+            'hands',
+            'legs',
+            'accessory',
+            'hand1',
+            'hand2',
+            'accessory2'
+        ];
+        this.toolSlots = equipCfg.TOOL_SLOTS || [
+            'tool_mining',
+            'tool_woodcutting',
+            'tool_harvesting',
+            'tool_fishing'
+        ];
 
         // Mode-specific category filters
         this.modeCategories = {
@@ -131,10 +146,11 @@ class EquipmentUI {
     }
 
     _createContainer() {
-        this.container = document.createElement('div');
-        this.container.id = 'equipment-screen';
-        this.container.className = 'equipment-screen';
-        this.container.style.display = 'none';
+        this.container = DOMUtils.create('div', {
+            id: 'equipment-screen',
+            className: 'equipment-screen',
+            styles: { display: 'none' }
+        });
 
         // Event delegation handlers
         this.container.addEventListener('click', (e) => this._handleClick(e));
@@ -165,13 +181,18 @@ class EquipmentUI {
         // Hero skin selector modal - select skin
         const skinOption = target.closest('.hero-skin-option');
         if (skinOption?.dataset.skinId) {
-            const charSprite = this.container?.querySelector('.character-sprite') as HTMLElement | null;
+            const charSprite = this.container?.querySelector(
+                '.character-sprite'
+            ) as HTMLElement | null;
             HeroSkinSelector.selectSkin(skinOption.dataset.skinId, charSprite);
             return;
         }
 
         // Hero skin selector close
-        if (target.closest('.hero-skin-modal-close') || target.closest('.hero-skin-modal-backdrop')) {
+        if (
+            target.closest('.hero-skin-modal-close') ||
+            target.closest('.hero-skin-modal-backdrop')
+        ) {
             HeroSkinSelector.close();
             return;
         }
@@ -180,17 +201,21 @@ class EquipmentUI {
         if (target.closest('#btn-open-wheel')) {
             const rootCategories = this._getFilterHierarchy();
 
-            WeaponWheelInstance.open(rootCategories, (path) => {
-                const leaf = path[path.length - 1];
-                if (path.length > 1) {
-                    this.selectedCategory = path.map(p => p.id).join(':');
-                } else {
-                    this.selectedCategory = leaf.id;
-                }
-                Logger.info(`[EquipmentUI] Filter selected: ${this.selectedCategory}`);
-                this._loadEquipment();
-                this._render();
-            }, target.closest('#btn-open-wheel') as HTMLElement);
+            WeaponWheelInstance.open(
+                rootCategories,
+                (path) => {
+                    const leaf = path[path.length - 1];
+                    if (path.length > 1) {
+                        this.selectedCategory = path.map((p) => p.id).join(':');
+                    } else {
+                        this.selectedCategory = leaf.id;
+                    }
+                    Logger.info(`[EquipmentUI] Filter selected: ${this.selectedCategory}`);
+                    this._loadEquipment();
+                    this._render();
+                },
+                target.closest('#btn-open-wheel') as HTMLElement
+            );
             return;
         }
 
@@ -242,7 +267,10 @@ class EquipmentUI {
             const now = Date.now();
             const DOUBLE_CLICK_THRESHOLD = 400;
 
-            if (itemId === this.lastClickedItemId && (now - this.lastClickTime) < DOUBLE_CLICK_THRESHOLD) {
+            if (
+                itemId === this.lastClickedItemId &&
+                now - this.lastClickTime < DOUBLE_CLICK_THRESHOLD
+            ) {
                 // Double-click - EQUIP
                 EquipmentSlotManager.equipItem(this, itemId);
                 this.lastClickedItemId = null;
@@ -268,7 +296,10 @@ class EquipmentUI {
             const DOUBLE_CLICK_THRESHOLD = 400;
             const slotKey = `slot_${slotId}`;
 
-            if (slotKey === this.lastClickedItemId && (now - this.lastClickTime) < DOUBLE_CLICK_THRESHOLD) {
+            if (
+                slotKey === this.lastClickedItemId &&
+                now - this.lastClickTime < DOUBLE_CLICK_THRESHOLD
+            ) {
                 // Double-click - UNEQUIP
                 EquipmentSlotManager.unequipSlot(this, slotId);
                 this.lastClickedItemId = null;
@@ -348,7 +379,8 @@ class EquipmentUI {
             this.originalFooterConfigs = {
                 inventory: {
                     label: btnInventory?.querySelector('.btn-label')?.textContent,
-                    iconId: (btnInventory?.querySelector('.btn-icon') as HTMLElement)?.dataset?.iconId,
+                    iconId: (btnInventory?.querySelector('.btn-icon') as HTMLElement)?.dataset
+                        ?.iconId,
                     onclick: btnInventory?.onclick
                 },
                 equip: {
@@ -379,7 +411,8 @@ class EquipmentUI {
             if (label) label.textContent = 'ARMOR';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_armor';
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_armor') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath('ui_icon_armor') || ''}')`;
             }
             btnInventory.classList.toggle('active', this.selectedMode === 'armor');
             btnInventory.onclick = () => {
@@ -402,7 +435,8 @@ class EquipmentUI {
             if (label) label.textContent = 'WEAPON';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_weapon';
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_weapon') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath('ui_icon_weapon') || ''}')`;
             }
             btnEquip.classList.toggle('active', this.selectedMode === 'weapon');
             btnEquip.onclick = () => {
@@ -425,7 +459,8 @@ class EquipmentUI {
             if (label) label.textContent = 'TOOL';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_pickaxe';
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_pickaxe') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath('ui_icon_pickaxe') || ''}')`;
             }
             btnMap.classList.toggle('active', this.selectedMode === 'tool');
             btnMap.onclick = () => {
@@ -446,7 +481,8 @@ class EquipmentUI {
             if (label) label.textContent = 'BACK';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_close';
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_close') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath('ui_icon_close') || ''}')`;
             }
             btnMagnet.classList.remove('active');
             btnMagnet.onclick = () => this.close();
@@ -457,8 +493,11 @@ class EquipmentUI {
             btnContext.classList.remove('inactive');
             btnContext.dataset.footerOverride = 'equipment';
 
-            const label = btnContext.querySelector('.btn-label') || btnContext.querySelector('#context-label');
-            const icon = btnContext.querySelector('.btn-icon') || btnContext.querySelector('#context-icon');
+            const label =
+                btnContext.querySelector('.btn-label') ||
+                btnContext.querySelector('#context-label');
+            const icon =
+                btnContext.querySelector('.btn-icon') || btnContext.querySelector('#context-icon');
 
             if (label) label.textContent = 'FILTER';
             if (icon) {
@@ -472,16 +511,20 @@ class EquipmentUI {
             btnContext.onclick = () => {
                 const rootCategories = this._getFilterHierarchy();
 
-                WeaponWheelInstance.open(rootCategories, (path) => {
-                    const leaf = path[path.length - 1];
-                    if (path.length > 1) {
-                        this.selectedCategory = path.map(p => p.id).join(':');
-                    } else {
-                        this.selectedCategory = leaf.id;
-                    }
-                    this._loadEquipment();
-                    this._render();
-                }, btnContext);
+                WeaponWheelInstance.open(
+                    rootCategories,
+                    (path) => {
+                        const leaf = path[path.length - 1];
+                        if (path.length > 1) {
+                            this.selectedCategory = path.map((p) => p.id).join(':');
+                        } else {
+                            this.selectedCategory = leaf.id;
+                        }
+                        this._loadEquipment();
+                        this._render();
+                    },
+                    btnContext
+                );
             };
         }
 
@@ -499,49 +542,81 @@ class EquipmentUI {
 
         if (this.selectedMode === 'weapon') {
             rootCategories.push(
-                { id: 'all', label: 'ALL' },
+                { id: 'all', label: 'ALL', iconId: 'ui_icon_all' },
                 {
-                    id: '1-hand', label: '1-HAND',
+                    id: '1-hand',
+                    label: '1-HAND',
+                    iconId: 'ui_icon_1-hand',
                     children: [
                         {
-                            id: 'melee', label: 'MELEE', children: [
-                                { id: 'sword', label: 'SWORD' },
-                                { id: 'axe', label: 'AXE' },
-                                { id: 'mace', label: 'MACE' },
-                                { id: 'knife', label: 'KNIFE' },
-                                { id: 'flail', label: 'FLAIL' },
-                                { id: 'shield', label: 'SHIELD' }
+                            id: 'melee',
+                            label: 'MELEE',
+                            iconId: 'ui_icon_melee',
+                            children: [
+                                { id: 'sword', label: 'SWORD', iconId: 'ui_icon_sword' },
+                                { id: 'axe', label: 'AXE', iconId: 'ui_icon_axe' },
+                                { id: 'mace', label: 'MACE', iconId: 'ui_icon_mace' },
+                                { id: 'knife', label: 'KNIFE', iconId: 'ui_icon_knife' },
+                                { id: 'flail', label: 'FLAIL', iconId: 'ui_icon_flail' },
+                                { id: 'shield', label: 'SHIELD', iconId: 'ui_icon_shield' }
                             ]
                         },
                         {
-                            id: 'ranged', label: 'RANGED', children: [
-                                { id: 'pistol', label: 'PISTOL' },
-                                { id: 'submachine_gun', label: 'SMG' }
+                            id: 'ranged',
+                            label: 'RANGED',
+                            iconId: 'ui_icon_ranged',
+                            children: [
+                                { id: 'pistol', label: 'PISTOL', iconId: 'ui_icon_pistol' },
+                                {
+                                    id: 'submachine_gun',
+                                    label: 'SMG',
+                                    iconId: 'ui_icon_machine_gun'
+                                }
                             ]
                         }
                     ]
                 },
                 {
-                    id: '2-hand', label: '2-HAND',
+                    id: '2-hand',
+                    label: '2-HAND',
+                    iconId: 'ui_icon_2-hand',
                     children: [
                         {
-                            id: 'melee', label: 'MELEE', children: [
-                                { id: 'greatsword', label: 'GREATSWORD' },
-                                { id: 'spear', label: 'SPEAR' },
-                                { id: 'war_axe', label: 'WAR AXE' },
-                                { id: 'war_hammer', label: 'HAMMER' },
-                                { id: 'lance', label: 'LANCE' },
-                                { id: 'halberd', label: 'HALBERD' }
+                            id: 'melee',
+                            label: 'MELEE',
+                            iconId: 'ui_icon_melee',
+                            children: [
+                                {
+                                    id: 'greatsword',
+                                    label: 'GREATSWORD',
+                                    iconId: 'ui_icon_greatsword'
+                                },
+                                { id: 'spear', label: 'SPEAR', iconId: 'ui_icon_spear' },
+                                { id: 'war_axe', label: 'WAR AXE', iconId: 'ui_icon_war_axe' },
+                                { id: 'war_hammer', label: 'HAMMER', iconId: 'ui_icon_war_hammer' },
+                                { id: 'lance', label: 'LANCE', iconId: 'ui_icon_lance' },
+                                { id: 'halberd', label: 'HALBERD', iconId: 'ui_icon_halberd' }
                             ]
                         },
                         {
-                            id: 'ranged', label: 'RANGED', children: [
-                                { id: 'rifle', label: 'RIFLE' },
-                                { id: 'machine_gun', label: 'MG' },
-                                { id: 'shotgun', label: 'SHOTGUN' },
-                                { id: 'sniper_rifle', label: 'SNIPER' },
-                                { id: 'bazooka', label: 'BAZOOKA' },
-                                { id: 'flamethrower', label: 'FLAME' }
+                            id: 'ranged',
+                            label: 'RANGED',
+                            iconId: 'ui_icon_ranged',
+                            children: [
+                                { id: 'rifle', label: 'RIFLE', iconId: 'ui_icon_rifle' },
+                                { id: 'machine_gun', label: 'MG', iconId: 'ui_icon_machine_gun' },
+                                { id: 'shotgun', label: 'SHOTGUN', iconId: 'ui_icon_shotgun' },
+                                {
+                                    id: 'sniper_rifle',
+                                    label: 'SNIPER',
+                                    iconId: 'ui_icon_sniper_rifle'
+                                },
+                                { id: 'bazooka', label: 'BAZOOKA', iconId: 'ui_icon_bazooka' },
+                                {
+                                    id: 'flamethrower',
+                                    label: 'FLAME',
+                                    iconId: 'ui_icon_flamethrower'
+                                }
                             ]
                         }
                     ]
@@ -549,21 +624,21 @@ class EquipmentUI {
             );
         } else if (this.selectedMode === 'armor') {
             rootCategories.push(
-                { id: 'all', label: 'ALL' },
-                { id: 'head', label: 'HEAD' },
-                { id: 'body', label: 'BODY' },
-                { id: 'hands', label: 'HANDS' },
-                { id: 'legs', label: 'LEGS' },
-                { id: 'accessory', label: 'ACC.' }
+                { id: 'all', label: 'ALL', iconId: 'ui_icon_all' },
+                { id: 'head', label: 'HEAD', iconId: 'ui_icon_helmet' },
+                { id: 'body', label: 'BODY', iconId: 'ui_icon_chest' },
+                { id: 'hands', label: 'HANDS', iconId: 'ui_icon_gloves' },
+                { id: 'legs', label: 'LEGS', iconId: 'ui_icon_legs' },
+                { id: 'accessory', label: 'ACC.', iconId: 'ui_icon_accessory' }
             );
         } else {
             // Tools
             rootCategories.push(
-                { id: 'all', label: 'ALL' },
-                { id: 'mining', label: 'MINING' },
-                { id: 'woodcutting', label: 'WOOD' },
-                { id: 'harvesting', label: 'CROP' },
-                { id: 'fishing', label: 'FISH' }
+                { id: 'all', label: 'ALL', iconId: 'ui_icon_all' },
+                { id: 'mining', label: 'MINING', iconId: 'ui_icon_pickaxe' },
+                { id: 'woodcutting', label: 'WOOD', iconId: 'ui_icon_wood_axe' },
+                { id: 'harvesting', label: 'CROP', iconId: 'ui_icon_harvesting' },
+                { id: 'fishing', label: 'FISH', iconId: 'ui_icon_fishing' }
             );
         }
         return rootCategories;
@@ -602,7 +677,8 @@ class EquipmentUI {
             if (label) label.textContent = this.originalFooterConfigs.inventory.label;
             if (icon && this.originalFooterConfigs.inventory.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.inventory.iconId;
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.inventory.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.inventory.iconId) || ''}')`;
             }
             btnInventory.classList.remove('active');
             btnInventory.onclick = null; // Event listener handles it
@@ -616,7 +692,8 @@ class EquipmentUI {
             if (label) label.textContent = this.originalFooterConfigs.equip.label;
             if (icon && this.originalFooterConfigs.equip.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.equip.iconId;
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.equip.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.equip.iconId) || ''}')`;
             }
             btnEquip.classList.remove('active');
             btnEquip.onclick = null; // Original toggle() is via addEventListener
@@ -630,7 +707,8 @@ class EquipmentUI {
             if (label) label.textContent = this.originalFooterConfigs.map.label;
             if (icon && this.originalFooterConfigs.map.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.map.iconId;
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.map.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.map.iconId) || ''}')`;
             }
             btnMap.classList.remove('active');
             btnMap.onclick = null;
@@ -644,7 +722,8 @@ class EquipmentUI {
             if (label) label.textContent = this.originalFooterConfigs.magnet.label;
             if (icon && this.originalFooterConfigs.magnet.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.magnet.iconId;
-                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.magnet.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage =
+                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.magnet.iconId) || ''}')`;
             }
             btnMagnet.classList.remove('active');
             btnMagnet.onclick = null;
@@ -672,15 +751,16 @@ class EquipmentUI {
         // Parse selectedCategory for composite filters
         // NEW FORMAT: "grip:type:subtype" e.g. "1-hand:melee:sword"
         const filterParts = this.selectedCategory?.split(':') || ['all'];
-        const grip = filterParts[0];      // 1-hand, 2-hand, or all
+        const grip = filterParts[0]; // 1-hand, 2-hand, or all
         const weaponType = filterParts[1]; // melee, ranged, or undefined
-        const subtype = filterParts[2];   // sword, pistol, etc. or undefined
+        const subtype = filterParts[2]; // sword, pistol, etc. or undefined
 
         Logger.info(`[EquipmentUI] Filter: grip=${grip}, type=${weaponType}, subtype=${subtype}`);
 
         if (this.selectedMode === 'armor') {
-            this.cachedEquipment = allEquipment.filter(e => {
-                const catMatch = grip === 'all' ||
+            this.cachedEquipment = allEquipment.filter((e) => {
+                const catMatch =
+                    grip === 'all' ||
                     e.sourceFile === grip ||
                     e.slot === grip ||
                     e.equipSlot === grip;
@@ -688,9 +768,10 @@ class EquipmentUI {
                 return catMatch;
             });
         } else if (this.selectedMode === 'weapon') {
-            this.cachedEquipment = allEquipment.filter(e => {
+            this.cachedEquipment = allEquipment.filter((e) => {
                 // 1. Must be a weapon
-                const isWeapon = e.weaponType !== undefined || e.sourceFile === 'weapon' || e.slot === 'weapon';
+                const isWeapon =
+                    e.weaponType !== undefined || e.sourceFile === 'weapon' || e.slot === 'weapon';
                 if (!isWeapon) return false;
 
                 // 2. Grip Filter (Level 1)
@@ -715,7 +796,7 @@ class EquipmentUI {
                 return true;
             });
         } else if (this.selectedMode === 'tool') {
-            this.cachedEquipment = allEquipment.filter(e => {
+            this.cachedEquipment = allEquipment.filter((e) => {
                 const isTool = e.sourceFile === 'tool' || e.slot === 'tool';
                 if (!isTool) return false;
 
@@ -728,7 +809,9 @@ class EquipmentUI {
             this.cachedEquipment = allEquipment;
         }
 
-        Logger.info(`[EquipmentUI] Result: ${this.cachedEquipment.length} items for mode=${this.selectedMode}`);
+        Logger.info(
+            `[EquipmentUI] Result: ${this.cachedEquipment.length} items for mode=${this.selectedMode}`
+        );
     }
 
     _render() {
@@ -737,11 +820,11 @@ class EquipmentUI {
     }
 
     _selectItemNoRender(itemId) {
-        const item = this.cachedEquipment.find(e => e.id === itemId);
+        const item = this.cachedEquipment.find((e) => e.id === itemId);
         this.selectedItem = item || null;
 
         // Update visual selection without DOM rebuild
-        this.container.querySelectorAll('.inventory-item').forEach(el => {
+        this.container.querySelectorAll('.inventory-item').forEach((el) => {
             el.classList.toggle('selected', (el as HTMLElement).dataset.id === itemId);
         });
 
@@ -759,7 +842,7 @@ class EquipmentUI {
     }
 
     _selectItem(itemId) {
-        const item = this.cachedEquipment.find(e => e.id === itemId);
+        const item = this.cachedEquipment.find((e) => e.id === itemId);
         this.selectedItem = item || null;
         this._render();
     }
@@ -772,12 +855,12 @@ class EquipmentUI {
             this.selectedItem = equippedItem;
 
             // Update slot selection highlight
-            this.container.querySelectorAll('.equip-slot').forEach(el => {
+            this.container.querySelectorAll('.equip-slot').forEach((el) => {
                 el.classList.toggle('selected', (el as HTMLElement).dataset.slot === slotId);
             });
 
             // Clear inventory selections
-            this.container.querySelectorAll('.inventory-item').forEach(el => {
+            this.container.querySelectorAll('.inventory-item').forEach((el) => {
                 el.classList.remove('selected');
             });
 
@@ -802,4 +885,3 @@ if (Registry) Registry.register('EquipmentUI', equipmentUIInstance);
 
 // ES6 Module Export
 export { EquipmentUI, equipmentUIInstance };
-

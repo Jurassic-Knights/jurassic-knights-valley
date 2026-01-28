@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SpawnManagerService - Orchestrates entity spawning via specialized spawners
  *
  * This is the main SpawnManager, now slimmed down to delegate to:
@@ -10,24 +10,23 @@
  * Owner: Director / Level Architect
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { entityManager } from '../core/EntityManager';
-import { GameState } from '../core/State';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { entityManager } from '@core/EntityManager';
+import { GameState } from '@core/State';
 import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { Hero } from '../gameplay/Hero';
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 import { PropSpawner } from './spawners/PropSpawner';
 import { ResourceSpawner } from './spawners/ResourceSpawner';
 import { EnemySpawner } from './spawners/EnemySpawner';
 import { DropSpawner } from './spawners/DropSpawner';
 import { Merchant } from '../gameplay/Merchant';
-import { PropConfig } from '../data/PropConfig';
+import { PropConfig } from '@data/PropConfig';
 
 // Unmapped modules - need manual import
-
 
 class SpawnManagerService {
     private game: any;
@@ -107,7 +106,7 @@ class SpawnManagerService {
 
         try {
             let spawnX: number, spawnY: number;
-            const islandManager = this.game.getSystem('IslandManager');
+            const islandManager = Registry.get('IslandManager');
 
             if (islandManager) {
                 const spawn = islandManager.getHeroSpawnPosition();
@@ -115,7 +114,7 @@ class SpawnManagerService {
                 spawnY = spawn.y;
             } else {
                 Logger.warn('[SpawnManager] IslandManager not found, using fallback spawn');
-                const gameRenderer = this.game.getSystem('GameRenderer');
+                const gameRenderer = Registry.get('GameRenderer');
                 const w = gameRenderer ? gameRenderer.worldWidth : 2000;
                 const h = gameRenderer ? gameRenderer.worldHeight : 2000;
                 spawnX = w / 2;
@@ -131,7 +130,7 @@ class SpawnManagerService {
             const hero = new Hero({ x: spawnX, y: spawnY });
             this.game.hero = hero;
 
-            const gameRenderer = this.game.getSystem('GameRenderer');
+            const gameRenderer = Registry.get('GameRenderer');
             if (gameRenderer && typeof gameRenderer.setHero === 'function') {
                 gameRenderer.setHero(hero);
             }
@@ -157,7 +156,7 @@ class SpawnManagerService {
     private spawnMerchants(): void {
         this.merchants = [];
 
-        const islandManager = this.game.getSystem('IslandManager');
+        const islandManager = Registry.get('IslandManager');
         if (!islandManager) return;
 
         const bridges = islandManager.getBridges();
@@ -208,7 +207,7 @@ class SpawnManagerService {
         for (const merchant of this.merchants) {
             if (merchant.isInRange(hero)) {
                 const [gridX, gridY] = merchant.islandId.split('_').map(Number);
-                const islandManager = this.game.getSystem('IslandManager');
+                const islandManager = Registry.get('IslandManager');
                 const island = islandManager ? islandManager.getIslandByGrid(gridX, gridY) : null;
                 if (island && island.unlocked) {
                     return merchant;
@@ -319,7 +318,14 @@ class SpawnManagerService {
         }
     }
 
-    spawnEnemyGroup(biomeId: string, x: number, y: number, enemyId: string, count: number, options: any = {}): any[] {
+    spawnEnemyGroup(
+        biomeId: string,
+        x: number,
+        y: number,
+        enemyId: string,
+        count: number,
+        options: any = {}
+    ): any[] {
         if (this.enemySpawner) {
             return this.enemySpawner.spawnEnemyGroup(biomeId, x, y, enemyId, count, options);
         }
@@ -372,5 +378,3 @@ if (Registry) Registry.register('SpawnManager', spawnManager);
 
 // ES6 Module Export
 export { SpawnManagerService, spawnManager };
-
-

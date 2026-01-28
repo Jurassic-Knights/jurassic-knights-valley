@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RenderProfiler - Performance profiling for render phases
  *
  * Extracted from GameRenderer.js for modularity.
@@ -7,8 +7,7 @@
  * Owner: Performance Tools
  */
 
-import { Logger } from '../core/Logger';
-
+import { Logger } from '@core/Logger';
 
 const RenderProfiler = {
     timing: null,

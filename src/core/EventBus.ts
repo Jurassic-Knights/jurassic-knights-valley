@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EventBus - Simple Publish/Sub Pattern for decoupling systems
  *
  * Allows systems to communicate without direct dependencies.

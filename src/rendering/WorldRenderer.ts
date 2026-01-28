@@ -1,14 +1,13 @@
-﻿/**
+/**
  * WorldRenderer
  * Handles rendering of static world elements: Water, Islands, Bridges, Fog, Borders.
  * Extracted from GameRenderer to improve modularity.
  */
 
-import { Logger } from '../core/Logger';
-import { GameRenderer } from '../core/GameRenderer';
-import { Registry } from '../core/Registry';
-import { getConfig } from '../data/GameConfig';
-
+import { Logger } from '@core/Logger';
+import { GameRenderer } from '@core/GameRenderer';
+import { Registry } from '@core/Registry';
+import { getConfig } from '@data/GameConfig';
 
 class WorldRenderer {
     game: any = null;
@@ -354,7 +353,7 @@ class WorldRenderer {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(
-            '🔒',
+            '??',
             island.worldX + island.width / 2,
             island.worldY + island.height / 2 - 40
         );

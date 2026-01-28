@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: furniture_cabinet_badlands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "furniture_cabinet_badlands",
-  "name": "Tool Cabinet",
-  "sourceCategory": "environment",
-  "sourceFile": "furniture",
-  "sprite": "furniture_cabinet_badlands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/furniture/furniture_cabinet_badlands_original.png"
-  },
-  "type": "furniture",
-  "biome": "badlands"
+    id: 'furniture_cabinet_badlands',
+    name: 'Tool Cabinet',
+    sourceCategory: 'environment',
+    sourceFile: 'furniture',
+    sprite: 'furniture_cabinet_badlands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/furniture/furniture_cabinet_badlands_original.png'
+    },
+    type: 'furniture',
+    biome: 'badlands'
 };

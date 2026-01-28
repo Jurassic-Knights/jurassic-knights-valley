@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: flora_grass_badlands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "flora_grass_badlands",
-  "name": "Scorched Grass",
-  "sourceCategory": "environment",
-  "sourceFile": "flora",
-  "sprite": "flora_grass_badlands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/flora/flora_grass_badlands_original.png"
-  },
-  "type": "flora",
-  "biome": "badlands"
+    id: 'flora_grass_badlands',
+    name: 'Scorched Grass',
+    sourceCategory: 'environment',
+    sourceFile: 'flora',
+    sprite: 'flora_grass_badlands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/flora/flora_grass_badlands_original.png'
+    },
+    type: 'flora',
+    biome: 'badlands'
 };

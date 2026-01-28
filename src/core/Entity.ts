@@ -1,15 +1,14 @@
-﻿/**
+/**
  * Entity - Base class for all game objects
  *
  * Owner: Director
  */
 
-import { RenderConfig } from '../config/RenderConfig';
-import { MaterialLibrary } from '../vfx/MaterialLibrary';
+import { RenderConfig } from '@config/RenderConfig';
+import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { AssetLoader } from './AssetLoader';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { Registry } from './Registry';
-
 
 class Entity {
     // Class properties

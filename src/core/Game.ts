@@ -1,12 +1,12 @@
-﻿/**
+/**
  * Game - Main game loop and orchestration
  *
  * Owner: Director
  */
 import { Logger } from './Logger';
 import { Registry } from './Registry';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { EntityLoader } from '../entities/EntityLoader';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { EntityLoader } from '@entities/EntityLoader';
 import { entityManager } from './EntityManager';
 import { GameState } from './State';
 import { Hero } from '../gameplay/Hero';
@@ -16,11 +16,11 @@ import { GameRenderer } from './GameRenderer';
 
 // Modules that don't exist yet - use ambient declarations
 import { EventBus } from './EventBus';
-import { SystemConfig } from '../config/SystemConfig';
+import { SystemConfig } from '@config/SystemConfig';
 import { Tween } from '../animation/Tween';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
-import { MerchantUI } from '../ui/MerchantUI';
-import { VFXController } from '../vfx/VFXController';
+import { MerchantUI } from '@ui/MerchantUI';
+import { VFXController } from '@vfx/VFXController';
 import type { ISystem, IEntity } from '../types/core';
 
 /** Profile data structure for performance monitoring */
@@ -32,7 +32,6 @@ interface ProfileData {
     frameCount: number;
     startTime: number;
 }
-
 
 class Game {
     private isRunning: boolean = false;
@@ -366,7 +365,9 @@ class Game {
             `Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`
         );
         Logger.info('--- Systems (ms total) ---');
-        for (const [name, time] of Object.entries(p.systems).sort((a, b) => (b[1] as number) - (a[1] as number))) {
+        for (const [name, time] of Object.entries(p.systems).sort(
+            (a, b) => (b[1] as number) - (a[1] as number)
+        )) {
             Logger.info(
                 `  ${name}: ${(time as number).toFixed(1)}ms (${((time as number) / p.frameCount).toFixed(2)}ms/frame)`
             );

@@ -4,7 +4,6 @@
  */
 import { SFX } from './SFX_Core';
 
-
 (function () {
     const handlers = {
         sfx_aggro_dinosaur_t3_01: function () {
@@ -62,6 +61,6 @@ import { SFX } from './SFX_Core';
     };
 
     if (SFX) {
-        SFX.register(handlers);    }
+        SFX.register(handlers);
+    }
 })();
-

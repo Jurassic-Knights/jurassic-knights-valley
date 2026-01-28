@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: metal_t2_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "metal_t2_01",
-  "name": "Iron Ingot",
-  "sourceCategory": "items",
-  "sourceFile": "metal",
-  "sprite": "metal_t2_01",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/items/metal_t2_01_original.png"
-  },
-  "type": "consumable",
-  "stackable": true,
-  "recipe": "2x Iron Ore + 1x Coal"
+    id: 'metal_t2_01',
+    name: 'Iron Ingot',
+    sourceCategory: 'items',
+    sourceFile: 'metal',
+    sprite: 'metal_t2_01',
+    status: 'approved',
+    files: {
+        original: 'assets/images/items/metal_t2_01_original.png'
+    },
+    type: 'consumable',
+    stackable: true,
+    recipe: '2x Iron Ore + 1x Coal'
 };

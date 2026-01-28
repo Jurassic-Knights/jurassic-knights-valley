@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: prop_tent_desert
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "prop_tent_desert",
-  "name": "Bedouin Tent",
-  "sourceCategory": "environment",
-  "sourceFile": "props",
-  "sprite": "prop_tent_desert",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/props/prop_tent_desert_original.png"
-  },
-  "type": "prop",
-  "biome": "desert"
+    id: 'prop_tent_desert',
+    name: 'Bedouin Tent',
+    sourceCategory: 'environment',
+    sourceFile: 'props',
+    sprite: 'prop_tent_desert',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/props/prop_tent_desert_original.png'
+    },
+    type: 'prop',
+    biome: 'desert'
 };

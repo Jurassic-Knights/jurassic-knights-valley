@@ -4,11 +4,9 @@
  * Handles DOM reparenting and state management
  */
 
-import { Logger } from '../../core/Logger';
+import { Logger } from '@core/Logger';
 import { InventoryUI } from '../InventoryUI';
-import { Registry } from '../../core/Registry';
-
-
+import { Registry } from '@core/Registry';
 
 class BaseLayout {
     ui: any;
@@ -25,7 +23,7 @@ class BaseLayout {
     }
 
     // Default implementation: do nothing
-    onGridUpdate() { }
+    onGridUpdate() {}
 }
 
 /**

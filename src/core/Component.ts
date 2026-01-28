@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Component - Base class for Entity Components
  *
  * Enables modular logic composition.
@@ -18,13 +18,13 @@ class Component {
     /**
      * Called when component is added to entity
      */
-    init() { }
+    init() {}
 
     /**
      * Update loop
      * @param {number} dt
      */
-    update(_dt: number) { }
+    update(_dt: number) {}
 
     /**
      * Cleanup

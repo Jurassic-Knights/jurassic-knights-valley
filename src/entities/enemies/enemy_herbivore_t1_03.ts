@@ -1,69 +1,58 @@
-﻿/**
+/**
  * Entity: enemy_herbivore_t1_03
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "enemy_herbivore_t1_03",
-  "name": "Maiasaura",
-  "sourceCategory": "enemies",
-  "sourceFile": "herbivore",
-  "sprite": "herbivore_t1_03",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/enemies/herbivore_t1_03_original.png"
-  },
-  "tier": 1,
-  "biome": "grasslands",
-  "stats": {
-    "health": 50,
-    "damage": 0,
-    "speed": 75,
-    "defense": 0
-  },
-  "combat": {
-    "attackRange": 0,
-    "attackRate": 0,
-    "aggroRange": 220,
-    "packAggro": true,
-    "attackType": "none"
-  },
-  "sfx": {
-    "spawn": "sfx_spawn_herbivore_t1_03",
-    "death": "sfx_death_herbivore_t1_03",
-    "hurt": "sfx_hurt_herbivore_t1_03",
-    "aggro": "sfx_aggro_herbivore_t1_03"
-  },
-  "spawning": {
-    "biomes": [
-      "grasslands"
-    ],
-    "groupSize": [
-      1,
-      2
-    ],
-    "weight": 50,
-    "respawnTime": 30
-  },
-  "loot": [
-    {
-      "item": "food_t1_02",
-      "chance": 1.0,
-      "amount": [
-        1,
-        2
-      ]
+    id: 'enemy_herbivore_t1_03',
+    name: 'Maiasaura',
+    sourceCategory: 'enemies',
+    sourceFile: 'herbivore',
+    sprite: 'herbivore_t1_03',
+    status: 'pending',
+    files: {
+        original: 'assets/images/enemies/herbivore_t1_03_original.png'
     },
-    {
-      "item": "leather_t1_01",
-      "chance": 0.4,
-      "amount": [
-        1,
-        1
-      ]
-    }
-  ],
-  "xpReward": 12,
-  "species": "Maiasaura",
-  "weaponType": "charge"
+    tier: 1,
+    biome: 'grasslands',
+    stats: {
+        health: 50,
+        damage: 0,
+        speed: 75,
+        defense: 0
+    },
+    combat: {
+        attackRange: 0,
+        attackRate: 0,
+        aggroRange: 220,
+        packAggro: true,
+        attackType: 'none'
+    },
+    sfx: {
+        spawn: 'sfx_spawn_herbivore_t1_03',
+        death: 'sfx_death_herbivore_t1_03',
+        hurt: 'sfx_hurt_herbivore_t1_03',
+        aggro: 'sfx_aggro_herbivore_t1_03'
+    },
+    spawning: {
+        biomes: ['grasslands'],
+        groupSize: [1, 2],
+        weight: 50,
+        respawnTime: 30
+    },
+    loot: [
+        {
+            item: 'food_t1_02',
+            chance: 1.0,
+            amount: [1, 2]
+        },
+        {
+            item: 'leather_t1_01',
+            chance: 0.4,
+            amount: [1, 1]
+        }
+    ],
+    xpReward: 12,
+    species: 'Maiasaura',
+    weaponType: 'charge'
 };

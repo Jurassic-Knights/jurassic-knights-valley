@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EnemyAI - Enemy behavior state machine
  *
  * Extracted from Enemy.js for modularity.
@@ -17,10 +17,9 @@ import { BiomeConfig } from '../../../data/BiomeConfig';
 import { EntityTypes } from '../../../config/EntityTypes';
 import { GameInstance } from '../../../core/Game';
 import { Registry } from '../../../core/Registry';
-
+import { MathUtils } from '../../../core/MathUtils';
 
 // Unmapped modules - need manual import
-
 
 const EnemyAI = {
     /**
@@ -97,7 +96,7 @@ const EnemyAI = {
         const dist = enemy.distanceTo(enemy.target);
 
         // Check leash distance
-        const spawnDist = Math.sqrt((enemy.x - enemy.spawnX) ** 2 + (enemy.y - enemy.spawnY) ** 2);
+        const spawnDist = MathUtils.distance(enemy.x, enemy.y, enemy.spawnX, enemy.spawnY);
         if (spawnDist > enemy.leashDistance) {
             enemy.state = 'returning';
             enemy.target = null;
@@ -142,7 +141,7 @@ const EnemyAI = {
      * Return to spawn behavior
      */
     updateReturning(enemy, dt) {
-        const dist = Math.sqrt((enemy.spawnX - enemy.x) ** 2 + (enemy.spawnY - enemy.y) ** 2);
+        const dist = MathUtils.distance(enemy.spawnX, enemy.spawnY, enemy.x, enemy.y);
 
         if (dist < 20) {
             enemy.state = 'wander';
@@ -187,13 +186,14 @@ const EnemyAI = {
         if (!entityManager || !enemy.groupId) return;
 
         // Read pack aggro radius from config for live tuning
-        const packRadius = (getConfig() as any).AI?.PACK_AGGRO_RADIUS ||
+        const packRadius =
+            (getConfig() as any).AI?.PACK_AGGRO_RADIUS ||
             BiomeConfig?.patrolDefaults?.packAggroRadius ||
             300;
 
-        const enemies = entityManager.getByType(EntityTypes.ENEMY_DINOSAUR).concat(
-            entityManager.getByType(EntityTypes.ENEMY_SOLDIER)
-        );
+        const enemies = entityManager
+            .getByType(EntityTypes.ENEMY_DINOSAUR)
+            .concat(entityManager.getByType(EntityTypes.ENEMY_SOLDIER));
 
         for (const other of enemies) {
             if (other === enemy || other.groupId !== enemy.groupId) continue;

@@ -96,6 +96,35 @@
     font-family: var(--font-body);
 }
 
+.text-pixel-outline {
+    font-family: var(--font-pixel);
+    font-weight: 700;
+    color: #fff !important;
+    /* Force white text */
+    text-shadow:
+        2px 2px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000;
+    line-height: 1;
+}
+
+.text-pixel-title {
+    font-family: var(--font-pixel);
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--gold-bright);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+}
+
+.text-pixel-body {
+    font-family: var(--font-pixel);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
 .text-uppercase {
     text-transform: uppercase;
     letter-spacing: 1px;

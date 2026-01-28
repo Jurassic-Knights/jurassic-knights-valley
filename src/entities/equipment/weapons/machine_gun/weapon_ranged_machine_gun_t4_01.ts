@@ -1,36 +1,35 @@
-﻿/**
+/**
  * Entity: weapon_ranged_machine_gun_t4_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "weapon_ranged_machine_gun_t4_01",
-    "name":  "Spino-Storm Cannon",
-    "description":  "A legendary rapid-fire weapon that mows down hordes.",
-    "category":  "equipment",
-    "equipSlot":  "hand1",
-    "weaponType":  "ranged",
-    "weaponSubtype":  "machine_gun",
-    "tier":  4,
-    "rarity":  "legendary",
-    "stats":  {
-                  "damage":  42,
-                  "attackSpeed":  6.0,
-                  "range":  400,
-                  "ammoCapacity":  100,
-                  "armorPen":  10
-              },
-    "recipe":  {
-                   "scraps_t4_01":  28,
-                   "minerals_t3_01":  18,
-                   "bone_t2_01":  9,
-                   "fossil_t1_01":  4
-               },
-    "sprite":  "weapon_ranged_machine_gun_t4_01",
-    "sourceFile":  "weapon",
-    "files":  {
-                  "original":  "images/equipment/weapons/machine_gun/weapon_machine_gun_t4_01_original.png"
-              },
-    "gripType":  "2-hand"
-}
-;
+    id: 'weapon_ranged_machine_gun_t4_01',
+    name: 'Spino-Storm Cannon',
+    description: 'A legendary rapid-fire weapon that mows down hordes.',
+    category: 'equipment',
+    equipSlot: 'hand1',
+    weaponType: 'ranged',
+    weaponSubtype: 'machine_gun',
+    tier: 4,
+    rarity: 'legendary',
+    stats: {
+        damage: 42,
+        attackSpeed: 6.0,
+        range: 400,
+        ammoCapacity: 100,
+        armorPen: 10
+    },
+    recipe: {
+        scraps_t4_01: 28,
+        minerals_t3_01: 18,
+        bone_t2_01: 9,
+        fossil_t1_01: 4
+    },
+    sprite: 'weapon_ranged_machine_gun_t4_01',
+    sourceFile: 'weapon',
+    files: {
+        original: 'images/equipment/weapons/machine_gun/weapon_machine_gun_t4_01_original.png'
+    },
+    gripType: '2-hand'
+};

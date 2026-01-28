@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_icon_magnet
  * Auto-generated from JSON.
  */

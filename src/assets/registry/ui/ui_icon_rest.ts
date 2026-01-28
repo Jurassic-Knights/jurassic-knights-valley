@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_icon_rest
  * Auto-generated from JSON.
  */

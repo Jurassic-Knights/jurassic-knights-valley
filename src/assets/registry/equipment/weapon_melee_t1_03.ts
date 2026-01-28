@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: weapon_melee_t1_03
  * Auto-generated from JSON.
  */

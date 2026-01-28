@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GameState - Global Reactive Store
  *
  * Centralizes transient game data (Inventory, Gold, Unlocks).
@@ -7,9 +7,8 @@
 
 import { Logger } from './Logger';
 import { EventBus } from './EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { Registry } from './Registry';
-
 
 class GameState {
     data: {
@@ -105,4 +104,3 @@ const gameState = new GameState();
 if (Registry) Registry.register('GameState', gameState);
 
 export { GameState, gameState };
-

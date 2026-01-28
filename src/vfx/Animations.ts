@@ -4,6 +4,7 @@
  *
  * Owner: VFX Specialist
  */
+import { DOMUtils } from '@core/DOMUtils';
 
 const Animations = {
     /**
@@ -11,10 +12,13 @@ const Animations = {
      */
     ripple(element, event) {
         const rect = element.getBoundingClientRect();
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        ripple.style.left = `${event.clientX - rect.left}px`;
-        ripple.style.top = `${event.clientY - rect.top}px`;
+        const ripple = DOMUtils.create('span', {
+            className: 'ripple',
+            styles: {
+                left: `${event.clientX - rect.left}px`,
+                top: `${event.clientY - rect.top}px`
+            }
+        });
         element.appendChild(ripple);
 
         setTimeout(() => ripple.remove(), 600);
@@ -24,8 +28,9 @@ const Animations = {
      * Flash the screen with a color
      */
     screenFlash(color = 'gold') {
-        const flash = document.createElement('div');
-        flash.className = `screen-flash screen-flash--${color}`;
+        const flash = DOMUtils.create('div', {
+            className: `screen-flash screen-flash--${color}`
+        });
         document.body.appendChild(flash);
 
         setTimeout(() => flash.remove(), 300);
@@ -35,17 +40,19 @@ const Animations = {
      * Show floating text
      */
     floatingText(text, x, y, type = 'gold') {
-        const el = document.createElement('div');
-        el.className = `floating-text floating-text--${type}`;
-        el.textContent = text;
-        el.style.left = `${x}px`;
-        el.style.top = `${y}px`;
+        const el = DOMUtils.create('div', {
+            className: `floating-text floating-text--${type}`,
+            text: text,
+            styles: {
+                left: `${x}px`,
+                top: `${y}px`
+            }
+        });
         document.getElementById('app').appendChild(el);
 
         setTimeout(() => el.remove(), 1000);
     }
 };
-
 
 // ES6 Module Export
 export { Animations };

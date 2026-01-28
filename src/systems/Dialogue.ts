@@ -1,13 +1,12 @@
-﻿/**
+/**
  * Dialogue System
  * Handles NPC conversations and branching dialogue
  *
  * Owner: Lore Writer (dialogue content), UI Artist (display)
  */
 
-import { Logger } from '../core/Logger';
-import { GameState } from '../core/State';
-
+import { Logger } from '@core/Logger';
+import { GameState } from '@core/State';
 
 const DialogueSystem = {
     dialogues: {} as Record<string, any>,

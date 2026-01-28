@@ -5,13 +5,13 @@
  * Owner: SFX Engineer
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { ProceduralSFX } from './ProceduralSFX';
-import { WeatherSystem } from '../systems/WeatherSystem';
-import { AssetLoader } from '../core/AssetLoader';
-import { Registry } from '../core/Registry';
+import { WeatherSystem } from '@systems/WeatherSystem';
+import { AssetLoader } from '@core/AssetLoader';
+import { Registry } from '@core/Registry';
 import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
 
 const AudioManager = {
@@ -116,10 +116,10 @@ const AudioManager = {
             category === 'master'
                 ? this.masterGain
                 : category === 'sfx'
-                    ? this.sfxGain
-                    : category === 'music'
-                        ? this.musicGain
-                        : null;
+                  ? this.sfxGain
+                  : category === 'music'
+                    ? this.musicGain
+                    : null;
 
         if (gain) {
             gain.gain.value = Math.max(0, Math.min(1, value));

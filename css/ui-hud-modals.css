@@ -70,7 +70,7 @@
 }
 
 .modal-title {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-md);
     color: var(--color-primary-dark);
     font-weight: bold;
@@ -84,8 +84,8 @@
     color: var(--color-primary-dark);
     font-weight: bold;
     cursor: pointer;
-    width: 24px;
-    height: 24px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;

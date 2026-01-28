@@ -1,4 +1,4 @@
-﻿/**
+/**
  * AISystem - Central orchestrator for all AI-driven entities
  *
  * Routes entity updates to appropriate behavior modules based on entityType.
@@ -7,19 +7,17 @@
  * Owner: AI System
  */
 
-import { Logger } from '../core/Logger';
-import { entityManager } from '../core/EntityManager';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { EntityTypes } from '../config/EntityTypes';
+import { Logger } from '@core/Logger';
+import { entityManager } from '@core/EntityManager';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { EntityTypes } from '@config/EntityTypes';
 import { EnemyAI } from './behaviors/enemies/EnemyAI';
 import { BossAI } from './behaviors/bosses/BossAI';
 import { NPCAI } from './behaviors/npcs/NPCAI';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 // Unmapped modules - need manual import
-
 
 class AISystem {
     private game: any = null;

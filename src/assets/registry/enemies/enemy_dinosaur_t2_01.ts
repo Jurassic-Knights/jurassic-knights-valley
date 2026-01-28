@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: enemy_dinosaur_t2_01
  * Auto-generated from JSON.
  */

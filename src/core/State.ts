@@ -1,4 +1,4 @@
-﻿/**
+/**
  * State - Centralized state management with reactivity
  *
  * Owner: Director
@@ -73,7 +73,9 @@ class State {
         }
         // Global listener for any change
         if (this.listeners['*']) {
-            this.listeners['*'].forEach((cb) => (cb as GlobalStateCallback)(key, newValue, oldValue));
+            this.listeners['*'].forEach((cb) =>
+                (cb as GlobalStateCallback)(key, newValue, oldValue)
+            );
         }
     }
 

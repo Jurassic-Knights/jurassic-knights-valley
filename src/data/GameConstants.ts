@@ -62,8 +62,8 @@ const GameConstants = {
 
     // Combat Settings
     Combat: {
-        DEFAULT_GUN_RANGE: 1000,
-        DEFAULT_MINING_RANGE: 125,
+        DEFAULT_GUN_RANGE: 1000, // Was 500 in some fallbacks
+        DEFAULT_MINING_RANGE: 125, // Was 75 in some fallbacks
         DEFAULT_DAMAGE: 10,
         ATTACK_COOLDOWN: 0.5,
         DEFAULT_PATROL_RADIUS: 150,
@@ -90,11 +90,51 @@ const GameConstants = {
 
     // Weapon Configuration (Single Source of Truth)
     Weapons: {
-        RANGED_TYPES: ['rifle', 'pistol', 'submachine_gun', 'machine_gun', 'flamethrower', 'shotgun', 'sniper_rifle', 'bazooka'],
-        MELEE_TYPES: ['sword', 'greatsword', 'axe', 'war_axe', 'mace', 'war_hammer', 'lance', 'halberd', 'spear', 'flail', 'knife'],
+        RANGED_TYPES: [
+            'rifle',
+            'pistol',
+            'submachine_gun',
+            'machine_gun',
+            'flamethrower',
+            'shotgun',
+            'sniper_rifle',
+            'bazooka'
+        ],
+        MELEE_TYPES: [
+            'sword',
+            'greatsword',
+            'axe',
+            'war_axe',
+            'mace',
+            'war_hammer',
+            'lance',
+            'halberd',
+            'spear',
+            'flail',
+            'knife'
+        ],
         // Combined for quick lookup
-        ALL_TYPES: ['rifle', 'pistol', 'submachine_gun', 'machine_gun', 'flamethrower', 'shotgun', 'sniper_rifle', 'bazooka',
-            'sword', 'greatsword', 'axe', 'war_axe', 'mace', 'war_hammer', 'lance', 'halberd', 'spear', 'flail', 'knife']
+        ALL_TYPES: [
+            'rifle',
+            'pistol',
+            'submachine_gun',
+            'machine_gun',
+            'flamethrower',
+            'shotgun',
+            'sniper_rifle',
+            'bazooka',
+            'sword',
+            'greatsword',
+            'axe',
+            'war_axe',
+            'mace',
+            'war_hammer',
+            'lance',
+            'halberd',
+            'spear',
+            'flail',
+            'knife'
+        ]
     },
 
     // Interaction Radii
@@ -158,7 +198,9 @@ const GameConstants = {
         PATHFINDING_MAX_ITERATIONS: 500,
         PATHFINDING_CACHE_TIMEOUT: 2000,
         DROP_SPAWN_DISTANCE: 150,
-        DROP_SPAWN_VARIANCE: 100
+
+        DROP_SPAWN_VARIANCE: 100,
+        PATROL_AREA_RADIUS: 400
     },
 
     // Timing & Durations (centralized timer values)
@@ -276,6 +318,11 @@ const GameConstants = {
         HERO_DIED: 'HERO_DIED', // { hero }
         HERO_RESPAWNED: 'HERO_RESPAWNED', // { hero }
 
+        // Entity Events
+        ENTITY_DAMAGED: 'ENTITY_DAMAGED', // { entity, amount, source, type }
+        ENTITY_DIED: 'ENTITY_DIED', // { entity, killer }
+        ENTITY_HEALTH_CHANGE: 'ENTITY_HEALTH_CHANGE', // { entity, current, max }
+
         // Boss (09-boss-system)
         BOSS_SPAWNED: 'BOSS_SPAWNED', // { boss, biomeId, bossType }
         BOSS_KILLED: 'BOSS_KILLED', // { boss, biomeId, bossType, xpReward, respawnIn }
@@ -323,35 +370,35 @@ const GameConstants = {
         ENEMY_RESPAWNED: 'ENEMY_RESPAWNED', // { enemy, biomeId, groupId, waveId }
 
         // Loot System
-        LOOT_DROPPED: 'LOOT_DROPPED', // { x, y, drops, totalItems }
+        LOOT_DROPPED: 'LOOT_DROPPED' // { x, y, drops, totalItems }
 
         // Generic Entity Events (used by AI system)
-        ENTITY_DAMAGED: 'ENTITY_DAMAGED', // { entity, damage, source }
-        ENTITY_DIED: 'ENTITY_DIED' // { entity, killer }
+        // ENTITY_DAMAGED & ENTITY_DIED defined above
     }
 };
-
 
 // ES6 Module Export
 export { GameConstants };
 
 /**
  * getConfig() - HMR-safe accessor for GameConstants
- * 
+ *
  * Use this instead of importing GameConstants directly to get
  * hot-reloadable config values that update without page refresh.
- * 
+ *
  * Usage: const speed = getConfig().Hero.SPEED;
  */
 export function getConfig(): typeof GameConstants {
     // Get tunable values directly from GameConfig's HMR-updated window reference
     // FIXED: Properly read the config object (was boolean short-circuit bug)
-    const tunables = (typeof window !== 'undefined' && window.__GAME_CONFIG__)
-        ? (window as any).__GAME_CONFIG__
-        : {};
-    const base = (typeof window !== 'undefined' && window.__GAME_CONSTANTS__)
-        ? window.__GAME_CONSTANTS__
-        : GameConstants;
+    const tunables =
+        typeof window !== 'undefined' && window.__GAME_CONFIG__
+            ? (window as any).__GAME_CONFIG__
+            : {};
+    const base =
+        typeof window !== 'undefined' && window.__GAME_CONSTANTS__
+            ? window.__GAME_CONSTANTS__
+            : GameConstants;
 
     // Deep merge WeaponDefaults (nested objects)
     const mergedWeaponDefaults = { ...(base as any).WeaponDefaults };
@@ -401,7 +448,10 @@ if (typeof window !== 'undefined') {
         const persisted = window.__GAME_CONSTANTS__;
         for (const key of Object.keys(GameConstants)) {
             const typedKey = key as keyof typeof GameConstants;
-            if (typeof GameConstants[typedKey] === 'object' && !Array.isArray(GameConstants[typedKey])) {
+            if (
+                typeof GameConstants[typedKey] === 'object' &&
+                !Array.isArray(GameConstants[typedKey])
+            ) {
                 Object.assign(persisted[typedKey], GameConstants[typedKey]);
             } else {
                 (persisted as any)[typedKey] = GameConstants[typedKey];

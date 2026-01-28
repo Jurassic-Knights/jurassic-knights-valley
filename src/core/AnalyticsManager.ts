@@ -17,6 +17,9 @@ const ANALYTICS_CONFIG = {
     build: '1.0.0'
 };
 
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
+
 const Analytics = {
     initialized: false,
 

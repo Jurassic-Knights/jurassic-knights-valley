@@ -7,19 +7,17 @@
 
 import { Logger } from './Logger';
 import { entityManager } from './EntityManager';
-import { VFXController } from '../vfx/VFXController';
+import { VFXController } from '@vfx/VFXController';
 import { IslandManager } from '../world/IslandManager';
 import { GameInstance } from './Game';
 import { Registry } from './Registry';
-
-
+import { DOMUtils } from './DOMUtils';
 
 // ENV fallback for runtime flags (in production this would be injected)
 const ENV: any = {
     SHOW_FPS: false,
     DEBUG: false
 };
-
 
 const Profiler = {
     enabled: false,
@@ -48,9 +46,9 @@ const Profiler = {
         this.enabled = ENV?.SHOW_FPS || false;
 
         // Create display element
-        this.element = document.createElement('div');
-        this.element.id = 'profiler';
-        this.element.style.cssText = `
+        this.element = DOMUtils.create('div', {
+            id: 'profiler',
+            cssText: `
             position: fixed;
             top: 50%;
             right: calc(50% + 520px);
@@ -66,7 +64,8 @@ const Profiler = {
             pointer-events: none;
             display: ${this.enabled ? 'block' : 'none'};
             line-height: 1.5;
-        `;
+        `
+        });
         document.body.appendChild(this.element);
 
         // Toggle with F3
@@ -168,7 +167,6 @@ const Profiler = {
         this.element.innerHTML = html;
     }
 };
-
 
 // Self-updating loop (no need to call from game loop)
 function profilerLoop() {

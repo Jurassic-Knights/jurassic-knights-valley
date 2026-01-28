@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: flora_flower_badlands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "flora_flower_badlands",
-  "name": "Toxic Flower",
-  "sourceCategory": "environment",
-  "sourceFile": "flora",
-  "sprite": "flora_flower_badlands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/flora/flora_flower_badlands_original.png"
-  },
-  "type": "flora",
-  "biome": "badlands"
+    id: 'flora_flower_badlands',
+    name: 'Toxic Flower',
+    sourceCategory: 'environment',
+    sourceFile: 'flora',
+    sprite: 'flora_flower_badlands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/flora/flora_flower_badlands_original.png'
+    },
+    type: 'flora',
+    biome: 'badlands'
 };

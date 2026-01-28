@@ -5,10 +5,10 @@
  * - Overlay: Procedural pixelated noise for detail and movement
  */
 
-import { Registry } from '../core/Registry';
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Registry } from '@core/Registry';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { IslandManager } from '../world/IslandManager';
 
 // Helper to get AssetLoader from Registry (avoid circular dependency)

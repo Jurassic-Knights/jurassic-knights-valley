@@ -1,10 +1,11 @@
 /**
  * HealthComponent - Manages Health and Death
  */
-import { Component } from '../core/Component';
-import { Registry } from '../core/Registry';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Component } from '@core/Component';
+import { Registry } from '@core/Registry';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
 
 class HealthComponent extends Component {
     maxHealth: number;
@@ -31,8 +32,10 @@ class HealthComponent extends Component {
     takeDamage(amount: number) {
         if (this.isDead) return;
 
+        Logger.info(`[HealthComponent] Before: ${this.health}/${this.maxHealth}, Dmg: ${amount}`);
         this.health -= amount;
         if (this.health < 0) this.health = 0;
+        Logger.info(`[HealthComponent] After: ${this.health}/${this.maxHealth}`);
 
         if (this.parent.id === 'hero' && EventBus) {
             EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
@@ -40,9 +43,9 @@ class HealthComponent extends Component {
                 max: this.maxHealth
             });
         } else if (EventBus) {
-            EventBus.emit('ENTITY_DAMAGED', {
+            // Avoid recursion with DamageSystem
+            EventBus.emit(GameConstants.Events.ENTITY_HEALTH_CHANGE, {
                 entity: this.parent,
-                amount: amount,
                 current: this.health,
                 max: this.maxHealth
             });
@@ -50,9 +53,10 @@ class HealthComponent extends Component {
 
         if (this.health <= 0) {
             this.die();
-            if (EventBus) {
-                EventBus.emit('ENTITY_DIED', { entity: this.parent });
-            }
+            // DamageSystem handles ENTITY_DIED event now
+            // if (EventBus) {
+            //     EventBus.emit('ENTITY_DIED', { entity: this.parent });
+            // }
             return true;
         }
         return false;

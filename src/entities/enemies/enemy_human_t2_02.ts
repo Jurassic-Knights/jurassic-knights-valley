@@ -1,70 +1,59 @@
-﻿/**
+/**
  * Entity: enemy_human_t2_02
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "enemy_human_t2_02",
-  "name": "Crossbowman",
-  "sourceCategory": "enemies",
-  "sourceFile": "human",
-  "sprite": "human_t2_02",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/enemies/human_t2_02_original.png"
-  },
-  "tier": 2,
-  "biome": "tundra",
-  "stats": {
-    "health": 55,
-    "damage": 18,
-    "speed": 55,
-    "defense": 0
-  },
-  "combat": {
-    "attackRange": 380,
-    "attackRate": 0.6,
-    "aggroRange": 300,
-    "packAggro": true,
-    "attackType": "ranged"
-  },
-  "sfx": {
-    "spawn": "sfx_spawn_human_t2_02",
-    "death": "sfx_death_human_t2_02",
-    "hurt": "sfx_hurt_human_t2_02",
-    "aggro": "sfx_aggro_human_t2_02"
-  },
-  "spawning": {
-    "biomes": [
-      "tundra"
-    ],
-    "groupSize": [
-      1,
-      2
-    ],
-    "weight": 50,
-    "respawnTime": 30
-  },
-  "loot": [
-    {
-      "item": "salvage_t1_02",
-      "chance": 0.7,
-      "amount": [
-        1,
-        2
-      ]
+    id: 'enemy_human_t2_02',
+    name: 'Crossbowman',
+    sourceCategory: 'enemies',
+    sourceFile: 'human',
+    sprite: 'human_t2_02',
+    status: 'pending',
+    files: {
+        original: 'assets/images/enemies/human_t2_02_original.png'
     },
-    {
-      "item": "mechanical_t1_01",
-      "chance": 0.3,
-      "amount": [
-        1,
-        1
-      ]
-    }
-  ],
-  "xpReward": 25,
-  "species": "Corporal",
-  "weaponType": "pistol",
-  "role": "medium"
+    tier: 2,
+    biome: 'tundra',
+    stats: {
+        health: 55,
+        damage: 18,
+        speed: 55,
+        defense: 0
+    },
+    combat: {
+        attackRange: 380,
+        attackRate: 0.6,
+        aggroRange: 300,
+        packAggro: true,
+        attackType: 'ranged'
+    },
+    sfx: {
+        spawn: 'sfx_spawn_human_t2_02',
+        death: 'sfx_death_human_t2_02',
+        hurt: 'sfx_hurt_human_t2_02',
+        aggro: 'sfx_aggro_human_t2_02'
+    },
+    spawning: {
+        biomes: ['tundra'],
+        groupSize: [1, 2],
+        weight: 50,
+        respawnTime: 30
+    },
+    loot: [
+        {
+            item: 'salvage_t1_02',
+            chance: 0.7,
+            amount: [1, 2]
+        },
+        {
+            item: 'mechanical_t1_01',
+            chance: 0.3,
+            amount: [1, 1]
+        }
+    ],
+    xpReward: 25,
+    species: 'Corporal',
+    weaponType: 'pistol',
+    role: 'medium'
 };

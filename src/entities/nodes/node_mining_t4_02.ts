@@ -1,20 +1,20 @@
-﻿/**
+/**
  * Entity: node_mining_t4_02
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "node_mining_t4_02",
-    "name":  "Deep Vein",
-    "sourceCategory":  "nodes",
-    "sourceFile":  "nodes",
-    "sprite":  "node_mining_t4_02",
-    "status":  "pending",
-    "files":  {
-                  "original":  "assets/images/nodes/node_mining_t4_02_original.png"
-              },
-    "type":  "ore",
-    "biome":  "badlands",
-    "nodeSubtype":  "mining",
-    "tier":  4
+    id: 'node_mining_t4_02',
+    name: 'Deep Vein',
+    sourceCategory: 'nodes',
+    sourceFile: 'nodes',
+    sprite: 'node_mining_t4_02',
+    status: 'pending',
+    files: {
+        original: 'assets/images/nodes/node_mining_t4_02_original.png'
+    },
+    type: 'ore',
+    biome: 'badlands',
+    nodeSubtype: 'mining',
+    tier: 4
 };

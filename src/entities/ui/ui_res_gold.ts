@@ -1,16 +1,16 @@
-﻿/**
+/**
  * Entity: ui_res_gold
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "ui_res_gold",
-  "name": "Gold Resource Icon",
-  "sourceCategory": "ui",
-  "status": "pending",
-  "files": {
-    "original": "images/ui/ui_res_gold_original.png"
-  },
-  "description": "Currency icon for gold",
-  "declineNote": ""
+    id: 'ui_res_gold',
+    name: 'Gold Resource Icon',
+    sourceCategory: 'ui',
+    status: 'pending',
+    files: {
+        original: 'images/ui/ui_res_gold_original.png'
+    },
+    description: 'Currency icon for gold',
+    declineNote: ''
 };

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * HomeBase - Player's starting home island with harvestable trees
  *
  * Creates collectible wood resources around the home island perimeter.
@@ -7,19 +7,18 @@
  * Owner: Level Architect
  */
 
-import { Logger } from '../core/Logger';
-import { GameRenderer } from '../core/GameRenderer';
-import { GameConstants } from '../data/GameConstants';
-import { getConfig } from '../data/GameConfig';
+import { Logger } from '@core/Logger';
+import { GameRenderer } from '@core/GameRenderer';
+import { GameConstants } from '@data/GameConstants';
+import { getConfig } from '@data/GameConfig';
 import { IslandManager } from './IslandManager';
-import { AssetLoader } from '../core/AssetLoader';
-import { entityManager } from '../core/EntityManager';
-import { EventBus } from '../core/EventBus';
-import { Registry } from '../core/Registry';
+import { AssetLoader } from '@core/AssetLoader';
+import { entityManager } from '@core/EntityManager';
+import { EventBus } from '@core/EventBus';
+import { Registry } from '@core/Registry';
 
 // entityManager instance is imported, but we also need the EntityManager reference for static access
 const EntityManager = entityManager;
-
 
 const HomeBase = {
     treeBorderWidth: 100,
@@ -161,7 +160,9 @@ const HomeBase = {
                     this._outpostPath = AssetLoader.getImagePath('building_residential_01');
                     this._forgePath = AssetLoader.getImagePath('building_industrial_01');
                     this._treePath = AssetLoader.getImagePath('node_woodcutting_t1_01');
-                    this._treeConsumedPath = AssetLoader.getImagePath('node_woodcutting_t1_01_consumed');
+                    this._treeConsumedPath = AssetLoader.getImagePath(
+                        'node_woodcutting_t1_01_consumed'
+                    );
                 }
             }
         }

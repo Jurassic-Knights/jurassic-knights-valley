@@ -1,4 +1,4 @@
-﻿/**
+/**
  * NPCAI - NPC behavior for merchants, quest givers, and patrol NPCs
  *
  * Supports:
@@ -10,7 +10,7 @@
  */
 
 import { EventBus } from '../../../core/EventBus';
-
+import { MathUtils } from '../../../core/MathUtils';
 
 const NPCAI = {
     /**
@@ -40,7 +40,7 @@ const NPCAI = {
 
         const dist = npc.distanceTo
             ? npc.distanceTo(hero)
-            : Math.sqrt((hero.x - npc.x) ** 2 + (hero.y - npc.y) ** 2);
+            : MathUtils.distance(hero.x, hero.y, npc.x, npc.y);
 
         // Show interaction prompt when player is close
         const interactRange = npc.interactRadius || 140;
@@ -72,7 +72,7 @@ const NPCAI = {
         }
 
         const target = npc.patrolPoints[npc.patrolIndex || 0];
-        const dist = Math.sqrt((target.x - npc.x) ** 2 + (target.y - npc.y) ** 2);
+        const dist = MathUtils.distance(target.x, target.y, npc.x, npc.y);
 
         if (dist < 20) {
             // Wait at patrol point

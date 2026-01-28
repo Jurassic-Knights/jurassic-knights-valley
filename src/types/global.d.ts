@@ -1,16 +1,16 @@
 /**
  * Global TypeScript Declarations
- * 
+ *
  * This file provides ambient declarations for all global objects
  * that are available at runtime but not imported as ES6 modules.
  */
 
 // Core Systems
-declare var Logger: any;
-declare var EventBus: any;
-declare var Registry: any;
-declare var GameInstance: any;
-declare var Game: any;
+// declare var Logger: any;
+// declare var EventBus: any;
+// declare var Registry: any;
+// declare var GameInstance: any;
+// declare var Game: any;
 declare var GameState: any;
 declare var GameConstants: any;
 declare var Events: any;

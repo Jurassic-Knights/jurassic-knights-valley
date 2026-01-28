@@ -1,16 +1,15 @@
-﻿/**
+/**
  * WeaponRenderer - Draw equipped weapons and tools
- * 
+ *
  * Extracted from HeroRenderer.js to reduce file size.
  * Handles melee weapons, ranged weapons, and tools with animations.
- * 
+ *
  * Owner: Director
  */
 
-import { RenderConfig } from '../config/RenderConfig';
-import { MeleeTrailVFX } from '../vfx/MeleeTrailVFX';
-import { AssetLoader } from '../core/AssetLoader';
-
+import { RenderConfig } from '@config/RenderConfig';
+import { MeleeTrailVFX } from '@vfx/MeleeTrailVFX';
+import { AssetLoader } from '@core/AssetLoader';
 
 const WeaponRenderer = {
     // Image caches
@@ -97,13 +96,7 @@ const WeaponRenderer = {
                 const offsetX = -drawWidth * anchorX;
                 const offsetY = -drawHeight * anchorY;
 
-                ctx.drawImage(
-                    img,
-                    offsetX,
-                    offsetY + cfg.OFFSET_Y,
-                    drawWidth,
-                    drawHeight
-                );
+                ctx.drawImage(img, offsetX, offsetY + cfg.OFFSET_Y, drawWidth, drawHeight);
                 ctx.restore();
             }
         } else {
@@ -168,13 +161,7 @@ const WeaponRenderer = {
                 const offsetX = -drawWidth * anchorX + cfg.OFFSET_X;
                 const offsetY = -drawHeight * anchorY;
 
-                ctx.drawImage(
-                    img,
-                    offsetX,
-                    offsetY,
-                    drawWidth,
-                    drawHeight
-                );
+                ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
             }
         }
         // No fallback - skip rendering until sprite loads
@@ -247,13 +234,7 @@ const WeaponRenderer = {
                 const offsetX = -drawWidth * anchorX;
                 const offsetY = -drawHeight * anchorY + (cfg.OFFSET_Y || 0);
 
-                ctx.drawImage(
-                    img,
-                    offsetX,
-                    offsetY,
-                    drawWidth,
-                    drawHeight
-                );
+                ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
                 ctx.restore();
             }
         }

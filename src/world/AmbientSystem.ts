@@ -1,16 +1,15 @@
-﻿/**
+/**
  * AmbientSystem - Manages ambient creatures and environmental effects
  *
  * Handles spawning decorative entities like birds (Pteranodon) that fly
  * across the screen to add life to the world.
  */
 
-import { Logger } from '../core/Logger';
-import { AssetLoader } from '../core/AssetLoader';
-import { GameRenderer } from '../core/GameRenderer';
+import { Logger } from '@core/Logger';
+import { AssetLoader } from '@core/AssetLoader';
+import { GameRenderer } from '@core/GameRenderer';
 import { AudioManager } from '../audio/AudioManager';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 class AmbientCreature {
     type: string;
@@ -44,7 +43,9 @@ class AmbientCreature {
         if (AssetLoader) {
             this.image = AssetLoader.getImage(this.type);
             if (!this.image) {
-                AssetLoader.preloadImage(this.type).then((img: HTMLImageElement) => (this.image = img));
+                AssetLoader.preloadImage(this.type).then(
+                    (img: HTMLImageElement) => (this.image = img)
+                );
             }
         }
     }

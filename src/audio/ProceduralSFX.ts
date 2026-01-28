@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ProceduralSFX - Legacy compatibility wrapper
  *
  * This file now just re-exports SFX for backward compatibility.

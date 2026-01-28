@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: minerals_t2_05
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "minerals_t2_05",
-  "name": "Oasis Salt",
-  "sourceCategory": "resources",
-  "sourceFile": "minerals",
-  "sprite": "minerals_t2_05",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/resources/minerals_t2_05_original.png"
-  },
-  "tier": 2,
-  "stackable": true,
-  "type": "material"
+    id: 'minerals_t2_05',
+    name: 'Oasis Salt',
+    sourceCategory: 'resources',
+    sourceFile: 'minerals',
+    sprite: 'minerals_t2_05',
+    status: 'approved',
+    files: {
+        original: 'assets/images/resources/minerals_t2_05_original.png'
+    },
+    tier: 2,
+    stackable: true,
+    type: 'material'
 };

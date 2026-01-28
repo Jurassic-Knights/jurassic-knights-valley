@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ShadowRenderer - Handles entity shadow rendering
  *
  * Extracted from GameRenderer.js for modularity.
@@ -7,12 +7,11 @@
  * Owner: Rendering System
  */
 
-import { GameRenderer } from '../core/GameRenderer';
+import { GameRenderer } from '@core/GameRenderer';
 import { environmentRenderer } from './EnvironmentRenderer';
-import { EntityTypes } from '../config/EntityTypes';
+import { EntityTypes } from '@config/EntityTypes';
 
 // Unmapped modules - need manual import
-
 
 const ShadowRenderer = {
     simpleShadows: false,

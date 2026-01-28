@@ -1,26 +1,33 @@
-﻿/**
+/**
  * DinosaurSystem
  * Handles AI, Movement, and Animation updates for all Dinosaurs.
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { entityManager } from '../core/EntityManager';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { entityManager } from '@core/EntityManager';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '../vfx/VFXController';
-import { VFXConfig } from '../data/VFXConfig';
+import { VFXController } from '@vfx/VFXController';
+import { VFXConfig } from '@data/VFXConfig';
 import { spawnManager } from './SpawnManager';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { Registry } from '../core/Registry';
-import { EntityTypes } from '../config/EntityTypes';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { Registry } from '@core/Registry';
+import { EntityTypes } from '@config/EntityTypes';
 import type { IGame, IEntity } from '../types/core.d';
 
 // Bounds padding constant (was from BaseCreature)
 const BOUNDS_PADDING = 30;
 
 // Event data interfaces
-interface EntityDamageEvent { entity: IEntity; amount: number; source?: IEntity }
-interface EntityDeathEvent { entity: IEntity; killer?: IEntity }
+interface EntityDamageEvent {
+    entity: IEntity;
+    amount: number;
+    source?: IEntity;
+}
+interface EntityDeathEvent {
+    entity: IEntity;
+    killer?: IEntity;
+}
 
 class DinosaurSystem {
     game: IGame | null = null;
@@ -111,7 +118,7 @@ class DinosaurSystem {
                         if (Array.isArray(entry.amount)) {
                             amount = Math.floor(
                                 entry.amount[0] +
-                                Math.random() * (entry.amount[1] - entry.amount[0] + 1)
+                                    Math.random() * (entry.amount[1] - entry.amount[0] + 1)
                             );
                         } else if (entry.amount) {
                             amount = entry.amount;
@@ -205,8 +212,8 @@ class DinosaurSystem {
             dino.wanderTimer =
                 (GameConstants?.AI?.WANDER_TIMER_MIN || 2000) +
                 Math.random() *
-                ((GameConstants?.AI?.WANDER_TIMER_MAX || 5000) -
-                    (GameConstants?.AI?.WANDER_TIMER_MIN || 2000));
+                    ((GameConstants?.AI?.WANDER_TIMER_MAX || 5000) -
+                        (GameConstants?.AI?.WANDER_TIMER_MIN || 2000));
         }
     }
 }

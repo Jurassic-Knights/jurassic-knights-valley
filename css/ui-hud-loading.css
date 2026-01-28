@@ -20,7 +20,7 @@
 }
 
 #loading p {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-lg);
     color: var(--color-text-gold);
     letter-spacing: 2px;
@@ -29,7 +29,6 @@
 }
 
 @keyframes loading-pulse {
-
     0%,
     100% {
         opacity: 0.5;
@@ -85,8 +84,8 @@
     align-items: center;
     gap: 4px;
     padding: 12px 24px;
-    background: linear-gradient(180deg, #2E7D32 0%, #1B5E20 100%);
-    border: 3px solid #4CAF50;
+    background: linear-gradient(180deg, #2e7d32 0%, #1b5e20 100%);
+    border: 3px solid #4caf50;
     border-radius: var(--border-radius-lg);
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.4),
@@ -115,7 +114,7 @@
 }
 
 .rest-text {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-sm);
     font-weight: bold;
     color: white;
@@ -125,7 +124,6 @@
 }
 
 @keyframes rest-pulse {
-
     0%,
     100% {
         box-shadow:

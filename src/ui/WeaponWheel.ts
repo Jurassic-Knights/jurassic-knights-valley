@@ -5,7 +5,8 @@
  * Replacing Radial Wheel for better vertical screen utilization.
  */
 
-import { AssetLoader } from '../core/AssetLoader';
+import { AssetLoader } from '@core/AssetLoader';
+import { DOMUtils } from '@core/DOMUtils';
 
 export interface WheelItem {
     id: string;
@@ -32,9 +33,9 @@ export class WeaponWheel {
 
     private injectStyles() {
         if (document.getElementById('weapon-wheel-styles')) return;
-        const style = document.createElement('style');
-        style.id = 'weapon-wheel-styles';
-        style.textContent = `
+        const style = DOMUtils.create('style', {
+            id: 'weapon-wheel-styles',
+            text: `
             .weapon-wheel-overlay {
                 position: fixed;
                 top: 0; left: 0; width: 100vw; height: 100vh;
@@ -115,22 +116,27 @@ export class WeaponWheel {
                 z-index: 10;
             }
             .tree-btn-icon {
-                width: 36px; height: 36px;
-                background-size: contain;
+                position: absolute;
+                top: 0; left: 0;
+                width: 100%; height: 100%;
+                background-size: cover; /* Fill the frame */
                 background-position: center;
                 background-repeat: no-repeat;
-                margin-bottom: 4px;
+                margin: 0;
                 pointer-events: none;
+                z-index: 1;
             }
             .tree-btn-label {
-                color: #c0b090;
-                font-size: 9px;
-                font-family: 'Press Start 2P', monospace;
+                position: absolute;
+                bottom: 2px;
+                left: 0;
+                width: 100%;
+                font-size: 14px; /* Specific to this component sizing */
                 text-align: center;
-                line-height: 1.1;
-                max-width: 100%;
-                overflow: hidden;
+                z-index: 2;
                 pointer-events: none;
+                white-space: nowrap;
+                overflow: hidden;
             }
             .tree-btn.active .tree-btn-label {
                 color: #ffd700;
@@ -140,23 +146,23 @@ export class WeaponWheel {
                 from { opacity: 0; transform: translateY(8px); }
                 to { opacity: 1; transform: translateY(0); }
             }
-        `;
+        `
+        });
         document.head.appendChild(style);
     }
 
     private createContainer() {
-        this.container = document.createElement('div');
-        this.container.id = 'weapon-wheel-overlay';
-        this.container.className = 'weapon-wheel-overlay';
+        this.container = DOMUtils.create('div', {
+            id: 'weapon-wheel-overlay',
+            className: 'weapon-wheel-overlay'
+        });
 
         // Backdrop for clicking off
-        const backdrop = document.createElement('div');
-        backdrop.className = 'wheel-backdrop';
+        const backdrop = DOMUtils.create('div', { className: 'wheel-backdrop' });
         this.container.appendChild(backdrop);
 
         // Actual Tree Container
-        this.treeContainer = document.createElement('div');
-        this.treeContainer.className = 'wheel-tree-container';
+        this.treeContainer = DOMUtils.create('div', { className: 'wheel-tree-container' });
         this.container.appendChild(this.treeContainer);
 
         document.body.appendChild(this.container);
@@ -181,7 +187,7 @@ export class WeaponWheel {
             const depth = parseInt(btn.dataset.depth || '0');
 
             // Visual hover feedback via attribute to avoid style recycling
-            document.querySelectorAll('.tree-btn').forEach(b => b.removeAttribute('data-hover'));
+            document.querySelectorAll('.tree-btn').forEach((b) => b.removeAttribute('data-hover'));
             btn.setAttribute('data-hover', 'true');
 
             // Find item object
@@ -192,7 +198,7 @@ export class WeaponWheel {
                 this.handleItemSelection(item, depth);
             }
         } else {
-            document.querySelectorAll('.tree-btn').forEach(b => b.removeAttribute('data-hover'));
+            document.querySelectorAll('.tree-btn').forEach((b) => b.removeAttribute('data-hover'));
         }
     }
 
@@ -227,7 +233,7 @@ export class WeaponWheel {
             const parent = this.activePath[depth - 1];
             if (parent) sourceList = parent.children || [];
         }
-        return sourceList.find(i => i.id === id);
+        return sourceList.find((i) => i.id === id);
     }
 
     private handleItemSelection(item: WheelItem, depth: number) {
@@ -298,7 +304,7 @@ export class WeaponWheel {
         }
 
         // 3. Prune extra rows
-        // Calculate expected row count. 
+        // Calculate expected row count.
         // Row 0 is base (1).
         // +1 for each active item that has children.
         let expectedRows = 1;
@@ -317,7 +323,7 @@ export class WeaponWheel {
         const row = this.treeContainer?.children[depth] as HTMLElement;
         if (!row) return;
 
-        Array.from(row.children).forEach(child => {
+        Array.from(row.children).forEach((child) => {
             const btn = child as HTMLElement;
             if (btn.dataset.id === activeItem.id) {
                 if (!btn.classList.contains('active')) btn.classList.add('active');
@@ -354,32 +360,38 @@ export class WeaponWheel {
         }
 
         if (!row) {
-            row = document.createElement('div');
-            row.className = 'tree-row';
+            row = DOMUtils.create('div', { className: 'tree-row' });
             // Insert at correct index? Flex reverse handles visual order.
             // DOM order implies depth (Child 0 = Bottom/Row 0).
 
-            items.forEach(item => {
-                const btn = document.createElement('div');
-                btn.className = 'tree-btn';
-                btn.dataset.id = item.id;
-                btn.dataset.depth = depth.toString();
+            items.forEach((item) => {
+                const btn = DOMUtils.create('div', {
+                    className: 'tree-btn',
+                    attributes: {
+                        'data-id': item.id,
+                        'data-depth': depth.toString()
+                    }
+                });
 
                 let iconUrl = '';
                 if (item.iconId) {
                     iconUrl = AssetLoader.getImagePath(item.iconId) || '';
-                } else if (item.id.includes('sword')) iconUrl = AssetLoader.getImagePath('weapon_melee_sword_t1_01') || '';
-                else if (item.id.includes('mace')) iconUrl = AssetLoader.getImagePath('weapon_melee_mace_t1_01') || '';
-                else if (item.id.includes('axe')) iconUrl = AssetLoader.getImagePath('weapon_melee_war_axe_t1_01') || '';
-                else if (item.id === 'shield') iconUrl = AssetLoader.getImagePath('weapon_melee_shield_t1_01') || '';
+                } else if (item.id.includes('sword'))
+                    iconUrl = AssetLoader.getImagePath('weapon_melee_sword_t1_01') || '';
+                else if (item.id.includes('mace'))
+                    iconUrl = AssetLoader.getImagePath('weapon_melee_mace_t1_01') || '';
+                else if (item.id.includes('axe'))
+                    iconUrl = AssetLoader.getImagePath('weapon_melee_war_axe_t1_01') || '';
+                else if (item.id === 'shield')
+                    iconUrl = AssetLoader.getImagePath('weapon_melee_shield_t1_01') || '';
 
                 if (iconUrl) {
                     btn.innerHTML = `
                         <div class="tree-btn-icon" style="background-image: url('${iconUrl}')"></div>
-                        <div class="tree-btn-label">${item.label}</div>
+                        <div class="tree-btn-label text-pixel-outline">${item.label}</div>
                      `;
                 } else {
-                    btn.innerHTML = `<div class="tree-btn-label">${item.label}</div>`;
+                    btn.innerHTML = `<div class="tree-btn-label text-pixel-outline">${item.label}</div>`;
                 }
                 row.appendChild(btn);
             });

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_res_gem
  * Auto-generated from JSON.
  */

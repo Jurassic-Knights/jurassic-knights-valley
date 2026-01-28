@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EnvironmentRenderer
  * Manages environmental visuals including Day/Night lighting and Weather Effects.
  *
@@ -7,12 +7,12 @@
  * - Weather Particles (Rain, Snow, Fog)
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { ProceduralSFX } from '../audio/ProceduralSFX';
-import { RainVFX } from '../vfx/weather/RainVFX';
-import { SnowVFX } from '../vfx/weather/SnowVFX';
+import { RainVFX } from '@vfx/weather/RainVFX';
+import { SnowVFX } from '@vfx/weather/SnowVFX';
 
 class EnvironmentRenderer {
     // Canvas references
@@ -82,7 +82,9 @@ class EnvironmentRenderer {
         // Listen for Time Ticks to update lighting state
         if (EventBus && GameConstants) {
             EventBus.on(GameConstants.Events.TIME_TICK, (data: any) => this.updateLighting(data));
-            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: any) => this.setWeather(data.type));
+            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: any) =>
+                this.setWeather(data.type)
+            );
         }
 
         // Initialize VFX Modules
@@ -132,7 +134,7 @@ class EnvironmentRenderer {
      */
     update(dt) {
         // Get Camera Delta from GameRenderer
-        let delta = { x: 0, y: 0 };
+        const delta = { x: 0, y: 0 };
         let viewport = null;
 
         if (this.game) {
@@ -358,8 +360,8 @@ class EnvironmentRenderer {
         // 0.50 (Noon) -> 0.0
         // 0.00 (Midnight) -> 0.0 (Smooth loop, no snap)
 
-        let skewStrength = 1.5;
-        let skew = Math.sin(dayTime * Math.PI * 2) * skewStrength;
+        const skewStrength = 1.5;
+        const skew = Math.sin(dayTime * Math.PI * 2) * skewStrength;
 
         // Clamp not needed for Sine, but good practice if strength > 2
         this.shadowSkew = skew;
@@ -440,7 +442,7 @@ class EnvironmentRenderer {
 // Create singleton and export
 const environmentRenderer = new EnvironmentRenderer();
 
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 Registry.register('EnvironmentRenderer', environmentRenderer);
 
 export { EnvironmentRenderer, environmentRenderer };

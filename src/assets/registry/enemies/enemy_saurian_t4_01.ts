@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: enemy_saurian_t4_01
  * Auto-generated from JSON.
  */

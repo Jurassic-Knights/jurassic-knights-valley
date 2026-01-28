@@ -1,19 +1,17 @@
-﻿/**
+/**
  * Merchant - NPC entity on each island for purchasing upgrades
  *
  * Owner: Director (engine), Gameplay Designer (values)
  */
-import { Entity } from '../core/Entity';
-import { MaterialLibrary } from '../vfx/MaterialLibrary';
-import { AssetLoader } from '../core/AssetLoader';
+import { Entity } from '@core/Entity';
+import { MaterialLibrary } from '@vfx/MaterialLibrary';
+import { AssetLoader } from '@core/AssetLoader';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
-import { EntityTypes } from '../config/EntityTypes';
-import { Registry } from '../core/Registry';
-import { getConfig } from '../data/GameConstants';
-
+import { EntityTypes } from '@config/EntityTypes';
+import { Registry } from '@core/Registry';
+import { getConfig } from '@data/GameConstants';
 
 // Unmapped modules - need manual import
-
 
 class Merchant extends Entity {
     // Merchant properties

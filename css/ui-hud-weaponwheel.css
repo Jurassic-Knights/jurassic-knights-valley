@@ -110,8 +110,8 @@
 }
 
 .wheel-label {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
+    font-family: var(--font-pixel);
+    font-size: 12px;
     color: #ffd700;
     text-transform: uppercase;
     line-height: 1.4;

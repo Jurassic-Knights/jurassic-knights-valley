@@ -1,4 +1,4 @@
-﻿/**
+/**
  * HeroDefaults - Default hero equipment and starting configuration
  *
  * Used to initialize the hero with starting equipment.
@@ -7,21 +7,20 @@
  * Owner: Gameplay Designer
  */
 
-
 const HeroDefaults = {
     // Default equipment by slot (use entity IDs from src/entities/equipment/)
     equipment: {
-        head: 'head_t1_01',       // Cloth Cap
-        body: 'chest_t1_01',      // Cloth Tunic
-        hands: 'hands_t1_01',     // Cloth Gloves
-        legs: 'feet_t1_01',       // Cloth Boots
-        accessory: null,          // No accessory by default
+        head: 'head_t1_01', // Cloth Cap
+        body: 'chest_t1_01', // Cloth Tunic
+        hands: 'hands_t1_01', // Cloth Gloves
+        legs: 'feet_t1_01', // Cloth Boots
+        accessory: null, // No accessory by default
         hand1: 'weapon_ranged_pistol_t1_01', // Nagant Revolver (pistol)
-        hand2: 'weapon_melee_sword_t1_01',  // Heavy Knife (sword)
-        tool_mining: 'tool_mining_t1_01',       // Stone Pickaxe
+        hand2: 'weapon_melee_sword_t1_01', // Heavy Knife (sword)
+        tool_mining: 'tool_mining_t1_01', // Stone Pickaxe
         tool_woodcutting: 'tool_woodcutting_t1_01', // Stone Hatchet
-        tool_harvesting: 'tool_harvesting_t1_01',   // Crude Sickle
-        tool_fishing: 'tool_fishing_t1_01'      // Makeshift Rod
+        tool_harvesting: 'tool_harvesting_t1_01', // Crude Sickle
+        tool_fishing: 'tool_fishing_t1_01' // Makeshift Rod
     },
 
     // Starting inventory items (resource IDs and quantities)

@@ -1,23 +1,21 @@
-﻿/**
+/**
  * DroppedItem - Collectible loot entity spawned when resources are destroyed
  *
  * Hero must walk near to pick up.
  *
  * Owner: Director (engine), Gameplay Designer (values)
  */
-import { Entity } from '../core/Entity';
+import { Entity } from '@core/Entity';
 import { Tween } from '../animation/Tween';
-import { VFXController } from '../vfx/VFXController';
+import { VFXController } from '@vfx/VFXController';
 import { ResourceRenderer } from '../rendering/ResourceRenderer';
 import { Resource } from './Resource';
-import { EntityTypes } from '../config/EntityTypes';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
-
+import { EntityTypes } from '@config/EntityTypes';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
 
 // Unmapped modules - need manual import
-
 
 class DroppedItem extends Entity {
     // Item identity
@@ -81,17 +79,14 @@ class DroppedItem extends Entity {
         this.pulseTime = 0;
 
         // Set color based on type (same as resource)
-        this.color =
-            Resource && Resource.COLORS ? Resource.COLORS[this.resourceType] : '#888888';
+        this.color = Resource && Resource.COLORS ? Resource.COLORS[this.resourceType] : '#888888';
 
         // Determine rarity
         const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
         this.rarity = typeConfig.rarity || 'common';
 
         this.rarityColor =
-            Resource && Resource.RARITY_COLORS
-                ? Resource.RARITY_COLORS[this.rarity]
-                : '#BDC3C7';
+            Resource && Resource.RARITY_COLORS ? Resource.RARITY_COLORS[this.rarity] : '#BDC3C7';
 
         // Flight animation props
         this.isFlying = false;

@@ -1,19 +1,18 @@
-﻿/**
+/**
  * ContextActionUI - Context-Sensitive Action Button Manager
  *
  * Separated from UIManager for single responsibility.
  * Handles the floating context action button (REST, FORGE, UNLOCK, SHOP).
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { AssetLoader } from '../core/AssetLoader';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { AssetLoader } from '@core/AssetLoader';
 import { AudioManager } from '../audio/AudioManager';
 import { MerchantUI } from './MerchantUI';
 // ForgeController accessed via Registry to avoid circular dependency
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 class ContextActionService {
     // Property declarations
@@ -117,13 +116,14 @@ class ContextActionService {
             case 'rest':
                 if (E && EventBus) EventBus.emit(E.REQUEST_REST);
                 break;
-            case 'forge':
+            case 'forge': {
                 const forgeCtrl = Registry?.get('ForgeController');
                 if (forgeCtrl) {
                     forgeCtrl.render('dashboard');
                     forgeCtrl.open();
                 }
                 break;
+            }
             case 'unlock':
                 if (this.contextData && E && EventBus) {
                     EventBus.emit(E.REQUEST_UNLOCK, {
@@ -164,8 +164,6 @@ class ContextActionService {
         this.btn.classList.add('active');
         Logger.debug('[ContextActionUI]', `Shown: ${type}`);
     }
-
-
 }
 
 // Create singleton and export

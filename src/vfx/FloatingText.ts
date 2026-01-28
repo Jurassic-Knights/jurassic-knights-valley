@@ -1,12 +1,12 @@
-﻿/**
+/**
  * FloatingText - Canvas-based damage numbers/popups
  *
- * Animation: Start full size â†’ shrink while floating â†’ hold small â†’ pop out
+ * Animation: Start full size → shrink while floating → hold small → pop out
  * Stacking: Multiple popups at same position stack vertically
  *
  * Owner: VFX Specialist
  */
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 
 class FloatingText {
     text: string;
@@ -36,12 +36,12 @@ class FloatingText {
         this.fontWeight = config.fontWeight || 'bold';
 
         // Timing (in seconds)
-        this.floatDuration = config.floatDuration || 0.4;  // Time to float and shrink
-        this.holdDuration = config.holdDuration || 0.15;   // Time to hold at small size
+        this.floatDuration = config.floatDuration || 0.4; // Time to float and shrink
+        this.holdDuration = config.holdDuration || 0.15; // Time to hold at small size
         this.totalDuration = this.floatDuration + this.holdDuration;
 
-        this.floatDistance = config.floatDistance || 40;   // Pixels to float up
-        this.shrinkScale = config.shrinkScale || 0.5;       // Final scale (50%)
+        this.floatDistance = config.floatDistance || 40; // Pixels to float up
+        this.shrinkScale = config.shrinkScale || 0.5; // Final scale (50%)
 
         this.timer = 0;
         this.active = true;
@@ -64,7 +64,7 @@ class FloatingText {
             const floatProgress = this.timer / this.floatDuration;
             // Ease out for smooth deceleration
             const easedProgress = 1 - Math.pow(1 - floatProgress, 2);
-            this.y = this.startY - (this.floatDistance * easedProgress);
+            this.y = this.startY - this.floatDistance * easedProgress;
         }
         // Hold phase: stay still at final position
     }
@@ -114,8 +114,8 @@ const FloatingTextManager = {
 
     // Track recent spawn positions for stacking
     recentSpawns: new Map(), // key: "x,y" -> { count, lastTime }
-    stackSpacing: 50,        // Pixels between stacked texts
-    stackTimeout: 500,       // ms before stack resets
+    stackSpacing: 50, // Pixels between stacked texts
+    stackTimeout: 500, // ms before stack resets
 
     // Type-based configurations
     configs: {
@@ -195,7 +195,7 @@ const FloatingTextManager = {
         const now = Date.now();
 
         const existing = this.recentSpawns.get(key);
-        if (existing && (now - existing.lastTime) < this.stackTimeout) {
+        if (existing && now - existing.lastTime < this.stackTimeout) {
             existing.count++;
             existing.lastTime = now;
             return existing.count * this.stackSpacing;

@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: flora_log_desert
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "flora_log_desert",
-  "name": "Petrified Log",
-  "sourceCategory": "environment",
-  "sourceFile": "flora",
-  "sprite": "flora_log_desert",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/flora/flora_log_desert_original.png"
-  },
-  "type": "flora",
-  "biome": "desert"
+    id: 'flora_log_desert',
+    name: 'Petrified Log',
+    sourceCategory: 'environment',
+    sourceFile: 'flora',
+    sprite: 'flora_log_desert',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/flora/flora_log_desert_original.png'
+    },
+    type: 'flora',
+    biome: 'desert'
 };

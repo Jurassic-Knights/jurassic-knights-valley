@@ -4,7 +4,7 @@
  */
 
 /* Override ui-overlay pointer-events: none */
-#ui-overlay>.equipment-screen,
+#ui-overlay > .equipment-screen,
 .equipment-screen {
     position: absolute;
     top: 0;
@@ -20,14 +20,15 @@
     padding: 0;
     /* No gaps - panel covers everything */
     box-sizing: border-box;
-    font-family: 'Press Start 2P', 'Courier New', monospace;
+    box-sizing: border-box;
+    font-family: 'Press Start 2P', monospace;
     overflow: hidden;
     /* Panel handles its own scrolling */
     pointer-events: auto !important;
 }
 
 /* Ensure ALL children are clickable - override any parent rules */
-#ui-overlay>.equipment-screen *,
+#ui-overlay > .equipment-screen *,
 .equipment-screen *,
 .equipment-screen button,
 .equipment-screen .inventory-item,
@@ -181,7 +182,8 @@
 
 .stat-value {
     color: #fff;
-    font-size: 10px;
+    font-size: 13px;
+    /* Mobile Secondary Safer */
     min-width: 40px;
     text-align: right;
 }
@@ -224,7 +226,8 @@
 }
 
 .item-preview-name {
-    font-size: 11px;
+    font-size: 14px;
+    /* Mobile Body Min */
     color: #c9a050;
     font-weight: bold;
     text-align: center;
@@ -280,7 +283,9 @@
 .inventory-item.selected {
     border-color: #ffd700 !important;
     border-width: 3px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.2);
+    box-shadow:
+        0 0 15px rgba(255, 215, 0, 0.6),
+        inset 0 0 15px rgba(255, 215, 0, 0.2);
     z-index: 5;
     background: #332b10;
 }
@@ -315,11 +320,11 @@
     top: 2px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 7px;
-    color: #fff;
+    font-size: 11px;
+    /* Minimum Readable */
     text-transform: uppercase;
     background: rgba(0, 0, 0, 0.7);
-    padding: 1px 4px;
+    padding: 2px 4px;
     border-radius: 3px;
     z-index: 1;
     white-space: nowrap;
@@ -357,7 +362,9 @@
 .equip-slot.selected .slot-icon {
     border-color: #ffd700 !important;
     border-width: 3px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 215, 0, 0.2);
+    box-shadow:
+        0 0 15px rgba(255, 215, 0, 0.6),
+        inset 0 0 15px rgba(255, 215, 0, 0.2);
     z-index: 5;
 }
 
@@ -648,7 +655,9 @@
 /* Make the character portrait clickable */
 .equip-character {
     cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
+    transition:
+        transform 0.15s,
+        box-shadow 0.15s;
 }
 
 .equip-character:hover {
@@ -712,7 +721,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s, transform 0.15s;
+    transition:
+        background 0.2s,
+        transform 0.15s;
 }
 
 .hero-skin-modal-close:hover {

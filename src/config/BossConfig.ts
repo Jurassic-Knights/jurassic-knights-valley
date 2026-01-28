@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BossConfig - Boss Enemy Configurations
  *
  * Separated from EntityConfig for single responsibility.

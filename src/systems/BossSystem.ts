@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BossSystem
  * Manages boss spawning, respawn timers, and encounter tracking.
  *
@@ -10,17 +10,16 @@
  * Work Package: 09-boss-system.md
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { entityManager } from '../core/EntityManager';
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
-import { BiomeConfig } from '../data/BiomeConfig';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { entityManager } from '@core/EntityManager';
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { BiomeConfig } from '@data/BiomeConfig';
 import { Boss } from '../gameplay/Boss';
 
 // Unmapped modules - need manual import
-
 
 class BossSystem {
     game: any = null;
@@ -49,7 +48,9 @@ class BossSystem {
             EventBus.on('ENEMY_DIED', (data: any) => this.onEnemyDied(data));
 
             // Listen for biome entry to spawn bosses
-            EventBus.on(GameConstants.Events.BIOME_ENTERED, (data: any) => this.onBiomeEntered(data));
+            EventBus.on(GameConstants.Events.BIOME_ENTERED, (data: any) =>
+                this.onBiomeEntered(data)
+            );
         }
     }
 

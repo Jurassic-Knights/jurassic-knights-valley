@@ -1,13 +1,12 @@
 /**
  * ForgePanel - Manages the Forge (Crafting) UI
  */
-import { UIPanel } from '../core/UIPanel';
+import { UIPanel } from '@ui/core/UIPanel';
 import { CraftingManager } from '../../gameplay/CraftingManager';
 import { AudioManager } from '../../audio/AudioManager';
-import { AssetLoader } from '../../core/AssetLoader';
-import { Registry } from '../../core/Registry';
-
-
+import { AssetLoader } from '@core/AssetLoader';
+import { Registry } from '@core/Registry';
+import { DOMUtils } from '@core/DOMUtils';
 
 class ForgePanel extends UIPanel {
     // Property declarations
@@ -71,9 +70,7 @@ class ForgePanel extends UIPanel {
                     const timeLeft = Math.ceil(
                         (slot.duration - (Date.now() - slot.startTime)) / 1000
                     );
-                    const iconPath = AssetLoader
-                        ? AssetLoader.getImagePath(recipe.outputIcon)
-                        : '';
+                    const iconPath = AssetLoader ? AssetLoader.getImagePath(recipe.outputIcon) : '';
 
                     el.innerHTML = `
                         <div style="display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: space-between; padding: 4px;">
@@ -107,8 +104,9 @@ class ForgePanel extends UIPanel {
         if (view === 'dashboard') {
             grid.classList.add('forge-dashboard-compact');
             CraftingManager.slots.forEach((slot) => {
-                const slotEl = document.createElement('div');
-                slotEl.className = `forge-slot ${slot.unlocked ? '' : 'locked'} ${slot.status === 'crafting' ? 'active' : ''}`;
+                const slotEl = DOMUtils.create('div', {
+                    className: `forge-slot ${slot.unlocked ? '' : 'locked'} ${slot.status === 'crafting' ? 'active' : ''}`
+                });
 
                 if (!slot.unlocked) {
                     slotEl.innerHTML = `
@@ -135,9 +133,7 @@ class ForgePanel extends UIPanel {
                 } else if (slot.status === 'crafting') {
                     // Active Slot (Initial paint)
                     const recipe = CraftingManager.getRecipe(slot.recipeId);
-                    const iconPath = AssetLoader
-                        ? AssetLoader.getImagePath(recipe.outputIcon)
-                        : '';
+                    const iconPath = AssetLoader ? AssetLoader.getImagePath(recipe.outputIcon) : '';
                     slotEl.innerHTML = `
                         <div style="display: flex; flex-direction: column; width: 100%; height: 100%; justify-content: space-between; padding: 4px;">
                             <div style="display: flex; align-items: center; width: 100%;">
@@ -171,40 +167,54 @@ class ForgePanel extends UIPanel {
             });
         } else if (view === 'recipes') {
             // ... Recipe View (Keep existing logic mostly as is, just method wrapper)
-            const header = document.createElement('div');
-            header.className = 'nav-header';
-            header.innerHTML = `<button class="back-btn">< Back</button> <span>Select Blueprint (Slot ${(context as any).slotId + 1})</span>`;
-            (header.querySelector('.back-btn') as HTMLElement).onclick = () => this.render('dashboard');
+            const header = DOMUtils.create('div', {
+                className: 'nav-header',
+                html: `<button class="back-btn">< Back</button> <span>Select Blueprint (Slot ${(context as any).slotId + 1})</span>`
+            });
+            const backBtn = header.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    this.render('dashboard');
+                });
+            }
             grid.appendChild(header);
 
             CraftingManager.recipes.forEach((recipe) => {
-                const item = document.createElement('div');
-                item.className = 'forge-item';
                 const iconPath = AssetLoader.getImagePath(recipe.outputIcon);
-                item.innerHTML = `
+                const item = DOMUtils.create('div', {
+                    className: 'forge-item',
+                    html: `
                     <div class="forge-icon" style="background-image: url('${iconPath || ''}')"></div>
                     <div class="forge-details">
                         <div class="forge-name">${recipe.name}</div>
                         <div class="forge-cost">
                             <span class="cost-item">Wood: ${recipe.fuelCost}</span>
                            ${Object.entries(recipe.ingredients)
-                        .map(
-                            ([k, v]) =>
-                                `<span class="cost-item">${k.replace('_', ' ')}: ${v}</span>`
-                        )
-                        .join('')}
+                               .map(
+                                   ([k, v]) =>
+                                       `<span class="cost-item">${k.replace('_', ' ')}: ${v}</span>`
+                               )
+                               .join('')}
                         </div>
                     </div>
-                `;
-                const btn = document.createElement('button');
-                btn.className = 'forge-btn';
-                btn.textContent = 'SELECT';
+                `
+                });
+
+                const btn = DOMUtils.create('button', {
+                    className: 'forge-btn',
+                    text: 'SELECT',
+                    onClick: () =>
+                        this.render('batch', {
+                            slotId: (context as any).slotId,
+                            recipeId: recipe.id
+                        })
+                }) as HTMLButtonElement;
+
                 if (!CraftingManager.canAfford(recipe, 1)) {
                     btn.disabled = true;
                     btn.textContent = 'LOCKED';
                 }
-                btn.onclick = () =>
-                    this.render('batch', { slotId: (context as any).slotId, recipeId: recipe.id });
+
                 item.appendChild(btn);
                 grid.appendChild(item);
             });
@@ -212,16 +222,20 @@ class ForgePanel extends UIPanel {
             const recipe = CraftingManager.getRecipe((context as any).recipeId);
             const max = CraftingManager.getMaxCraftable(recipe);
 
-            const header = document.createElement('div');
-            header.className = 'nav-header';
-            header.innerHTML = `<button class="back-btn">< Back</button> <span>Configuring ${recipe.name} (Slot ${(context as any).slotId + 1})</span>`;
-            (header.querySelector('.back-btn') as HTMLElement).onclick = () =>
-                this.render('recipes', { slotId: (context as any).slotId });
+            const header = DOMUtils.create('div', {
+                className: 'nav-header',
+                html: `<button class="back-btn">< Back</button> <span>Configuring ${recipe.name} (Slot ${(context as any).slotId + 1})</span>`
+            });
+            const backBtn = header.querySelector('.back-btn');
+            if (backBtn) {
+                (backBtn as HTMLElement).onclick = () =>
+                    this.render('recipes', { slotId: (context as any).slotId });
+            }
             grid.appendChild(header);
 
-            const container = document.createElement('div');
-            container.className = 'batch-control';
-            container.innerHTML = `
+            const container = DOMUtils.create('div', {
+                className: 'batch-control',
+                html: `
                 <div class="batch-amount" id="batch-display">1</div>
                 <div class="batch-slider-container">
                     <span>1</span>
@@ -230,7 +244,8 @@ class ForgePanel extends UIPanel {
                 </div>
                 <div class="forge-cost">Total Fuel: <span id="total-fuel">${recipe.fuelCost}</span> Wood</div>
                 <button class="forge-btn" id="confirm-craft">START FORGING</button>
-            `;
+            `
+            });
             grid.appendChild(container);
 
             const slider = document.getElementById('batch-slider');
@@ -252,13 +267,20 @@ class ForgePanel extends UIPanel {
 
             (confirmBtn as HTMLElement).onclick = () => {
                 const qty = parseInt((slider as HTMLInputElement).value);
-                const result = CraftingManager.startCrafting((context as any).slotId, recipe.id, qty);
+                const result = CraftingManager.startCrafting(
+                    (context as any).slotId,
+                    recipe.id,
+                    qty
+                );
                 if (result) {
                     if (AudioManager) AudioManager.playSFX('sfx_ui_click');
                     this.render('dashboard');
                 } else {
                     (confirmBtn as HTMLElement).textContent = 'FAILED';
-                    setTimeout(() => ((confirmBtn as HTMLElement).textContent = 'START FORGING'), 1000);
+                    setTimeout(
+                        () => ((confirmBtn as HTMLElement).textContent = 'START FORGING'),
+                        1000
+                    );
                 }
             };
         }

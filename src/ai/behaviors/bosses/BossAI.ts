@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BossAI - Phase-based boss behavior
  *
  * Extends basic enemy AI with:
@@ -15,10 +15,9 @@ import { AudioManager } from '../../../audio/AudioManager';
 import { BaseAI } from '../BaseAI';
 import { EnemyAI } from '../enemies/EnemyAI';
 import { Registry } from '../../../core/Registry';
-
+import { MathUtils } from '../../../core/MathUtils';
 
 // Unmapped modules - need manual import
-
 
 const BossAI = {
     /**
@@ -167,7 +166,7 @@ const BossAI = {
         if (boss.abilityCooldown <= 0 && boss.abilities?.length > 0) {
             const dist = boss.distanceTo
                 ? boss.distanceTo(hero)
-                : Math.sqrt((hero.x - boss.x) ** 2 + (hero.y - boss.y) ** 2);
+                : MathUtils.distance(hero.x, hero.y, boss.x, boss.y);
 
             // Random ability at medium range
             if (dist > boss.attackRange * 1.5 && dist < boss.aggroRange) {

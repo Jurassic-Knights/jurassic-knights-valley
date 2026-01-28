@@ -1,33 +1,32 @@
-﻿/**
+/**
  * Entity: weapon_melee_axe_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "weapon_melee_axe_t3_01",
-    "name":  "Cleaver Axe",
-    "description":  "A brutal weapon designed to split armor and bone alike.",
-    "category":  "equipment",
-    "equipSlot":  "hand1",
-    "weaponType":  "melee",
-    "weaponSubtype":  "axe",
-    "tier":  3,
-    "rarity":  "rare",
-    "stats":  {
-                  "damage":  30,
-                  "attackSpeed":  1.0,
-                  "range":  320
-              },
-    "recipe":  {
-                   "scraps_t3_01":  14,
-                   "minerals_t2_01":  10,
-                   "bone_t1_01":  4
-               },
-    "sprite":  "weapon_melee_axe_t3_01",
-    "sourceFile":  "weapon",
-    "files":  {
-                  "original":  "images/equipment/weapons/axe/weapon_axe_t3_01_original.png"
-              },
-    "gripType":  "1-hand"
-}
-;
+    id: 'weapon_melee_axe_t3_01',
+    name: 'Cleaver Axe',
+    description: 'A brutal weapon designed to split armor and bone alike.',
+    category: 'equipment',
+    equipSlot: 'hand1',
+    weaponType: 'melee',
+    weaponSubtype: 'axe',
+    tier: 3,
+    rarity: 'rare',
+    stats: {
+        damage: 30,
+        attackSpeed: 1.0,
+        range: 320
+    },
+    recipe: {
+        scraps_t3_01: 14,
+        minerals_t2_01: 10,
+        bone_t1_01: 4
+    },
+    sprite: 'weapon_melee_axe_t3_01',
+    sourceFile: 'weapon',
+    files: {
+        original: 'images/equipment/weapons/axe/weapon_axe_t3_01_original.png'
+    },
+    gripType: '1-hand'
+};

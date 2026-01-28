@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: boss_human_t4_03
  * Auto-generated from JSON.
  */

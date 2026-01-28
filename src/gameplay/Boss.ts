@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Boss - Powerful biome boss entity
  *
  * Larger, stronger, and has special abilities.
@@ -6,16 +6,15 @@
  *
  * Work Package: 09-boss-system.md
  */
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { EntityTypes } from '../config/EntityTypes';
-import { BiomeConfig } from '../data/BiomeConfig';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { EntityTypes } from '@config/EntityTypes';
+import { BiomeConfig } from '@data/BiomeConfig';
 
 import { Enemy } from './EnemyCore';
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
-
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
 
 class Boss extends Enemy {
     // Boss property declarations
@@ -34,9 +33,7 @@ class Boss extends Enemy {
         // Get boss config hierarchy: defaults -> type config -> instance config
         // Get boss config from EntityRegistry
         const defaults = EntityRegistry.defaults?.boss || {};
-        const typeConfig = config.bossType
-            ? EntityRegistry.bosses?.[config.bossType] || {}
-            : {};
+        const typeConfig = config.bossType ? EntityRegistry.bosses?.[config.bossType] || {} : {};
 
         // Merge configs (instance overrides type overrides defaults)
         const finalConfig = { ...defaults, ...typeConfig, ...config };

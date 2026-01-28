@@ -40,30 +40,12 @@
 }
 
 .inv-title {
-    font-family: var(--font-heading);
+    font-family: var(--font-pixel);
     font-size: 18px;
     color: var(--color-text-gold);
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 0;
-}
-
-.inv-close {
-    width: 32px;
-    height: 32px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--color-accent-iron);
-    border-radius: 4px;
-    color: var(--color-text-secondary);
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.inv-close:hover {
-    background: rgba(255, 100, 100, 0.3);
-    color: white;
-    border-color: #ff6666;
 }
 
 /* ========================================
@@ -79,8 +61,8 @@
 }
 
 .inv-type-btn {
-    font-family: var(--font-body);
-    font-size: 10px;
+    font-family: var(--font-pixel);
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding: 6px 12px;
@@ -149,8 +131,8 @@
     position: absolute;
     top: 4px;
     right: 4px;
-    font-family: var(--font-body);
-    font-size: 10px;
+    font-family: var(--font-pixel);
+    font-size: 11px;
     font-weight: bold;
     color: var(--color-text-gold);
     background: rgba(0, 0, 0, 0.85);
@@ -160,8 +142,8 @@
 }
 
 .inv-name {
-    font-family: var(--font-body);
-    font-size: 10px;
+    font-family: var(--font-pixel);
+    font-size: 11px;
     color: var(--color-text-primary);
     text-align: center;
     text-transform: uppercase;
@@ -178,7 +160,7 @@
     text-align: center;
     color: var(--color-text-secondary);
     padding: 40px 20px;
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 14px;
 }
 
@@ -224,7 +206,7 @@
 }
 
 .inv-category-btn .btn-label {
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 1px;

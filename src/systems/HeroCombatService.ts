@@ -1,24 +1,25 @@
-﻿/**
+/**
  * HeroCombatService - Handles auto-targeting and attack execution
  *
  * Extracted from HeroSystem to reduce file size and improve maintainability.
  * Owner: HeroCombatService
  */
 
-import { Logger } from '../core/Logger';
-import { entityManager } from '../core/EntityManager';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { entityManager } from '@core/EntityManager';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
-import { ProjectileVFX } from '../vfx/ProjectileVFX';
-import { VFXConfig } from '../data/VFXConfig';
-import { FloatingTextManager } from '../vfx/FloatingText';
-import { Registry } from '../core/Registry';
+import { ProjectileVFX } from '@vfx/ProjectileVFX';
+import { VFXConfig } from '@data/VFXConfig';
+import { FloatingTextManager } from '@vfx/FloatingText';
+import { Registry } from '@core/Registry';
 import { inputSystem } from '../input/InputSystem';
-import { EntityTypes } from '../config/EntityTypes';
-import { getWeaponStats } from '../data/GameConfig';
+import { EntityTypes } from '@config/EntityTypes';
+import { getWeaponStats } from '@data/GameConfig';
+import { MathUtils } from '@core/MathUtils';
 
 // Unmapped modules - need manual import
-
 
 const HeroCombatService = {
     game: null as any,
@@ -83,9 +84,15 @@ const HeroCombatService = {
 
         // Compute scan range as max of equipped weapon ranges using getWeaponStats
         const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
-        const hand1Range = activeWeapons.mainHand ? getWeaponStats(activeWeapons.mainHand).range : 0;
+        const hand1Range = activeWeapons.mainHand
+            ? getWeaponStats(activeWeapons.mainHand).range
+            : 0;
         const hand2Range = activeWeapons.offHand ? getWeaponStats(activeWeapons.offHand).range : 0;
-        const scanRange = Math.max(hand1Range, hand2Range, getConfig().Combat.DEFAULT_MINING_RANGE || 125);
+        const scanRange = Math.max(
+            hand1Range,
+            hand2Range,
+            getConfig().Combat.DEFAULT_MINING_RANGE || 125
+        );
 
         // Check Enemies (HIGHEST Priority)
         const enemyTypes = ['Enemy', 'Boss'];
@@ -94,9 +101,7 @@ const HeroCombatService = {
             for (const candidate of candidates) {
                 if (!candidate.active || candidate.isDead) continue;
 
-                const dx = candidate.x - hero.x;
-                const dy = candidate.y - hero.y;
-                const distSq = dx * dx + dy * dy;
+                const distSq = MathUtils.distanceSq(hero.x, hero.y, candidate.x, candidate.y);
                 const rangeSq = scanRange * scanRange;
 
                 if (distSq <= rangeSq && distSq < minDistSq) {
@@ -167,16 +172,16 @@ const HeroCombatService = {
         if (isEnemy && target.isDead) return false;
 
         // Calculate distance to target
-        const dx = hero.x - target.x;
-        const dy = hero.y - target.y;
-        const distSq = dx * dx + dy * dy;
-        const dist = Math.sqrt(distSq);
+        const dist = MathUtils.distance(hero.x, hero.y, target.x, target.y);
 
         // Get equipped weapons from the active weapon set
         const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
         const hand1Item = activeWeapons.mainHand;
         const hand2Item = activeWeapons.offHand;
-        const activeSlots = hero.equipment?.getActiveWeaponSlots?.() || { mainHand: 'hand1', offHand: 'hand2' };
+        const activeSlots = hero.equipment?.getActiveWeaponSlots?.() || {
+            mainHand: 'hand1',
+            offHand: 'hand2'
+        };
 
         // Use getWeaponStats for consistent range (base + bonus)
         const hand1Range = hand1Item ? getWeaponStats(hand1Item).range : 80;
@@ -227,11 +232,13 @@ const HeroCombatService = {
 
             // SFX based on weapon type
             if (AudioManager) {
-                AudioManager.playSFX(hand1Item.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing');
+                AudioManager.playSFX(
+                    hand1Item.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing'
+                );
             }
         }
 
-        // Hand2 Attack  
+        // Hand2 Attack
         if (hand2InRange) {
             const weaponStats = getWeaponStats(hand2Item);
             const weaponDmg = weaponStats.damage;
@@ -244,7 +251,9 @@ const HeroCombatService = {
 
             // SFX based on weapon type (only if different from hand1)
             if (AudioManager && !hand1InRange) {
-                AudioManager.playSFX(hand2Item.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing');
+                AudioManager.playSFX(
+                    hand2Item.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing'
+                );
             }
         }
 
@@ -261,17 +270,23 @@ const HeroCombatService = {
             this.playMuzzleFlash(hero, target, isRangedTarget);
         }
 
-        Logger.info(`[HeroCombatService] Attacking ${target.constructor.name}, damage: ${totalDmg} (H1:${hand1InRange}, H2:${hand2InRange})`);
+        Logger.info(
+            `[HeroCombatService] Attacking ${target.constructor.name}, damage: ${totalDmg} (H1:${hand1InRange}, H2:${hand2InRange})`
+        );
 
         // Damage Logic
-        let justKilled = false;
-        if (isEnemy && target.takeDamage) {
-            justKilled = target.takeDamage(totalDmg, hero);
-        } else if (target.components && target.components.health) {
-            justKilled = target.components.health.takeDamage(totalDmg);
-        } else if (target.takeDamage) {
-            justKilled = target.takeDamage(totalDmg);
+        // Damage Logic - Delegated to DamageSystem
+        if (EventBus) {
+            EventBus.emit(GameConstants.Events.ENTITY_DAMAGED, {
+                entity: target,
+                amount: totalDmg, // Use totalDmg
+                source: hero,
+                type: 'physical'
+            });
         }
+
+        const justKilled = false; // DamageSystem handles death, this is just for local return if needed
+        // We assume false for now as death is async event
 
         // Spawn damage popup
         if (FloatingTextManager && totalDmg > 0) {
@@ -293,11 +308,7 @@ const HeroCombatService = {
         const item = hero.equipment?.getSlot?.(slotId);
         const weaponType = item?.weaponSubtype || 'pistol';
 
-        ProjectileVFX.spawn(
-            { x: hero.x, y: hero.y },
-            { x: target.x, y: target.y },
-            weaponType
-        );
+        ProjectileVFX.spawn({ x: hero.x, y: hero.y }, { x: target.x, y: target.y }, weaponType);
     },
 
     /**
@@ -312,11 +323,7 @@ const HeroCombatService = {
         // Use new ProjectileVFX system
         if (ProjectileVFX) {
             const weaponType = ProjectileVFX.getWeaponType(hero);
-            ProjectileVFX.spawn(
-                { x: hero.x, y: hero.y },
-                { x: target.x, y: target.y },
-                weaponType
-            );
+            ProjectileVFX.spawn({ x: hero.x, y: hero.y }, { x: target.x, y: target.y }, weaponType);
             return;
         }
 

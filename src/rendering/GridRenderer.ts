@@ -1,4 +1,4 @@
-﻿/**
+/**
  * GridRenderer - Island and bridge rendering
  *
  * Extracted from GameRenderer.js for modularity.
@@ -126,7 +126,7 @@ const GridRenderer = {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(
-            '🔒',
+            '??',
             island.worldX + island.width / 2,
             island.worldY + island.height / 2 - 40
         );

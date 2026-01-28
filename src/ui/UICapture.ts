@@ -1,18 +1,18 @@
-﻿/**
+/**
  * UICapture - Debug UI Screenshot Utilities
  *
  * Separated from UIManager for single responsibility.
  * Only loaded in development/debug mode.
  */
 
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
+import { DOMUtils } from '@core/DOMUtils';
 
 // Unmapped modules - need manual import
 declare const html2canvas: any; // TODO: Add proper import
 
 // Unmapped modules - need manual import
- // TODO: Add proper import
-
+// TODO: Add proper import
 
 const UICapture = {
     /**
@@ -49,9 +49,12 @@ const UICapture = {
                 }
             });
 
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = canvas.toDataURL('image/png');
+            const link = DOMUtils.create('a', {
+                attributes: {
+                    download: filename,
+                    href: canvas.toDataURL('image/png')
+                }
+            }) as HTMLAnchorElement;
             link.click();
             Logger.info('[UICapture]', `Saved ${filename}`);
         } catch (err) {
@@ -65,7 +68,7 @@ const UICapture = {
     async captureAllZones() {
         if (!html2canvas) return alert('html2canvas missing');
 
-        let wasActive = document.body.classList.contains('ui-capture-mode');
+        const wasActive = document.body.classList.contains('ui-capture-mode');
         if (!wasActive) this.toggleMode();
 
         await new Promise((r) => setTimeout(r, 500));

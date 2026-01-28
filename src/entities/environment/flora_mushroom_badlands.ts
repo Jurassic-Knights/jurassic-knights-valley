@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: flora_mushroom_badlands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "flora_mushroom_badlands",
-  "name": "Toxic Mushroom",
-  "sourceCategory": "environment",
-  "sourceFile": "flora",
-  "sprite": "flora_mushroom_badlands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/flora/flora_mushroom_badlands_original.png"
-  },
-  "type": "flora",
-  "biome": "badlands"
+    id: 'flora_mushroom_badlands',
+    name: 'Toxic Mushroom',
+    sourceCategory: 'environment',
+    sourceFile: 'flora',
+    sprite: 'flora_mushroom_badlands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/flora/flora_mushroom_badlands_original.png'
+    },
+    type: 'flora',
+    biome: 'badlands'
 };

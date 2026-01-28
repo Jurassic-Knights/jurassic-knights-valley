@@ -1,16 +1,16 @@
-﻿/**
+/**
  * Entity: ui_icon_map
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "ui_icon_map",
-  "name": "Map Icon",
-  "sourceCategory": "ui",
-  "status": "pending",
-  "files": {
-    "original": "images/ui/ui_icon_map_original.png"
-  },
-  "description": "Icon for the world map button",
-  "declineNote": ""
+    id: 'ui_icon_map',
+    name: 'Map Icon',
+    sourceCategory: 'ui',
+    status: 'pending',
+    files: {
+        original: 'images/ui/ui_icon_map_original.png'
+    },
+    description: 'Icon for the world map button',
+    declineNote: ''
 };

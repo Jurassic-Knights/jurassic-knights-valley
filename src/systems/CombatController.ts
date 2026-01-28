@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CombatController - Manages combat targeting, attacks, and loot drops
  *
  * Extracted from Game.js to separate combat logic from the core game loop.
@@ -7,10 +7,12 @@
  * Owner: Gameplay Engineer
  */
 
-import { Logger } from '../core/Logger';
-import { entityManager } from '../core/EntityManager';
-import { Registry } from '../core/Registry';
+import { Logger } from '@core/Logger';
+import { GameConstants } from '@data/GameConstants';
+import { entityManager } from '@core/EntityManager';
+import { Registry } from '@core/Registry';
 import { heroSystem } from './HeroSystem';
+import { MathUtils } from '@core/MathUtils';
 
 // Reference entityManager as EntityManager for global usage pattern
 const EntityManager = entityManager;
@@ -68,7 +70,8 @@ class CombatController {
         let targetType = null;
 
         // Check resources (Mining Range)
-        const miningDist = hero.miningRange || (combat ? combat.range : 75);
+        const miningDist =
+            hero.miningRange || (combat ? combat.range : GameConstants.Combat.DEFAULT_MINING_RANGE);
         let i = 0;
         for (const resource of resources) {
             // Must be active AND ready (not depleted)
@@ -85,7 +88,9 @@ class CombatController {
         }
 
         // Check dinosaurs (Gun Range) - use stats component for equipped weapon range
-        const gunDist = hero.stats?.getAttackRange?.() || (combat ? combat.range : 500);
+        const gunDist =
+            hero.stats?.getAttackRange?.() ||
+            (combat ? combat.range : GameConstants.Combat.DEFAULT_GUN_RANGE);
 
         for (const dino of dinosaurs) {
             if (dino.active) {
@@ -109,7 +114,7 @@ class CombatController {
             if (enemy.active && !enemy.isDead) {
                 const dist = enemy.distanceTo
                     ? enemy.distanceTo(hero)
-                    : Math.sqrt((enemy.x - hero.x) ** 2 + (enemy.y - hero.y) ** 2);
+                    : MathUtils.distance(enemy.x, enemy.y, hero.x, hero.y);
                 // Enemies are valid targets within gun range
                 if (dist <= gunDist && dist < closestDist) {
                     closestDist = dist;

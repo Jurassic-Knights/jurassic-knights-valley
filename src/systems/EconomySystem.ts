@@ -1,21 +1,20 @@
-﻿/**
+/**
  * EconomySystem
  * Manages game currency, transactions, and resource validation.
  *
  * Replaces the legacy Economy.js object literal.
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { GameState } from '../core/State';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameState } from '@core/State';
 import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXTriggerService } from './VFXTriggerService';
 import { spawnManager } from './SpawnManager';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 class EconomySystem {
     game: any = null;
@@ -34,7 +33,9 @@ class EconomySystem {
         if (!EventBus) return;
 
         // Listen for transaction requests
-        EventBus.on(GameConstants.Events.REQUEST_UNLOCK, (data: any) => this.handleUnlockRequest(data));
+        EventBus.on(GameConstants.Events.REQUEST_UNLOCK, (data: any) =>
+            this.handleUnlockRequest(data)
+        );
 
         // Listen for direct gold modification requests (e.g. from debug or cheats)
         EventBus.on(GameConstants.Events.ADD_GOLD, (amount: any) => this.addGold(amount));

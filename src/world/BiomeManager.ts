@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BiomeManager - Handles world biome boundaries, detection, and roads
  *
  * World Size: 30,000 x 30,000 pixels
@@ -7,10 +7,10 @@
  * Uses polygon boundaries for natural-looking biome shapes.
  */
 
-import { Logger } from '../core/Logger';
-import { RoadsData } from '../data/RoadsData';
-import { Registry } from '../core/Registry';
-
+import { Logger } from '@core/Logger';
+import { RoadsData } from '@data/RoadsData';
+import { Registry } from '@core/Registry';
+import { MathUtils } from '@core/MathUtils';
 
 const BiomeManager = {
     // Biome IDs
@@ -215,16 +215,31 @@ const BiomeManager = {
         const lengthSq = dx * dx + dy * dy;
 
         if (lengthSq === 0) {
-            return Math.sqrt((px - from.x) ** 2 + (py - from.y) ** 2);
+            return MathUtils.distance(px, py, from.x, from.y);
         }
 
         let t = ((px - from.x) * dx + (py - from.y) * dy) / lengthSq;
-        t = Math.max(0, Math.min(1, t));
+        // t = Math.max(0, Math.min(1, t));
+        t = MathUtils.clamp(t, 0, 1);
 
         const projX = from.x + t * dx;
         const projY = from.y + t * dy;
 
-        return Math.sqrt((px - projX) ** 2 + (py - projY) ** 2);
+        return MathUtils.distance(px, py, projX, projY);
+    },
+
+    evaluateBezierTangent(t, points) {
+        const [p0, p1, p2, p3] = points;
+        const mt = 1 - t;
+        const mt2 = mt * mt;
+        const t2 = t * t;
+
+        // First derivative of cubic Bezier
+        const dx = 3 * mt2 * (p1.x - p0.x) + 6 * mt * t * (p2.x - p1.x) + 3 * t2 * (p3.x - p2.x);
+        const dy = 3 * mt2 * (p1.y - p0.y) + 6 * mt * t * (p2.y - p1.y) + 3 * t2 * (p3.y - p2.y);
+        const len = Math.sqrt(dx * dx + dy * dy) || 1; // Keeping Math.sqrt here for vector normalization as MathUtils doesn't have normalize yet
+
+        return { x: dx / len, y: dy / len };
     },
 
     isValidPosition(x, y) {
@@ -281,19 +296,6 @@ const BiomeManager = {
     /**
      * Get tangent vector at parameter t on Bezier curve
      */
-    evaluateBezierTangent(t, points) {
-        const [p0, p1, p2, p3] = points;
-        const mt = 1 - t;
-        const mt2 = mt * mt;
-        const t2 = t * t;
-
-        // First derivative of cubic Bezier
-        const dx = 3 * mt2 * (p1.x - p0.x) + 6 * mt * t * (p2.x - p1.x) + 3 * t2 * (p3.x - p2.x);
-        const dy = 3 * mt2 * (p1.y - p0.y) + 6 * mt * t * (p2.y - p1.y) + 3 * t2 * (p3.y - p2.y);
-        const len = Math.sqrt(dx * dx + dy * dy) || 1;
-
-        return { x: dx / len, y: dy / len };
-    },
 
     /**
      * Sample N points along a spline road

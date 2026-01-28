@@ -5,9 +5,8 @@
  * Owner: VFX Specialist
  */
 
-import { GameRenderer } from '../core/GameRenderer';
+import { GameRenderer } from '@core/GameRenderer';
 import { ParticleRenderer } from './ParticleRenderer';
-
 
 const ParticleSystem = {
     particles: [] as any[],
@@ -66,7 +65,7 @@ const ParticleSystem = {
                 angle = Math.random() * Math.PI * 2;
             }
             // Heavily bias vertical velocity for debris (pop up then fall)
-            let velocity = Math.random() * speed;
+            const velocity = Math.random() * speed;
             let vx = options.vx !== undefined ? options.vx : Math.cos(angle) * velocity;
             let vy = options.vy !== undefined ? options.vy : Math.sin(angle) * velocity;
 
@@ -132,10 +131,10 @@ const ParticleSystem = {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result
             ? {
-                r: parseInt(result[1], 16),
-                g: parseInt(result[2], 16),
-                b: parseInt(result[3], 16)
-            }
+                  r: parseInt(result[1], 16),
+                  g: parseInt(result[2], 16),
+                  b: parseInt(result[3], 16)
+              }
             : { r: 255, g: 255, b: 255 };
     },
 
@@ -256,12 +255,7 @@ const ParticleSystem = {
         let canvasTop = 0;
 
         // Calculate projection if we are drawing to our own overlay canvas
-        if (
-            !overrideCtx &&
-            GameRenderer &&
-            GameRenderer.viewport &&
-            GameRenderer.canvas
-        ) {
+        if (!overrideCtx && GameRenderer && GameRenderer.viewport && GameRenderer.canvas) {
             const gr = GameRenderer;
             const rect = gr.canvas.getBoundingClientRect();
 

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ColorPalette - Centralized color constants for game systems
  *
  * SINGLE SOURCE OF TRUTH - Use these instead of inline hex strings in JS code.

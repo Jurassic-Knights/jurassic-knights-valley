@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: boss_dinosaur_t3_01
  * Auto-generated from JSON.
  */

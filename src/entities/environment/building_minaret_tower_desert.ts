@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: building_minaret_tower_desert
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "building_minaret_tower_desert",
-  "name": "Minaret Tower",
-  "sourceCategory": "environment",
-  "sourceFile": "buildings",
-  "sprite": "building_minaret_tower_desert",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/buildings/building_minaret_tower_desert_original.png"
-  },
-  "type": "prop",
-  "biome": "desert"
+    id: 'building_minaret_tower_desert',
+    name: 'Minaret Tower',
+    sourceCategory: 'environment',
+    sourceFile: 'buildings',
+    sprite: 'building_minaret_tower_desert',
+    status: 'pending',
+    files: {
+        original: 'assets/images/buildings/building_minaret_tower_desert_original.png'
+    },
+    type: 'prop',
+    biome: 'desert'
 };

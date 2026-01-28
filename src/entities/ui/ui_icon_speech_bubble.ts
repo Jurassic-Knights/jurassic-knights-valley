@@ -1,15 +1,15 @@
-﻿/**
+/**
  * Entity: ui_icon_speech_bubble
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "ui_icon_speech_bubble",
-  "name": "Speech Bubble Icon",
-  "sourceCategory": "ui",
-  "status": "approved",
-  "files": {
-    "original": "images/ui/ui_icon_speech_bubble_original.png"
-  },
-  "description": "Icon for dialogue/speech interactions"
+    id: 'ui_icon_speech_bubble',
+    name: 'Speech Bubble Icon',
+    sourceCategory: 'ui',
+    status: 'approved',
+    files: {
+        original: 'images/ui/ui_icon_speech_bubble_original.png'
+    },
+    description: 'Icon for dialogue/speech interactions'
 };

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: enemy_human_t1_01
  * Auto-generated from JSON.
  */

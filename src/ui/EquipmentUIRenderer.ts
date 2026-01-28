@@ -1,15 +1,15 @@
 /**
  * EquipmentUIRenderer - Rendering logic for EquipmentUI
  * Handles all HTML generation and template rendering.
- * 
+ *
  * Owner: UI Engineer
  */
 
-import { AssetLoader } from '../core/AssetLoader';
-import { GameInstance } from '../core/Game';
-import { EntityRegistry } from '../entities/EntityLoader';
-import { Registry } from '../core/Registry';
-
+import { AssetLoader } from '@core/AssetLoader';
+import { GameInstance } from '@core/Game';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { Registry } from '@core/Registry';
+import { RenderConfig } from '@config/RenderConfig';
 
 class EquipmentUIRenderer {
     /**
@@ -62,23 +62,18 @@ class EquipmentUIRenderer {
                 </div>
 
                 <!-- Selected Item Stats Bar -->
-                <div class="equip-summary-bar ${item ? 'has-item' : 'empty'}" style="width:100%; padding:0; background:rgba(0,0,0,0.5); display:flex; flex-direction:row; align-items:stretch; min-height:60px;">
-                    <div class="item-preview-name" style="
-                        font-size: 1.0rem; 
-                        font-weight: 800; 
-                        color: #ffc107; 
+                <div class="equip-summary-bar ${item ? 'has-item' : 'empty'}" style="width:100%; padding:0; background:rgba(0,0,0,0.5); display:flex; flex-direction:row; align-items:stretch; min-height:${RenderConfig.UI.Equipment.SLOT_SIZE}px;">
+                    <div class="item-preview-name text-pixel-outline" style="
+                        font-size: ${RenderConfig.UI.Equipment.FONTS.ITEM_NAME_SIZE}; 
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         padding: 0 12px; 
                         width: 30%; 
-                        background: rgba(255,193,7,0.1);
-                        border-right: 1px solid rgba(255,193,7,0.2);
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
+                        background: ${RenderConfig.UI.Equipment.COLORS.SELECTED_BG};
+                        border-right: 1px solid ${RenderConfig.UI.Equipment.COLORS.SELECTED_BORDER};
                         box-sizing: border-box;
                         text-align: center;
-                        line-height: 1.2;
                     ">${itemName}</div>
                     <div class="item-stats-row" style="flex:1; padding:4px 8px; box-sizing: border-box; display:flex; align-items:center;">
                         ${item ? EquipmentUIRenderer.renderItemStats(item) : '<div class="summary-stat empty" style="width:100%; text-align:center; color:#666;">Double-tap to equip</div>'}
@@ -120,7 +115,7 @@ class EquipmentUIRenderer {
 
             return `
                 <div class="slot-row tool-slots">
-                    ${['tool_mining', 'tool_woodcutting', 'tool_harvesting', 'tool_fishing'].map(slot => EquipmentUIRenderer.renderSlot(ui, slot, toolSlotLabels[slot], equipment)).join('')}
+                    ${['tool_mining', 'tool_woodcutting', 'tool_harvesting', 'tool_fishing'].map((slot) => EquipmentUIRenderer.renderSlot(ui, slot, toolSlotLabels[slot], equipment)).join('')}
                 </div>
             `;
         }
@@ -143,12 +138,12 @@ class EquipmentUIRenderer {
                 <div class="weapon-sets-container">
                     <div class="weapon-set">
                         <div class="slot-row weapon-slots-pair">
-                            ${['hand1', 'hand2'].map(slot => EquipmentUIRenderer.renderSlot(ui, slot, weaponSlotLabels[slot], equipment)).join('')}
+                            ${['hand1', 'hand2'].map((slot) => EquipmentUIRenderer.renderSlot(ui, slot, weaponSlotLabels[slot], equipment)).join('')}
                         </div>
                     </div>
                     <div class="weapon-set">
                         <div class="slot-row weapon-slots-pair">
-                            ${['hand1_alt', 'hand2_alt'].map(slot => EquipmentUIRenderer.renderSlot(ui, slot, weaponSlotLabels[slot], equipment)).join('')}
+                            ${['hand1_alt', 'hand2_alt'].map((slot) => EquipmentUIRenderer.renderSlot(ui, slot, weaponSlotLabels[slot], equipment)).join('')}
                         </div>
                     </div>
                 </div>
@@ -157,16 +152,20 @@ class EquipmentUIRenderer {
 
         // Armor mode: show armor and accessory slots only
         const armorSlotLabels = {
-            head: 'Helmet', body: 'Armor', hands: 'Gloves', legs: 'Legs',
-            accessory: 'Acc 1', accessory2: 'Acc 2'
+            head: 'Helmet',
+            body: 'Armor',
+            hands: 'Gloves',
+            legs: 'Legs',
+            accessory: 'Acc 1',
+            accessory2: 'Acc 2'
         };
 
         return `
             <div class="slot-row">
-                ${['head', 'body', 'hands', 'legs'].map(slot => EquipmentUIRenderer.renderSlot(ui, slot, armorSlotLabels[slot], equipment)).join('')}
+                ${['head', 'body', 'hands', 'legs'].map((slot) => EquipmentUIRenderer.renderSlot(ui, slot, armorSlotLabels[slot], equipment)).join('')}
             </div>
             <div class="slot-row">
-                ${['accessory', 'accessory2'].map(slot => EquipmentUIRenderer.renderSlot(ui, slot, armorSlotLabels[slot], equipment)).join('')}
+                ${['accessory', 'accessory2'].map((slot) => EquipmentUIRenderer.renderSlot(ui, slot, armorSlotLabels[slot], equipment)).join('')}
             </div>
         `;
     }
@@ -188,25 +187,32 @@ class EquipmentUIRenderer {
         const isDisabledByTwoHand = slotId === 'hand2' && hand1Item?.gripType === '2-hand';
 
         // Add slot-selectable class for weapon slots during selection mode
-        const isSelectable = ui.slotSelectionMode && (slotId === 'hand1' || slotId === 'hand2') && !isDisabledByTwoHand;
+        const isSelectable =
+            ui.slotSelectionMode &&
+            (slotId === 'hand1' || slotId === 'hand2') &&
+            !isDisabledByTwoHand;
         const selectableClass = isSelectable ? 'slot-selectable' : '';
         const disabledClass = isDisabledByTwoHand ? 'slot-disabled' : '';
 
         // SVG marching ants animation for selectable slots
-        const marchingAntsSvg = isSelectable ? `
+        const marchingAntsSvg = isSelectable
+            ? `
             <svg class="marching-ants-border" viewBox="0 0 60 60" preserveAspectRatio="none">
                 <rect x="2" y="2" width="56" height="56" rx="6" ry="6" />
             </svg>
-        ` : '';
+        `
+            : '';
 
         // Slash overlay for disabled slots
-        const slashOverlay = isDisabledByTwoHand ? `
+        const slashOverlay = isDisabledByTwoHand
+            ? `
             <div class="slot-disabled-slash"></div>
-        ` : '';
+        `
+            : '';
 
         return `
             <div class="equip-slot ${selectableClass} ${disabledClass}" data-slot="${slotId}">
-                <div class="slot-label">${label}</div>
+                <div class="slot-label text-pixel-outline">${label}</div>
                 <div class="slot-icon ${item ? 'filled' : 'empty'}" style="${imgPath ? `background-image: url('${imgPath}')` : ''}">
                     ${marchingAntsSvg}
                     ${slashOverlay}
@@ -230,11 +236,15 @@ class EquipmentUIRenderer {
 
         return `
             <div class="inventory-grid">
-                ${filtered.map(item => `
+                ${filtered
+                    .map(
+                        (item) => `
                     <div class="inventory-item ${ui.selectedItem?.id === item.id ? 'selected' : ''}" data-id="${item.id}">
                         <div class="item-icon" style="background-image: url('${EquipmentUIRenderer.getItemIcon(item.id)}')"></div>
                     </div>
-                `).join('')}
+                `
+                    )
+                    .join('')}
             </div>
         `;
     }
@@ -320,48 +330,59 @@ class EquipmentUIRenderer {
                 { key: 'attackSpeed', label: 'SPD', iconId: 'stat_attack_speed' },
                 { key: 'range', label: 'RNG', iconId: 'stat_range' },
                 { key: 'critChance', label: 'CRT%', iconId: 'stat_crit_chance' },
-                { key: 'critDamage', label: 'CRT×', iconId: 'stat_crit_damage' },
+                { key: 'critDamage', label: 'CRT×', iconId: 'stat_crit_damage' }
             ];
-        } else if (type === 'armor' || ['head', 'body', 'chest', 'hands', 'legs', 'feet'].includes(item.slot)) {
+        } else if (
+            type === 'armor' ||
+            ['head', 'body', 'chest', 'hands', 'legs', 'feet'].includes(item.slot)
+        ) {
             // Armor stats
             relevantStats = [
                 { key: 'armor', label: 'ARM', iconId: 'stat_armor' },
                 { key: 'health', label: 'HP', iconId: 'stat_health' },
                 { key: 'stamina', label: 'STA', iconId: 'stat_stamina' },
-                { key: 'speed', label: 'SPD', iconId: 'stat_speed' },
+                { key: 'speed', label: 'SPD', iconId: 'stat_speed' }
             ];
         } else if (type === 'tool' || item.slot === 'tool') {
             // Tool stats
-            relevantStats = [
-                { key: 'efficiency', label: 'EFF', iconId: 'stat_efficiency' },
-            ];
+            relevantStats = [{ key: 'efficiency', label: 'EFF', iconId: 'stat_efficiency' }];
         } else {
             // Generic - show any stats present
             return Object.entries(stats)
-                .map(([key, val]) => `<div class="summary-stat"><span>${key}</span> <span>${val}</span></div>`)
+                .map(
+                    ([key, val]) =>
+                        `<div class="summary-stat"><span>${key}</span> <span>${val}</span></div>`
+                )
                 .join('');
         }
 
         // Render each stat with icon - fixed width grid, no layout shift
         const statCount = relevantStats.length;
         // Grid columns based on stat count: weapons=5, armor=4, tools=1
-        const gridCols = statCount <= 1 ? '1fr' : statCount <= 4 ? `repeat(${statCount}, 1fr)` : 'repeat(5, 1fr)';
+        const gridCols =
+            statCount <= 1
+                ? '1fr'
+                : statCount <= 4
+                  ? `repeat(${statCount}, 1fr)`
+                  : 'repeat(5, 1fr)';
 
         return `<div class="stats-grid" style="display:grid; grid-template-columns:${gridCols}; gap:4px; width:100%; justify-items:center;">
-            ${relevantStats.map(stat => {
-            const value = stats[stat.key] ?? 0;
-            const iconPath = AssetLoader?.getImagePath?.(stat.iconId) || '';
-            const prefix = value > 0 ? '+' : '';
-            // Format value: show 1 decimal for decimals, integer otherwise
-            const displayVal = Number.isInteger(value) ? value : value.toFixed(1);
-            return `
+            ${relevantStats
+                .map((stat) => {
+                    const value = stats[stat.key] ?? 0;
+                    const iconPath = AssetLoader?.getImagePath?.(stat.iconId) || '';
+                    const prefix = value > 0 ? '+' : '';
+                    // Format value: show 1 decimal for decimals, integer otherwise
+                    const displayVal = Number.isInteger(value) ? value : value.toFixed(1);
+                    return `
                     <div class="summary-stat" title="${stat.label}" style="display:flex; flex-direction:column; align-items:center; gap:0px; min-width:0; width:100%;">
                         <img class="stat-icon-img" src="${iconPath}" alt="${stat.label}" style="width:24px;height:24px;object-fit:contain; margin-bottom:2px;">
                         <span style="font-size:0.6rem; color:#888; text-transform:uppercase; white-space:nowrap; line-height:1;">${stat.label}</span>
-                        <span style="font-size:0.9rem; font-weight:bold; color:#fff; width:100%; text-align:center; white-space:nowrap;">${prefix}${displayVal}</span>
+                        <span class="text-pixel-outline" style="font-size:0.9rem; width:100%; text-align:center; white-space:nowrap;">${prefix}${displayVal}</span>
                     </div>
                 `;
-        }).join('')}
+                })
+                .join('')}
         </div>`;
     }
 }

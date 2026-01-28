@@ -7,10 +7,9 @@
  * Owner: VFX Artist
  */
 
-import { Logger } from '../core/Logger';
-import { VFXController } from '../vfx/VFXController';
-import { VFXConfig } from '../data/VFXConfig';
-
+import { Logger } from '@core/Logger';
+import { VFXController } from '@vfx/VFXController';
+import { VFXConfig } from '@data/VFXConfig';
 
 const VFXTriggerService = {
     /**

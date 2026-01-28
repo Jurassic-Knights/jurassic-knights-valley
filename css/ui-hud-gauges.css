@@ -35,7 +35,7 @@
     bottom: -4px;
     left: 50%;
     transform: translateX(-50%);
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 7px;
     font-weight: bold;
     color: var(--color-primary-dark);
@@ -64,7 +64,7 @@
 }
 
 .gauge-label {
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 7px;
     font-weight: bold;
     color: var(--color-text-secondary);
@@ -99,7 +99,7 @@
 }
 
 .gauge-value {
-    font-family: var(--font-body);
+    font-family: var(--font-pixel);
     font-size: 0.7rem;
     font-weight: bold;
     color: var(--color-text-primary);

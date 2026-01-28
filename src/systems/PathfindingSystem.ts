@@ -1,4 +1,4 @@
-﻿/**
+/**
  * PathfindingSystem - A* pathfinding for grid-based navigation
  *
  * Uses the IslandManager's grid system to find paths around obstacles.
@@ -7,11 +7,10 @@
  * Owner: AI Systems
  */
 
-import { Logger } from '../core/Logger';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Logger } from '@core/Logger';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { IslandManager } from '../world/IslandManager';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 class PathfindingSystem {
     game: any = null;

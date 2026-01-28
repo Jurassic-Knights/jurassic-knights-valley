@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: prop_campfire_grasslands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "prop_campfire_grasslands",
-  "name": "Campfire",
-  "sourceCategory": "environment",
-  "sourceFile": "props",
-  "sprite": "prop_campfire_grasslands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/props/prop_campfire_grasslands_original.png"
-  },
-  "type": "prop",
-  "biome": "grasslands"
+    id: 'prop_campfire_grasslands',
+    name: 'Campfire',
+    sourceCategory: 'environment',
+    sourceFile: 'props',
+    sprite: 'prop_campfire_grasslands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/props/prop_campfire_grasslands_original.png'
+    },
+    type: 'prop',
+    biome: 'grasslands'
 };

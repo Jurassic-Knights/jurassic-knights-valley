@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BaseAI - Shared AI utility functions
  *
  * Provides common methods used by all AI behavior modules:
@@ -9,7 +9,8 @@
  * Owner: AI System
  */
 
-import { getConfig } from '../../data/GameConfig';
+import { getConfig } from '@data/GameConfig';
+import { MathUtils } from '@core/MathUtils';
 
 const BaseAI = {
     /**
@@ -25,18 +26,14 @@ const BaseAI = {
      * Calculate distance between two entities
      */
     distanceTo(entity, target) {
-        const dx = target.x - entity.x;
-        const dy = target.y - entity.y;
-        return Math.sqrt(dx * dx + dy * dy);
+        return MathUtils.distance(entity.x, entity.y, target.x, target.y);
     },
 
     /**
      * Check if entity is within leash distance of spawn
      */
     isWithinLeash(entity) {
-        const dx = entity.x - entity.spawnX;
-        const dy = entity.y - entity.spawnY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = MathUtils.distance(entity.x, entity.y, entity.spawnX, entity.spawnY);
         const leash = entity.leashDistance || getConfig().AI?.LEASH_DISTANCE || 800;
         return dist <= leash;
     },
@@ -55,7 +52,7 @@ const BaseAI = {
     moveTowards(entity, targetX, targetY, speed, dt) {
         const dx = targetX - entity.x;
         const dy = targetY - entity.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = MathUtils.distance(entity.x, entity.y, targetX, targetY);
 
         if (dist < 10) return true; // Arrived
 

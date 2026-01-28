@@ -47,8 +47,27 @@ export interface IEntity {
     width: number;
     /** Height for collision/rendering */
     height: number;
+    height: number;
     /** Whether entity is active */
     active: boolean;
+    /** Current state (idle, move, attack, dead) */
+    state?: string;
+    /** Whether entity is dead */
+    isDead?: boolean;
+
+    // Combat Properties (Optional)
+    health?: number;
+    maxHealth?: number;
+    defense?: number;
+    xpReward?: number;
+    lootTableId?: string;
+
+    /** Component container */
+    components?: {
+        [key: string]: any;
+        health?: any;
+        stats?: any;
+    };
     /** Sprite image for rendering */
     sprite?: HTMLImageElement | null;
     /** Visual scale multiplier */
@@ -148,7 +167,6 @@ export interface IResourceEntity extends IEntity {
     resourceType?: string;
     recalculateRespawnTimer?(): void;
 }
-
 
 // ============================================
 // GAME INTERFACE

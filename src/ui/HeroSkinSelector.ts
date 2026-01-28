@@ -1,15 +1,16 @@
 /**
  * HeroSkinSelector - Modal UI for selecting hero skins
- * 
+ *
  * Extracted from EquipmentUI for better modularity.
- * 
+ *
  * Owner: UI Engineer
  */
 
-import { EventBus } from '../core/EventBus';
-import { GameInstance } from '../core/Game';
+import { EventBus } from '@core/EventBus';
+import { GameInstance } from '@core/Game';
 import { HeroRenderer } from '../rendering/HeroRenderer';
-import { EntityRegistry } from '../entities/EntityLoader';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { DOMUtils } from '@core/DOMUtils';
 
 /**
  * Hero skin selector modal manager
@@ -39,21 +40,26 @@ class HeroSkinSelectorClass {
                 <button class="hero-skin-modal-close">×</button>
                 <div class="hero-skin-modal-title">Select Hero Skin</div>
                 <div class="hero-skin-grid">
-                    ${heroSkins.map(skin => `
+                    ${heroSkins
+                        .map(
+                            (skin) => `
                         <div class="hero-skin-option ${skin.id === currentSkin ? 'selected' : ''}" data-skin-id="${skin.id}">
                             <div class="hero-skin-image" data-icon-id="${skin.id}"></div>
                             <div class="hero-skin-name">${skin.name}</div>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                     ${heroSkins.length === 0 ? '<div class="hero-skin-empty">No hero skins available</div>' : ''}
                 </div>
             </div>
         `;
 
-        const modalContainer = document.createElement('div');
-        modalContainer.id = 'hero-skin-selector';
-        modalContainer.className = 'hero-skin-selector-overlay';
-        modalContainer.innerHTML = modalHtml;
+        const modalContainer = DOMUtils.create('div', {
+            id: 'hero-skin-selector',
+            className: 'hero-skin-selector-overlay',
+            html: modalHtml
+        });
         this.container.appendChild(modalContainer);
 
         this._loadSkinImages(modalContainer);

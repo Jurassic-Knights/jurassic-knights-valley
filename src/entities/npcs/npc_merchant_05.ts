@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: npc_merchant_05
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "npc_merchant_05",
-  "name": "Scrap Yard Merchant",
-  "sourceCategory": "npcs",
-  "sourceFile": "merchants",
-  "sprite": "npc_merchant_05",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/characters/npc_merchant_05_original.png"
-  },
-  "type": "merchant",
-  "biome": "scrap_yard"
+    id: 'npc_merchant_05',
+    name: 'Scrap Yard Merchant',
+    sourceCategory: 'npcs',
+    sourceFile: 'merchants',
+    sprite: 'npc_merchant_05',
+    status: 'pending',
+    files: {
+        original: 'assets/images/characters/npc_merchant_05_original.png'
+    },
+    type: 'merchant',
+    biome: 'scrap_yard'
 };

@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: flora_mushroom_grasslands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "flora_mushroom_grasslands",
-  "name": "Mushroom Cluster",
-  "sourceCategory": "environment",
-  "sourceFile": "flora",
-  "sprite": "flora_mushroom_grasslands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/flora/flora_mushroom_grasslands_original.png"
-  },
-  "type": "flora",
-  "biome": "grasslands"
+    id: 'flora_mushroom_grasslands',
+    name: 'Mushroom Cluster',
+    sourceCategory: 'environment',
+    sourceFile: 'flora',
+    sprite: 'flora_mushroom_grasslands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/flora/flora_mushroom_grasslands_original.png'
+    },
+    type: 'flora',
+    biome: 'grasslands'
 };

@@ -1,25 +1,26 @@
-﻿/**
+/**
  * HeroRenderer - Dedicated rendering system for the player character
  *
  * Extracted from Hero.js to separate logic from presentation.
  * Uses RenderConfig for constants.
  */
 
-import { Logger } from '../core/Logger';
-import { RenderConfig } from '../config/RenderConfig';
-import { MaterialLibrary } from '../vfx/MaterialLibrary';
-import { AssetLoader } from '../core/AssetLoader';
-import { entityManager } from '../core/EntityManager';
+import { Logger } from '@core/Logger';
+import { RenderConfig } from '@config/RenderConfig';
+import { MaterialLibrary } from '@vfx/MaterialLibrary';
+import { AssetLoader } from '@core/AssetLoader';
+import { entityManager } from '@core/EntityManager';
 import { WeaponRenderer } from './WeaponRenderer';
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
-import { ColorPalette } from '../config/ColorPalette';
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { ColorPalette } from '@config/ColorPalette';
 import { environmentRenderer } from './EnvironmentRenderer';
-import { EntityTypes } from '../config/EntityTypes';
-import { getWeaponStats } from '../data/GameConfig';
+import { EntityTypes } from '@config/EntityTypes';
+import { getWeaponStats } from '@data/GameConfig';
 
 // Unmapped modules - need manual import
-
+import { MathUtils } from '@core/MathUtils';
+import { DOMUtils } from '@core/DOMUtils';
 
 class HeroRendererSystem {
     // Cached image properties
@@ -100,13 +101,13 @@ class HeroRendererSystem {
      * Draw health bar above hero
      */
     drawStatusBars(ctx, hero) {
-        const barWidth = 80;
-        const barHeight = 10;
+        const barWidth = RenderConfig.UI.HEALTH_BAR_WIDTH;
+        const barHeight = RenderConfig.UI.HEALTH_BAR_HEIGHT;
         const cornerRadius = 4;
 
         // Health Bar (above hero) - Use ColorPalette
         const healthY = hero.y - hero.height / 2 - 18;
-        const healthPercent = Math.max(0, Math.min(1, hero.health / hero.maxHealth));
+        const healthPercent = MathUtils.clamp(hero.health / hero.maxHealth, 0, 1);
         const colors = ColorPalette;
 
         this.drawBar(
@@ -255,7 +256,8 @@ class HeroRendererSystem {
             }
 
             // Wait for image to be fully processed (white removal converts src to data URL)
-            const isProcessed = this._heroImg.src.startsWith('data:') || this._heroImg.src.includes('PH.png');
+            const isProcessed =
+                this._heroImg.src.startsWith('data:') || this._heroImg.src.includes('PH.png');
             const isLoaded = this._heroImg.complete && this._heroImg.naturalWidth;
 
             if (isLoaded && isProcessed) {
@@ -268,9 +270,7 @@ class HeroRendererSystem {
                 ) {
                     this._heroW = hero.width;
                     this._heroH = hero.height;
-                    this._heroCanvas = document.createElement('canvas');
-                    this._heroCanvas.width = hero.width;
-                    this._heroCanvas.height = hero.height;
+                    this._heroCanvas = DOMUtils.createCanvas(hero.width, hero.height);
                     const c = this._heroCanvas.getContext('2d');
                     c.imageSmoothingEnabled = false;
                     c.drawImage(this._heroImg, 0, 0, hero.width, hero.height);
@@ -285,7 +285,7 @@ class HeroRendererSystem {
     /**
      * Draw the equipped weapon based on target
      * Uses equipped items from hero.equipment for sprite rendering
-     * 
+     *
      * Positioning:
      * - Idle: Hand 1 on LEFT, Hand 2 on RIGHT, pointing diagonally upward
      * - Active (moving/targeting): Rotate toward aim direction
@@ -302,10 +302,15 @@ class HeroRendererSystem {
         let aimY = 0;
 
         if (hasTarget) {
-            const dx = hero.targetResource.x - hero.x;
-            const dy = hero.targetResource.y - hero.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const dist = MathUtils.distance(
+                hero.x,
+                hero.y,
+                hero.targetResource.x,
+                hero.targetResource.y
+            );
             if (dist > 0) {
+                const dx = hero.targetResource.x - hero.x;
+                const dy = hero.targetResource.y - hero.y;
                 aimX = dx / dist;
                 aimY = dy / dist;
             }
@@ -332,7 +337,8 @@ class HeroRendererSystem {
                 target.constructor?.name === 'Boss');
 
         // Check if actively gathering at a resource node
-        const isResource = target &&
+        const isResource =
+            target &&
             (target.entityType === EntityTypes?.RESOURCE ||
                 target.entityType === 'resource' ||
                 target.constructor?.name === 'Resource');
@@ -404,7 +410,14 @@ class HeroRendererSystem {
                     const ox = facingRight ? perpX * offsetDistance : -perpX * offsetDistance;
                     const oy = perpY * offsetDistance;
                     ctx.translate(ox, oy);
-                    this.drawEquippedWeapon(ctx, hero, drawAngle, true, hand1Item, hero.hand1Attacking);
+                    this.drawEquippedWeapon(
+                        ctx,
+                        hero,
+                        drawAngle,
+                        true,
+                        hand1Item,
+                        hero.hand1Attacking
+                    );
                     ctx.restore();
                 }
 
@@ -414,7 +427,14 @@ class HeroRendererSystem {
                     const ox = facingRight ? -perpX * offsetDistance : perpX * offsetDistance;
                     const oy = -perpY * offsetDistance;
                     ctx.translate(ox, oy);
-                    this.drawEquippedWeapon(ctx, hero, drawAngle, true, hand2Item, hero.hand2Attacking);
+                    this.drawEquippedWeapon(
+                        ctx,
+                        hero,
+                        drawAngle,
+                        true,
+                        hand2Item,
+                        hero.hand2Attacking
+                    );
                     ctx.restore();
                 }
             }
@@ -465,7 +485,14 @@ class HeroRendererSystem {
      */
     drawMeleeWeapon(ctx, hero, baseAngle, facingRight, spriteId, weaponSubtype = 'sword') {
         if (WeaponRenderer) {
-            WeaponRenderer.drawMeleeWeapon(ctx, hero, baseAngle, facingRight, spriteId, weaponSubtype);
+            WeaponRenderer.drawMeleeWeapon(
+                ctx,
+                hero,
+                baseAngle,
+                facingRight,
+                spriteId,
+                weaponSubtype
+            );
         }
     }
 
@@ -503,12 +530,11 @@ class HeroRendererSystem {
             if (!entity.active) continue;
 
             // Check if hostile enemy type
-            const isEnemy = (
+            const isEnemy =
                 entity.entityType === EntityTypes?.ENEMY_DINOSAUR ||
                 entity.entityType === EntityTypes?.ENEMY_SOLDIER ||
                 entity.constructor?.name === 'Enemy' ||
-                entity.constructor?.name === 'Boss'
-            );
+                entity.constructor?.name === 'Boss';
             if (!isEnemy) continue;
 
             // Check distance
@@ -534,7 +560,7 @@ class HeroRendererSystem {
 
         // Get ranges using additive model (base from config + entity bonus)
         const hand1Range = hand1Item ? getWeaponStats(hand1Item).range : 0;
-        const hand2Range = (!is2H && hand2Item) ? getWeaponStats(hand2Item).range : 0;
+        const hand2Range = !is2H && hand2Item ? getWeaponStats(hand2Item).range : 0;
 
         // Determine which is inner (smaller range = thicker line)
         if (hand1Range && hand2Range) {
@@ -577,4 +603,3 @@ const HeroRenderer = new HeroRendererSystem();
 if (Registry) Registry.register('HeroRenderer', HeroRenderer);
 
 export { HeroRendererSystem, HeroRenderer };
-

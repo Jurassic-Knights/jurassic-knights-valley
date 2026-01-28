@@ -6,9 +6,9 @@
  */
 
 import { Enemy } from './EnemyCore';
-import { Entity } from '../core/Entity';
-import { AssetLoader } from '../core/AssetLoader';
-import { Logger } from '../core/Logger';
+import { Entity } from '@core/Entity';
+import { AssetLoader } from '@core/AssetLoader';
+import { Logger } from '@core/Logger';
 
 /**
  * Update animation frame
@@ -80,13 +80,7 @@ Enemy.prototype.render = function (ctx) {
         if (!this.facingRight) {
             ctx.translate(this.x, this.y);
             ctx.scale(-1, 1);
-            ctx.drawImage(
-                this._sprite,
-                -this.width / 2,
-                -this.height / 2,
-                this.width,
-                this.height
-            );
+            ctx.drawImage(this._sprite, -this.width / 2, -this.height / 2, this.width, this.height);
         } else {
             ctx.drawImage(
                 this._sprite,
@@ -157,4 +151,3 @@ Enemy.prototype.renderThreatIndicator = function (ctx) {
 };
 
 Logger.info('[EnemyRender] Render methods added to Enemy prototype');
-

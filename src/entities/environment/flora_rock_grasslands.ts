@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: flora_rock_grasslands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "flora_rock_grasslands",
-  "name": "Mossy Boulder",
-  "sourceCategory": "environment",
-  "sourceFile": "flora",
-  "sprite": "flora_rock_grasslands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/flora/flora_rock_grasslands_original.png"
-  },
-  "type": "flora",
-  "biome": "grasslands"
+    id: 'flora_rock_grasslands',
+    name: 'Mossy Boulder',
+    sourceCategory: 'environment',
+    sourceFile: 'flora',
+    sprite: 'flora_rock_grasslands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/flora/flora_rock_grasslands_original.png'
+    },
+    type: 'flora',
+    biome: 'grasslands'
 };

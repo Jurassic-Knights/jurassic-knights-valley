@@ -1,10 +1,9 @@
-﻿/**
+/**
  * EnemyConfig - Enemy Types and Combat Configuration
  *
  * Now pulls from EntityRegistry (entity files are single source of truth).
  * This file provides lookup helpers and combat defaults only.
  */
-
 
 const EnemyConfig = {
     defaults: {

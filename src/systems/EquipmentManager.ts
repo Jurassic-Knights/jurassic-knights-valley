@@ -1,15 +1,15 @@
-﻿/**
+/**
  * EquipmentManager
  * Manages equipped items on an entity (typically Hero).
  * Handles equip/unequip, stat aggregation, and set bonus detection.
- * 
+ *
  * Owner: Gameplay Engineer
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { SetBonusesConfig } from '../config/SetBonusesConfig';
-import { EquipmentSlotsConfig } from '../config/EquipmentSlotsConfig';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { SetBonusesConfig } from '@config/SetBonusesConfig';
+import { EquipmentSlotsConfig } from '@config/EquipmentSlotsConfig';
 
 class EquipmentManager {
     owner: any;
@@ -77,9 +77,8 @@ class EquipmentManager {
      */
     getEquippedItemsForStats() {
         const activeSlots = this.getActiveWeaponSlots();
-        const excludedSlots = this.activeWeaponSet === 1
-            ? ['hand1_alt', 'hand2_alt']
-            : ['hand1', 'hand2'];
+        const excludedSlots =
+            this.activeWeaponSet === 1 ? ['hand1_alt', 'hand2_alt'] : ['hand1', 'hand2'];
 
         return Object.entries(this.slots)
             .filter(([slotId, item]) => item !== null && !excludedSlots.includes(slotId))
@@ -103,7 +102,9 @@ class EquipmentManager {
         const itemType = equipmentData.slot || equipmentData.sourceFile || equipmentData.type;
         if (EquipmentSlotsConfig && !EquipmentSlotsConfig.canEquip(slotId, itemType)) {
             // Log warning but still allow equip (data issue)
-            Logger.warn(`[EquipmentManager] Type mismatch: ${itemType} in ${slotId} - allowing anyway`);
+            Logger.warn(
+                `[EquipmentManager] Type mismatch: ${itemType} in ${slotId} - allowing anyway`
+            );
         }
 
         // Unequip existing item first
@@ -154,7 +155,7 @@ class EquipmentManager {
      * @returns {Object[]} Array of equipped items (non-null)
      */
     getEquippedItems() {
-        return Object.values(this.slots).filter(item => item !== null);
+        return Object.values(this.slots).filter((item) => item !== null);
     }
 
     /**
@@ -162,7 +163,7 @@ class EquipmentManager {
      * @returns {string[]}
      */
     getEquippedIds() {
-        return this.getEquippedItems().map(item => item.id);
+        return this.getEquippedItems().map((item) => item.id);
     }
 
     /**

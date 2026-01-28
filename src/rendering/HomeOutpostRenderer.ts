@@ -1,4 +1,4 @@
-﻿/**
+/**
  * HomeOutpostRenderer - Home base / rest area visual
  *
  * Extracted from GameRenderer.js for modularity.
@@ -7,7 +7,7 @@
  * Owner: Rendering System
  */
 
-import { getConfig } from '../data/GameConfig';
+import { getConfig } from '@data/GameConfig';
 
 const HomeOutpostRenderer = {
     /**

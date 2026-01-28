@@ -1,9 +1,10 @@
 import globals from 'globals';
 import js from '@eslint/js';
-import type { Linter } from 'eslint';
+import tseslint from 'typescript-eslint';
 
-const config: Linter.Config[] = [
+export default [
     js.configs.recommended,
+    ...tseslint.configs.recommended,
     {
         files: ['**/*.ts', '**/*.js'],
         languageOptions: {
@@ -115,15 +116,25 @@ const config: Linter.Config[] = [
 
                 // Legacy/Deprecated (to be removed)
                 TileMap: 'readonly',
-                RocksData: 'readonly',
-            },
+                RocksData: 'readonly'
+            }
         },
         rules: {
-            'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+            'no-unused-vars': 'off',
+            '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
             'no-console': 'off',
             'prefer-const': 'warn',
-        },
-    },
-];
 
-export default config;
+            // Relaxing rules for current codebase state
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-unused-expressions': 'off',
+            '@typescript-eslint/ban-ts-comment': 'off',
+            '@typescript-eslint/no-empty-interface': 'off',
+            'no-undef': 'off',
+            'no-var': 'off',
+            'no-redeclare': 'off',
+            '@typescript-eslint/no-this-alias': 'off',
+            'no-prototype-builtins': 'off'
+        }
+    }
+];

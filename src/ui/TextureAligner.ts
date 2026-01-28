@@ -3,6 +3,8 @@
  * Helper to alignment GenAI 1:1 textures within rectangular UI containers.
  * Allows live editing of background-position and background-size.
  */
+import { Logger } from '@core/Logger';
+import { DOMUtils } from '@core/DOMUtils';
 class TextureAlignerService {
     // Property declarations
     active: boolean;
@@ -82,9 +84,9 @@ class TextureAlignerService {
     }
 
     createUI() {
-        const div = document.createElement('div');
-        div.id = 'texture-aligner-ui';
-        div.style.cssText = `
+        const div = DOMUtils.create('div', {
+            id: 'texture-aligner-ui',
+            cssText: `
             position: fixed;
             top: 60px; right: 20px;
             width: 300px;
@@ -96,12 +98,13 @@ class TextureAlignerService {
             z-index: 10000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border-radius: 8px;
-        `;
+        `
+        });
 
-        let options = this.targets
+        const options = this.targets
             .map((t, i) => `<option value="${i}">${t.name}</option>`)
             .join('');
-        let imgOptions = (this.availableImages || [])
+        const imgOptions = (this.availableImages || [])
             .map((img) => `<option value="${img}">${img}</option>`)
             .join('');
 
@@ -196,8 +199,12 @@ class TextureAlignerService {
             const range = div.querySelector(`#${rangeId}`) as HTMLInputElement;
             const num = div.querySelector(`#${numId}`) as HTMLInputElement;
 
-            range?.addEventListener('input', (e) => this.updateState(key, (e.target as HTMLInputElement).value));
-            num?.addEventListener('input', (e) => this.updateState(key, (e.target as HTMLInputElement).value));
+            range?.addEventListener('input', (e) =>
+                this.updateState(key, (e.target as HTMLInputElement).value)
+            );
+            num?.addEventListener('input', (e) =>
+                this.updateState(key, (e.target as HTMLInputElement).value)
+            );
         };
 
         bindInput('inp-x', 'num-x', 'x');
@@ -240,11 +247,13 @@ class TextureAlignerService {
 
             // UI Update
             (this.container.querySelector('#btn-connect') as HTMLElement).style.display = 'none';
-            (this.container.querySelector('#status-connected') as HTMLElement).style.display = 'block';
+            (this.container.querySelector('#status-connected') as HTMLElement).style.display =
+                'block';
             (this.container.querySelector('#btn-save') as HTMLElement).innerText = 'SAVE TO DISK';
 
             // Override export logic to use direct write
-            (this.container.querySelector('#btn-save') as HTMLElement).onclick = () => this.saveToDisk();
+            (this.container.querySelector('#btn-save') as HTMLElement).onclick = () =>
+                this.saveToDisk();
 
             alert(`Connected to ${handle.name}. Click 'SAVE TO DISK' to overwrite.`);
         } catch (err) {
@@ -312,12 +321,20 @@ class TextureAlignerService {
     updateUIInputs() {
         if (!this.container) return;
         (this.container.querySelector('#inp-x') as HTMLInputElement).value = String(this.state.x);
-        (this.container.querySelector('#num-x') as HTMLInputElement).value = String(Math.round(this.state.x));
+        (this.container.querySelector('#num-x') as HTMLInputElement).value = String(
+            Math.round(this.state.x)
+        );
         (this.container.querySelector('#inp-y') as HTMLInputElement).value = String(this.state.y);
-        (this.container.querySelector('#num-y') as HTMLInputElement).value = String(Math.round(this.state.y));
+        (this.container.querySelector('#num-y') as HTMLInputElement).value = String(
+            Math.round(this.state.y)
+        );
 
-        (this.container.querySelector('#inp-s') as HTMLInputElement).value = String(this.state.scale);
-        (this.container.querySelector('#num-s') as HTMLInputElement).value = String(this.state.scale);
+        (this.container.querySelector('#inp-s') as HTMLInputElement).value = String(
+            this.state.scale
+        );
+        (this.container.querySelector('#num-s') as HTMLInputElement).value = String(
+            this.state.scale
+        );
 
         // Virtual Values: State (CSS) / Multiplier = Slider (Image Relative)
         const virtX = this.multX ? Math.round(this.state.scaleX / this.multX) : this.state.scaleX;
@@ -385,11 +402,15 @@ class TextureAlignerService {
             this.state[key] = val;
             if (key !== 'img') {
                 const map: any = { x: 'num-x', y: 'num-y', scale: 'num-s' };
-                if (map[key]) (this.container.querySelector(`#${map[key]}`) as HTMLInputElement).value = val as any;
+                if (map[key])
+                    (this.container.querySelector(`#${map[key]}`) as HTMLInputElement).value =
+                        val as any;
 
                 // Don't auto-update scaleX/Y inputs here as they are virtual
                 const inpMap: any = { x: 'inp-x', y: 'inp-y', scale: 'inp-s' };
-                if (inpMap[key]) (this.container.querySelector(`#${inpMap[key]}`) as HTMLInputElement).value = val as any;
+                if (inpMap[key])
+                    (this.container.querySelector(`#${inpMap[key]}`) as HTMLInputElement).value =
+                        val as any;
             }
         }
 
@@ -404,16 +425,16 @@ class TextureAlignerService {
         const def = this.state;
         const bgPos = `${def.x}% ${def.y}%`;
 
-        let master = def.scale !== undefined ? def.scale : 500; // Default 500 (1.0x)
-        let sxRaw = def.scaleX !== undefined ? def.scaleX : 500;
-        let syRaw = def.scaleY !== undefined ? def.scaleY : 500;
+        const master = def.scale !== undefined ? def.scale : 500; // Default 500 (1.0x)
+        const sxRaw = def.scaleX !== undefined ? def.scaleX : 500;
+        const syRaw = def.scaleY !== undefined ? def.scaleY : 500;
 
         // New Logic: Input 500 = 1.0 multiplier
         // final = sx * (500/500) = sx
-        let finalX = sxRaw * (master / 500);
-        let finalY = syRaw * (master / 500);
+        const finalX = sxRaw * (master / 500);
+        const finalY = syRaw * (master / 500);
 
-        let bgSize = `${finalX}% ${finalY}%`;
+        const bgSize = `${finalX}% ${finalY}%`;
 
         this.targetsList.forEach((el) => {
             (el as HTMLElement).style.backgroundPosition = bgPos;

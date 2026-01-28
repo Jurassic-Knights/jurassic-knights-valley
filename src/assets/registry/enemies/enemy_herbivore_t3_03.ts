@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: enemy_herbivore_t3_03
  * Auto-generated from JSON.
  */

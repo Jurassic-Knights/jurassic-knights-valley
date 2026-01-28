@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Sound Registry
  * Maps sound IDs to audio configuration
  *

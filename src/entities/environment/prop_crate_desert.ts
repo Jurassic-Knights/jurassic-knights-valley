@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: prop_crate_desert
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "prop_crate_desert",
-  "name": "Canvas Crate",
-  "sourceCategory": "environment",
-  "sourceFile": "props",
-  "sprite": "prop_crate_desert",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/props/prop_crate_desert_original.png"
-  },
-  "type": "prop",
-  "biome": "desert"
+    id: 'prop_crate_desert',
+    name: 'Canvas Crate',
+    sourceCategory: 'environment',
+    sourceFile: 'props',
+    sprite: 'prop_crate_desert',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/props/prop_crate_desert_original.png'
+    },
+    type: 'prop',
+    biome: 'desert'
 };

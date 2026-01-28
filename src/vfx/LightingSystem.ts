@@ -9,8 +9,8 @@
  *
  * Owner: VFX Specialist
  */
-import { Logger } from '../core/Logger';
-import { Registry } from '../core/Registry';
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
 
 class LightingSystemClass {
     lights: any[];
@@ -125,4 +125,3 @@ Registry.register('LightingSystem', LightingSystem);
 
 // ES6 Module Export
 export { LightingSystem };
-

@@ -9,19 +9,20 @@
  * Owner: UI Artist
  */
 
-import { Logger } from '../core/Logger';
-import { PlatformManager } from '../core/PlatformManager';
-import { ResponsiveManager } from '../core/ResponsiveManager';
+import { Logger } from '@core/Logger';
+import { PlatformManager } from '@core/PlatformManager';
+import { ResponsiveManager } from '@core/ResponsiveManager';
 import { AudioManager } from '../audio/AudioManager';
 import { ContextActionUI } from './ContextActionUI';
-import { GameConstants } from '../data/GameConstants';
-import { EventBus } from '../core/EventBus';
-import { GameState } from '../core/State';
-import { VFXController } from '../vfx/VFXController';
-import { AssetLoader } from '../core/AssetLoader';
-import { Registry } from '../core/Registry';
+import { GameConstants } from '@data/GameConstants';
+import { EventBus } from '@core/EventBus';
+import { GameState } from '@core/State';
+import { VFXController } from '@vfx/VFXController';
+import { AssetLoader } from '@core/AssetLoader';
+import { Registry } from '@core/Registry';
+import { DOMUtils } from '@core/DOMUtils';
 import { UICapture } from './UICapture';
-import { GameInstance } from '../core/Game';
+import { GameInstance } from '@core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
 import { HUDController } from './controllers/HUDController';
 import type { Island } from '../types/world';
@@ -33,7 +34,11 @@ class UIManagerService {
     currentUnlockTarget: Island | null = null;
     panels: Map<string, UIPanelConfig> = new Map();
     fullscreenUIs: Set<UIPanelConfig> = new Set();
-    currentStrategy: { apply?(container: HTMLElement): void; enter?(): void; exit?(): void } | null = null;
+    currentStrategy: {
+        apply?(container: HTMLElement): void;
+        enter?(): void;
+        exit?(): void;
+    } | null = null;
 
     constructor() {
         Logger.debug('[UIManager]', 'Constructed');
@@ -46,10 +51,14 @@ class UIManagerService {
 
         // Listen for platform changes
         if (PlatformManager) {
-            PlatformManager.on('modechange', (config: { mode: string }) => this.onPlatformChange(config));
+            PlatformManager.on('modechange', (config: { mode: string }) =>
+                this.onPlatformChange(config)
+            );
             this.onPlatformChange(PlatformManager.getConfig());
         } else if (ResponsiveManager) {
-            ResponsiveManager.on('change', (data: { breakpoint: string }) => this.onResponsiveChange(data));
+            ResponsiveManager.on('change', (data: { breakpoint: string }) =>
+                this.onResponsiveChange(data)
+            );
         }
 
         this.createUnlockPrompt();
@@ -113,7 +122,9 @@ class UIManagerService {
         // EventBus Listeners
         if (EventBus && GameConstants) {
             const E = GameConstants.Events;
-            EventBus.on(E.UI_FADE_SCREEN, (data: { onMidpoint?: () => void } | null) => this.fadeInOut(data ? data.onMidpoint : null));
+            EventBus.on(E.UI_FADE_SCREEN, (data: { onMidpoint?: () => void } | null) =>
+                this.fadeInOut(data ? data.onMidpoint : null)
+            );
         }
 
         this.initialized = true;
@@ -141,16 +152,17 @@ class UIManagerService {
 
     // === Unlock Prompt ===
     createUnlockPrompt() {
-        const prompt = document.createElement('div');
-        prompt.id = 'unlock-prompt';
-        prompt.className = 'unlock-prompt hidden';
-        prompt.innerHTML = `
-            <div class="unlock-prompt-content">
-                <div class="unlock-island-name"></div>
-                <div class="unlock-cost"><span class="cost-amount"></span> Gold</div>
-                <button class="unlock-btn">Unlock</button>
-            </div>
-        `;
+        const prompt = DOMUtils.create('div', {
+            id: 'unlock-prompt',
+            className: 'unlock-prompt hidden',
+            html: `
+                <div class="unlock-prompt-content">
+                    <div class="unlock-island-name"></div>
+                    <div class="unlock-cost"><span class="cost-amount"></span> Gold</div>
+                    <button class="unlock-btn">Unlock</button>
+                </div>
+            `
+        });
         document.getElementById('app')?.appendChild(prompt);
 
         prompt.querySelector('.unlock-btn')?.addEventListener('click', () => this.tryUnlock());
@@ -253,7 +265,9 @@ class UIManagerService {
             if (animate && VFXController?.triggerUIProgressSparks) {
                 // Get position from bar element for VFX
                 const rect = bar.getBoundingClientRect();
-                VFXController.triggerUIProgressSparks(rect.right, rect.top + rect.height / 2, { color: '#3498DB' });
+                VFXController.triggerUIProgressSparks(rect.right, rect.top + rect.height / 2, {
+                    color: '#3498DB'
+                });
             }
         }
     }

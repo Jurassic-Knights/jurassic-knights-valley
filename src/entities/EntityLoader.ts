@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EntityLoader - Loads entity definitions from individual JSON files
  *
  * Source of truth: src/entities/{category}/{entity_id}.json
@@ -8,8 +8,8 @@
  * Owner: Director
  */
 
-import { Logger } from '../core/Logger';
-import { Registry } from '../core/Registry';
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
 import manifest from './manifest';
 
 // Pre-import all entity modules using Vite's import.meta.glob (eager mode)
@@ -38,9 +38,8 @@ declare global {
     }
 }
 
-let EntityRegistry: any = (typeof window !== 'undefined' && window.__ENTITY_REGISTRY__)
-    ? window.__ENTITY_REGISTRY__
-    : {};
+const EntityRegistry: any =
+    typeof window !== 'undefined' && window.__ENTITY_REGISTRY__ ? window.__ENTITY_REGISTRY__ : {};
 
 if (typeof window !== 'undefined') {
     window.__ENTITY_REGISTRY__ = EntityRegistry;
@@ -106,7 +105,7 @@ const EntityLoader = {
         EntityRegistry.equipment = {};
         EntityRegistry.npcs = {};
         EntityRegistry.environment = {};
-        EntityRegistry.hero = {};  // Hero skins registry (hero_t1_01, etc.)
+        EntityRegistry.hero = {}; // Hero skins registry (hero_t1_01, etc.)
         EntityRegistry.defaults = this.defaults;
 
         try {
@@ -156,7 +155,7 @@ const EntityLoader = {
             'equipment',
             'npcs',
             'environment',
-            'hero'  // Hero skins as a category
+            'hero' // Hero skins as a category
         ];
 
         for (const category of categories) {
@@ -201,8 +200,7 @@ const EntityLoader = {
                 } else {
                     modulePath = `./${category}/${id}.ts`;
                 }
-            }
-            else {
+            } else {
                 modulePath = `./${category}/${id}.ts`;
             }
 
@@ -439,7 +437,9 @@ const EntityLoader = {
 
     getEnemiesForBiome(biomeId: string) {
         const enemies = EntityRegistry?.enemies || {};
-        return Object.values(enemies).filter((e: any) => e.spawnBiomes?.includes(biomeId) && !e.isBoss);
+        return Object.values(enemies).filter(
+            (e: any) => e.spawnBiomes?.includes(biomeId) && !e.isBoss
+        );
     },
 
     getEnemiesByTier(tier: number) {
@@ -518,7 +518,7 @@ if (import.meta.hot) {
 // BROADCAST LISTENERS - Live updates from Dashboard
 // ============================================
 
-import { entityManager } from '../core/EntityManager';
+import { entityManager } from '@core/EntityManager';
 
 if (typeof window !== 'undefined' && typeof BroadcastChannel !== 'undefined') {
     const entityChannel = new BroadcastChannel('game-entity-updates');
@@ -610,8 +610,7 @@ function handleEntityUpdate(category: string, configId: string, updates: Record<
                 if (!isNaN(numVal)) {
                     (entity as any)[statName] = numVal;
                 }
-            }
-            else {
+            } else {
                 // Direct property update (speed, damage, etc.)
                 // Filter out complex objects or arrays unless specific handler
                 if (typeof value !== 'object') {

@@ -6,8 +6,8 @@
 
 // Globals: Logger, UIManager, VFXController, AudioManager, Registry are declared in global.d.ts
 
-import { Logger } from '../core/Logger';
-import { Registry } from '../core/Registry';
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
 
 class QuestManagerService {
     // Property declarations
@@ -153,13 +153,7 @@ class QuestManagerService {
 
 // Ambient declarations for not-yet-migrated modules
 
-
-
-
-
 const QuestManager = new QuestManagerService();
 if (Registry) Registry.register('QuestManager', QuestManager);
 
 export { QuestManager, QuestManagerService };
-
-

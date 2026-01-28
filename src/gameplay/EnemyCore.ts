@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EnemyCore - Core Enemy class with constructor and state
  *
  * Different from Dinosaur (passive zone creatures).
@@ -12,23 +12,22 @@
  *
  * Owner: Combat System
  */
-import { Entity } from '../core/Entity';
-import { Logger } from '../core/Logger';
-import { EntityConfig } from '../config/EntityConfig';
-import { EntityRegistry } from '../entities/EntityLoader';
-import { BiomeConfig } from '../data/BiomeConfig';
-import { EntityTypes } from '../config/EntityTypes';
-import { SpeciesScaleConfig } from '../config/SpeciesScaleConfig';
+import { Entity } from '@core/Entity';
+import { Logger } from '@core/Logger';
+import { EntityConfig } from '@config/EntityConfig';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { BiomeConfig } from '@data/BiomeConfig';
+import { EntityTypes } from '@config/EntityTypes';
+import { SpeciesScaleConfig } from '@config/SpeciesScaleConfig';
 import { HealthComponent } from '../components/HealthComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { CombatComponent } from '../components/CombatComponent';
 import { AIComponent } from '../components/AIComponent';
 import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
-import { Registry } from '../core/Registry';
-import { getConfig } from '../data/GameConstants';
+import { Registry } from '@core/Registry';
+import { getConfig } from '@data/GameConstants';
 
 // Unmapped modules - need manual import
-
 
 class Enemy extends Entity {
     // Identity
@@ -117,7 +116,8 @@ class Enemy extends Entity {
         if (config.enemyType) {
             // Priority 1: EntityRegistry (from entity JSONs via EntityLoader)
             // Check enemies first (includes bosses), then fallbacks
-            typeConfig = EntityRegistry.enemies?.[config.enemyType] ||
+            typeConfig =
+                EntityRegistry.enemies?.[config.enemyType] ||
                 EntityConfig.get?.(config.enemyType) ||
                 // Fallback: Old EntityConfig paths (deprecated)
                 EntityConfig.enemy?.dinosaurs?.[config.enemyType] ||
@@ -130,9 +130,7 @@ class Enemy extends Entity {
 
         // Elite Roll - 5% chance or forced via config
         const eliteChance =
-            EntityConfig.enemy?.eliteSpawnChance ||
-            BiomeConfig.Biome?.ELITE_SPAWN_CHANCE ||
-            0.05;
+            EntityConfig.enemy?.eliteSpawnChance || BiomeConfig.Biome?.ELITE_SPAWN_CHANCE || 0.05;
         const isElite = config.isElite || (!config.forceNormal && Math.random() < eliteChance);
 
         // Apply elite multipliers if elite
@@ -144,7 +142,8 @@ class Enemy extends Entity {
                 lootDrops: 3.0
             };
             finalConfig.health = (Number(finalConfig.health) || 50) * mult.health;
-            finalConfig.maxHealth = (Number(finalConfig.maxHealth) || finalConfig.health) * mult.health;
+            finalConfig.maxHealth =
+                (Number(finalConfig.maxHealth) || finalConfig.health) * mult.health;
             finalConfig.damage = (Number(finalConfig.damage) || 5) * mult.damage;
             finalConfig.xpReward = (Number(finalConfig.xpReward) || 10) * mult.xpReward;
         }
@@ -182,12 +181,17 @@ class Enemy extends Entity {
         // Call parent constructor
         // Get size from SpeciesScaleConfig (runtime lookup by species/bodyType)
         const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';
-        const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss) || { width: 192, height: 192 };
+        const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss) || {
+            width: 192,
+            height: 192
+        };
 
         // Debug
         const scaleValue = (sizeInfo as any).scale;
         if (scaleValue && scaleValue !== 1.0) {
-            Logger.info(`[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`);
+            Logger.info(
+                `[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`
+            );
         }
 
         super({
@@ -398,17 +402,19 @@ class Enemy extends Entity {
     // ============================================
     // Prototype extension stubs (implemented in EnemyBehavior.ts)
     // ============================================
-    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): any { }
-    moveDirectly(_targetX: number, _targetY: number, _speed: number, _dt: number): boolean { return false; }
-    updateWander(_dt: number): void { }
-    updateChase(_dt: number): void { }
-    updateAttack(_dt: number): void { }
-    performAttack(): void { }
-    updateReturning(_dt: number): void { }
-    takeDamage(_amount: number, _attacker?: any): void { }
-    triggerPackAggro(_target: any): void { }
-    renderHealthBar(_ctx: any): void { }
-    renderThreatIndicator(_ctx: any): void { }
+    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): any {}
+    moveDirectly(_targetX: number, _targetY: number, _speed: number, _dt: number): boolean {
+        return false;
+    }
+    updateWander(_dt: number): void {}
+    updateChase(_dt: number): void {}
+    updateAttack(_dt: number): void {}
+    performAttack(): void {}
+    updateReturning(_dt: number): void {}
+    takeDamage(_amount: number, _attacker?: any): void {}
+    triggerPackAggro(_target: any): void {}
+    renderHealthBar(_ctx: any): void {}
+    renderThreatIndicator(_ctx: any): void {}
 }
 
 // ES6 Module Export

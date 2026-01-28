@@ -1,20 +1,25 @@
-﻿/**
+/**
  * IslandManagerCore - Island grid initialization, collision, and spatial utilities
- * 
+ *
  * CONSOLIDATED: Methods previously in IslandManagerCollision.ts and IslandManagerGrid.ts
  * are now directly defined here to avoid ES module circular dependency issues with Vite.
  *
  * Owner: Level Architect
  */
 
-import { Logger } from '../core/Logger';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { WorldData } from '../data/WorldData';
-import { GameState } from '../core/State';
-import { EventBus } from '../core/EventBus';
+import { Logger } from '@core/Logger';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { WorldData } from '@data/WorldData';
+import { GameState } from '@core/State';
+import { EventBus } from '@core/EventBus';
 import { BiomeManager } from './BiomeManager';
-import type { Island, Bridge, WalkableZoneWithId, CollisionBlockWithMeta, PlayableBounds } from '../types/world';
-
+import type {
+    Island,
+    Bridge,
+    WalkableZoneWithId,
+    CollisionBlockWithMeta,
+    PlayableBounds
+} from '../types/world';
 
 class IslandManagerService {
     // Property declarations
@@ -175,7 +180,9 @@ class IslandManagerService {
             });
         }
 
-        Logger.info(`[IslandManager] Rebuilt walkable zones: ${this.walkableZones.length} active zones`);
+        Logger.info(
+            `[IslandManager] Rebuilt walkable zones: ${this.walkableZones.length} active zones`
+        );
     }
 
     /**
@@ -292,7 +299,9 @@ class IslandManagerService {
             }
         }
 
-        Logger.info(`[IslandManager] Rebuilt collision blocks: ${this.collisionBlocks.length} blocks`);
+        Logger.info(
+            `[IslandManager] Rebuilt collision blocks: ${this.collisionBlocks.length} blocks`
+        );
     }
 
     /**
@@ -475,7 +484,10 @@ class IslandManagerService {
     /**
      * Get the bounds of a grid cell at given grid coordinates
      */
-    getGridCellBounds(gx: number, gy: number): { x: number; y: number; width: number; height: number } {
+    getGridCellBounds(
+        gx: number,
+        gy: number
+    ): { x: number; y: number; width: number; height: number } {
         const cellSize = GameConstants.Grid.CELL_SIZE;
         return {
             x: gx * cellSize,
@@ -604,8 +616,14 @@ class IslandManagerService {
      */
     getWorldSize(): { width: number; height: number } {
         return {
-            width: this.mapPadding * 2 + this.gridCols * this.islandSize + (this.gridCols - 1) * this.waterGap,
-            height: this.mapPadding * 2 + this.gridRows * this.islandSize + (this.gridRows - 1) * this.waterGap
+            width:
+                this.mapPadding * 2 +
+                this.gridCols * this.islandSize +
+                (this.gridCols - 1) * this.waterGap,
+            height:
+                this.mapPadding * 2 +
+                this.gridRows * this.islandSize +
+                (this.gridRows - 1) * this.waterGap
         };
     }
 }

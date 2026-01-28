@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: wood_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "wood_t3_01",
-  "name": "Acacia Plank",
-  "sourceCategory": "items",
-  "sourceFile": "wood",
-  "sprite": "wood_t3_01",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/items/wood_t3_01_original.png"
-  },
-  "type": "consumable",
-  "stackable": true,
-  "recipe": "2x Acacia Wood"
+    id: 'wood_t3_01',
+    name: 'Acacia Plank',
+    sourceCategory: 'items',
+    sourceFile: 'wood',
+    sprite: 'wood_t3_01',
+    status: 'approved',
+    files: {
+        original: 'assets/images/items/wood_t3_01_original.png'
+    },
+    type: 'consumable',
+    stackable: true,
+    recipe: '2x Acacia Wood'
 };

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: signature_t4_02
  * Auto-generated from JSON.
  */

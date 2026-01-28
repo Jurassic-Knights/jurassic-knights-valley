@@ -1,11 +1,10 @@
-﻿/**
+/**
  * Prop - Static decorative entity
  * Rendered as part of the world environment
  */
 
-
-import { Entity } from '../core/Entity';
-import { AssetLoader } from '../core/AssetLoader';
+import { Entity } from '@core/Entity';
+import { AssetLoader } from '@core/AssetLoader';
 
 class Prop extends Entity {
     scale: number;

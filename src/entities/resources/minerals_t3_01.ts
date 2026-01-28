@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: minerals_t3_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "minerals_t3_01",
-  "name": "Gold Dust",
-  "sourceCategory": "resources",
-  "sourceFile": "minerals",
-  "sprite": "minerals_t3_01",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/resources/minerals_t3_01_original.png"
-  },
-  "tier": 3,
-  "stackable": true,
-  "type": "material"
+    id: 'minerals_t3_01',
+    name: 'Gold Dust',
+    sourceCategory: 'resources',
+    sourceFile: 'minerals',
+    sprite: 'minerals_t3_01',
+    status: 'pending',
+    files: {
+        original: 'assets/images/resources/minerals_t3_01_original.png'
+    },
+    tier: 3,
+    stackable: true,
+    type: 'material'
 };

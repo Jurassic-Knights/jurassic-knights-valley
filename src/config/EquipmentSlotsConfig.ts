@@ -1,7 +1,7 @@
-﻿/**
+/**
  * Equipment Slots Configuration
  * Defines all equipment slots and what item types they accept.
- * 
+ *
  * Slot Types:
  * - hand1/hand2: Dual 1-handed slots for weapons or shields
  * - tool: Dedicated slot for mining/harvesting tools

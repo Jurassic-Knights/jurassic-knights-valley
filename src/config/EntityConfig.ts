@@ -1,11 +1,11 @@
-﻿/**
+/**
  * EntityConfig - Central Configuration for Game Entities
  *
  * DEPRECATION NOTICE: Most configs have been migrated:
- * - hero, dinosaur, resource → src/entities/
- * - enemy → EnemyConfig.js
- * - lootTables → LootTableConfig.js
- * - boss → BossConfig.js
+ * - hero, dinosaur, resource ? src/entities/
+ * - enemy ? EnemyConfig.js
+ * - lootTables ? LootTableConfig.js
+ * - boss ? BossConfig.js
  *
  * REMAINING SECTIONS:
  * - droppedItem: Dropped item defaults
@@ -15,8 +15,7 @@
  * - resources, resource, boss: Empty objects for legacy code
  */
 
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 const EntityConfig = {
     // ============================================

@@ -4,6 +4,9 @@
  * Owner: Director
  */
 
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
+
 const InputManager = {
     // Current movement vector (normalized)
     movement: { x: 0, y: 0 },

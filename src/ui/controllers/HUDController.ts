@@ -5,11 +5,10 @@
  * Listens to EventBus updates.
  */
 
-import { Logger } from '../../core/Logger';
-import { EventBus } from '../../core/EventBus';
-import { GameConstants, getConfig } from '../../data/GameConstants';
-import { Registry } from '../../core/Registry';
-
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { Registry } from '@core/Registry';
 
 class HUDControllerClass {
     constructor() {
@@ -20,9 +19,19 @@ class HUDControllerClass {
     initListeners() {
         if (!EventBus) return;
 
-        EventBus.on(GameConstants.Events.HERO_STAMINA_CHANGE, (data: { current: number; max: number }) => this.updateStamina(data));
-        EventBus.on(GameConstants.Events.HERO_HEALTH_CHANGE, (data: { current: number; max: number }) => this.updateHealth(data));
-        EventBus.on(GameConstants.Events.INVENTORY_UPDATED, (data: { resources?: Record<string, number>; gold?: number }) => this.updateResources(data));
+        EventBus.on(
+            GameConstants.Events.HERO_STAMINA_CHANGE,
+            (data: { current: number; max: number }) => this.updateStamina(data)
+        );
+        EventBus.on(
+            GameConstants.Events.HERO_HEALTH_CHANGE,
+            (data: { current: number; max: number }) => this.updateHealth(data)
+        );
+        EventBus.on(
+            GameConstants.Events.INVENTORY_UPDATED,
+            (data: { resources?: Record<string, number>; gold?: number }) =>
+                this.updateResources(data)
+        );
         EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: { isHome: boolean }) =>
             this.updateRestButton(data)
         );

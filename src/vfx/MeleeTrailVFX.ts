@@ -1,9 +1,9 @@
-﻿/**
+/**
  * MeleeTrailVFX - Unique trailing effects for each melee weapon type
  *
  * Tracks weapon tip positions and renders type-specific effects:
  * - Swords: Clean arc trails
- * - Greatswords: Heavy blur + particles  
+ * - Greatswords: Heavy blur + particles
  * - Axes: Chunky debris
  * - Hammers: Impact shockwaves
  * - Knives: Quick afterimages
@@ -14,8 +14,7 @@
  */
 
 import { VFXController } from './VFXController';
-import { Registry } from '../core/Registry';
-
+import { Registry } from '@core/Registry';
 
 const MeleeTrailVFX = {
     // Active trail points per weapon slot
@@ -28,79 +27,133 @@ const MeleeTrailVFX = {
     configs: {
         // Knife: Quick thin afterimage
         knife: {
-            color: '#00FFFF', fadeColor: '#004444',
-            width: 3, maxPoints: 6, lifetime: 0.08,
-            style: 'afterimage', flickerRate: 3
+            color: '#00FFFF',
+            fadeColor: '#004444',
+            width: 3,
+            maxPoints: 6,
+            lifetime: 0.08,
+            style: 'afterimage',
+            flickerRate: 3
         },
         // Sword: Clean curved arc
         sword: {
-            color: '#FFFFFF', fadeColor: '#4466AA',
-            width: 6, maxPoints: 12, lifetime: 0.14,
-            style: 'arc', glow: true
+            color: '#FFFFFF',
+            fadeColor: '#4466AA',
+            width: 6,
+            maxPoints: 12,
+            lifetime: 0.14,
+            style: 'arc',
+            glow: true
         },
         // Longsword: Extended arc with shimmer
         longsword: {
-            color: '#66BBFF', fadeColor: '#224488',
-            width: 7, maxPoints: 14, lifetime: 0.16,
-            style: 'arc', glow: true, shimmer: true
+            color: '#66BBFF',
+            fadeColor: '#224488',
+            width: 7,
+            maxPoints: 14,
+            lifetime: 0.16,
+            style: 'arc',
+            glow: true,
+            shimmer: true
         },
         // Greatsword: Heavy blur + particles
         greatsword: {
-            color: '#2266FF', fadeColor: '#112266',
-            width: 16, maxPoints: 18, lifetime: 0.28,
-            style: 'heavy', blur: true, particles: true
+            color: '#2266FF',
+            fadeColor: '#112266',
+            width: 16,
+            maxPoints: 18,
+            lifetime: 0.28,
+            style: 'heavy',
+            blur: true,
+            particles: true
         },
         // Axe: Chunky debris trail
         axe: {
-            color: '#FF8800', fadeColor: '#663300',
-            width: 10, maxPoints: 10, lifetime: 0.12,
-            style: 'debris', sparks: true
+            color: '#FF8800',
+            fadeColor: '#663300',
+            width: 10,
+            maxPoints: 10,
+            lifetime: 0.12,
+            style: 'debris',
+            sparks: true
         },
         // War Axe: Thick crescent + embers
         war_axe: {
-            color: '#FF2200', fadeColor: '#660000',
-            width: 18, maxPoints: 12, lifetime: 0.18,
-            style: 'crescent', embers: true
+            color: '#FF2200',
+            fadeColor: '#660000',
+            width: 18,
+            maxPoints: 12,
+            lifetime: 0.18,
+            style: 'crescent',
+            embers: true
         },
         // Mace: Blunt impact burst
         mace: {
-            color: '#FFAA00', fadeColor: '#553300',
-            width: 10, maxPoints: 8, lifetime: 0.10,
-            style: 'burst', shockwave: true
+            color: '#FFAA00',
+            fadeColor: '#553300',
+            width: 10,
+            maxPoints: 8,
+            lifetime: 0.1,
+            style: 'burst',
+            shockwave: true
         },
         // War Hammer: Heavy impact + ground crack
         war_hammer: {
-            color: '#FFCC00', fadeColor: '#664400',
-            width: 20, maxPoints: 10, lifetime: 0.20,
-            style: 'impact', shockwave: true, sparks: true
+            color: '#FFCC00',
+            fadeColor: '#664400',
+            width: 20,
+            maxPoints: 10,
+            lifetime: 0.2,
+            style: 'impact',
+            shockwave: true,
+            sparks: true
         },
         // Lance: Long thrust line + flash
         lance: {
-            color: '#AACCEE', fadeColor: '#446688',
-            width: 5, maxPoints: 16, lifetime: 0.12,
-            style: 'thrust', flash: true
+            color: '#AACCEE',
+            fadeColor: '#446688',
+            width: 5,
+            maxPoints: 16,
+            lifetime: 0.12,
+            style: 'thrust',
+            flash: true
         },
         // Halberd: Wide sweep
         halberd: {
-            color: '#DD4422', fadeColor: '#551111',
-            width: 14, maxPoints: 14, lifetime: 0.20,
-            style: 'sweep', windTrail: true
+            color: '#DD4422',
+            fadeColor: '#551111',
+            width: 14,
+            maxPoints: 14,
+            lifetime: 0.2,
+            style: 'sweep',
+            windTrail: true
         },
         // Spear: Quick thrust + afterimage
         spear: {
-            color: '#22DD22', fadeColor: '#115511',
-            width: 5, maxPoints: 14, lifetime: 0.10,
-            style: 'thrust', afterimage: true
+            color: '#22DD22',
+            fadeColor: '#115511',
+            width: 5,
+            maxPoints: 14,
+            lifetime: 0.1,
+            style: 'thrust',
+            afterimage: true
         },
         // Flail: Chain trail with ball
         flail: {
-            color: '#CC8844', fadeColor: '#553311',
-            width: 4, maxPoints: 14, lifetime: 0.16,
-            style: 'chain', ball: true
+            color: '#CC8844',
+            fadeColor: '#553311',
+            width: 4,
+            maxPoints: 14,
+            lifetime: 0.16,
+            style: 'chain',
+            ball: true
         },
         default: {
-            color: '#FFFFFF', fadeColor: '#444444',
-            width: 5, maxPoints: 10, lifetime: 0.15,
+            color: '#FFFFFF',
+            fadeColor: '#444444',
+            width: 5,
+            maxPoints: 10,
+            lifetime: 0.15,
             style: 'arc'
         }
     },
@@ -131,8 +184,14 @@ const MeleeTrailVFX = {
         // Spawn particles for particle-emitting weapons
         if (config.particles && trail.length === 1 && VFXController) {
             VFXController.playForeground(x, y, {
-                type: 'spark', color: config.color, count: 2,
-                speed: 20, lifetime: 150, size: 3, spread: 1.0, drag: 0.9
+                type: 'spark',
+                color: config.color,
+                count: 2,
+                speed: 20,
+                lifetime: 150,
+                size: 3,
+                spread: 1.0,
+                drag: 0.9
             });
         }
     },
@@ -217,7 +276,8 @@ const MeleeTrailVFX = {
         }
 
         for (let i = 0; i < trail.length - 1; i++) {
-            const p1 = trail[i], p2 = trail[i + 1];
+            const p1 = trail[i],
+                p2 = trail[i + 1];
             const progress = p1.age / config.lifetime;
             const alpha = Math.max(0, 1 - progress);
             const width = config.width * (1 - progress * 0.5);
@@ -266,7 +326,8 @@ const MeleeTrailVFX = {
         for (let offset = -2; offset <= 2; offset++) {
             ctx.globalAlpha = 0.3;
             for (let i = 0; i < trail.length - 1; i++) {
-                const p1 = trail[i], p2 = trail[i + 1];
+                const p1 = trail[i],
+                    p2 = trail[i + 1];
                 const progress = p1.age / config.lifetime;
                 const alpha = Math.max(0, 0.6 - progress);
                 const width = config.width * (1 - progress * 0.4);
@@ -300,7 +361,7 @@ const MeleeTrailVFX = {
             const p = trail[i];
             const progress = p.age / config.lifetime;
             const alpha = Math.max(0, 0.8 - progress);
-            const size = (config.width * 0.6) * (1 - progress);
+            const size = config.width * 0.6 * (1 - progress);
 
             ctx.fillStyle = this.hexToRgba(config.fadeColor, alpha);
             ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
@@ -320,7 +381,8 @@ const MeleeTrailVFX = {
         ctx.shadowBlur = 20;
 
         for (let i = 0; i < trail.length - 1; i++) {
-            const p1 = trail[i], p2 = trail[i + 1];
+            const p1 = trail[i],
+                p2 = trail[i + 1];
             const progress = p1.age / config.lifetime;
             const alpha = Math.max(0, 1 - progress * 0.8);
             const width = config.width * (1 - progress * 0.3);
@@ -347,7 +409,8 @@ const MeleeTrailVFX = {
         ctx.lineCap = 'round';
         const trailLen = Math.min(trail.length, 4);
         for (let i = 0; i < trailLen - 1; i++) {
-            const p1 = trail[i], p2 = trail[i + 1];
+            const p1 = trail[i],
+                p2 = trail[i + 1];
             const alpha = Math.max(0, 0.8 - progress);
             ctx.strokeStyle = this.hexToRgba(config.color, alpha);
             ctx.lineWidth = config.width * (1 - i * 0.2);
@@ -379,7 +442,8 @@ const MeleeTrailVFX = {
         // Streak line
         ctx.lineCap = 'round';
         for (let i = 0; i < trail.length - 1; i++) {
-            const p1 = trail[i], p2 = trail[i + 1];
+            const p1 = trail[i],
+                p2 = trail[i + 1];
             const progress = p1.age / config.lifetime;
             const alpha = Math.max(0, 1 - progress);
 
@@ -412,7 +476,8 @@ const MeleeTrailVFX = {
         // Wind trail effect - wider at start
         ctx.lineCap = 'round';
         for (let i = 0; i < trail.length - 1; i++) {
-            const p1 = trail[i], p2 = trail[i + 1];
+            const p1 = trail[i],
+                p2 = trail[i + 1];
             const progress = p1.age / config.lifetime;
             const alpha = Math.max(0, 0.9 - progress);
             const width = config.width * (1 - i * 0.05);

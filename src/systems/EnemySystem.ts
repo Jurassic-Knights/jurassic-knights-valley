@@ -1,27 +1,31 @@
-﻿/**
+/**
  * EnemySystem
  * Handles AI, Movement, and Combat updates for hostile enemies.
  *
  * States: WANDER, CHASE, ATTACK, LEASH_RETURN
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { entityManager } from '../core/EntityManager';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { entityManager } from '@core/EntityManager';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '../vfx/VFXController';
-import { VFXConfig } from '../data/VFXConfig';
-import { Registry } from '../core/Registry';
-import { EntityTypes } from '../config/EntityTypes';
+import { VFXController } from '@vfx/VFXController';
+import { VFXConfig } from '@data/VFXConfig';
+import { Registry } from '@core/Registry';
+import { EntityTypes } from '@config/EntityTypes';
+import { MathUtils } from '@core/MathUtils';
 import type { IGame, IEntity } from '../types/core.d';
 
 // Events from GameConstants
 const Events = GameConstants.Events;
 
 // Event data interface
-interface EntityEvent { entity: IEntity; amount?: number; killer?: IEntity }
-
+interface EntityEvent {
+    entity: IEntity;
+    amount?: number;
+    killer?: IEntity;
+}
 
 class EnemySystem {
     game: IGame | null = null;
@@ -37,8 +41,8 @@ class EnemySystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on('ENTITY_DAMAGED', (data: EntityEvent) => this.onEntityDamaged(data));
-            EventBus.on('ENTITY_DIED', (data: EntityEvent) => this.onEntityDied(data));
+            // EventBus.on('ENTITY_DAMAGED', (data: EntityEvent) => this.onEntityDamaged(data));
+            // EventBus.on('ENTITY_DIED', (data: EntityEvent) => this.onEntityDied(data));
         }
     }
 
@@ -57,6 +61,9 @@ class EnemySystem {
     updateEnemy(enemy, hero, dt) {
         const ai = enemy.components?.ai;
         if (!ai) return;
+
+        // Debug state
+        // Logger.info(`[EnemySystem] ${enemy.id} State: ${ai.state} Pos: ${enemy.x.toFixed(0)},${enemy.y.toFixed(0)}`);
 
         // State Machine
         switch (ai.state) {
@@ -107,9 +114,7 @@ class EnemySystem {
 
         // Clamp to patrol radius
         const patrolRadius = enemy.patrolRadius || 150;
-        const dx = nextX - enemy.spawnX;
-        const dy = nextY - enemy.spawnY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = MathUtils.distance(nextX, nextY, enemy.spawnX, enemy.spawnY);
 
         if (dist > patrolRadius) {
             // Reverse direction
@@ -136,13 +141,15 @@ class EnemySystem {
             if (enemy === aggroEnemy) continue;
             if (enemy.groupId !== aggroEnemy.groupId) continue;
             if (!enemy.packAggro) continue; // Respect individual packAggro flag
-            const ai = enemy.components?.ai as { state?: string; setState?(s: string): void; target?: any };
+            const ai = enemy.components?.ai as {
+                state?: string;
+                setState?(s: string): void;
+                target?: any;
+            };
             if (ai?.state !== 'WANDER') continue;
 
             // Check distance
-            const dx = enemy.x - aggroEnemy.x;
-            const dy = enemy.y - aggroEnemy.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
+            const dist = MathUtils.distance(enemy.x, enemy.y, aggroEnemy.x, aggroEnemy.y);
 
             if (dist <= alertRadius) {
                 ai.setState?.('CHASE');
@@ -173,7 +180,7 @@ class EnemySystem {
         // Move toward target
         const dx = hero.x - enemy.x;
         const dy = hero.y - enemy.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = MathUtils.distance(enemy.x, enemy.y, hero.x, hero.y);
 
         if (dist > 0) {
             const speed = enemy.speed * (dt / 1000);
@@ -204,8 +211,15 @@ class EnemySystem {
             if (combat.canAttack) {
                 const attacked = combat.attack();
                 if (attacked) {
-                    // Emit attack event for damage system
+                    // Emit damage event for DamageSystem
                     if (EventBus) {
+                        EventBus.emit(GameConstants.Events.ENTITY_DAMAGED, {
+                            entity: hero,
+                            amount: combat.damage,
+                            source: enemy,
+                            type: 'physical'
+                        });
+
                         EventBus.emit(Events.ENEMY_ATTACK, {
                             attacker: enemy,
                             target: hero,
@@ -223,7 +237,7 @@ class EnemySystem {
         // Move back to spawn
         const dx = enemy.spawnX - enemy.x;
         const dy = enemy.spawnY - enemy.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = MathUtils.distance(enemy.x, enemy.y, enemy.spawnX, enemy.spawnY);
 
         if (dist < 10) {
             ai.setState('WANDER');
@@ -241,11 +255,15 @@ class EnemySystem {
 
         // Check if entity is an enemy type
         const entityType = entity.entityType;
-        Logger.info(`[EnemySystem] Damage event: entityType="${entityType}", expected=[${EntityTypes?.ENEMY_DINOSAUR}, ${EntityTypes?.ENEMY_SOLDIER}, ${EntityTypes?.ENEMY_SAURIAN}]`);
+        Logger.info(
+            `[EnemySystem] Damage event: entityType="${entityType}", expected=[${EntityTypes?.ENEMY_DINOSAUR}, ${EntityTypes?.ENEMY_SOLDIER}, ${EntityTypes?.ENEMY_SAURIAN}]`
+        );
 
-        if (entityType !== EntityTypes?.ENEMY_DINOSAUR &&
+        if (
+            entityType !== EntityTypes?.ENEMY_DINOSAUR &&
             entityType !== EntityTypes?.ENEMY_SOLDIER &&
-            entityType !== EntityTypes?.ENEMY_SAURIAN)
+            entityType !== EntityTypes?.ENEMY_SAURIAN
+        )
             return;
 
         // SFX
@@ -253,7 +271,9 @@ class EnemySystem {
 
         // Blood VFX - Multi-layered realistic gore (uses DINO config for all creatures)
         if (VFXController && VFXConfig) {
-            Logger.info(`[EnemySystem] Blood VFX for ${entity.enemyType} at (${Math.round(entity.x)}, ${Math.round(entity.y)})`);
+            Logger.info(
+                `[EnemySystem] Blood VFX for ${entity.enemyType} at (${Math.round(entity.x)}, ${Math.round(entity.y)})`
+            );
             // Primary blood spray
             VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
             // Blood mist
@@ -273,9 +293,11 @@ class EnemySystem {
 
         // Check if entity is an enemy type
         const entityType = entity.entityType;
-        if (entityType !== EntityTypes?.ENEMY_DINOSAUR &&
+        if (
+            entityType !== EntityTypes?.ENEMY_DINOSAUR &&
             entityType !== EntityTypes?.ENEMY_SOLDIER &&
-            entityType !== EntityTypes?.ENEMY_SAURIAN)
+            entityType !== EntityTypes?.ENEMY_SAURIAN
+        )
             return;
 
         // Death handling

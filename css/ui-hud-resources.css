@@ -39,9 +39,7 @@
     align-items: center;
     gap: 8px;
     background: var(--color-metal-mid);
-    background-image:
-        var(--bg-noise),
-        var(--gradient-metal);
+    background-image: var(--bg-noise), var(--gradient-metal);
     padding: 6px 14px 6px 10px;
     border: 1px solid var(--color-metal-dark);
     border-radius: 4px;
@@ -49,8 +47,7 @@
     box-shadow:
         /* Bevel Highlight */
         inset 0 1px 0 rgba(255, 255, 255, 0.15),
-        /* Drop Shadow */
-        0 4px 8px rgba(0, 0, 0, 0.6);
+        /* Drop Shadow */ 0 4px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Rivets on the plate */
@@ -90,7 +87,7 @@
 }
 
 .counter-value {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: 14px;
     font-weight: 700;
     color: var(--color-text-gold);

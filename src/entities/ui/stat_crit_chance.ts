@@ -2,15 +2,15 @@
  * Entity: stat_crit_chance
  * Auto-generated. Edit in dashboard.
  */
-import type { UIEntity } from '@types/entities';
+import type { UIEntity } from '@app-types/entities';
 
 export default {
-    "id": "stat_crit_chance",
-    "name": "Crit Chance",
-    "category": "ui",
-    "status": "pending",
-    "sourceDescription": "Crit Chance icon, detailed pixel art iconography",
-    "files": {
-        "original": "assets/images/ui/stat_crit_chance_original.png"
+    id: 'stat_crit_chance',
+    name: 'Crit Chance',
+    category: 'ui',
+    status: 'pending',
+    sourceDescription: 'Crit Chance icon, detailed pixel art iconography',
+    files: {
+        original: 'assets/images/ui/stat_crit_chance_original.png'
     }
 } satisfies UIEntity;

@@ -1,10 +1,16 @@
-﻿/**
+/**
  * TouchAdapter - Maps Touch/Joystick inputs to Input State
  */
 
-
 class TouchAdapter {
-    joystick: { active: boolean; startX: number; startY: number; currentX: number; currentY: number; maxRadius: number };
+    joystick: {
+        active: boolean;
+        startX: number;
+        startY: number;
+        currentX: number;
+        currentY: number;
+        maxRadius: number;
+    };
     move: { x: number; y: number };
     isMobile: boolean;
 

@@ -1,22 +1,22 @@
-﻿/**
+/**
  * Dinosaur - AI-controlled entity that wanders and drops loot
  *
  * Spawns on dinosaur islands, moves randomly, freezes when attacked.
  *
  * Owner: Director (engine), Gameplay Designer (stats)
  */
-import { Entity } from '../core/Entity';
-import { Logger } from '../core/Logger';
-import { AssetLoader } from '../core/AssetLoader';
+import { Entity } from '@core/Entity';
+import { Logger } from '@core/Logger';
+import { AssetLoader } from '@core/AssetLoader';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
-import { EntityRegistry } from '../entities/EntityLoader';
+import { EntityRegistry } from '@entities/EntityLoader';
 import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
-import { EntityTypes } from '../config/EntityTypes';
-import { SpeciesScaleConfig } from '../config/SpeciesScaleConfig';
+import { EntityTypes } from '@config/EntityTypes';
+import { SpeciesScaleConfig } from '@config/SpeciesScaleConfig';
 import { HealthComponent } from '../components/HealthComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { AIComponent } from '../components/AIComponent';
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 
 class Dinosaur extends Entity {
     // Entity type and identity
@@ -57,20 +57,23 @@ class Dinosaur extends Entity {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
 
         // Look up entity config from EntityRegistry using dinoType (e.g., 'enemy_herbivore_t1_01')
-        const entityConfig = config.dinoType
-            ? EntityRegistry.enemies?.[config.dinoType] || {}
-            : {};
+        const entityConfig = config.dinoType ? EntityRegistry.enemies?.[config.dinoType] || {} : {};
 
         // Merge: Entity JSON < Constructor
         const finalConfig = { ...entityConfig, ...config };
 
         // Get size from SpeciesScaleConfig (runtime lookup by species)
-        const sizeInfo = SpeciesScaleConfig.getSize(entityConfig, false) || { width: 150, height: 150 };
+        const sizeInfo = SpeciesScaleConfig.getSize(entityConfig, false) || {
+            width: 150,
+            height: 150
+        };
 
         // Debug
         const scaleValue = (sizeInfo as any).scale;
         if (scaleValue !== 1.0) {
-            Logger.info(`[Dinosaur] ${config.dinoType}: species=${entityConfig.species}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`);
+            Logger.info(
+                `[Dinosaur] ${config.dinoType}: species=${entityConfig.species}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`
+            );
         }
 
         // IMPORTANT: Apply ...config first, then override with species sizing

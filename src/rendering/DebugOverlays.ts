@@ -1,4 +1,4 @@
-﻿/**
+/**
  * DebugOverlays - Debug visualization overlays for development
  *
  * Extracted from GameRenderer.js for modularity.
@@ -7,8 +7,7 @@
  * Owner: Development Tools
  */
 
-import { GameConstants, getConfig } from '../data/GameConstants';
-
+import { GameConstants, getConfig } from '@data/GameConstants';
 
 const DebugOverlays = {
     /**

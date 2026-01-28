@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_icon_orders
  * Auto-generated from JSON.
  */

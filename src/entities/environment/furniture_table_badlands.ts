@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: furniture_table_badlands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "furniture_table_badlands",
-  "name": "Workbench",
-  "sourceCategory": "environment",
-  "sourceFile": "furniture",
-  "sprite": "furniture_table_badlands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/furniture/furniture_table_badlands_original.png"
-  },
-  "type": "furniture",
-  "biome": "badlands"
+    id: 'furniture_table_badlands',
+    name: 'Workbench',
+    sourceCategory: 'environment',
+    sourceFile: 'furniture',
+    sprite: 'furniture_table_badlands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/furniture/furniture_table_badlands_original.png'
+    },
+    type: 'furniture',
+    biome: 'badlands'
 };

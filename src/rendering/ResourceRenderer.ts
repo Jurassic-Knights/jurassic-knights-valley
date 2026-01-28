@@ -1,17 +1,17 @@
-﻿/**
+/**
  * ResourceRenderer
  * Handles rendering for all resources.
  */
 
-import { Logger } from '../core/Logger';
-import { MaterialLibrary } from '../vfx/MaterialLibrary';
-import { ProgressBarRenderer } from '../vfx/ProgressBarRenderer';
-import { AssetLoader } from '../core/AssetLoader';
-import { Registry } from '../core/Registry';
+import { Logger } from '@core/Logger';
+import { MaterialLibrary } from '@vfx/MaterialLibrary';
+import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
+import { AssetLoader } from '@core/AssetLoader';
+import { Registry } from '@core/Registry';
 import { environmentRenderer } from './EnvironmentRenderer';
 import { Resource } from '../gameplay/Resource';
-import { ColorPalette } from '../config/ColorPalette';
-import { EntityRegistry } from '../entities/EntityLoader';
+import { ColorPalette } from '@config/ColorPalette';
+import { EntityRegistry } from '@entities/EntityLoader';
 
 class ResourceRendererService {
     constructor() {

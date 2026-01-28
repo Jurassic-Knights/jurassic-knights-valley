@@ -1,15 +1,15 @@
-﻿/**
+/**
  * ResourceSystem
  * Handles state updates and respawning for all resources.
  */
 
-import { Logger } from '../core/Logger';
-import { entityManager } from '../core/EntityManager';
+import { Logger } from '@core/Logger';
+import { entityManager } from '@core/EntityManager';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '../vfx/VFXController';
-import { VFXConfig } from '../data/VFXConfig';
-import { Registry } from '../core/Registry';
-import { EntityRegistry } from '../entities/EntityLoader';
+import { VFXController } from '@vfx/VFXController';
+import { VFXConfig } from '@data/VFXConfig';
+import { Registry } from '@core/Registry';
+import { EntityRegistry } from '@entities/EntityLoader';
 import type { IGame } from '../types/core.d';
 
 class ResourceSystem {

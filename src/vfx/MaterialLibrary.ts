@@ -16,9 +16,10 @@
  * Owner: VFX Specialist
  */
 
-import { Registry } from '../core/Registry';
-import { AssetLoader } from '../core/AssetLoader';
-import { Logger } from '../core/Logger';
+import { Registry } from '@core/Registry';
+import { AssetLoader } from '@core/AssetLoader';
+import { Logger } from '@core/Logger';
+import { DOMUtils } from '@core/DOMUtils';
 
 const MaterialLibrary = {
     cache: new Map(),
@@ -85,10 +86,7 @@ const MaterialLibrary = {
      * Helper: Create offscreen canvas of same size
      */
     _createCanvas(w, h) {
-        const c = document.createElement('canvas');
-        c.width = w;
-        c.height = h;
-        return c;
+        return DOMUtils.createCanvas(w, h);
     },
 
     // =========================================================================

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Game Events Configuration
  * Centralized registry of all event names to prevent typos/magic strings.
  */

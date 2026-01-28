@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SFX_Core - Core Sound System
  *
  * Base module with init, play dispatcher, and helper functions.
@@ -13,7 +13,7 @@
  */
 
 // Ambient declarations for global dependencies
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 
 const SFX = {
     ctx: null,

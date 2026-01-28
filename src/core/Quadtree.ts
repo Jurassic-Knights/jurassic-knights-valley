@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Quadtree
  * Spatial partitioning data structure for optimizing 2D range queries.
  * Used by EntityManager for rendering culling and collision detection.

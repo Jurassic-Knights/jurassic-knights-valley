@@ -1,4 +1,4 @@
-﻿/**
+/**
  * RestSystem
  * Handles the "Rest" mechanic at the Home Outpost.
  * Logic:
@@ -9,13 +9,13 @@
  * 5. Saves Game.
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '../vfx/VFXController';
-import { GameState } from '../core/State';
-import { Registry } from '../core/Registry';
+import { VFXController } from '@vfx/VFXController';
+import { GameState } from '@core/State';
+import { Registry } from '@core/Registry';
 
 import type { IGame } from '../types/core.d';
 
@@ -125,8 +125,14 @@ class RestSystem {
 
         // Emit events for UI updates
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: hero.health, max: hero.maxHealth });
-            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, { current: hero.stamina, max: hero.maxStamina });
+            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
+                current: hero.health,
+                max: hero.maxHealth
+            });
+            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
+                current: hero.stamina,
+                max: hero.maxStamina
+            });
             // EventBus.emit('GAME_SAVED');
         }
     }

@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: food_t4_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "food_t4_01",
-  "name": "Iron Rations",
-  "sourceCategory": "resources",
-  "sourceFile": "food",
-  "sprite": "food_t4_01",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/resources/food_t4_01_original.png"
-  },
-  "tier": 4,
-  "stackable": true,
-  "type": "material"
+    id: 'food_t4_01',
+    name: 'Iron Rations',
+    sourceCategory: 'resources',
+    sourceFile: 'food',
+    sprite: 'food_t4_01',
+    status: 'approved',
+    files: {
+        original: 'assets/images/resources/food_t4_01_original.png'
+    },
+    tier: 4,
+    stackable: true,
+    type: 'material'
 };

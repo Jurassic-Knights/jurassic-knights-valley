@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: arch_road_cobble
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "arch_road_cobble",
-  "name": "Cobblestone Road",
-  "sourceCategory": "environment",
-  "sourceFile": "architecture",
-  "sprite": "arch_road_cobble",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/architecture/arch_road_cobble_original.png"
-  },
-  "type": "architecture",
-  "biome": "all"
+    id: 'arch_road_cobble',
+    name: 'Cobblestone Road',
+    sourceCategory: 'environment',
+    sourceFile: 'architecture',
+    sprite: 'arch_road_cobble',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/architecture/arch_road_cobble_original.png'
+    },
+    type: 'architecture',
+    biome: 'all'
 };

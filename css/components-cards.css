@@ -34,11 +34,13 @@
 
 .card:hover {
     border-color: var(--color-accent-gold);
-    box-shadow: var(--shadow-md), 0 0 15px rgba(212, 175, 55, 0.15);
+    box-shadow:
+        var(--shadow-md),
+        0 0 15px rgba(212, 175, 55, 0.15);
 }
 
 .card-header {
-    font-family: var(--font-display);
+    font-family: var(--font-pixel);
     font-size: var(--font-size-base);
     font-weight: 700;
     color: var(--color-accent-gold);
@@ -59,7 +61,9 @@
     border: 2px solid var(--color-accent-iron);
     border-radius: var(--border-radius-lg);
     padding: var(--space-lg);
-    box-shadow: var(--shadow-lg), inset 0 0 40px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        var(--shadow-lg),
+        inset 0 0 40px rgba(0, 0, 0, 0.5);
     position: relative;
 }
 

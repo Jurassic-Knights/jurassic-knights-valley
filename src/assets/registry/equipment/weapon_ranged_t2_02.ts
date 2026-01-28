@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: weapon_ranged_t2_02
  * Auto-generated from JSON.
  */

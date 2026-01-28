@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_res_token
  * Auto-generated from JSON.
  */

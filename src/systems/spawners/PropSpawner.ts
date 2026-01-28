@@ -7,17 +7,15 @@
  * Owner: Level Architect
  */
 
-import { Logger } from '../../core/Logger';
+import { Logger } from '@core/Logger';
 import { Prop } from '../../world/Prop';
-import { GameConstants } from '../../data/GameConstants';
-import { getConfig } from '../../data/GameConfig';
-import { entityManager } from '../../core/EntityManager';
-import { PropConfig } from '../../data/PropConfig';
-import { Registry } from '../../core/Registry';
-
+import { GameConstants } from '@data/GameConstants';
+import { getConfig } from '@data/GameConfig';
+import { entityManager } from '@core/EntityManager';
+import { PropConfig } from '@data/PropConfig';
+import { Registry } from '@core/Registry';
 
 // Unmapped modules - need manual import
-
 
 class PropSpawner {
     // Property declarations
@@ -71,8 +69,7 @@ class PropSpawner {
         for (const island of islandManager.islands) {
             if (island.type === 'home') continue;
 
-            const foliageMap =
-                PropConfig && PropConfig.FOLIAGE_MAP ? PropConfig.FOLIAGE_MAP : {};
+            const foliageMap = PropConfig && PropConfig.FOLIAGE_MAP ? PropConfig.FOLIAGE_MAP : {};
             const itemMap = PropConfig && PropConfig.ITEM_MAP ? PropConfig.ITEM_MAP : {};
             const foliageList = foliageMap[island.name];
             const itemList = itemMap[island.name];
@@ -214,7 +211,6 @@ class PropSpawner {
         if (entityManager) entityManager.add(prop);
     }
 }
-
 
 // ES6 Module Export
 export { PropSpawner };

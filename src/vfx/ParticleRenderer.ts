@@ -1,11 +1,13 @@
 /**
  * ParticleRenderer - Shape-specific particle drawing
- * 
+ *
  * Extracted from ParticleSystem.js to reduce file size.
  * Called by ParticleSystem.render() for each particle.
- * 
+ *
  * Owner: VFX Specialist
  */
+
+import { MathUtils } from '@core/MathUtils';
 
 const ParticleRenderer = {
     // Sprite cache for lazy-loading
@@ -63,7 +65,7 @@ const ParticleRenderer = {
     },
 
     drawStreak(ctx, p, pSize, scaleX) {
-        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        const speed = MathUtils.distance(0, 0, p.vx, p.vy);
         const angle = Math.atan2(p.vy, p.vx);
         ctx.rotate(angle);
         ctx.fillStyle = p.color;
@@ -105,7 +107,7 @@ const ParticleRenderer = {
         const vAngle = Math.atan2(p.vy, p.vx);
         ctx.rotate(vAngle);
         ctx.moveTo(0, 0);
-        const len = Math.min(pSize * 3, Math.sqrt(p.vx * p.vx + p.vy * p.vy) * 3 * scaleX);
+        const len = Math.min(pSize * 3, MathUtils.distance(0, 0, p.vx, p.vy) * 3 * scaleX);
         ctx.lineTo(-len, 0);
         ctx.stroke();
     },
@@ -221,7 +223,6 @@ const ParticleRenderer = {
         ctx.fill();
     }
 };
-
 
 // ES6 Module Export
 export { ParticleRenderer };

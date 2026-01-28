@@ -1,8 +1,8 @@
-﻿/**
+/**
  * EntityManager
  * Centralized storage and management for all game entities.
  * Replaces disconnected arrays in Game.js.
- * 
+ *
  * Owner: Core Systems
  */
 import { Logger } from './Logger';
@@ -19,7 +19,10 @@ class EntityManagerService {
     private entitiesByType: Record<string, IEntity[]> = {};
     private tree: Quadtree | null = null;
     private _queryBuffer: IEntity[] = [];
-    private _insertPool: WeakMap<IEntity, { x: number; y: number; width: number; height: number; entity: IEntity }> = new WeakMap();
+    private _insertPool: WeakMap<
+        IEntity,
+        { x: number; y: number; width: number; height: number; entity: IEntity }
+    > = new WeakMap();
 
     constructor() {
         Logger.info('[EntityManager] Constructed');

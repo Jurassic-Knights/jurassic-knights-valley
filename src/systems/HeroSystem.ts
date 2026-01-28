@@ -4,15 +4,15 @@
  * Decoupled from the Hero class data container.
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { VFXController } from '../vfx/VFXController';
-import { VFXConfig } from '../data/VFXConfig';
-import { IslandManager } from '../world/IslandManager';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { VFXController } from '@vfx/VFXController';
+import { VFXConfig } from '@data/VFXConfig';
 import { BiomeManager } from '../world/BiomeManager';
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 import { HeroCombatService } from './HeroCombatService';
+import { MathUtils } from '@core/MathUtils';
 import type { IGame, IEntity } from '../types/core.d';
 import type { ParticleOptions } from '../types/vfx';
 
@@ -54,11 +54,11 @@ class HeroSystem {
         // Assume single hero for now, but design allows for multiple
         this.hero = game.hero;
 
-        // GC Optimization: Cache system references
-        this._islandManager = game.getSystem('IslandManager');
-        this._homeBase = game.getSystem('HomeBase');
-        this._gameRenderer = game.getSystem('GameRenderer');
-        this._vfxController = game.getSystem('VFXController');
+        // GC Optimization: Cache system references via Registry (Service Locator)
+        this._islandManager = Registry.get('IslandManager');
+        this._homeBase = Registry.get('HomeBase');
+        this._gameRenderer = Registry.get('GameRenderer');
+        this._vfxController = Registry.get('VFXController');
     }
 
     initListeners() {
@@ -69,7 +69,9 @@ class HeroSystem {
             // Attack events could be handled here too
 
             // Death handler (06-damage-system)
-            EventBus.on(GameConstants.Events.HERO_DIED, (data: { hero: IEntity }) => this.onHeroDied(data));
+            EventBus.on(GameConstants.Events.HERO_DIED, (data: { hero: IEntity }) =>
+                this.onHeroDied(data)
+            );
         }
     }
 
@@ -122,6 +124,38 @@ class HeroSystem {
         }
     }
 
+    // --- Stamina Management (Moved from StatsComponent) ---
+    consumeStamina(hero, amount) {
+        if (!hero.components.stats) return false;
+
+        const stats = hero.components.stats;
+        if (stats.stamina >= amount) {
+            stats.stamina -= amount;
+            if (EventBus) {
+                EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
+                    current: stats.stamina,
+                    max: stats.maxStamina
+                });
+            }
+            return true;
+        }
+        return false;
+    }
+
+    restoreStamina(hero, amount) {
+        if (!hero.components.stats) return;
+
+        const stats = hero.components.stats;
+        stats.stamina = Math.min(stats.stamina + amount, stats.maxStamina);
+
+        if (EventBus) {
+            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
+                current: stats.stamina,
+                max: stats.maxStamina
+            });
+        }
+    }
+
     // Death/Respawn Handler (06-damage-system)
     onHeroDied(data) {
         const hero = data.hero;
@@ -146,8 +180,10 @@ class HeroSystem {
         // Respawn after delay
         setTimeout(() => {
             // Get spawn position
-            const spawnPos = this._islandManager?.getHeroSpawnPosition?.() ||
-                IslandManager?.getHeroSpawnPosition?.() || { x: hero.x, y: hero.y };
+            const spawnPos = this._islandManager?.getHeroSpawnPosition?.() || {
+                x: hero.x,
+                y: hero.y
+            };
             hero.x = spawnPos.x;
             hero.y = spawnPos.y;
 
@@ -223,8 +259,8 @@ class HeroSystem {
         if (gameRenderer) {
             const halfW = hero.width / 2;
             const halfH = hero.height / 2;
-            hero.x = Math.max(halfW, Math.min(gameRenderer.worldWidth - halfW, hero.x));
-            hero.y = Math.max(halfH, Math.min(gameRenderer.worldHeight - halfH, hero.y));
+            hero.x = MathUtils.clamp(hero.x, halfW, gameRenderer.worldWidth - halfW);
+            hero.y = MathUtils.clamp(hero.y, halfH, gameRenderer.worldHeight - halfH);
         }
 
         // Update interaction flags (Home Outpost)

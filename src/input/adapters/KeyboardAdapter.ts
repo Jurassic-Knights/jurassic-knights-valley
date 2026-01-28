@@ -3,7 +3,7 @@
  * Refactored to generic key tracking.
  */
 
-import { Logger } from '../../core/Logger';
+import { Logger } from '@core/Logger';
 import { inputSystem } from '../InputSystem';
 
 class KeyboardAdapter {

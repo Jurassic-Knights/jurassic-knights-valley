@@ -1,21 +1,20 @@
-﻿/**
+/**
  * VFX Controller (System 2.0)
  * Orchestrates all visual effects using a Data-Driven Sequencer.
  *
  * Owner: VFX Specialist
  */
 
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 import { ParticleSystem } from './ParticleSystem';
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 import { ProjectileVFX } from './ProjectileVFX';
 import { MeleeTrailVFX } from './MeleeTrailVFX';
 import { FloatingTextManager, FloatingText } from './FloatingText';
-import { VFXConfig } from '../data/VFXConfig';
-import { GameRenderer } from '../core/GameRenderer';
+import { VFXConfig } from '@data/VFXConfig';
+import { GameRenderer } from '@core/GameRenderer';
 import type { IGame } from '../types/core.d';
 import type { ParticleOptions, VFXSequence } from '../types/vfx';
-
 
 class VFXSystem {
     // Property declarations
@@ -23,7 +22,14 @@ class VFXSystem {
     bgParticles: typeof ParticleSystem | null = null;
     fgParticles: typeof ParticleSystem | null = null;
     texts: FloatingText[] = [];
-    activeSequences: Array<{ name?: string; x: number; y: number; elapsed: number; cues: Array<{ time: number; type: string; options?: ParticleOptions }>; options?: ParticleOptions }> = [];
+    activeSequences: Array<{
+        name?: string;
+        x: number;
+        y: number;
+        elapsed: number;
+        cues: Array<{ time: number; type: string; options?: ParticleOptions }>;
+        options?: ParticleOptions;
+    }> = [];
     initialized: boolean = false;
 
     constructor() {

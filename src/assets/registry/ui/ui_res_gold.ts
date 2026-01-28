@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: ui_res_gold
  * Auto-generated from JSON.
  */

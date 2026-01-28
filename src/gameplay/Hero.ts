@@ -1,25 +1,23 @@
-﻿/**
+/**
  * Hero - Player-controlled character
  *
  * Owner: Director (engine), Gameplay Designer (stats)
  */
-import { Entity } from '../core/Entity';
-import { RenderConfig } from '../config/RenderConfig';
-import { EquipmentManager } from '../systems/EquipmentManager';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { EntityRegistry } from '../entities/EntityLoader';
-import { GameInstance } from '../core/Game';
-import { EntityTypes } from '../config/EntityTypes';
+import { Entity } from '@core/Entity';
+import { RenderConfig } from '@config/RenderConfig';
+import { EquipmentManager } from '@systems/EquipmentManager';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { GameInstance } from '@core/Game';
+import { EntityTypes } from '@config/EntityTypes';
 import { HealthComponent } from '../components/HealthComponent';
 import { InventoryComponent } from '../components/InventoryComponent';
 import { CombatComponent } from '../components/CombatComponent';
 import { StatsComponent } from '../components/StatsComponent';
-import { HeroDefaults } from '../config/HeroDefaults';
-import { Registry } from '../core/Registry';
-
+import { HeroDefaults } from '@config/HeroDefaults';
+import { Registry } from '@core/Registry';
 
 // Unmapped modules - need manual import
-
 
 class Hero extends Entity {
     // Class properties
@@ -182,7 +180,9 @@ class Hero extends Entity {
     }
     set speed(val) {
         // Speed is now controlled by GameConstants, this setter is for backwards compatibility
-        console.warn('[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED');
+        console.warn(
+            '[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED'
+        );
     }
 
     get stamina() {
@@ -240,8 +240,11 @@ class Hero extends Entity {
      * Helper to restore stamina (used by RestSystem legacy calls)
      */
     restStamina() {
-        if (this.components.stats) {
-            this.components.stats.restoreStamina(this.maxStamina);
+        if (this.components.stats && Registry) {
+            const heroSystem = Registry.get('HeroSystem');
+            if (heroSystem) {
+                heroSystem.restoreStamina(this, this.maxStamina);
+            }
         }
     }
 }

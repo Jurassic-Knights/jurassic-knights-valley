@@ -1,9 +1,9 @@
 /**
  * CombatComponent - Manages Attack Stats and Cooldowns
  */
-import { Component } from '../core/Component';
-import { Registry } from '../core/Registry';
-import { EventBus } from '../core/EventBus';
+import { Component } from '@core/Component';
+import { Registry } from '@core/Registry';
+import { EventBus } from '@core/EventBus';
 
 class CombatComponent extends Component {
     damage: number;

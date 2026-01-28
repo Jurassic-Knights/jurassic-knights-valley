@@ -1,19 +1,19 @@
-﻿/**
+/**
  * InteractionSystem
  * Handles entity interactions, specifically item pickups and magnetism.
  * Decouples logic from Game.js.
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { entityManager } from '../core/EntityManager';
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { entityManager } from '@core/EntityManager';
 import { spawnManager } from './SpawnManager';
 import { IslandManager } from '../world/IslandManager';
 import { AudioManager } from '../audio/AudioManager';
 import { QuestManager } from '../gameplay/QuestManager';
 import { VFXTriggerService } from './VFXTriggerService';
-import { Registry } from '../core/Registry';
+import { Registry } from '@core/Registry';
 
 import type { IGame } from '../types/core.d';
 
@@ -80,8 +80,7 @@ class InteractionSystem {
         if (IslandManager) {
             const lockedIsland = IslandManager.getUnlockTrigger(hero.x, hero.y);
             if (lockedIsland) {
-                if (EventBus)
-                    EventBus.emit(GameConstants.Events.UI_UNLOCK_PROMPT, lockedIsland);
+                if (EventBus) EventBus.emit(GameConstants.Events.UI_UNLOCK_PROMPT, lockedIsland);
             } else {
                 if (EventBus) EventBus.emit(GameConstants.Events.UI_HIDE_UNLOCK_PROMPT);
             }

@@ -4,7 +4,7 @@
  */
 
 import { SFX } from './SFX_Core';
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 
 (function () {
     const handlers = {

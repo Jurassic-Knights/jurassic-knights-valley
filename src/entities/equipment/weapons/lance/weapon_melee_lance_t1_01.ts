@@ -1,32 +1,31 @@
-﻿/**
+/**
  * Entity: weapon_melee_lance_t1_01
  * Auto-generated from JSON.
  */
 
 export default {
-    "id":  "weapon_melee_lance_t1_01",
-    "name":  "Cavalry Pike",
-    "description":  "A simple lance for mounted combat.",
-    "category":  "equipment",
-    "equipSlot":  "hand1",
-    "weaponType":  "melee",
-    "weaponSubtype":  "lance",
-    "tier":  1,
-    "rarity":  "common",
-    "stats":  {
-                  "damage":  13,
-                  "attackSpeed":  0.6,
-                  "range":  450
-              },
-    "recipe":  {
-                   "scraps_t1_01":  6,
-                   "wood_t1_01":  8
-               },
-    "sprite":  "weapon_melee_lance_t1_01",
-    "sourceFile":  "weapon",
-    "files":  {
-                  "original":  "images/equipment/weapons/lance/weapon_lance_t1_01_original.png"
-              },
-    "gripType":  "2-hand"
-}
-;
+    id: 'weapon_melee_lance_t1_01',
+    name: 'Cavalry Pike',
+    description: 'A simple lance for mounted combat.',
+    category: 'equipment',
+    equipSlot: 'hand1',
+    weaponType: 'melee',
+    weaponSubtype: 'lance',
+    tier: 1,
+    rarity: 'common',
+    stats: {
+        damage: 13,
+        attackSpeed: 0.6,
+        range: 450
+    },
+    recipe: {
+        scraps_t1_01: 6,
+        wood_t1_01: 8
+    },
+    sprite: 'weapon_melee_lance_t1_01',
+    sourceFile: 'weapon',
+    files: {
+        original: 'images/equipment/weapons/lance/weapon_lance_t1_01_original.png'
+    },
+    gripType: '2-hand'
+};

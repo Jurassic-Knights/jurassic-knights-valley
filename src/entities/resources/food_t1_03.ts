@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: food_t1_03
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "food_t1_03",
-  "name": "Wheat Grain",
-  "sourceCategory": "resources",
-  "sourceFile": "food",
-  "sprite": "food_t1_03",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/resources/food_t1_03_original.png"
-  },
-  "tier": 1,
-  "stackable": true,
-  "type": "material"
+    id: 'food_t1_03',
+    name: 'Wheat Grain',
+    sourceCategory: 'resources',
+    sourceFile: 'food',
+    sprite: 'food_t1_03',
+    status: 'approved',
+    files: {
+        original: 'assets/images/resources/food_t1_03_original.png'
+    },
+    tier: 1,
+    stackable: true,
+    type: 'material'
 };

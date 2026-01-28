@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Registry: weapon_shield_t3_01
  * Auto-generated from JSON.
  */

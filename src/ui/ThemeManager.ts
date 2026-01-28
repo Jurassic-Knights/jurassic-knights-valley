@@ -4,13 +4,12 @@
  * to the UI elements at runtime.
  */
 
-import { Logger } from '../core/Logger';
+import { Logger } from '@core/Logger';
 
 // UI_THEME is optional config - default to empty object
 const UI_THEME: any = {};
 // Runtime variable for TextureAligner access
 let UI_THEME_RUNTIME: any = {};
-
 
 class ThemeManagerService {
     // Property declarations
@@ -132,12 +131,12 @@ class ThemeManagerService {
             }
 
             // Support legacy scale or ScaleX/ScaleY
-            let master = def.scale !== undefined ? def.scale : 500;
-            let sxRaw = def.scaleX !== undefined ? def.scaleX : 500;
-            let syRaw = def.scaleY !== undefined ? def.scaleY : 500;
+            const master = def.scale !== undefined ? def.scale : 500;
+            const sxRaw = def.scaleX !== undefined ? def.scaleX : 500;
+            const syRaw = def.scaleY !== undefined ? def.scaleY : 500;
 
-            let finalX = sxRaw * (master / 500);
-            let finalY = syRaw * (master / 500);
+            const finalX = sxRaw * (master / 500);
+            const finalY = syRaw * (master / 500);
 
             el.style.backgroundSize = `${finalX}% ${finalY}%`;
         });

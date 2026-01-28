@@ -2,7 +2,7 @@
  * GamepadAdapter - Maps Gamepad inputs to Input State
  */
 
-import { Logger } from '../../core/Logger';
+import { Logger } from '@core/Logger';
 import { inputSystem } from '../InputSystem';
 
 class GamepadAdapter {

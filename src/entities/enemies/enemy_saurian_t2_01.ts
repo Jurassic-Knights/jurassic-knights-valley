@@ -1,78 +1,64 @@
-﻿/**
+/**
  * Entity: enemy_saurian_t2_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "enemy_saurian_t2_01",
-  "name": "Deinonychus Lancer",
-  "sourceCategory": "enemies",
-  "sourceFile": "saurian",
-  "sprite": "saurian_t2_01",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/enemies/saurian_t2_01_original.png"
-  },
-  "tier": 2,
-  "biome": "tundra",
-  "stats": {
-    "health": 90,
-    "damage": 18,
-    "speed": 85,
-    "defense": 0
-  },
-  "combat": {
-    "attackRange": 180,
-    "attackRate": 0.8,
-    "aggroRange": 250,
-    "packAggro": true,
-    "attackType": "melee"
-  },
-  "sfx": {
-    "spawn": "sfx_spawn_saurian_t2_01",
-    "death": "sfx_death_saurian_t2_01",
-    "hurt": "sfx_hurt_saurian_t2_01",
-    "aggro": "sfx_aggro_saurian_t2_01"
-  },
-  "spawning": {
-    "biomes": [
-      "tundra"
-    ],
-    "groupSize": [
-      1,
-      2
-    ],
-    "weight": 50,
-    "respawnTime": 30
-  },
-  "loot": [
-    {
-      "item": "leather_t2_01",
-      "chance": 0.8,
-      "amount": [
-        1,
-        2
-      ]
+    id: 'enemy_saurian_t2_01',
+    name: 'Deinonychus Lancer',
+    sourceCategory: 'enemies',
+    sourceFile: 'saurian',
+    sprite: 'saurian_t2_01',
+    status: 'pending',
+    files: {
+        original: 'assets/images/enemies/saurian_t2_01_original.png'
     },
-    {
-      "item": "bone_t1_01",
-      "chance": 0.5,
-      "amount": [
-        1,
-        2
-      ]
+    tier: 2,
+    biome: 'tundra',
+    stats: {
+        health: 90,
+        damage: 18,
+        speed: 85,
+        defense: 0
     },
-    {
-      "item": "trench_mace",
-      "chance": 0.08,
-      "amount": [
-        1,
-        1
-      ]
-    }
-  ],
-  "xpReward": 35,
-  "species": "Deinonychus",
-  "weaponType": "lance",
-  "role": "medium"
+    combat: {
+        attackRange: 180,
+        attackRate: 0.8,
+        aggroRange: 250,
+        packAggro: true,
+        attackType: 'melee'
+    },
+    sfx: {
+        spawn: 'sfx_spawn_saurian_t2_01',
+        death: 'sfx_death_saurian_t2_01',
+        hurt: 'sfx_hurt_saurian_t2_01',
+        aggro: 'sfx_aggro_saurian_t2_01'
+    },
+    spawning: {
+        biomes: ['tundra'],
+        groupSize: [1, 2],
+        weight: 50,
+        respawnTime: 30
+    },
+    loot: [
+        {
+            item: 'leather_t2_01',
+            chance: 0.8,
+            amount: [1, 2]
+        },
+        {
+            item: 'bone_t1_01',
+            chance: 0.5,
+            amount: [1, 2]
+        },
+        {
+            item: 'trench_mace',
+            chance: 0.08,
+            amount: [1, 1]
+        }
+    ],
+    xpReward: 35,
+    species: 'Deinonychus',
+    weaponType: 'lance',
+    role: 'medium'
 };

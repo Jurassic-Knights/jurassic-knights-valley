@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: bone_t1_01
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "bone_t1_01",
-  "name": "Bone Shard",
-  "sourceCategory": "items",
-  "sourceFile": "bone",
-  "sprite": "bone_t1_01",
-  "status": "approved",
-  "files": {
-    "original": "assets/images/items/bone_t1_01_original.png"
-  },
-  "type": "consumable",
-  "stackable": true,
-  "recipe": "2x Bone"
+    id: 'bone_t1_01',
+    name: 'Bone Shard',
+    sourceCategory: 'items',
+    sourceFile: 'bone',
+    sprite: 'bone_t1_01',
+    status: 'approved',
+    files: {
+        original: 'assets/images/items/bone_t1_01_original.png'
+    },
+    type: 'consumable',
+    stackable: true,
+    recipe: '2x Bone'
 };

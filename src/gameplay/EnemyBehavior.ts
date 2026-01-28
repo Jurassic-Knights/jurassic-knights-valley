@@ -8,27 +8,24 @@
  */
 
 import { Enemy } from './EnemyCore';
-import { Logger } from '../core/Logger';
-import { entityManager as EntityManager } from '../core/EntityManager';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { BiomeConfig } from '../data/BiomeConfig';
+import { Logger } from '@core/Logger';
+import { entityManager as EntityManager } from '@core/EntityManager';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { BiomeConfig } from '@data/BiomeConfig';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '../vfx/VFXController';
-import { VFXConfig } from '../data/VFXConfig';
+import { VFXController } from '@vfx/VFXController';
+import { VFXConfig } from '@data/VFXConfig';
 import { IslandManager } from '../world/IslandManager';
-import { EntityTypes } from '../config/EntityTypes';
-import { spawnManager as SpawnManager } from '../systems/SpawnManager';
-import { GameInstance } from '../core/Game';
+import { EntityTypes } from '@config/EntityTypes';
+import { spawnManager as SpawnManager } from '@systems/SpawnManager';
+import { pathfindingSystem as PathfindingSystem } from '@systems/PathfindingSystem';
+import { GameInstance } from '@core/Game';
 
-import { pathfindingSystem as PathfindingSystem } from '../systems/PathfindingSystem';
+import { MathUtils } from '@core/MathUtils';
 
-// PathfindingSystem may not exist, declare as optional
-/**
- * Move along a calculated A* path to destination
- */
 Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
-    const distToTarget = Math.sqrt((targetX - this.x) ** 2 + (targetY - this.y) ** 2);
+    const distToTarget = MathUtils.distance(this.x, this.y, targetX, targetY);
 
     if (distToTarget < 20) {
         this.currentPath = [];
@@ -52,7 +49,7 @@ Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
 
         if (this.currentPath.length > 1) {
             const first = this.currentPath[0];
-            const distToFirst = Math.sqrt((first.x - this.x) ** 2 + (first.y - this.y) ** 2);
+            const distToFirst = MathUtils.distance(this.x, this.y, first.x, first.y);
             if (distToFirst < 50) {
                 this.pathIndex = 1;
             }
@@ -70,7 +67,7 @@ Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
 
     const dx = waypoint.x - this.x;
     const dy = waypoint.y - this.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    const dist = MathUtils.distance(this.x, this.y, waypoint.x, waypoint.y);
 
     if (dist < 30) {
         this.pathIndex++;
@@ -98,7 +95,7 @@ Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
 Enemy.prototype.moveDirectly = function (targetX, targetY, speed, dt) {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    const dist = MathUtils.distance(this.x, this.y, targetX, targetY);
 
     if (dist < 10) return true;
 
@@ -123,9 +120,7 @@ Enemy.prototype.moveDirectly = function (targetX, targetY, speed, dt) {
 Enemy.prototype.updateWander = function (dt) {
     const hero = EntityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
     if (hero && !hero.isDead) {
-        const dx = hero.x - this.x;
-        const dy = hero.y - this.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = MathUtils.distance(this.x, this.y, hero.x, hero.y);
 
         if (dist <= this.aggroRange) {
             this.target = hero;
@@ -136,9 +131,7 @@ Enemy.prototype.updateWander = function (dt) {
                 AudioManager.playSFX(aggroSfx);
             }
 
-            Logger.info(
-                `[Enemy] ${this.enemyName} aggro on hero at distance ${dist.toFixed(0)}`
-            );
+            Logger.info(`[Enemy] ${this.enemyName} aggro on hero at distance ${dist.toFixed(0)}`);
             return;
         }
     }
@@ -173,11 +166,9 @@ Enemy.prototype.updateChase = function (dt) {
         return;
     }
 
-    const dx = this.target.x - this.x;
-    const dy = this.target.y - this.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
+    const dist = MathUtils.distance(this.x, this.y, this.target.x, this.target.y);
 
-    const spawnDist = Math.sqrt((this.x - this.spawnX) ** 2 + (this.y - this.spawnY) ** 2);
+    const spawnDist = MathUtils.distance(this.x, this.y, this.spawnX, this.spawnY);
     if (spawnDist > this.leashDistance) {
         this.state = 'returning';
         this.target = null;
@@ -422,4 +413,3 @@ Enemy.prototype.respawn = function () {
 };
 
 Logger.info('[EnemyBehavior] Behavior methods added to Enemy prototype');
-

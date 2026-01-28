@@ -1,19 +1,19 @@
-﻿/**
+/**
  * Entity: bg_zone_bone_valley
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "bg_zone_bone_valley",
-  "name": "Bone Valley",
-  "sourceCategory": "environment",
-  "sourceFile": "backgrounds",
-  "sprite": "bg_zone_bone_valley",
-  "status": "clean",
-  "files": {
-    "original": "assets/images/backgrounds/zone_bone_valley.png",
-    "clean": "assets/images/backgrounds/zone_bone_valley_clean.png"
-  },
-  "type": "zone_background",
-  "biome": "grasslands"
+    id: 'bg_zone_bone_valley',
+    name: 'Bone Valley',
+    sourceCategory: 'environment',
+    sourceFile: 'backgrounds',
+    sprite: 'bg_zone_bone_valley',
+    status: 'clean',
+    files: {
+        original: 'assets/images/backgrounds/zone_bone_valley.png',
+        clean: 'assets/images/backgrounds/zone_bone_valley_clean.png'
+    },
+    type: 'zone_background',
+    biome: 'grasslands'
 };

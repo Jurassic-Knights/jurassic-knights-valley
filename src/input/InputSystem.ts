@@ -1,19 +1,18 @@
-﻿/**
+/**
  * InputSystem - Central Input Aggregator
  *
  * Aggregates input from Keyboard, Touch, and Gamepad adapters.
  * Emits standardized events via EventBus.
  *
  * Update: Supports Intent-based mapping (Keys -> Actions)
- * 
+ *
  * Owner: Core Infrastructure
  */
 
-import { Logger } from '../core/Logger';
-import { EventBus } from '../core/EventBus';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { Registry } from '../core/Registry';
-
+import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { Registry } from '@core/Registry';
 
 class InputSystem {
     // game reference stored via init()

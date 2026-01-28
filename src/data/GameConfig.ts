@@ -1,9 +1,9 @@
 /**
  * GameConfig - Tunable game values with HMR support
- * 
+ *
  * This file contains ONLY values that should be editable at runtime.
  * For immutable constants (grid size, world dimensions, events), see GameConstants.ts
- * 
+ *
  * All systems should read from getConfig() to get HMR-reactive values.
  */
 
@@ -43,7 +43,18 @@ const DEFAULTS = {
         HOME_GOLD_COUNT: 3,
         HOME_GOLD_AMOUNT_MIN: 10,
         ELITE_SPAWN_CHANCE: 0.08,
-        BOSS_RESPAWN_DEFAULT: 30000
+
+        BOSS_RESPAWN_DEFAULT: 30000,
+        PROPS: {
+            CLUSTER_COUNT_MIN: 4,
+            CLUSTER_COUNT_RND: 3,
+            PROPS_PER_CLUSTER_MIN: 3,
+            PROPS_PER_CLUSTER_RND: 3,
+            CLUSTER_RADIUS: 120,
+            ITEM_COUNT_MIN: 2,
+            ITEM_COUNT_RND: 3,
+            MIN_DIST: 80
+        }
     },
     Time: {
         REAL_SECONDS_PER_GAME_DAY: 300,
@@ -96,7 +107,7 @@ export type GameConfigType = typeof DEFAULTS;
 
 /**
  * getConfig() - Returns current tunable game values
- * 
+ *
  * Reads from window.__GAME_CONFIG__ which is updated by HMR.
  * On first call before HMR runs, returns module-level GameConfig.
  */
@@ -110,19 +121,23 @@ export function getConfig(): GameConfigType {
 
 /**
  * getWeaponStats() - Get weapon stats using ADDITIVE model
- * 
+ *
  * Config WeaponDefaults = BASE values
  * Entity weapon.stats = BONUS values (added to base)
  * Total = base + bonus
- * 
+ *
  * Example: pistol default range=400, entity bonus=200 → total=600
  */
-export function getWeaponStats(weapon: { weaponSubtype?: string; stats?: { range?: number; damage?: number; attackSpeed?: number } }) {
+export function getWeaponStats(weapon: {
+    weaponSubtype?: string;
+    stats?: { range?: number; damage?: number; attackSpeed?: number };
+}) {
     const subtype = weapon.weaponSubtype as keyof typeof DEFAULTS.WeaponDefaults;
     const configDefaults = getConfig().WeaponDefaults;
-    const base = subtype && configDefaults?.[subtype]
-        ? configDefaults[subtype]
-        : { range: 300, damage: 10, attackSpeed: 1.0 };
+    const base =
+        subtype && configDefaults?.[subtype]
+            ? configDefaults[subtype]
+            : { range: 300, damage: 10, attackSpeed: 1.0 };
 
     // Additive: base + entity bonus (ensure numeric values)
     const bonus = weapon.stats || {};

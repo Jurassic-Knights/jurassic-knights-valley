@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TimeSystem
  * Manages the global game time, day/night cycles, and seasons.
  *
@@ -9,11 +9,10 @@
  * - Emits time-based events for other systems to consume
  */
 
-import { Logger } from '../core/Logger';
-import { GameConstants, getConfig } from '../data/GameConstants';
-import { EventBus } from '../core/EventBus';
-import { Registry } from '../core/Registry';
-
+import { Logger } from '@core/Logger';
+import { GameConstants, getConfig } from '@data/GameConstants';
+import { EventBus } from '@core/EventBus';
+import { Registry } from '@core/Registry';
 
 class TimeSystem {
     // Property declarations
@@ -176,10 +175,10 @@ class TimeSystem {
         let newPhase = this.currentPhase;
 
         // Determine phase based on dayTime
-        // NIGHT: 0.9 â†’ 1.0 â†’ 0.0 â†’ 0.05
-        // DAWN: 0.05 â†’ 0.15
-        // DAY: 0.15 â†’ 0.75
-        // DUSK: 0.75 â†’ 0.9
+        // NIGHT: 0.9 → 1.0 → 0.0 → 0.05
+        // DAWN: 0.05 → 0.15
+        // DAY: 0.15 → 0.75
+        // DUSK: 0.75 → 0.9
         if (this.dayTime >= phases.NIGHT || this.dayTime < phases.DAWN) {
             newPhase = 'NIGHT';
         } else if (this.dayTime >= phases.DUSK) {
@@ -194,7 +193,9 @@ class TimeSystem {
         if (newPhase !== this.currentPhase) {
             const prevPhase = this.currentPhase;
             this.currentPhase = newPhase;
-            Logger.info(`[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase} (dayTime: ${this.dayTime.toFixed(3)})`);
+            Logger.info(
+                `[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase} (dayTime: ${this.dayTime.toFixed(3)})`
+            );
             EventBus.emit(GameConstants.Events.DAY_PHASE_CHANGE, {
                 phase: newPhase,
                 prevPhase: prevPhase

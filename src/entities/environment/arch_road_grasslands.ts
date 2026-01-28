@@ -1,18 +1,18 @@
-﻿/**
+/**
  * Entity: arch_road_grasslands
  * Auto-generated from JSON.
  */
 
 export default {
-  "id": "arch_road_grasslands",
-  "name": "Dirt Path",
-  "sourceCategory": "environment",
-  "sourceFile": "architecture",
-  "sprite": "arch_road_grasslands",
-  "status": "pending",
-  "files": {
-    "original": "assets/images/environment/architecture/arch_road_grasslands_original.png"
-  },
-  "type": "architecture",
-  "biome": "grasslands"
+    id: 'arch_road_grasslands',
+    name: 'Dirt Path',
+    sourceCategory: 'environment',
+    sourceFile: 'architecture',
+    sprite: 'arch_road_grasslands',
+    status: 'pending',
+    files: {
+        original: 'assets/images/environment/architecture/arch_road_grasslands_original.png'
+    },
+    type: 'architecture',
+    biome: 'grasslands'
 };

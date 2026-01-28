@@ -8,17 +8,16 @@
  * - Finished items must be claimed (or auto-added, for now auto-add/notify)
  */
 
-import { Logger } from '../core/Logger';
-import { Registry } from '../core/Registry';
-import { EventBus } from '../core/EventBus';
-import { GameState } from '../core/State';
-import { GameInstance } from '../core/Game';
-import { UIManager } from '../ui/UIManager';
-import { spawnManager as SpawnManager } from '../systems/SpawnManager';
+import { Logger } from '@core/Logger';
+import { Registry } from '@core/Registry';
+import { EventBus } from '@core/EventBus';
+import { GameState } from '@core/State';
+import { GameInstance } from '@core/Game';
+import { UIManager } from '@ui/UIManager';
+import { spawnManager as SpawnManager } from '@systems/SpawnManager';
 import { IslandManager } from '../world/IslandManager';
 
-import { economySystem as EconomySystem } from '../systems/EconomySystem';
-
+import { economySystem as EconomySystem } from '@systems/EconomySystem';
 
 const CraftingManager = {
     // Configuration
@@ -263,11 +262,7 @@ const CraftingManager = {
 
     canAfford(recipe, quantity) {
         // Dependencies
-        if (
-            !GameInstance ||
-            !GameInstance.hero ||
-            !GameInstance.hero.inventory
-        ) {
+        if (!GameInstance || !GameInstance.hero || !GameInstance.hero.inventory) {
             // Fallback
             return false;
         }
@@ -288,12 +283,7 @@ const CraftingManager = {
     },
 
     consumeResources(recipe, quantity) {
-        if (
-            !GameInstance ||
-            !GameInstance.hero ||
-            !GameInstance.hero.inventory
-        )
-            return;
+        if (!GameInstance || !GameInstance.hero || !GameInstance.hero.inventory) return;
 
         const inv = GameInstance.hero.inventory;
 
@@ -312,12 +302,7 @@ const CraftingManager = {
     },
 
     getMaxCraftable(recipe) {
-        if (
-            !GameInstance ||
-            !GameInstance.hero ||
-            !GameInstance.hero.inventory
-        )
-            return 0;
+        if (!GameInstance || !GameInstance.hero || !GameInstance.hero.inventory) return 0;
 
         const inv = GameInstance.hero.inventory;
 

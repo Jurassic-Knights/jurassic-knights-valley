@@ -1,4 +1,4 @@
-﻿/**
+/**
  * HealthBarRenderer - Utility for rendering health and respawn bars
  *
  * Consolidates duplicated health bar rendering code from Resource.js and Dinosaur.js.
@@ -86,10 +86,15 @@ const HealthBarRenderer = {
     drawForEntity(ctx, entity, options = {}) {
         const barY = entity.y - entity.height / 2 - 18;
 
+        // Check for HealthComponent first
+        const healthComp = entity.components?.health;
+        const current = healthComp ? healthComp.health : entity.health;
+        const max = healthComp ? healthComp.maxHealth || entity.maxHealth : entity.maxHealth;
+
         this.draw(ctx, {
             x: entity.x,
             y: barY,
-            percent: entity.health / entity.maxHealth,
+            percent: current / max,
             mode: 'health',
             entityId: entity.id,
             ...options

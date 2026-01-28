@@ -1,4 +1,4 @@
-﻿/**
+/**
  * EntityTypes - Centralized entity type constants
  *
  * Use these instead of constructor.name checks for reliable type identification.
@@ -17,7 +17,8 @@ const EntityTypes = {
     RESOURCE: 'resource',
     MERCHANT: 'merchant',
     DROPPED_ITEM: 'dropped_item',
-    PROP: 'prop'
+    PROP: 'prop',
+    BUILDING: 'building'
 };
 
 export { EntityTypes };
