@@ -99,10 +99,21 @@ export function closeTemplatesModal(): void {
     });
 }
 
-export function initModalKeyboard(): void {
+export function initModalHandlers(): void {
+    // Keyboard support
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
         }
     });
+
+    // Click outside support
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
 }

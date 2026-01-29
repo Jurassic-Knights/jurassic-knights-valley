@@ -9,6 +9,7 @@ import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { AssetLoader } from './AssetLoader';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { Registry } from './Registry';
+import { CollisionComponent } from '../components/CollisionComponent';
 
 class Entity {
     // Class properties
@@ -23,6 +24,13 @@ class Entity {
     active: boolean;
     islandGridX?: number;
     islandGridY?: number;
+
+    // Physics State for Interpolation
+    prevX: number;
+    prevY: number;
+
+    // Components
+    collision?: CollisionComponent;
 
     /** IEntity interface compliance - returns entityType */
     get type(): string {
@@ -47,6 +55,23 @@ class Entity {
         // Grid coordinates (optional)
         if (config.islandGridX !== undefined) this.islandGridX = config.islandGridX;
         if (config.islandGridY !== undefined) this.islandGridY = config.islandGridY;
+
+        this.prevX = this.x;
+        this.prevY = this.y;
+
+        if (config.collision) {
+            // Auto-sync collision bounds with entity size if not explicitly set
+            this.collision = new CollisionComponent({
+                ...config.collision,
+                bounds: {
+                    width: this.width,
+                    height: this.height, // Default to visual size
+                    offsetX: 0,
+                    offsetY: 0,
+                    ...(config.collision.bounds || {}) // Allow override
+                }
+            });
+        }
     }
 
     /**
@@ -130,10 +155,6 @@ class Entity {
         // Apply Skew (Sun Direction)
         const skew = env ? env.shadowSkew || 0 : 0;
         // Skew X: transform(1, 0, skew, 1, 0, 0)
-        // We apply skew before flip, so positive skew leans right (West?), negative leans left (East?)
-        // EnvironmentRenderer calculation: (0.5 - time) * 3.
-        // Dawn (0.25): +0.75. Leans Right.
-        // Dusk (0.75): -0.75. Leans Left.
         ctx.transform(1, 0, skew, 1, 0, 0);
 
         // Apply Dynamic Transform
@@ -151,8 +172,6 @@ class Entity {
         // Optimize: Use cached silhouette from MaterialLibrary if available
         let shadowImg: HTMLCanvasElement | HTMLImageElement | null = null;
         if (this.sprite && MaterialLibrary) {
-            // We need to pass the loaded image if AssetLoader doesn't have it indexed (shouldn't happen often)
-            // But MaterialLibrary handles AssetLoader lookups.
             shadowImg = MaterialLibrary.get(this.sprite, 'shadow');
         }
 
@@ -163,8 +182,6 @@ class Entity {
             ctx.drawImage(shadowImg, -this.width / 2, -this.height, this.width, this.height);
         } else if (this.sprite && AssetLoader) {
             // Fallback: simple oval logic if sprite not ready
-            // Skip duplicate oval if contact shadow is enough, but dynamic is crucial for time.
-            // Just skip fallback oval here to avoid "double oval" look if contact shadow exists.
         } else {
             // Fallback oval - skip
         }

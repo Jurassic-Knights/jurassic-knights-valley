@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/flora/flora_shrub_grasslands_original.png'
     },
     type: 'flora',
-    biome: 'grasslands'
-};
+    biome: 'grasslands',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

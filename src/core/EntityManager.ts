@@ -9,6 +9,8 @@ import { Logger } from './Logger';
 import { Quadtree } from './Quadtree';
 import { GameRenderer } from './GameRenderer';
 import { Registry } from './Registry';
+import { EventBus } from './EventBus';
+import { GameConstants } from '../data/GameConstants';
 import type { IEntity, IGame } from '../types/core';
 
 // Ambient declaration for not-yet-migrated module
@@ -98,6 +100,7 @@ class EntityManagerService {
         }
         this.entitiesByType[type].push(entity);
 
+        EventBus.emit(GameConstants.Events.ENTITY_ADDED, { entity });
         Logger.info(`[EntityManager] Added ${type}. Total: ${this.entities.length}`);
     }
 
@@ -117,6 +120,8 @@ class EntityManagerService {
                     this.entitiesByType[type].splice(typeIdx, 1);
                 }
             }
+
+            EventBus.emit(GameConstants.Events.ENTITY_REMOVED, { entity });
 
             // Optional: Cleanup method on entity
             if (typeof entity.destroy === 'function') {

@@ -253,6 +253,12 @@ const EntityLoader = {
             _sourceFile: `${id}.ts`
         };
 
+        // Fix: Flatten display properties to root for ALL entities
+        // This ensures EntityScaling can find width/height/scale regardless of category
+        if (data.display) {
+            Object.assign(entity, data.display);
+        }
+
         // Ensure registry category exists
         if (!EntityRegistry[category]) {
             EntityRegistry[category] = {};
@@ -361,7 +367,7 @@ const EntityLoader = {
             ...defaults
         };
 
-        // Copy direct properties
+        // Copy direct properties override defaults
         for (const [key, value] of Object.entries(data)) {
             if (typeof value !== 'object' || value === null || Array.isArray(value)) {
                 entity[key] = value;
@@ -371,6 +377,7 @@ const EntityLoader = {
         // Flatten nested objects
         if (data.stats) Object.assign(entity, data.stats);
         if (data.combat) Object.assign(entity, data.combat);
+        // Size override from JSON takes precedence over defaults
         if (data.size) Object.assign(entity, data.size);
 
         // Handle display block (species-based sizing)
@@ -416,6 +423,52 @@ const EntityLoader = {
                     ? { min: l.amount[0], max: l.amount[1] }
                     : l.amount || 1
             }));
+        }
+
+        // Inject default collision config if missing
+        if (!entity.collision) {
+            // Determine default collision settings based on category
+            let layer = 0;
+            let mask = 0;
+            let isTrigger = false;
+            let boundsScale = 0.4; // Default bounds scaling
+
+            // Use bitmasks directly to avoid circular imports if CollisionComponent loads EntityLoader
+            // CollisionLayers: WORLD=1, HERO=2, ENEMY=4, TRIGGER=8
+            // DefaultMasks: WORLD=7, HERO=5, ENEMY=3, TRIGGER=2
+
+            if (category === 'bosses' || category === 'enemies') {
+                layer = 0b0100; // ENEMY
+                mask = 0b0011;  // WORLD | HERO
+            } else if (category === 'items' || category === 'projectiles') {
+                layer = 0b1000; // TRIGGER
+                mask = 0b0010;  // HERO
+                isTrigger = true;
+                boundsScale = 0.5;
+            } else if (category === 'resources' || category === 'nodes' || category === 'environment') {
+                // Static World Objects
+                layer = 0b0001; // WORLD
+                mask = 0b0111;  // EVERYTHING
+                boundsScale = 0.8;
+            } else if (category === 'npcs') {
+                layer = 0b0001; // Treat NPCs as World obstacles for now? Or triggers?
+                mask = 0b0111;
+                boundsScale = 0.6;
+            }
+
+            entity.collision = {
+                // Default to logic box if not specified
+                bounds: {
+                    x: 0,
+                    y: 0,
+                    width: entity.width ? entity.width * boundsScale : 32,
+                    height: entity.height ? entity.height * boundsScale : 32
+                },
+                offset: { x: 0, y: 0 },
+                layer: layer,
+                mask: mask,
+                isTrigger: isTrigger
+            };
         }
 
         return entity;
@@ -557,6 +610,15 @@ function handleEntityUpdate(category: string, configId: string, updates: Record<
                 target = target[parts[i]];
             }
             target[parts[parts.length - 1]] = value;
+
+            // Fix: Mirror display properties to root for consistency
+            // Because EntityLoader flattens these during load, we must maintain that state
+            if (parts[0] === 'display') {
+                const param = parts[1];
+                if (param === 'width' || param === 'height' || param === 'sizeScale' || param === 'scale') {
+                    registryEntity[param] = value;
+                }
+            }
         } else {
             registryEntity[key] = value;
         }
@@ -570,18 +632,33 @@ function handleEntityUpdate(category: string, configId: string, updates: Record<
     const activeEntities = entityManager.getAll();
     let updatedCount = 0;
 
+    Logger.info(`[EntityLoader] Attempting to patch active entities for ${configId}. Count: ${activeEntities.length}`);
+
     for (const entity of activeEntities) {
+        // Debug logging for first few items to see what we are comparing against
+        if (updatedCount === 0 && activeEntities.indexOf(entity) < 3) {
+            // console.log('Checking entity:', entity); 
+        }
+
         // Check if this entity uses the updated config
         // Matches if any type identifier equals the configId
         const matchesInfo =
+            (entity as any).registryId === configId || // Primary standard match
             (entity as any).enemyType === configId ||
             (entity as any).dinoType === configId ||
             (entity as any).bossType === configId ||
             (entity as any).resourceType === configId ||
             (entity as any).itemType === configId ||
-            (entity as any).spriteId === configId; // Fallback for simple props
+            (entity as any).spriteId === configId ||
+            (entity as any).sprite === configId; // Fallback for simple props using sprite as ID
 
-        if (!matchesInfo) continue;
+        if (!matchesInfo) {
+            // Detailed debug for why it didn't match (only log if it looks relevant)
+            if ((entity as any).sprite?.includes(configId) || (entity as any).registryId?.includes(configId)) {
+                Logger.warn(`[EntityLoader] Near miss for ${configId}: RegID=${(entity as any).registryId}, Sprite=${(entity as any).sprite}`);
+            }
+            continue;
+        }
 
         // Apply updates to instance
         for (const [key, value] of Object.entries(updates)) {
@@ -618,8 +695,33 @@ function handleEntityUpdate(category: string, configId: string, updates: Record<
                 }
             }
         }
+
+        // Fix: Explicitly handle display/size updates (width, height, sizeScale)
+        if (updates.width || updates.height ||
+            updates.sizeScale || updates.scale ||
+            updates['display.width'] || updates['display.height'] ||
+            updates['display.sizeScale'] || updates['display.scale']) {
+
+            Logger.info(`[EntityLoader] Triggering refreshConfig for ${configId}`);
+            // Re-read fresh config from registry to get final calculated sizes
+            // This is safer than trying to manually patch width/height here
+            if (typeof (entity as any).refreshConfig === 'function') {
+                (entity as any).refreshConfig();
+            } else {
+                // Fallback for entities without refreshConfig
+                if (updates.width) (entity as any).width = Number(updates.width);
+                if (updates.height) (entity as any).height = Number(updates.height);
+
+                // Update Collision if present
+                if ((entity as any).collision && (entity as any).collision.bounds) {
+                    (entity as any).collision.bounds.width = (entity as any).width;
+                    (entity as any).collision.bounds.height = (entity as any).height;
+                }
+            }
+        }
         updatedCount++;
     }
+
 
     if (updatedCount > 0) {
         Logger.info(`[EntityLoader] Live updated ${updatedCount} active instances of ${configId}`);

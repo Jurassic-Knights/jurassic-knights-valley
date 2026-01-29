@@ -11,6 +11,7 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
 import { BiomeConfig } from '@data/BiomeConfig';
+import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
 
 import { Enemy } from './EnemyCore';
 import { Registry } from '@core/Registry';
@@ -117,6 +118,33 @@ class Boss extends Enemy {
         }
 
         Logger.info(`[Boss] ${this.bossName} defeated! Respawns in ${this.respawnTime}s`);
+    }
+
+    update(dt) {
+        if (!this.active || this.isDead) {
+            if (this.isDead) {
+                this.respawnTimer -= dt / 1000;
+                if (this.respawnTimer <= 0) {
+                    this.respawn();
+                }
+            }
+            return;
+        }
+
+        // Sync HealthComponent (Fix for HP Bar)
+        if (this.components.health) {
+            this.health = this.components.health.health;
+        }
+
+        if (this.attackCooldown > 0) {
+            this.attackCooldown -= dt / 1000;
+        }
+
+        if (EnemyAI) {
+            EnemyAI.updateState(this, dt);
+        }
+
+        this.updateAnimation(dt);
     }
 
     /**

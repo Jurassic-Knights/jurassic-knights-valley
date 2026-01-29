@@ -319,6 +319,8 @@ const GameConstants = {
         HERO_RESPAWNED: 'HERO_RESPAWNED', // { hero }
 
         // Entity Events
+        ENTITY_ADDED: 'ENTITY_ADDED', // { entity }
+        ENTITY_REMOVED: 'ENTITY_REMOVED', // { entity }
         ENTITY_DAMAGED: 'ENTITY_DAMAGED', // { entity, amount, source, type }
         ENTITY_DIED: 'ENTITY_DIED', // { entity, killer }
         ENTITY_HEALTH_CHANGE: 'ENTITY_HEALTH_CHANGE', // { entity, current, max }
@@ -370,7 +372,11 @@ const GameConstants = {
         ENEMY_RESPAWNED: 'ENEMY_RESPAWNED', // { enemy, biomeId, groupId, waveId }
 
         // Loot System
-        LOOT_DROPPED: 'LOOT_DROPPED' // { x, y, drops, totalItems }
+        LOOT_DROPPED: 'LOOT_DROPPED', // { x, y, drops, totalItems }
+
+        // Collision Events
+        COLLISION_START: 'COLLISION_START', // { a, b }
+        COLLISION_END: 'COLLISION_END' // { a, b }
 
         // Generic Entity Events (used by AI system)
         // ENTITY_DAMAGED & ENTITY_DIED defined above

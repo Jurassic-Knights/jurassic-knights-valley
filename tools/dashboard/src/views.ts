@@ -14,6 +14,7 @@ import {
 } from './state';
 import { fetchCategory, updateCategoryStatus, loadGlobalAssetLookup } from './api';
 import { renderCategoryView } from './categoryRenderer';
+import { renderConfigView } from './configRenderer';
 
 // ============================================
 // POLLING STATE
@@ -56,7 +57,7 @@ export function showLandingPage(): void {
                 ${categories
             .map(
                 (cat) => `
-                    <button onclick="showCategoryView('${cat}')" 
+                    <button data-action="navigate-category" data-category="${cat}" 
                         style="padding:1.5rem; font-size:1.2rem; background:${CATEGORY_COLORS[cat] || '#666'}; 
                                border:none; border-radius:8px; cursor:pointer; color:white; 
                                display:flex; flex-direction:column; align-items:center; gap:0.5rem;
@@ -265,5 +266,18 @@ export function stopAutoRefresh(): void {
     if (autoRefreshInterval) {
         clearInterval(autoRefreshInterval);
         autoRefreshInterval = null;
+    }
+}
+
+export function showConfigView(): void {
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) {
+        // Hide stats and filters when showing config
+        const stats = document.querySelector('.stats') as HTMLElement;
+        const stickyBar = document.querySelector('.sticky-bar') as HTMLElement;
+        if (stats) stats.style.display = 'none';
+        if (stickyBar) stickyBar.style.display = 'none';
+
+        renderConfigView(mainContent);
     }
 }

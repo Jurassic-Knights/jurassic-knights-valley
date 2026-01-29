@@ -24,6 +24,8 @@ import { GameInstance } from '@core/Game';
 
 import { MathUtils } from '@core/MathUtils';
 
+import { Registry } from '@core/Registry';
+
 Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
     const distToTarget = MathUtils.distance(this.x, this.y, targetX, targetY);
 
@@ -410,6 +412,64 @@ Enemy.prototype.respawn = function () {
     }
 
     Logger.info(`[Enemy] ${this.enemyName} respawned`);
+};
+
+/**
+ * Render UI Overlays (Health Bar, Threat)
+ */
+Enemy.prototype.renderUI = function (ctx) {
+    if (!this.active || this.isDead) return;
+
+    this.renderHealthBar(ctx);
+    this.renderThreatIndicator(ctx);
+};
+
+Enemy.prototype.renderHealthBar = function (ctx) {
+    // Only show if damaged or boss
+    if (this.health >= this.maxHealth && !this.isBoss) return;
+
+    // Boss bars are larger
+    const width = this.isBoss ? 160 : 60;
+    const height = this.isBoss ? 12 : 6;
+    const yOffset = this.isBoss ? 40 : 25;
+
+    const x = this.x - width / 2;
+    const y = this.y - this.height / 2 - yOffset;
+
+    // Use ProgressBarRenderer if available
+    const ProgressBarRenderer = Registry.get('ProgressBarRenderer');
+    if (ProgressBarRenderer) {
+        ProgressBarRenderer.draw(ctx, {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            percent: this.health / this.maxHealth,
+            mode: 'health',
+            entityId: this.id,
+            animated: true
+        });
+    } else {
+        // Fallback
+        ctx.fillStyle = 'black';
+        ctx.fillRect(x, y, width, height);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(x + 1, y + 1, (width - 2) * (this.health / this.maxHealth), height - 2);
+    }
+};
+
+Enemy.prototype.renderThreatIndicator = function (ctx) {
+    if (this.isElite) {
+        ctx.save();
+        ctx.fillStyle = '#FFD700';
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(this.x - 10, this.y - this.height / 2 - 35, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
 };
 
 Logger.info('[EnemyBehavior] Behavior methods added to Enemy prototype');

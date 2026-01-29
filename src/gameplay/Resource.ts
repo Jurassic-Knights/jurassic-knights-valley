@@ -6,6 +6,7 @@
  * Owner: Director (engine), Gameplay Designer (values), Lore Writer (names)
  */
 import { Entity } from '@core/Entity';
+import { Logger } from '@core/Logger';
 import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { AudioManager } from '../audio/AudioManager';
@@ -16,13 +17,16 @@ import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
+import { EntityScaling } from '../utils/EntityScaling';
 
 class Resource extends Entity {
     // Resource identity
+    registryId: string | null = null; // Set in constructor
     resourceType: string = 'scraps_t1_01';
     nodeSubtype: string | null = null;
     amount: number = 1;
     interactRadius: number = 145;
+    scale: number = 1.0;
 
     // Health system
     maxHealth: number = 30;
@@ -46,23 +50,39 @@ class Resource extends Entity {
      */
     constructor(config: any = {}) {
         // 1. Load Config from EntityRegistry (nodes or resources)
-        // 1. Load Config from EntityRegistry (nodes or resources)
-        const typeConfig =
-            EntityRegistry.nodes?.[config.resourceType] ||
-            EntityRegistry.resources?.[config.resourceType] ||
-            {};
+        const nodeConfig = EntityRegistry.nodes?.[config.resourceType];
+        const resConfig = EntityRegistry.resources?.[config.resourceType];
+
+        const typeConfig = nodeConfig || resConfig || {};
+
+        if (!nodeConfig && !resConfig) {
+            Logger.warn(`[Resource] Registry Lookup FAILED for '${config.resourceType}'. Registry keys available: Nodes=${Object.keys(EntityRegistry.nodes || {}).length}, Resources=${Object.keys(EntityRegistry.resources || {}).length}`);
+        } else {
+            Logger.info(`[Resource] Registry Lookup SUCCESS for '${config.resourceType}'. Scale in Registry: ${typeConfig.sizeScale || typeConfig.scale}`);
+        }
+
+        // Calculate size using standard utility
+        const size = EntityScaling.calculateSize(config, typeConfig, { width: 150, height: 150 });
+
+        Logger.info(`[Resource] Final Size for '${config.resourceType}': ${size.width}x${size.height} (Scale: ${size.scale}). Source: ${size.source || 'unknown'}`);
+
 
         // Merge
         const finalConfig = { ...typeConfig, ...config };
 
         super({
             entityType: EntityTypes.RESOURCE,
-            width: finalConfig.width || 150,
-            height: finalConfig.height || 150,
+            width: size.width,
+            height: size.height,
+            collision: finalConfig.collision, // Pass merged collision config
             ...config
         });
 
+        // Store scale
+        this.scale = size.scale;
+
         this.resourceType = config.resourceType || 'scraps_t1_01';
+        this.registryId = this.resourceType; // Enable standardized EntityLoader matching
 
         // Extract nodeSubtype from config or parse from resourceType (node_mining_t1_01 ? mining)
         if (finalConfig.nodeSubtype) {
@@ -297,12 +317,29 @@ class Resource extends Entity {
                 animated: true
             });
         } else {
-            // Fallback: flat bar
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-            ctx.fillRect(barX, barY, barWidth, barHeight);
             ctx.fillStyle = '#4CAF50';
             ctx.fillRect(barX, barY, barWidth * this.getHealthPercent(), barHeight);
         }
+    }
+
+    /**
+     * Refresh configuration from EntityRegistry
+     * Called by EntityLoader on live update
+     */
+    refreshConfig() {
+        // Look up latest config
+        const typeConfig =
+            EntityRegistry.nodes?.[this.resourceType] ||
+            EntityRegistry.resources?.[this.resourceType] ||
+            {};
+
+        Logger.info(`[Resource] Refreshing config for ${this.resourceType}`);
+
+        // Update dimensions using standard utility
+        // Note: passing empty instance config {} because we want to reset to registry values
+        // unless we want to persist instance overrides?
+        // Usually hot-reload implies we want to see the new registry values.
+        EntityScaling.applyToEntity(this, {}, typeConfig, { width: 120, height: 120 });
     }
 
     // Static properties

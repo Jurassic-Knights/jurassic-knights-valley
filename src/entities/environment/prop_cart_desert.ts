@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/props/prop_cart_desert_original.png'
     },
     type: 'prop',
-    biome: 'desert'
-};
+    biome: 'desert',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

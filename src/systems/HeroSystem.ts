@@ -208,72 +208,50 @@ class HeroSystem {
         hero.inputMove = move; // Sync for Renderer
         const dtSec = dt / 1000;
 
-        // Save previous position for collision/VFX
+        // Save previous position for collision/VFX interpolated rendering
+        // PrevX/Y must be updated once per logic tick
         hero.prevX = hero.x;
         hero.prevY = hero.y;
 
-        // Calculate new position
-        // Apply road speed bonus from BiomeManager
+        // Calculate velocity
         const speedMultiplier = BiomeManager?.getSpeedMultiplier?.(hero.x, hero.y) || 1.0;
         const effectiveSpeed = hero.speed * speedMultiplier;
-        const newX = hero.x + move.x * effectiveSpeed * dtSec;
-        const newY = hero.y + move.y * effectiveSpeed * dtSec;
+        let dx = move.x * effectiveSpeed * dtSec;
+        let dy = move.y * effectiveSpeed * dtSec;
 
-        // Check collision blocks
-        let canMoveX = true;
-        let canMoveY = true;
+        // Collision System
+        const collisionSystem = this.game?.getSystem('CollisionSystem');
 
-        // Use cached system refs
-        const islandManager = this._islandManager;
+        // HomeBase Special Check (Legacy tree collision until fully migrated)
         const homeBase = this._homeBase;
-        const gameRenderer = this._gameRenderer;
-
-        if (islandManager) {
-            // Offset check to feet (approx 40% down from center)
-            const feetOffset = hero.height * 0.4;
-
-            // Check collision blocks (new system)
-            if (islandManager.isBlocked(newX, hero.y + feetOffset)) {
-                canMoveX = false;
-            }
-            if (islandManager.isBlocked(hero.x, newY + feetOffset)) {
-                canMoveY = false;
-            }
-            // Check diagonal
-            if (canMoveX && canMoveY && islandManager.isBlocked(newX, newY + feetOffset)) {
-                canMoveY = false;
-            }
-        }
-
-        // Check HomeBase tree collision
         if (homeBase) {
-            if (canMoveX && homeBase.isBlockedByTrees(newX, hero.y)) canMoveX = false;
-            if (canMoveY && homeBase.isBlockedByTrees(hero.x, newY)) canMoveY = false;
+            if (dx !== 0 && homeBase.isBlockedByTrees(hero.x + dx, hero.y)) dx = 0;
+            if (dy !== 0 && homeBase.isBlockedByTrees(hero.x, hero.y + dy)) dy = 0;
         }
 
-        // Apply movement
-        if (canMoveX) hero.x = newX;
-        if (canMoveY) hero.y = newY;
+        if (collisionSystem) {
+            // Delegate to physics engine
+            (collisionSystem as any).move(hero, dx, dy);
+        } else {
+            // Fallback
+            hero.x += dx;
+            hero.y += dy;
 
-        // Clamp to world bounds
+            // Simple fallback terrain check
+            if (this._islandManager?.isBlocked(hero.x, hero.y)) {
+                hero.x = hero.prevX;
+                hero.y = hero.prevY;
+            }
+        }
+
+        // World Bounds Check
+        const gameRenderer = this._gameRenderer;
         if (gameRenderer) {
             const halfW = hero.width / 2;
             const halfH = hero.height / 2;
             hero.x = MathUtils.clamp(hero.x, halfW, gameRenderer.worldWidth - halfW);
             hero.y = MathUtils.clamp(hero.y, halfH, gameRenderer.worldHeight - halfH);
         }
-
-        // Update interaction flags (Home Outpost)
-        // Handled by HomeBase.ts using GameConfig.Interaction.REST_AREA_RADIUS
-        // if (islandManager) {
-        //     const home = islandManager.getHomeIsland();
-        //     if (home) {
-        //         const centerX = home.worldX + home.width / 2;
-        //         const centerY = home.worldY + home.height / 2;
-        //         const dist = Math.sqrt((hero.x - centerX) ** 2 + (hero.y - centerY) ** 2);
-        //         hero.isAtHomeOutpost = dist < 200;
-        //     }
-        // }
     }
 
     updateCombat(dt, hero) {

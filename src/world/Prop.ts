@@ -1,24 +1,46 @@
-/**
- * Prop - Static decorative entity
- * Rendered as part of the world environment
- */
-
 import { Entity } from '@core/Entity';
 import { AssetLoader } from '@core/AssetLoader';
+import { EntityRegistry } from '@entities/EntityLoader';
+import { Logger } from '@core/Logger';
+import { EntityScaling } from '../utils/EntityScaling';
 
 class Prop extends Entity {
     scale: number;
     _img: HTMLImageElement | null = null;
+    registryId: string | null = null;
 
     constructor(config: any = {}) {
+        // 1. Identify Registry ID
+        // Priority: Explicit config.registryId > config.id (if matched) > config.sprite
+        let registryId = config.registryId || null;
+
+        if (!registryId) {
+            // Check if config.id is a valid registry key (e.g. "prop_barrel_01")
+            if (EntityRegistry.environment?.[config.id]) {
+                registryId = config.id;
+            } else if (EntityRegistry.environment?.[config.sprite]) {
+                // Check if sprite matches (e.g. "props/barrel")
+                registryId = config.sprite;
+            } else {
+                // Fallback: Use sprite as key (Legacy behavior)
+                registryId = config.sprite;
+            }
+        }
+
+        const registryConfig = EntityRegistry.environment?.[registryId] || {};
+
+        // Calculate size using standard utility
+        const size = EntityScaling.calculateSize(config, registryConfig, { width: 80, height: 80 });
+
         super({
-            width: 80,
-            height: 80,
+            width: size.width,
+            height: size.height,
             active: true,
             ...config
         });
 
-        this.scale = config.scale || 1.0;
+        this.scale = size.scale;
+        this.registryId = registryId;
     }
 
     /**
@@ -29,17 +51,15 @@ class Prop extends Entity {
         if (!this.active) return;
 
         // Draw shadow first (underneath)
-        // Prop inherits from Entity, which has the dynamic shadow logic.
         this.drawShadow(ctx);
 
         // Try to get from cache first
         let img = AssetLoader ? AssetLoader.getImage(this.sprite) : null;
 
-        // Lazy load if not in cache but AssetLoader exists
+        // Lazy load
         if (!img && AssetLoader && this.sprite) {
             const path = AssetLoader.getImagePath(this.sprite);
             if (path) {
-                // Check if we already started loading this specific instance's image to avoid spam
                 if (!this._img) {
                     this._img = AssetLoader.createImage(path);
                 }
@@ -50,12 +70,24 @@ class Prop extends Entity {
         }
 
         if (img) {
-            // Draw centered
-            const w = this.width * this.scale;
-            const h = this.height * this.scale;
-            ctx.drawImage(img, this.x - w / 2, this.y - h / 2, w, h);
+            // Draw centered using Final Dimensions (this.width/height)
+            // No extra scaling!
+            ctx.drawImage(img, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         }
-        // No fallback - skip rendering until sprite loads
+    }
+
+    /**
+     * Refresh configuration from EntityRegistry
+     */
+    refreshConfig() {
+        if (!this.registryId) return;
+
+        const registryConfig = EntityRegistry.environment?.[this.registryId] || {};
+
+        Logger.info(`[Prop] Refreshing config for ${this.registryId}`);
+
+        // Update dimensions using standard utility
+        EntityScaling.applyToEntity(this, {}, registryConfig, { width: 80, height: 80 });
     }
 }
 

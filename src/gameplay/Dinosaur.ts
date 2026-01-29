@@ -82,7 +82,8 @@ class Dinosaur extends Entity {
             entityType: EntityTypes.DINOSAUR,
             color: '#2ECC71',
             width: sizeInfo.width,
-            height: sizeInfo.height
+            height: sizeInfo.height,
+            collision: finalConfig.collision // Pass merged collision config
         });
 
         // Modern: Store entity type for sprite loading
@@ -272,6 +273,33 @@ class Dinosaur extends Entity {
     }
     set wanderTimer(val) {
         if (this.components.ai) this.components.ai.wanderTimer = val;
+    }
+
+    /**
+     * Refresh configuration from EntityRegistry
+     * Called by EntityLoader on live update
+     */
+    refreshConfig() {
+        // Look up fresh config from registry
+        const registryConfig = this.dinoType ? EntityRegistry.enemies?.[this.dinoType] || {} : {};
+
+        // Re-calculate size using SpeciesScaleConfig
+        // This will pick up new width/height/sizeScale from registryConfig
+        const isBoss = registryConfig.isBoss || registryConfig.entityType === 'Boss';
+        const sizeInfo = SpeciesScaleConfig.getSize(registryConfig, isBoss);
+
+        if (sizeInfo) {
+            this.width = sizeInfo.width;
+            this.height = sizeInfo.height;
+            // Note: Dinosaur doesn't use this.scale for rendering key, but we can set it if needed
+            // this.scale = sizeInfo.scale; 
+        }
+
+        // Sync Collision
+        if (this.collision && this.collision.bounds) {
+            this.collision.bounds.width = this.width;
+            this.collision.bounds.height = this.height;
+        }
     }
 }
 

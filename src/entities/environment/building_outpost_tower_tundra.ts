@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/buildings/building_outpost_tower_tundra_original.png'
     },
     type: 'prop',
-    biome: 'tundra'
-};
+    biome: 'tundra',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

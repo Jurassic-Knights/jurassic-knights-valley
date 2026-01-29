@@ -16,5 +16,10 @@ export default {
     type: 'ore',
     biome: 'grasslands',
     nodeSubtype: 'harvesting',
-    tier: 1
-};
+    tier: 1,
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

@@ -16,5 +16,10 @@ export default {
     type: 'plant',
     biome: 'tundra',
     nodeSubtype: 'harvesting',
-    tier: 2
-};
+    tier: 2,
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

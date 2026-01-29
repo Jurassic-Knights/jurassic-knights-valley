@@ -12,5 +12,10 @@ export default {
     status: 'approved',
     files: {},
     type: 'flora',
-    biome: 'all'
-};
+    biome: 'all',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

@@ -155,6 +155,16 @@ const SpeciesScaleConfig = {
      * @returns {{width: number, height: number, scale: number}}
      */
     getSize(entityConfig, isBoss = false) {
+        // Priority: Explicit config > Species Scale
+        if (entityConfig.width && entityConfig.height) {
+            const explicitScale = entityConfig.sizeScale || 1.0;
+            return {
+                width: Math.round(entityConfig.width * explicitScale),
+                height: Math.round(entityConfig.height * explicitScale),
+                scale: explicitScale
+            };
+        }
+
         const sourceFile = entityConfig.sourceFile || 'dinosaur';
         const baseSize = this.baseSizes[sourceFile] || 128;
         const scale = this.getScale(entityConfig, isBoss);

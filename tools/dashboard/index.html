@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asset Dashboard (Vite + HMR)</title>
+    <title>Asset Dashboard (Field Command)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Courier+Prime:wght@400;700&family=Special+Elite&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -12,31 +17,40 @@
     <header>
         <h1>🦖 Asset Dashboard <span class="server-badge">Vite + HMR</span></h1>
         <div class="controls">
-            <button id="btnTemplates" class="secondary" onclick="showTemplatesView()">📝 Templates</button>
+            <button id="btnTemplates" class="secondary" data-action="toggle-templates">📝 Templates</button>
 
-            <button id="btnHero" class="secondary" onclick="showCategoryView('hero')" style="background:#2196f3;">🛡️
+            <button id="btnHero" class="secondary" data-action="navigate-category" data-category="hero"
+                style="background:#2196f3;">🛡️
                 Hero</button>
-            <button id="btnEnemies" class="secondary" onclick="showCategoryView('enemies')"
+            <button id="btnEnemies" class="secondary" data-action="navigate-category" data-category="enemies"
                 style="background:#e91e63;">🦖 Enemies</button>
-            <button id="btnBosses" class="secondary" onclick="showCategoryView('bosses')" style="background:#9c27b0;">👑
+            <button id="btnBosses" class="secondary" data-action="navigate-category" data-category="bosses"
+                style="background:#9c27b0;">👑
                 Bosses</button>
-            <button id="btnNpcs" class="secondary" onclick="showCategoryView('npcs')" style="background:#4caf50;">👤
+            <button id="btnNpcs" class="secondary" data-action="navigate-category" data-category="npcs"
+                style="background:#4caf50;">👤
                 NPCs</button>
-            <button id="btnItems" class="secondary" onclick="showCategoryView('items')" style="background:#795548;">🧱
+            <button id="btnItems" class="secondary" data-action="navigate-category" data-category="items"
+                style="background:#795548;">🧱
                 Items</button>
-            <button id="btnEquipment" class="secondary" onclick="showCategoryView('equipment')"
+            <button id="btnEquipment" class="secondary" data-action="navigate-category" data-category="equipment"
                 style="background:#9c27b0;">⚔️ Equipment</button>
-            <button id="btnResources" class="secondary" onclick="showCategoryView('resources')"
+            <button id="btnResources" class="secondary" data-action="navigate-category" data-category="resources"
                 style="background:#ff9800;">🪨 Resources</button>
-            <button id="btnNodes" class="secondary" onclick="showCategoryView('nodes')" style="background:#6d4c41;">⛏️
+            <button id="btnNodes" class="secondary" data-action="navigate-category" data-category="nodes"
+                style="background:#6d4c41;">⛏️
                 Nodes</button>
-            <button id="btnEnvironment" class="secondary" onclick="showCategoryView('environment')"
+            <button id="btnEnvironment" class="secondary" data-action="navigate-category" data-category="environment"
                 style="background:#8bc34a;">🌲 Environment</button>
-            <button id="btnUI" class="secondary" onclick="showCategoryView('ui')" style="background:#03a9f4;">🖼️
+            <button id="btnUI" class="secondary" data-action="navigate-category" data-category="ui"
+                style="background:#03a9f4;">🖼️
                 UI</button>
-            <button id="btnConfig" class="secondary" onclick="showConfigView()" style="background:#607d8b;">⚙️
+            <button id="btnConfig" class="secondary" data-action="toggle-config" style="background:#607d8b;">⚙️
                 Config</button>
-            <button id="btnRefresh" class="secondary" onclick="loadManifest()">🔄</button>
+            <button id="btnMapEditor" class="secondary" data-action="toggle-map-editor"
+                style="background:#3f51b5; border: 1px solid #7986cb;">🌍
+                Map Editor</button>
+            <button id="btnRefresh" class="secondary" data-action="refresh-manifest">🔄</button>
         </div>
     </header>
 
@@ -74,10 +88,35 @@
         <div class="loading">Loading assets...</div>
     </main>
 
+    <!-- Map Editor Container (Full Screen Overlay) -->
+    <div id="map-editor-container"
+        style="display:none; position:fixed; top:80px; left:0; right:0; bottom:0; background:#1a1a1a; z-index:100;">
+        <!-- Sidebar (Palette) -->
+        <div id="map-editor-sidebar"
+            style="position:absolute; top:0; left:0; width:300px; bottom:0; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd;">
+            <h3>Asset Palette</h3>
+            <div id="palette-content"></div>
+        </div>
+
+        <!-- Canvas Area -->
+        <div id="map-editor-canvas" style="position:absolute; top:0; left:300px; right:0; bottom:0; overflow:hidden;">
+        </div>
+
+        <!-- Toolbar (Top Right) -->
+        <div id="map-editor-toolbar"
+            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; pointer-events:none;">
+            <div>Coords: <span id="cursor-coords">0, 0</span></div>
+            <div>Phase: <span id="editor-phase">Painting</span></div>
+            <div style="margin-top:5px; pointer-events:auto;">
+                <button data-action="save-map-data">💾 Save Map</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="imageModal">
-        <span class="modal-close" onclick="closeModal()">×</span>
+        <span class="modal-close" data-action="close-modal">×</span>
         <div class="modal-header">
-            <button class="modal-toggle" id="toggleComparison" onclick="toggleComparisonView()">📊 Compare</button>
+            <button class="modal-toggle" id="toggleComparison" data-action="toggle-comparison">📊 Compare</button>
         </div>
         <img id="modalImage" src="" alt="Preview" style="display:block;">
         <div class="comparison-view" id="comparisonView" style="display:none;">

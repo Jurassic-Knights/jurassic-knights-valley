@@ -76,25 +76,46 @@ class HeroRendererSystem {
      * @param {CanvasRenderingContext2D} ctx
      * @param {Hero} hero
      */
-    render(ctx, hero, includeShadow = true) {
+    render(ctx, hero, includeShadow = true, alpha = 1) {
         if (!hero || !hero.active) return;
 
-        // Draw Shadow
-        if (includeShadow) {
-            this.drawShadow(ctx, hero);
+        // Interpolation
+        const prevX = (hero.prevX !== undefined) ? hero.prevX : hero.x;
+        const prevY = (hero.prevY !== undefined) ? hero.prevY : hero.y;
+
+        const renderX = prevX + (hero.x - prevX) * alpha;
+        const renderY = prevY + (hero.y - prevY) * alpha;
+
+        const originalX = hero.x;
+        const originalY = hero.y;
+
+        // Apply interpolated coordinates for rendering
+        // Use type casting to allow assignment if strict
+        (hero as any).x = renderX;
+        (hero as any).y = renderY;
+
+        try {
+            // Draw Shadow
+            if (includeShadow) {
+                this.drawShadow(ctx, hero);
+            }
+
+            // Draw Range Circles (beneath hero)
+            this.drawRangeCircles(ctx, hero);
+
+            // Draw Hero Body
+            this.drawBody(ctx, hero);
+
+            // Draw Weapon (and Muzzle Flash)
+            this.drawWeapon(ctx, hero);
+
+            // Draw Status Bars (Health above, Resolve below)
+            this.drawStatusBars(ctx, hero);
+        } finally {
+            // Restore actual physics coordinates
+            (hero as any).x = originalX;
+            (hero as any).y = originalY;
         }
-
-        // Draw Range Circles (beneath hero)
-        this.drawRangeCircles(ctx, hero);
-
-        // Draw Hero Body
-        this.drawBody(ctx, hero);
-
-        // Draw Weapon (and Muzzle Flash)
-        this.drawWeapon(ctx, hero);
-
-        // Draw Status Bars (Health above, Resolve below)
-        this.drawStatusBars(ctx, hero);
     }
 
     /**

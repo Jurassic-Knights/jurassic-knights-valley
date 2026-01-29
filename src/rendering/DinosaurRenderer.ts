@@ -14,33 +14,52 @@ class DinosaurRendererService {
         Logger.info('[DinosaurRenderer] Initialized');
     }
 
-    render(ctx, dino, includeShadow = true) {
+    render(ctx, dino, includeShadow = true, alpha = 1) {
         if (!dino.active) return;
 
-        // Shadow
-        if (includeShadow) {
-            this.renderShadow(ctx, dino);
+        // Interpolation
+        const prevX = (dino.prevX !== undefined) ? dino.prevX : dino.x;
+        const prevY = (dino.prevY !== undefined) ? dino.prevY : dino.y;
+
+        const renderX = prevX + (dino.x - prevX) * alpha;
+        const renderY = prevY + (dino.y - prevY) * alpha;
+
+        const originalX = dino.x;
+        const originalY = dino.y;
+
+        // Apply interpolated coordinates for rendering
+        (dino as any).x = renderX;
+        (dino as any).y = renderY;
+
+        try {
+            // Shadow
+            if (includeShadow) {
+                this.renderShadow(ctx, dino);
+            }
+
+            // Dead State
+            if (dino.state === 'dead') {
+                this.renderDead(ctx, dino);
+                return;
+            }
+
+            // Alive State
+            ctx.save();
+
+            // 1. Sprite Render (modern: single sprite via _sprite)
+            if (dino._spriteLoaded && dino._sprite) {
+                const flipX = dino.wanderDirection.x < 0;
+                ctx.translate(dino.x, dino.y);
+                if (flipX) ctx.scale(-1, 1);
+                ctx.drawImage(dino._sprite, -dino.width / 2, -dino.height / 2, dino.width, dino.height);
+            }
+            // No fallback - just skip rendering until sprite loads
+
+            ctx.restore();
+        } finally {
+            (dino as any).x = originalX;
+            (dino as any).y = originalY;
         }
-
-        // Dead State
-        if (dino.state === 'dead') {
-            this.renderDead(ctx, dino);
-            return;
-        }
-
-        // Alive State
-        ctx.save();
-
-        // 1. Sprite Render (modern: single sprite via _sprite)
-        if (dino._spriteLoaded && dino._sprite) {
-            const flipX = dino.wanderDirection.x < 0;
-            ctx.translate(dino.x, dino.y);
-            if (flipX) ctx.scale(-1, 1);
-            ctx.drawImage(dino._sprite, -dino.width / 2, -dino.height / 2, dino.width, dino.height);
-        }
-        // No fallback - just skip rendering until sprite loads
-
-        ctx.restore();
     }
 
     // ... rest of methods ...

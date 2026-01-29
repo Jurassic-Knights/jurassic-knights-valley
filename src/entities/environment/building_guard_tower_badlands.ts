@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/buildings/building_guard_tower_badlands_original.png'
     },
     type: 'prop',
-    biome: 'badlands'
-};
+    biome: 'badlands',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/furniture/furniture_table_grasslands_original.png'
     },
     type: 'furniture',
-    biome: 'grasslands'
-};
+    biome: 'grasslands',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

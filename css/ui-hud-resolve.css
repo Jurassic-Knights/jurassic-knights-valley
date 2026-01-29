@@ -1,0 +1,294 @@
+/* ui-hud-resolve.css - Resolve Bar Only */
+/* Extracted from ui-hud-quest.css */
+
+/* ========================================
+   RESOLVE BAR - Amber Liquid Gauge (Earthy)
+   ======================================== */
+#ui-resolve-bar {
+    position: absolute;
+    top: 105px;
+    /* Moved down to center with Quest Tracker */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 158px;
+    /* Tweak width for integer math (5 pips * 26px + 12px gap + 16px pad) */
+    height: 24px;
+    background: var(--bg-deepest);
+    /* Strong Orange Outline per request */
+    /* border: 1px solid #d4af37; */
+    /* Replaced by box-shadow for consistent sizing */
+    border-radius: 12px;
+    position: relative;
+    /* Container Settings */
+    display: flex;
+    align-items: center;
+    padding: 3px 8px;
+    /* Internal padding */
+    gap: 0;
+    overflow: visible;
+    /* Burnt Orange Border (#CC5500) */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), inset 0 0 0 1px #CC5500;
+}
+
+/* Remove Spark/Mask elements */
+#resolve-fx-mask,
+.spark-emitter {
+    display: none;
+}
+
+/* Glass Reflection Overlay */
+#ui-resolve-bar::before {
+    transform: skewX(-15deg);
+    border-radius: 4px;
+    z-index: 50;
+    pointer-events: none;
+}
+
+/* Label Framed as Top Tab */
+#ui-resolve-bar::after {
+    content: 'RESOLVE';
+    position: absolute;
+    top: -14px;
+    /* Move to top */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-deepest);
+    /* border: 1px solid #d4af37; */
+    /* Replaced by box-shadow */
+    /* border-bottom: 1px solid var(--bg-deepest); */
+    /* Replaced by box-shadow */
+    /* Burnt Orange Border matching parent */
+    box-shadow: inset 0 0 0 1px #CC5500, inset 0 -1px 0 var(--bg-deepest);
+    border-radius: 4px 4px 0 0;
+    padding: 1px 8px;
+
+    font-family: var(--font-pixel);
+    font-size: 9px;
+    color: #ffd700;
+    /* Gold text */
+    letter-spacing: 1px;
+    line-height: 1;
+    z-index: 5;
+    /* Below pips if they fly out, but visible */
+}
+
+/* PIPS CONTAINER */
+#resolve-pips-container {
+    flex: 1;
+    width: auto;
+    height: 100%;
+    display: flex;
+    gap: 0;
+    /* Removing Flex Gap - using borders instead */
+    z-index: 10;
+    transform: skewX(-15deg);
+    /* Anti-Aliasing Fix */
+    backface-visibility: hidden;
+    -webkit-font-smoothing: antialiased;
+    transform-style: preserve-3d;
+}
+
+/* INDIVIDUAL PIP */
+.resolve-pip {
+    flex: 1 1 0px;
+    /* Force STRICT equal sizing */
+    min-width: 0;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    background-clip: padding-box;
+    /* Important: clipped by spacing border */
+    border-radius: 1px;
+    position: relative;
+
+    /* VISUAL BORDER (via Shadow) */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    /* SPACING (via Real Border) */
+    border: none;
+    border-right: 3px solid transparent;
+
+    transition: background 0.2s;
+    /* Force Smooth Rendering */
+    image-rendering: auto;
+    transform: translateZ(0);
+    will-change: transform, opacity;
+    box-sizing: border-box;
+}
+
+/* Remove spacing from last pip */
+.resolve-pip:last-child {
+    border-right: none;
+}
+
+/* ACTIVE PIP (Solid Gold Block) */
+.resolve-pip.active {
+    background: linear-gradient(to bottom, #ffd700 0%, #e6a800 100%);
+    background-clip: padding-box;
+    /* Border via Box Shadow */
+    box-shadow:
+        inset 0 0 0 1px #ffe680,
+        0 0 5px rgba(255, 215, 0, 0.3);
+    /* Keep spacing border */
+    border: none;
+    border-right: 3px solid transparent;
+    opacity: 1;
+}
+
+.resolve-pip.active:last-child {
+    border-right: none;
+}
+
+/* IMPACT SHAKE (The Bar reacts to the loss) */
+#ui-resolve-bar:has(.resolve-pip.lost) {
+    animation: bar-shake 0.3s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+/* LOST PIP (Animation State) */
+.resolve-pip.lost {
+    animation: pip-shatter 0.8s cubic-bezier(0.1, 0.5, 0.2, 1) forwards;
+    z-index: 100;
+    /* Restore Spacing Border to prevent layout shift */
+    border: none;
+    border-right: 3px solid transparent;
+
+    /* Visual border via shadow */
+    box-shadow: inset 0 0 0 1px white;
+}
+
+.resolve-pip.lost:last-child {
+    border-right: none;
+}
+
+/* EXPLOSIVE RESIDUE (Stays at origin briefly) */
+.resolve-pip.lost::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 2px;
+    background: #ffd700;
+    /* Gold debris */
+    border-radius: 50%;
+    /* Start at center, explode outward */
+    box-shadow: 0 0 0 #ffd700;
+    opacity: 1;
+    animation: pip-explosion 0.5s ease-out forwards;
+}
+
+/* PHYSICAL SHATTER ANIMATION (Arcing Flight Path) */
+@keyframes pip-shatter {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+        background: #ffd700;
+        /* Start as solid gold */
+        box-shadow: 0 0 30px #fff;
+    }
+
+    10% {
+        /* Impact Lift */
+        transform: translate(2px, -5px) scale(1.2) rotate(15deg);
+        background: #fff;
+        /* Flash white */
+        opacity: 1;
+    }
+
+    40% {
+        /* Apex of the Arc */
+        transform: translate(20px, -40px) scale(1) rotate(90deg);
+        background: #ffd700;
+        /* Return to gold */
+        opacity: 1;
+    }
+
+    100% {
+        /* Gravity Drop */
+        transform: translate(60px, 120px) scale(0.6) rotate(240deg);
+        opacity: 0;
+        background: #b8860b;
+        /* Darken as it falls */
+    }
+}
+
+/* BAR SHAKE ANIMATION */
+@keyframes bar-shake {
+    0% {
+        transform: translateX(-50%) translate(0, 0);
+    }
+
+    10% {
+        transform: translateX(-50%) translate(-2px, 2px);
+    }
+
+    30% {
+        transform: translateX(-50%) translate(2px, -2px);
+    }
+
+    50% {
+        transform: translateX(-50%) translate(-1px, 1px);
+    }
+
+    70% {
+        transform: translateX(-50%) translate(1px, -1px);
+    }
+
+    100% {
+        transform: translateX(-50%) translate(0, 0);
+    }
+}
+
+/* PARTICLE EXPLOSION ANIMATION */
+@keyframes pip-explosion {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow:
+            0 0 0 #fff,
+            0 0 0 #fff,
+            0 0 0 #fff,
+            0 0 0 #fff;
+    }
+
+    20% {
+        /* Expansion at origin */
+        opacity: 1;
+        transform: scale(3);
+    }
+
+    100% {
+        opacity: 0;
+        /* Particles scatter wide */
+        box-shadow:
+            -10px -15px 0 var(--gold-primary),
+            15px -10px 0 #fff,
+            -5px 15px 0 var(--gold-dark),
+            10px 20px 0 #fff;
+    }
+}
+
+/* Remove old fill/text styles */
+.resolve-fill,
+.resolve-text {
+    display: none;
+}
+
+.resolve-text {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-pixel);
+    /* Standardized */
+    font-size: 11px;
+    color: var(--gold-bright);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
+    z-index: 30;
+    letter-spacing: 0px;
+    opacity: 1;
+    pointer-events: none;
+}

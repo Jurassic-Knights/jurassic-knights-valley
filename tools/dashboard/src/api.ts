@@ -344,6 +344,48 @@ export async function updateDisplayField(
     }
 }
 
+export async function updateDisplaySize(
+    category: string,
+    fileName: string,
+    itemId: string,
+    size: number
+): Promise<void> {
+    try {
+        const payload = {
+            category,
+            file: fileName,
+            id: itemId,
+            updates: {
+                'display.width': size,
+                'display.height': size
+            },
+        };
+
+        const response = await fetch('/api/update_entity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            const files = categoryData?.files;
+            if (files && files[fileName]) {
+                const item = files[fileName].find((i) => i.id === itemId);
+                if (item) {
+                    if (!item.display) item.display = {};
+                    item.display.width = size;
+                    item.display.height = size;
+                }
+            }
+            broadcastUpdate(category, itemId, { 'display.width': size, 'display.height': size });
+            renderCategoryView();
+        }
+    } catch (err) {
+        console.error('[Dashboard] API error in updateDisplaySize:', err);
+    }
+}
+
 
 export async function updateWeaponMeta(
     category: string,

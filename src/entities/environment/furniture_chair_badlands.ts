@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/furniture/furniture_chair_badlands_original.png'
     },
     type: 'furniture',
-    biome: 'badlands'
-};
+    biome: 'badlands',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

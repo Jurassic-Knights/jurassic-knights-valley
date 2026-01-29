@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/architecture/arch_ladder_all_original.png'
     },
     type: 'architecture',
-    biome: 'all'
-};
+    biome: 'all',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

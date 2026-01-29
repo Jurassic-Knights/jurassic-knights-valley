@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/flora/flora_shrub_tundra_original.png'
     },
     type: 'flora',
-    biome: 'tundra'
-};
+    biome: 'tundra',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

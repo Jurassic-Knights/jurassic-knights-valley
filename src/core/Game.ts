@@ -259,12 +259,24 @@ class Game {
     gameLoop(timestamp) {
         if (!this.isRunning) return;
 
-        // Calculate delta time in milliseconds (compatible with existing systems)
-        const dt = timestamp - this.lastTime;
+        // Calculate delta time
+        let dt = timestamp - this.lastTime;
         this.lastTime = timestamp;
 
-        this.update(dt);
-        this.render();
+        // Cap dt to prevent spiral of death (max 100ms)
+        if (dt > 100) dt = 100;
+
+        this.accumulator += dt;
+
+        // Fixed Timestep Update
+        while (this.accumulator >= this.tickRate) {
+            this.update(this.tickRate);
+            this.accumulator -= this.tickRate;
+        }
+
+        // Interpolation Factor
+        const alpha = this.accumulator / this.tickRate;
+        this.render(alpha);
 
         // Increment profile frame count
         if (this._profile) this._profile.frameCount++;
@@ -308,8 +320,9 @@ class Game {
 
     /**
      * Render updates (variable timestep)
+     * @param {number} [alpha] - Interpolation factor (0-1)
      */
-    render() {
+    render(alpha = 1) {
         const profile = this._profile;
 
         // 3. Render Game World (includes BG VFX)

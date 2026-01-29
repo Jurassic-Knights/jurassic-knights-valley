@@ -98,6 +98,17 @@ import { Logger } from '@core/Logger';
             gain.connect(SFX.masterGain);
             osc.start();
             osc.stop(SFX.ctx.currentTime + 0.3);
+        },
+
+        sfx_ui_resolve_shatter: function () {
+            // 1. Glass Crack (High pass noise)
+            SFX.playNoise(0.1, 0.01, 0.1, 0.2, 3000); // Short, sharp
+
+            // 2. Energy Dissipation (Descending Sine)
+            SFX.playTone(800, 0.2, 'sine', 0.1, 0.01, 0.2); // Starts high, fades out
+
+            // 3. Subtle Thump (Low impact)
+            SFX.playTone(150, 0.1, 'triangle', 0.2, 0.01, 0.1);
         }
     };
 

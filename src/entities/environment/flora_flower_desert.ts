@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/flora/flora_flower_desert_original.png'
     },
     type: 'flora',
-    biome: 'desert'
-};
+    biome: 'desert',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

@@ -15,7 +15,7 @@ Listen to the user's idea. It can be:
 
 ## 2. Clarify if Needed
 
-If the idea is vague or incomplete, ask clarifying questions such as:
+Always ask 5 clarifying questions such as:
 - **What problem does this solve?** (gameplay, UX, content gap)
 - **What's the core mechanic or feature?**
 - **Which game system does this relate to?** (combat, inventory, progression, UI, etc.)
@@ -32,7 +32,7 @@ After understanding the idea, propose enhancements or variations:
 - **Alternatives:** Different approaches to achieve the same goal
 - **Edge cases:** Potential issues or considerations to address
 
-Present these as brief suggestions for the user to consider. They can accept, reject, or modify any of them before we document.
+Present these as brief suggestions for the user to consider. They can accept, reject, or modify any of them before we document. Present 5.
 
 ## 4. Document the Idea
 

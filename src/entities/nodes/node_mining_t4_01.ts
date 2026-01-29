@@ -17,5 +17,10 @@ export default {
     type: 'ore',
     biome: 'tundra',
     nodeSubtype: 'mining',
-    tier: 4
-};
+    tier: 4,
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

@@ -33,7 +33,7 @@ import {
     buildVfxHtml,
     buildOtherFieldsHtml,
     buildHeroSfxHtml,
-} from './cardBuilders';
+} from './builders';
 
 // ============================================
 // SORTING
@@ -123,21 +123,21 @@ export function renderCategoryView(): void {
             </div>
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Status:</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.status === 'all' ? 'active' : ''}" onclick="setCategoryStatusFilter('all')" style="background:#666;">All</button>
-                <button class="filter-btn ${categoryFilter.status === 'pending' ? 'active' : ''}" onclick="setCategoryStatusFilter('pending')" style="background:#d4a017;">Pending</button>
-                <button class="filter-btn ${categoryFilter.status === 'approved' ? 'active' : ''}" onclick="setCategoryStatusFilter('approved')" style="background:#4caf50;">Approved</button>
-                <button class="filter-btn ${categoryFilter.status === 'declined' ? 'active' : ''}" onclick="setCategoryStatusFilter('declined')" style="background:#f44336;">Declined</button>
-                <button class="filter-btn ${categoryFilter.status === 'clean' ? 'active' : ''}" onclick="setCategoryStatusFilter('clean')" style="background:#64b5f6;">Clean</button>
+                <button class="filter-btn ${categoryFilter.status === 'all' ? 'active' : ''}" data-action="set-category-status" data-value="all">All</button>
+                <button class="filter-btn ${categoryFilter.status === 'pending' ? 'active' : ''}" data-action="set-category-status" data-value="pending">Pending</button>
+                <button class="filter-btn ${categoryFilter.status === 'approved' ? 'active' : ''}" data-action="set-category-status" data-value="approved">Approved</button>
+                <button class="filter-btn ${categoryFilter.status === 'declined' ? 'active' : ''}" data-action="set-category-status" data-value="declined">Declined</button>
+                <button class="filter-btn ${categoryFilter.status === 'clean' ? 'active' : ''}" data-action="set-category-status" data-value="clean">Clean</button>
             </div>
             ${fileNames.length > 1
             ? `
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Files:</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.file === 'all' ? 'active' : ''}" onclick="setCategoryFileFilter('all')" style="background:#666;">All</button>
+                <button class="filter-btn ${categoryFilter.file === 'all' ? 'active' : ''}" data-action="set-category-file" data-value="all" style="background:#666;">All</button>
                 ${fileNames
                 .map((f) => {
                     const displayName = f.replace(/^(equipment_|item_|items_|resources_|enemies_|)/, '');
-                    return `<button class="filter-btn ${categoryFilter.file === f ? 'active' : ''}" onclick="setCategoryFileFilter('${f}')">${displayName}</button>`;
+                    return `<button class="filter-btn ${categoryFilter.file === f ? 'active' : ''}" data-action="set-category-file" data-value="${f}">${displayName}</button>`;
                 })
                 .join('')}
             </div>
@@ -148,8 +148,8 @@ export function renderCategoryView(): void {
             ? `
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Biomes (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.biome === 'all' ? 'active' : ''}" onclick="setCategoryBiomeFilter('all')" style="background:#666;">Clear</button>
-                ${biomes.map((b) => `<button class="filter-btn ${categoryFilter.biome === b ? 'active' : ''}" onclick="setCategoryBiomeFilter('${b}')" style="background:${b === 'grasslands' ? '#4caf50' : b === 'tundra' ? '#00bcd4' : b === 'desert' ? '#ff9800' : '#f44336'};">${b}</button>`).join('')}
+                <button class="filter-btn ${categoryFilter.biome === 'all' ? 'active' : ''}" data-action="set-category-biome" data-value="all" style="background:#666;">Clear</button>
+                ${biomes.map((b) => `<button class="filter-btn ${categoryFilter.biome === b ? 'active' : ''}" data-action="set-category-biome" data-value="${b}" style="background:${b === 'grasslands' ? '#4caf50' : b === 'tundra' ? '#00bcd4' : b === 'desert' ? '#ff9800' : '#f44336'};">${b}</button>`).join('')}
             </div>
             `
             : ''
@@ -158,8 +158,8 @@ export function renderCategoryView(): void {
             ? `
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Tiers (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.tier === 'all' ? 'active' : ''}" onclick="setCategoryTierFilter('all')" style="background:#666;">Clear</button>
-                ${tiers.map((t) => `<button class="filter-btn ${categoryFilter.tier === t ? 'active' : ''}" onclick="setCategoryTierFilter(${t})" style="background:${t === 1 ? '#9e9e9e' : t === 2 ? '#4caf50' : t === 3 ? '#2196f3' : '#9c27b0'};">T${t}</button>`).join('')}
+                <button class="filter-btn ${categoryFilter.tier === 'all' ? 'active' : ''}" data-action="set-category-tier" data-value="all" style="background:#666;">Clear</button>
+                ${tiers.map((t) => `<button class="filter-btn ${categoryFilter.tier === t ? 'active' : ''}" data-action="set-category-tier" data-value="${t}" style="background:${t === 1 ? '#9e9e9e' : t === 2 ? '#4caf50' : t === 3 ? '#2196f3' : '#9c27b0'};">T${t}</button>`).join('')}
             </div>
             `
             : ''
@@ -168,11 +168,11 @@ export function renderCategoryView(): void {
             ? `
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Node Type (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.nodeSubtype === 'all' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('all')" style="background:#666;">All</button>
-                <button class="filter-btn ${categoryFilter.nodeSubtype === 'mining' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('mining')" style="background:#795548;">⛏️ Mining</button>
-                <button class="filter-btn ${categoryFilter.nodeSubtype === 'woodcutting' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('woodcutting')" style="background:#4caf50;">🪓 Woodcutting</button>
-                <button class="filter-btn ${categoryFilter.nodeSubtype === 'harvesting' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('harvesting')" style="background:#ff9800;">🌾 Harvesting</button>
-                <button class="filter-btn ${categoryFilter.nodeSubtype === 'fishing' ? 'active' : ''}" onclick="setCategoryNodeSubtypeFilter('fishing')" style="background:#2196f3;">🎣 Fishing</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'all' ? 'active' : ''}" data-action="set-category-subtype" data-value="all" style="background:#666;">All</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'mining' ? 'active' : ''}" data-action="set-category-subtype" data-value="mining" style="background:#795548;">⛏️ Mining</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'woodcutting' ? 'active' : ''}" data-action="set-category-subtype" data-value="woodcutting" style="background:#4caf50;">🪓 Woodcutting</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'harvesting' ? 'active' : ''}" data-action="set-category-subtype" data-value="harvesting" style="background:#ff9800;">🌾 Harvesting</button>
+                <button class="filter-btn ${categoryFilter.nodeSubtype === 'fishing' ? 'active' : ''}" data-action="set-category-subtype" data-value="fishing" style="background:#2196f3;">🎣 Fishing</button>
             </div>
             `
             : ''
@@ -181,16 +181,16 @@ export function renderCategoryView(): void {
             ? `
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Weapon Type (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.weaponType === 'all' ? 'active' : ''}" onclick="setCategoryWeaponTypeFilter('all')" style="background:#666;">Clear</button>
-                <button class="filter-btn ${categoryFilter.weaponType === 'melee' ? 'active' : ''}" onclick="setCategoryWeaponTypeFilter('melee')" style="background:#e91e63;">⚔️ Melee</button>
-                <button class="filter-btn ${categoryFilter.weaponType === 'ranged' ? 'active' : ''}" onclick="setCategoryWeaponTypeFilter('ranged')" style="background:#ff9800;">🔫 Ranged</button>
-                <button class="filter-btn ${categoryFilter.weaponType === 'shield' ? 'active' : ''}" onclick="setCategoryWeaponTypeFilter('shield')" style="background:#2196f3;">🛡️ Shield</button>
+                <button class="filter-btn ${categoryFilter.weaponType === 'all' ? 'active' : ''}" data-action="set-category-weapon" data-value="all" style="background:#666;">Clear</button>
+                <button class="filter-btn ${categoryFilter.weaponType === 'melee' ? 'active' : ''}" data-action="set-category-weapon" data-value="melee" style="background:#e91e63;">⚔️ Melee</button>
+                <button class="filter-btn ${categoryFilter.weaponType === 'ranged' ? 'active' : ''}" data-action="set-category-weapon" data-value="ranged" style="background:#ff9800;">🔫 Ranged</button>
+                <button class="filter-btn ${categoryFilter.weaponType === 'shield' ? 'active' : ''}" data-action="set-category-weapon" data-value="shield" style="background:#2196f3;">🛡️ Shield</button>
             </div>
             <div style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem;">Hands (additive filter):</div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
-                <button class="filter-btn ${categoryFilter.hands === 'all' ? 'active' : ''}" onclick="setCategoryHandsFilter('all')" style="background:#666;">Clear</button>
-                <button class="filter-btn ${categoryFilter.hands === '1-hand' ? 'active' : ''}" onclick="setCategoryHandsFilter('1-hand')" style="background:#4caf50;">✋ 1-Hand</button>
-                <button class="filter-btn ${categoryFilter.hands === '2-hand' ? 'active' : ''}" onclick="setCategoryHandsFilter('2-hand')" style="background:#9c27b0;">🤲 2-Hand</button>
+                <button class="filter-btn ${categoryFilter.hands === 'all' ? 'active' : ''}" data-action="set-category-hands" data-value="all" style="background:#666;">Clear</button>
+                <button class="filter-btn ${categoryFilter.hands === '1-hand' ? 'active' : ''}" data-action="set-category-hands" data-value="1-hand" style="background:#4caf50;">✋ 1-Hand</button>
+                <button class="filter-btn ${categoryFilter.hands === '2-hand' ? 'active' : ''}" data-action="set-category-hands" data-value="2-hand" style="background:#9c27b0;">🤲 2-Hand</button>
             </div>
             `
             : ''
@@ -198,13 +198,13 @@ export function renderCategoryView(): void {
             <div style="display:flex; align-items:center; gap:1rem; margin-top:0.5rem;">
                 <span style="font-size:0.8rem; color:var(--text-dim);">🔍 Image Size:</span>
                 <input type="range" id="imageSizeSlider" min="100" max="400" value="${categoryImageSize}" 
-                    oninput="setCategoryImageSize(this.value)" 
+                    data-action="set-category-size" data-capture-value="true"
                     style="width:200px; accent-color:var(--accent-green);">
                 <span id="imageSizeValue" style="font-size:0.8rem; color:var(--text-dim);">${categoryImageSize}px</span>
                 <span style="margin-left:2rem; font-size:0.8rem; color:var(--text-dim);">📊 Sort:</span>
-                <button class="filter-btn ${categorySort === 'tier' ? 'active' : ''}" onclick="setCategorySortOrder('tier')" style="background:#666;">By Tier</button>
-                <button class="filter-btn ${categorySort === 'newest' ? 'active' : ''}" onclick="setCategorySortOrder('newest')" style="background:#666;">Newest First</button>
-                <button class="filter-btn ${categorySort === 'oldest' ? 'active' : ''}" onclick="setCategorySortOrder('oldest')" style="background:#666;">Oldest First</button>
+                <button class="filter-btn ${categorySort === 'tier' ? 'active' : ''}" data-action="set-category-sort" data-value="tier" style="background:#666;">By Tier</button>
+                <button class="filter-btn ${categorySort === 'newest' ? 'active' : ''}" data-action="set-category-sort" data-value="newest" style="background:#666;">Newest First</button>
+                <button class="filter-btn ${categorySort === 'oldest' ? 'active' : ''}" data-action="set-category-sort" data-value="oldest" style="background:#666;">Oldest First</button>
             </div>
         </div>
     `;
@@ -287,7 +287,10 @@ function createCategoryCard(item: AssetItem, fileName: string): HTMLElement {
         const displayPath = imgPath.replace(/^(assets\/)?images\//, '');
         const fullImgUrl = `/images/${displayPath}`;
         imgHtml = `<img class="asset-image" src="${fullImgUrl}" alt="${item.name}" 
-            onclick="openModal('${fullImgUrl}', '${item.name}', '${item.status || 'pending'}')"
+            data-action="open-modal"
+            data-path="${fullImgUrl}"
+            data-name="${item.name}"
+            data-status="${item.status || 'pending'}"
             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
             style="width:${imgSize}; height:${imgSize}; object-fit:cover; background:var(--bg-dark); cursor:pointer;">
         <div style="width:${imgSize}; height:${imgSize}; background:var(--bg-dark); display:none; align-items:center; justify-content:center;"><span style="font-size:3rem;">📦</span></div>`;
@@ -310,9 +313,9 @@ function createCategoryCard(item: AssetItem, fileName: string): HTMLElement {
         card.innerHTML = `
             ${imgHtml}
             <div class="asset-info" style="padding:0.5rem;">
-                <div style="font-weight:bold; color:#2196f3; margin-bottom:0.1rem; font-size:0.85rem;">🛡️ ${item.name || item.id}</div>
-                <div style="font-size:0.65rem; color:var(--text-dim); margin-bottom:0.3rem; font-family:monospace;">${item.id}</div>
-                <div style="font-size:0.6rem; color:#888; margin-bottom:0.3rem;">Hero Skin Variant</div>
+                <div class="asset-name" style="margin-bottom:0.1rem; font-size:0.85rem;">🛡️ ${item.name || item.id}</div>
+                <div style="font-size:0.65rem; color:#444; margin-bottom:0.3rem; font-family:monospace;">${item.id}</div>
+                <div style="font-size:0.6rem; color:#666; margin-bottom:0.3rem;">Hero Skin Variant</div>
                 ${heroSfxHtml}
                 <span class="asset-status status-${item.status || 'pending'}" style="margin-top:0.5rem;">${item.status || 'pending'}</span>
                 ${descPreview}
@@ -333,7 +336,7 @@ function createCategoryCard(item: AssetItem, fileName: string): HTMLElement {
     const weaponDropdownHtml = buildWeaponDropdownHtml(item, fileName);
     const genderBodyTypeHtml = buildGenderBodyTypeHtml(item, fileName);
     const speciesDropdownHtml = buildSpeciesDropdownHtml(item, fileName);
-    const sizeScaleHtml = buildSizeScaleHtml(item);
+    const sizeScaleHtml = buildSizeScaleHtml(item, fileName);
     const loreDescriptionHtml = buildLoreDescriptionHtml(item, fileName);
     const sfxHtml = buildSfxHtml(item);
     const vfxHtml = buildVfxHtml(item);
@@ -342,8 +345,8 @@ function createCategoryCard(item: AssetItem, fileName: string): HTMLElement {
     card.innerHTML = `
         ${imgHtml}
         <div class="asset-info" style="padding:0.5rem;">
-            <div style="font-weight:bold; color:#9c27b0; margin-bottom:0.1rem; font-size:0.85rem;">${item.name || item.id}</div>
-            <div style="font-size:0.65rem; color:var(--text-dim); margin-bottom:0.3rem; font-family:monospace;">${item.id}</div>
+            <div class="asset-name" style="margin-bottom:0.1rem; font-size:0.85rem;">${item.name || item.id}</div>
+            <div style="font-size:0.65rem; color:#444; margin-bottom:0.3rem; font-family:monospace;">${item.id}</div>
             ${badgesHtml}
             ${roleDropdownHtml}
             ${weaponDropdownHtml}

@@ -4,21 +4,26 @@
  * Owner: Director (engine), Gameplay Designer (values)
  */
 import { Entity } from '@core/Entity';
+import { Logger } from '@core/Logger';
 import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { AssetLoader } from '@core/AssetLoader';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { EntityTypes } from '@config/EntityTypes';
+import { EntityRegistry } from '@entities/EntityLoader';
 import { Registry } from '@core/Registry';
 import { getConfig } from '@data/GameConstants';
+import { EntityScaling } from '../utils/EntityScaling';
 
 // Unmapped modules - need manual import
 
 class Merchant extends Entity {
     // Merchant properties
+    registryId: string = 'npc_merchant'; // Required for EntityLoader hot-reload
     islandId: string = 'unknown';
     islandName: string = 'Unknown Island';
     interactRadius: number = 140;
     bobTime: number = 0;
+    scale: number = 1.0;
 
     // Sprite caching
     _img: any = null;
@@ -36,18 +41,51 @@ class Merchant extends Entity {
             interactRadius: 140,
             color: '#8E44AD'
         };
-        const finalConfig = { ...defaults, ...config };
+
+        // Determine correct Registry ID based on Island Name (same logic as Sprite ID)
+        const islandName = config.islandName || 'Unknown Island';
+
+        // If config provides specific ID, use it. Otherwise derive from island.
+        let registryId = config.registryId;
+        if (!registryId) {
+            const name = islandName.toLowerCase();
+            if (name.includes('quarry')) registryId = 'npc_merchant_01';
+            else if (name.includes('iron')) registryId = 'npc_merchant_02';
+            else if (name.includes('dead')) registryId = 'npc_merchant_03';
+            else if (name.includes('cross')) registryId = 'npc_merchant_04';
+            else if (name.includes('scrap')) registryId = 'npc_merchant_05';
+            else if (name.includes('mud')) registryId = 'npc_merchant_06';
+            else if (name.includes('bone')) registryId = 'npc_merchant_07';
+            else if (name.includes('ruins')) registryId = 'npc_merchant_08';
+            else registryId = 'npc_merchant_04'; // Default
+        }
+
+        // Lookup with correct ID
+        const typeConfig = EntityRegistry.npcs?.[registryId] || EntityRegistry.environment?.[registryId] || {};
+
+        if (!EntityRegistry.npcs?.[registryId]) {
+            Logger.warn(`[Merchant] Registry Lookup FAILED for '${registryId}'. Falling back to defaults.`);
+        } else {
+            Logger.info(`[Merchant] Registry Lookup SUCCESS for '${registryId}'. Scale: ${typeConfig.scale}`);
+        }
+
+        // Calculate size using standard utility
+        const size = EntityScaling.calculateSize(config, typeConfig, { width: 192, height: 192 });
+
+        const finalConfig = { ...defaults, ...typeConfig, ...config };
 
         super({
             entityType: EntityTypes.MERCHANT,
-            width: finalConfig.width || 186,
-            height: finalConfig.height || 186,
+            width: size.width,
+            height: size.height,
             color: finalConfig.color || '#8E44AD', // Purple - merchant color
             ...config
         });
 
+        this.scale = size.scale;
+        this.registryId = registryId;
         this.islandId = config.islandId || 'unknown';
-        this.islandName = config.islandName || 'Unknown Island';
+        this.islandName = islandName;
         this.interactRadius = finalConfig.interactRadius || 140;
 
         // Animation timer
@@ -100,6 +138,9 @@ class Merchant extends Entity {
     /**
      * Draw shadow for merchant (called by GameRenderer shadow pass)
      */
+    /**
+     * Draw shadow for merchant (called by GameRenderer shadow pass)
+     */
     drawShadow(ctx: CanvasRenderingContext2D, forceOpaque = false) {
         if (!this.active || !this._img) return;
 
@@ -112,7 +153,7 @@ class Merchant extends Entity {
             alpha = env.shadowAlpha;
         }
 
-        const size = 186; // Match Hero size
+        const size = this.width; // Use actual entity width
 
         // 1. Static Contact Shadow
         ctx.save();
@@ -194,12 +235,15 @@ class Merchant extends Entity {
             }
 
             if (this._img && this._img.complete && this._img.naturalWidth) {
-                const size = 186; // Match Hero size
+                // Use entity dimensions (baked scale)
+                const width = this.width;
+                const height = this.height;
 
                 ctx.save();
 
                 // Sprite (centered)
-                ctx.drawImage(this._img, this.x - size / 2, this.y - size / 2 + bob, size, size);
+                // Use height for Y centering to support non-square types
+                ctx.drawImage(this._img, this.x - width / 2, this.y - height / 2 + bob, width, height);
 
                 ctx.restore();
 
@@ -214,7 +258,8 @@ class Merchant extends Entity {
                 if (this._iconImg && this._iconImg.complete && this._iconImg.naturalWidth) {
                     const iconSize = 64;
                     const hoverOffset = Math.sin(this.bobTime * 3) * 5;
-                    const iconY = this.y - size / 2 - iconSize + 20 + hoverOffset;
+                    // Fix: Use 'height' or 'width' for positioning, 'size' var is gone
+                    const iconY = this.y - height / 2 - iconSize + 20 + hoverOffset;
                     ctx.drawImage(this._iconImg, this.x - iconSize / 2, iconY, iconSize, iconSize);
                 }
                 return;
@@ -222,6 +267,20 @@ class Merchant extends Entity {
         }
 
         // No fallback - skip rendering until sprite loads
+    }
+    /**
+     * Refresh configuration from EntityRegistry
+     */
+    refreshConfig() {
+        // Find config (Merchants might use island-based logic, or generic NPC logic)
+        // For now, look up by generic 'npc_merchant' key or fallback to defaults
+        const registryId = this.registryId || 'npc_merchant';
+        const typeConfig = EntityRegistry.npcs?.[registryId] || EntityRegistry.environment?.[registryId] || {};
+
+        Logger.info(`[Merchant] Refreshing config for ${registryId}`);
+
+        // Update dimensions using standard utility
+        EntityScaling.applyToEntity(this, {}, typeConfig, { width: 192, height: 192 });
     }
 }
 

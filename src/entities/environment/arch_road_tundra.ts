@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/architecture/arch_road_tundra_original.png'
     },
     type: 'architecture',
-    biome: 'tundra'
-};
+    biome: 'tundra',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

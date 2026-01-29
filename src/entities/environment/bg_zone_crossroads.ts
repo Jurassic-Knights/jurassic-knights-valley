@@ -15,5 +15,10 @@ export default {
         clean: 'assets/images/backgrounds/zone_crossroads_clean.png'
     },
     type: 'zone_background',
-    biome: 'grasslands'
-};
+    biome: 'grasslands',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

@@ -14,5 +14,10 @@ export default {
         original: 'assets/images/environment/props/prop_crate_medical_original.png'
     },
     type: 'prop',
-    biome: 'all'
-};
+    biome: 'all',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

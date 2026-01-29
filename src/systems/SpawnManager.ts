@@ -171,9 +171,10 @@ class SpawnManagerService {
                 (b: any) => b.to.col === island.gridX && b.to.row === island.gridY
             );
 
-            let merchantX = bounds.x + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || 60);
-            let merchantY = bounds.y + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || 60);
-            const padding = PropConfig?.MERCHANT?.PADDING || 70;
+            const config = getConfig().Spawning;
+            let merchantX = bounds.x + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT_OFFSET_X);
+            let merchantY = bounds.y + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT_OFFSET_Y);
+            const padding = PropConfig?.MERCHANT?.PADDING || config.MERCHANT_PADDING;
 
             if (entryBridge) {
                 if (entryBridge.type === 'horizontal') {

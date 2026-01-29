@@ -9,17 +9,7 @@ interface ConfigSection {
 }
 
 interface GameConfig {
-    Core: ConfigSection;
-    Hero: ConfigSection;
-    Combat: ConfigSection;
-    Interaction: ConfigSection;
-    Time: ConfigSection;
-    Weather: ConfigSection;
-    AI: ConfigSection;
-    Biome: ConfigSection;
-    Spawning: ConfigSection;
-    UnlockCosts: number[];
-    BodyTypes: Record<string, { scale: number }>;
+    [key: string]: ConfigSection | any;
 }
 
 // Section display names and descriptions (tunable sections from GameConfig.ts)
@@ -60,9 +50,29 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
         const sectionsContainer = container.querySelector('.config-sections')!;
 
         // Render each section
-        for (const [sectionKey, meta] of Object.entries(SECTION_META)) {
-            const sectionData = currentConfig[sectionKey as keyof GameConfig];
-            if (!sectionData) continue;
+        // Render each section dynamically
+        const allSections = Object.keys(currentConfig) as Array<keyof GameConfig>;
+
+        // Sort sections: known ones first (based on meta order), then others alpha
+        const metaKeys = Object.keys(SECTION_META);
+        allSections.sort((a, b) => {
+            const aIdx = metaKeys.indexOf(String(a));
+            const bIdx = metaKeys.indexOf(String(b));
+            if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+            if (aIdx !== -1) return -1;
+            if (bIdx !== -1) return 1;
+            return String(a).localeCompare(String(b));
+        });
+
+        for (const sectionKey of allSections) {
+            const sectionData = currentConfig[sectionKey];
+            if (!sectionData || Object.keys(sectionData as object).length === 0) continue;
+
+            // Get meta or create default
+            const meta = SECTION_META[sectionKey as string] || {
+                name: sectionKey,
+                description: `Configuration for ${sectionKey}`
+            };
 
             const sectionEl = document.createElement('div');
             sectionEl.className = 'config-section';
@@ -71,11 +81,11 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                     <h3>${meta.name}</h3>
                     <span class="section-description">${meta.description}</span>
                     <div class="section-actions">
-                        <button class="btn-reset" data-section="${sectionKey}" title="Reset to defaults">↺ Reset</button>
-                        <button class="btn-save-defaults" data-section="${sectionKey}" title="Save current values as new defaults">💾 Save Defaults</button>
+                        <button class="btn-reset" data-section="${sectionKey as string}" title="Reset to defaults">↺ Reset</button>
+                        <button class="btn-save-defaults" data-section="${sectionKey as string}" title="Save current values as new defaults">💾 Save Defaults</button>
                     </div>
                 </div>
-                <div class="section-fields" data-section="${sectionKey}"></div>
+                <div class="section-fields" data-section="${sectionKey as string}"></div>
             `;
 
             const fieldsContainer = sectionEl.querySelector('.section-fields')!;
@@ -83,7 +93,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
             if (sectionKey === 'BodyTypes') {
                 // Special rendering for body types
                 for (const [bodyType, data] of Object.entries(sectionData as Record<string, { scale: number }>)) {
-                    fieldsContainer.appendChild(createField(sectionKey, bodyType, data.scale, 'number'));
+                    fieldsContainer.appendChild(createField(sectionKey as string, bodyType, data.scale, 'number'));
                 }
             } else if (sectionKey === 'WeaponDefaults') {
                 // Special rendering for weapon defaults (nested objects with range/damage/attackSpeed)
@@ -91,9 +101,9 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                     const weaponDiv = document.createElement('div');
                     weaponDiv.className = 'weapon-type-group';
                     weaponDiv.innerHTML = `<label class="weapon-type-label">${weaponType}</label>`;
-                    weaponDiv.appendChild(createField(sectionKey, `${weaponType}.range`, stats.range, 'number'));
-                    weaponDiv.appendChild(createField(sectionKey, `${weaponType}.damage`, stats.damage, 'number'));
-                    weaponDiv.appendChild(createField(sectionKey, `${weaponType}.attackSpeed`, stats.attackSpeed, 'number'));
+                    weaponDiv.appendChild(createField(sectionKey as string, `${weaponType}.range`, stats.range, 'number'));
+                    weaponDiv.appendChild(createField(sectionKey as string, `${weaponType}.damage`, stats.damage, 'number'));
+                    weaponDiv.appendChild(createField(sectionKey as string, `${weaponType}.attackSpeed`, stats.attackSpeed, 'number'));
                     fieldsContainer.appendChild(weaponDiv);
                 }
             } else if (typeof sectionData === 'object' && !Array.isArray(sectionData)) {
@@ -101,7 +111,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                 for (const [key, value] of Object.entries(sectionData as ConfigSection)) {
                     if (typeof value === 'object') continue; // Skip nested objects for now
                     const type = typeof value === 'number' ? 'number' : 'text';
-                    fieldsContainer.appendChild(createField(sectionKey, key, value, type));
+                    fieldsContainer.appendChild(createField(sectionKey as string, key, value, type));
                 }
             }
 

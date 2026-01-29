@@ -15,5 +15,10 @@ export default {
         clean: 'assets/images/buildings/building_outpost_clean.png'
     },
     type: 'prop',
-    biome: 'grasslands'
-};
+    biome: 'grasslands',
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

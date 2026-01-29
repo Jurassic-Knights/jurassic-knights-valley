@@ -45,6 +45,12 @@ const DEFAULTS = {
         ELITE_SPAWN_CHANCE: 0.08,
 
         BOSS_RESPAWN_DEFAULT: 30000,
+
+        // Merchant Layout
+        MERCHANT_OFFSET_X: 60,
+        MERCHANT_OFFSET_Y: 60,
+        MERCHANT_PADDING: 70,
+
         PROPS: {
             CLUSTER_COUNT_MIN: 4,
             CLUSTER_COUNT_RND: 3,
@@ -58,7 +64,8 @@ const DEFAULTS = {
     },
     Time: {
         REAL_SECONDS_PER_GAME_DAY: 300,
-        DAYS_PER_SEASON: 7
+        DAYS_PER_SEASON: 7,
+        WEATHER_DECAY_RATE: 1000
     },
     PlayerResources: {
         INITIAL_GOLD: 10000,

@@ -4,19 +4,23 @@
    QUEST + RESOLVE CONTAINER
    ======================================== */
 #quest-resolve-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    margin: 0 auto;
-    pointer-events: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
 }
 
 /* ========================================
    QUEST PANEL - Fixed Size
    ======================================== */
 #ui-quest-panel {
-    width: 280px;
+    position: absolute;
+    top: 80px;
+    right: 0;
+    width: 150px;
     pointer-events: auto;
 }
 
@@ -24,127 +28,18 @@
     pointer-events: auto;
 }
 
-/* ========================================
-   RESOLVE BAR - Amber Liquid Gauge (Earthy)
-   ======================================== */
-#ui-resolve-bar {
-    width: 290px;
-    height: 28px;
-    background: var(--bg-deepest);
-    border: 1px solid var(--bg-medium);
-    border-radius: 14px;
-    position: relative;
-    overflow: hidden;
-    box-shadow:
-        0 4px 10px rgba(0, 0, 0, 0.9),
-        inset 0 2px 8px rgba(0, 0, 0, 1),
-        0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-/* Dirty Glass Reflection */
-#ui-resolve-bar::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    height: 40%;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.02) 100%
-    );
-    border-radius: 12px 12px 50% 50%;
-    z-index: 20;
-    pointer-events: none;
-}
-
-.resolve-fill {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    bottom: 3px;
-    width: calc(100% - 6px);
-    background: var(--glow);
-    /* Amber base */
-    background-image:
-        var(--bg-noise), linear-gradient(90deg, #8b4513 0%, #cd853f 50%, #8b4513 100%);
-    border-radius: 10px;
-    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    box-shadow:
-        0 0 15px rgba(205, 133, 63, 0.4),
-        /* Amber Glow */ inset 0 -4px 5px rgba(0, 0, 0, 0.5),
-        /* Volume */ inset 0 2px 2px rgba(255, 255, 255, 0.3);
-    /* Top Meniscus */
-}
-
-/* Bubbles in the Amber */
-.resolve-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background:
-        radial-gradient(circle at 20% 60%, rgba(255, 255, 255, 0.2) 0%, transparent 10%),
-        radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.2) 0%, transparent 8%),
-        radial-gradient(circle at 90% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 12%);
-    background-size: 80px 100%;
-    opacity: 0.8;
-    mix-blend-mode: overlay;
-    border-radius: 10px;
-}
-
-.resolve-text {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-pixel);
-    /* Standardized */
-    font-size: 11px;
-    color: var(--gold-bright);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 1);
-    z-index: 30;
-    letter-spacing: 0px;
-    opacity: 1;
-    pointer-events: none;
-}
+/* Remove Resolve Bar Styles (moved to ui-hud-resolve.css) */
 
 .quest-frame {
-    /* Thick Dirty Paper Style */
-    background: var(--color-parchment);
-    background-image:
-        var(--bg-noise),
-        radial-gradient(circle at 50% 50%, transparent 40%, rgba(62, 54, 46, 0.3) 100%),
-        /* Vignette */
-        repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(0, 0, 0, 0.02) 10px,
-                rgba(0, 0, 0, 0.02) 11px
-            );
-    /* Texture lines */
-    border: 1px solid var(--bg-hover);
-    border-top: 1px solid var(--text-secondary);
-    /* Highlight edge */
+    /* Subtle Dark Glass Style */
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-top: 2px solid rgba(255, 255, 255, 0.15);
     border-radius: 4px;
-    /* Slightly worn corners */
     position: relative;
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.8),
-        /* Deep shadow */ 0 0 0 1px rgba(0, 0, 0, 0.5),
-        /* Outline */ inset 0 0 60px rgba(44, 38, 32, 0.2);
-    /* Inner grime */
-    color: var(--color-ink);
-    transform: rotate(-0.5deg);
-    /* Hand-placed imperfection */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
 }
 
 /* Tape/Clip simulation at top? Optional, kept simple for now */
@@ -158,19 +53,17 @@
 
 /* Header - Worn Ink Stamp */
 .quest-header {
-    background: none;
-    border-bottom: 2px dashed rgba(43, 34, 27, 0.3);
-    padding: 14px 18px;
+    display: none;
 }
 
 .header-label {
-    color: var(--ink);
+    color: var(--gold-primary);
     font-family: var(--font-pixel);
     font-size: 15px;
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 1px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
     opacity: 0.9;
 }
 
@@ -182,53 +75,74 @@
 }
 
 .quest-content {
-    padding: 18px;
+    padding: 8px 4px 8px 8px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 8px;
+}
+
+.quest-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
 }
 
 .quest-icon {
-    border: 2px solid var(--ink);
-    box-shadow: 2px 2px 0 rgba(43, 34, 27, 0.1);
-    background: rgba(0, 0, 0, 0.05);
-    mix-blend-mode: multiply;
-    border-radius: 2px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .quest-objective {
     font-family: var(--font-pixel);
     /* Serif font */
     font-weight: 600;
-    color: var(--color-ink);
-    font-size: 14px;
-    line-height: 1.5;
+    color: var(--text-primary);
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: normal;
 }
 
 .quest-progress {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    position: relative;
+    width: 100%;
+    height: 12px;
 }
 
 .progress-bar {
-    flex: 1;
-    height: 8px;
+    width: 100%;
+    height: 100%;
     background: var(--color-primary-dark);
-    border: 1px solid var(--color-accent-iron);
-    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: var(--shadow-inset);
 }
 
 .progress-fill {
     height: 100%;
     background: var(--gradient-brass);
     transition: width var(--transition-normal);
-    border-radius: 3px;
 }
 
 .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-family: var(--font-pixel);
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    min-width: 40px;
-    text-align: right;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px black;
+    z-index: 10;
+    pointer-events: none;
+    white-space: nowrap;
+    line-height: 1;
+    margin-top: -1px;
 }

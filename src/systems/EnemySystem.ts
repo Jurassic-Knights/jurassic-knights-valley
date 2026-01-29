@@ -59,6 +59,15 @@ class EnemySystem {
     }
 
     updateEnemy(enemy, hero, dt) {
+        // Update interpolation state (per fixed tick)
+        enemy.prevX = enemy.x;
+        enemy.prevY = enemy.y;
+
+        // Sync HealthComponent to Entity property for Renderer/UI
+        if (enemy.components.health) {
+            enemy.health = enemy.components.health.health;
+        }
+
         const ai = enemy.components?.ai;
         if (!ai) return;
 
@@ -96,7 +105,7 @@ class EnemySystem {
             }
 
             if (EventBus) {
-                EventBus.emit(Events.ENEMY_AGGRO, { enemy, target: hero });
+                EventBus.emit(GameConstants.Events.ENEMY_AGGRO, { enemy, target: hero });
             }
             return;
         }
@@ -109,8 +118,12 @@ class EnemySystem {
 
         // Move
         const speed = enemy.speed * (dt / 1000);
-        let nextX = enemy.x + ai.wanderDirection.x * speed;
-        let nextY = enemy.y + ai.wanderDirection.y * speed;
+        const dx = ai.wanderDirection.x * speed;
+        const dy = ai.wanderDirection.y * speed;
+
+        // Predict next pos for patrol radius check
+        const nextX = enemy.x + dx;
+        const nextY = enemy.y + dy;
 
         // Clamp to patrol radius
         const patrolRadius = enemy.patrolRadius || 150;
@@ -120,12 +133,11 @@ class EnemySystem {
             // Reverse direction
             ai.wanderDirection.x *= -1;
             ai.wanderDirection.y *= -1;
-            nextX = enemy.x;
-            nextY = enemy.y;
+            // Immediate turnaround
+            return;
         }
 
-        enemy.x = nextX;
-        enemy.y = nextY;
+        this.applyMovement(enemy, dx, dy);
     }
 
     /**
@@ -166,7 +178,7 @@ class EnemySystem {
             ai.setState('LEASH_RETURN');
             ai.target = null;
             if (EventBus) {
-                EventBus.emit(Events.ENEMY_LEASH, { enemy });
+                EventBus.emit(GameConstants.Events.ENEMY_LEASH, { enemy });
             }
             return;
         }
@@ -178,14 +190,25 @@ class EnemySystem {
         }
 
         // Move toward target
-        const dx = hero.x - enemy.x;
-        const dy = hero.y - enemy.y;
+        const dxRaw = hero.x - enemy.x;
+        const dyRaw = hero.y - enemy.y;
         const dist = MathUtils.distance(enemy.x, enemy.y, hero.x, hero.y);
 
         if (dist > 0) {
             const speed = enemy.speed * (dt / 1000);
-            enemy.x += (dx / dist) * speed;
-            enemy.y += (dy / dist) * speed;
+            const dx = (dxRaw / dist) * speed;
+            const dy = (dyRaw / dist) * speed;
+            this.applyMovement(enemy, dx, dy);
+        }
+    }
+
+    applyMovement(enemy, dx, dy) {
+        const collisionSystem = this.game?.getSystem('CollisionSystem') as any;
+        if (collisionSystem && typeof collisionSystem.move === 'function') {
+            collisionSystem.move(enemy, dx, dy);
+        } else {
+            enemy.x += dx;
+            enemy.y += dy;
         }
     }
 
@@ -220,7 +243,7 @@ class EnemySystem {
                             type: 'physical'
                         });
 
-                        EventBus.emit(Events.ENEMY_ATTACK, {
+                        EventBus.emit(GameConstants.Events.ENEMY_ATTACK, {
                             attacker: enemy,
                             target: hero,
                             damage: combat.damage
@@ -235,8 +258,8 @@ class EnemySystem {
         const ai = enemy.components.ai;
 
         // Move back to spawn
-        const dx = enemy.spawnX - enemy.x;
-        const dy = enemy.spawnY - enemy.y;
+        const dxRaw = enemy.spawnX - enemy.x;
+        const dyRaw = enemy.spawnY - enemy.y;
         const dist = MathUtils.distance(enemy.x, enemy.y, enemy.spawnX, enemy.spawnY);
 
         if (dist < 10) {
@@ -245,8 +268,9 @@ class EnemySystem {
         }
 
         const speed = enemy.speed * 1.5 * (dt / 1000); // Faster return
-        enemy.x += (dx / dist) * speed;
-        enemy.y += (dy / dist) * speed;
+        const dx = (dxRaw / dist) * speed;
+        const dy = (dyRaw / dist) * speed;
+        this.applyMovement(enemy, dx, dy);
     }
 
     onEntityDamaged(data) {

@@ -60,7 +60,7 @@ export function renderTemplatesView(): void {
         <div style="text-align:center; padding:3rem;">
             <h2>📝 Templates Editor</h2>
             <p style="color:var(--text-dim);">Coming soon in modular version...</p>
-            <button onclick="showLandingPage()" class="secondary" style="margin-top:1rem;">← Back</button>
+            <button data-action="refresh-manifest" class="secondary" style="margin-top:1rem;">← Back</button>
         </div>
     `;
 }

@@ -202,7 +202,8 @@ class Enemy extends Entity {
             width: sizeInfo.width,
             height: sizeInfo.height,
             color: isElite ? '#FF4500' : finalConfig.color || '#8B0000',
-            sprite: finalConfig.sprite || null
+            sprite: finalConfig.sprite || null,
+            collision: finalConfig.collision // Pass merged collision config
         });
 
         // Enemy Identity
@@ -402,19 +403,45 @@ class Enemy extends Entity {
     // ============================================
     // Prototype extension stubs (implemented in EnemyBehavior.ts)
     // ============================================
-    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): any {}
+    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): any { }
     moveDirectly(_targetX: number, _targetY: number, _speed: number, _dt: number): boolean {
         return false;
     }
-    updateWander(_dt: number): void {}
-    updateChase(_dt: number): void {}
-    updateAttack(_dt: number): void {}
-    performAttack(): void {}
-    updateReturning(_dt: number): void {}
-    takeDamage(_amount: number, _attacker?: any): void {}
-    triggerPackAggro(_target: any): void {}
-    renderHealthBar(_ctx: any): void {}
-    renderThreatIndicator(_ctx: any): void {}
+    updateWander(_dt: number): void { }
+    updateChase(_dt: number): void { }
+    updateAttack(_dt: number): void { }
+    performAttack(): void { }
+    updateReturning(_dt: number): void { }
+    takeDamage(_amount: number, _attacker?: any): void { }
+    triggerPackAggro(_target: any): void { }
+    renderHealthBar(_ctx: any): void { }
+    renderThreatIndicator(_ctx: any): void { }
+
+    /**
+     * Refresh configuration from EntityRegistry
+     * Called by EntityLoader on live update
+     */
+    refreshConfig() {
+        // 1. Re-fetch config
+        // Re-construct logic similar to constructor lookup
+        const typeConfig = this.enemyType ? EntityRegistry.enemies?.[this.enemyType] || {} : {};
+
+        // 2. Re-calculate size
+        const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';
+        const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss);
+
+        if (sizeInfo) {
+            this.width = sizeInfo.width;
+            this.height = sizeInfo.height;
+            // Logger.info(`[Enemy] Refreshed config for ${this.enemyType}: ${this.width}x${this.height}`);
+        }
+
+        // 3. Sync Collision
+        if (this.collision && this.collision.bounds) {
+            this.collision.bounds.width = this.width;
+            this.collision.bounds.height = this.height;
+        }
+    }
 }
 
 // ES6 Module Export

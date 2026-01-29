@@ -17,5 +17,10 @@ export default {
     type: 'ore',
     biome: 'tundra',
     nodeSubtype: 'woodcutting',
-    tier: 2
-};
+    tier: 2,
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

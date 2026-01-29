@@ -289,7 +289,7 @@ const GameRenderer = {
     /**
      * Clear and render all entities
      */
-    render() {
+    render(alpha = 1) {
         if (!this.ctx) return;
 
         // Detailed profiling when enabled
@@ -381,7 +381,7 @@ const GameRenderer = {
                 dinosaurRenderer: this._dinosaurRenderer,
                 resourceRenderer: this._resourceRenderer
             };
-            EntityRenderService.renderAll(this.ctx, sortableEntities, renderers, timing);
+            EntityRenderService.renderAll(this.ctx, sortableEntities, renderers, timing, alpha);
             EntityRenderService.renderUIOverlays(this.ctx, sortableEntities, timing);
         }
 
@@ -418,12 +418,6 @@ const GameRenderer = {
         if (vfxController) {
             this.ctx.save();
             this.ctx.translate(-this.viewport.x, -this.viewport.y);
-
-            // Particles
-            // fgParticles now rendered via VFXController.renderForeground() to overlay canvas
-            // if (VFXController.fgParticles) {
-            //    VFXController.fgParticles.render(this.ctx);
-            // }
 
             // Floating Text (Canvas)
             if (typeof vfxController.render === 'function') {
@@ -467,6 +461,15 @@ const GameRenderer = {
         // --- DEBUG OVERLAY ---
         if (this.debugMode) {
             this.drawWorldBoundary();
+        }
+
+        // --- COLLISION DEBUG ---
+        const collisionSystem = this.game.getSystem('CollisionSystem');
+        if (collisionSystem && typeof collisionSystem.renderDebug === 'function') {
+            this.ctx.save();
+            this.ctx.translate(-this.viewport.x, -this.viewport.y);
+            collisionSystem.renderDebug(this.ctx);
+            this.ctx.restore();
         }
 
         // --- GRID OVERLAY (separate toggle) ---

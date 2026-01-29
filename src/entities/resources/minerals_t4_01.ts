@@ -15,5 +15,10 @@ export default {
     },
     tier: 4,
     stackable: true,
-    type: 'material'
-};
+    type: 'material',
+
+    display: {
+        sizeScale: 1,
+        width: 48,
+        height: 48
+    },};

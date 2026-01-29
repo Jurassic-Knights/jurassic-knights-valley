@@ -77,21 +77,22 @@ const EntityRenderService = {
      * @param {object} entity
      * @param {object} renderers - {hero, heroRenderer, dinosaurRenderer, resourceRenderer}
      * @param {object} timing - Optional timing object for profiling
+     * @param {number} alpha - Interpolation factor
      */
-    renderEntity(ctx, entity, renderers, timing = null) {
+    renderEntity(ctx, entity, renderers, timing = null, alpha = 1) {
         const tSub = timing ? performance.now() : 0;
         const type = entity.entityType;
 
         // Pass 'false' for includeShadow to prevent double rendering
         if (entity === renderers.hero) {
             if (renderers.heroRenderer) {
-                renderers.heroRenderer.render(ctx, renderers.hero, false);
+                renderers.heroRenderer.render(ctx, renderers.hero, false, alpha);
             } else if (typeof entity.render === 'function') {
                 entity.render(ctx);
             }
             if (timing) timing.entHeroTime = (timing.entHeroTime || 0) + performance.now() - tSub;
         } else if (type === EntityTypes.DINOSAUR && renderers.dinosaurRenderer) {
-            renderers.dinosaurRenderer.render(ctx, entity, false);
+            renderers.dinosaurRenderer.render(ctx, entity, false, alpha);
             if (timing) timing.entDinoTime = (timing.entDinoTime || 0) + performance.now() - tSub;
         } else if (type === EntityTypes.RESOURCE && renderers.resourceRenderer) {
             renderers.resourceRenderer.render(ctx, entity, false);
@@ -127,8 +128,9 @@ const EntityRenderService = {
      * @param {array} entities - Y-sorted entity array
      * @param {object} renderers - Renderer references
      * @param {object} timing - Optional profiling object
+     * @param {number} alpha - Interpolation factor (0-1)
      */
-    renderAll(ctx, entities, renderers, timing = null) {
+    renderAll(ctx, entities, renderers, timing = null, alpha = 1) {
         // Initialize timing counters
         if (timing) {
             timing.entHeroTime = timing.entHeroTime || 0;
@@ -139,7 +141,7 @@ const EntityRenderService = {
         }
 
         for (const entity of entities) {
-            this.renderEntity(ctx, entity, renderers, timing);
+            this.renderEntity(ctx, entity, renderers, timing, alpha);
         }
     },
 

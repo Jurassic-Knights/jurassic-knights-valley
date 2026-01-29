@@ -49,6 +49,12 @@ class Hero extends Entity {
             width: finalConfig.width || RenderConfig.Hero.WIDTH,
             height: finalConfig.height || RenderConfig.Hero.HEIGHT,
             color: finalConfig.color || RenderConfig.Hero.COLOR,
+            collision: {
+                bounds: { x: 0, y: 0, width: 32, height: 32 },
+                layer: 0x0002, // HERO
+                mask: 0x0001 | 0x0010 | 0x0004 | 0x0008, // WORLD | TRIGGER | ENEMY | BOSS
+                isTrigger: false
+            },
             ...config
         });
 

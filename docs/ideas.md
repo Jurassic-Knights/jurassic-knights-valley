@@ -6,6 +6,39 @@
 
 ## Ideas Backlog
 
+### The Ironclad Express (Train System) - 2026-01-28
+**Category:** Gameplay Loop / Economy / Content
+**Priority:** High
+**Status:** 💡 New
+
+**Summary:**
+A rail-based travel system connecting key outposts that serves as both fast travel and a logistic transport layer. Players must physically transport "Heavy" resources between bases while defending the train in a turret-based rail shooter minigame.
+
+**Details:**
+- **Hybrid Economy:** 
+  - Basic resources (Wood, Stone) remain global/magic.
+  - **Heavy/Rare Resources** (Dino Carcasses, Refined Alloys, High-Tier Tech) are **local** to the outpost where they were harvested. They must be transported via train to the main base to be used.
+- **Rail Shooter Combat:** 
+  - Player mans a mounted turret to defend the train while it moves through the world.
+  - **Exclusive Enemies:** Unique "Chaser" variants (fast raptors, flyers) that only spawn to attack the train.
+- **Logistics & Risk:** 
+  - **Fuel Cost:** Trips require fuel (Coal, Oil) to start.
+  - **Cargo Integrity:** Taking damage doesn't stop the train, but it destroys a percentage of the cargo. Arriving safely = 100% profit.
+- **Rewards & Mastery:**
+  - **Performance Grade:** Runs are graded (S/A/B) based on Cargo Integrity and Enemies Killed.
+  - **S-Rank Bonus:** Grants a "Supply Drop" crate containing rare train upgrade parts or high-tier fuel.
+  - **Reliability Streak:** Consecutive successful deliveries to an outpost apply a temporary "Boom Town" buff, lowering shop prices and increasing passive resource generation at that outpost.
+- **Progression:**
+  - **Train Equipment:** Craftable turret upgrades (Heavy Barrels, Rapid Receivers, Cooling Systems) using the standard crafting system.
+
+**Related Systems:**
+- Economy/Inventory (Inventory splitting logic)
+- Fast Travel
+- Crafting (Vehicle parts)
+- Enemy AI (Chaser behavior)
+
+---
+
 ### Pterodactyl Hunt - 2026-01-22
 **Category:** Combat / Content
 **Priority:** High

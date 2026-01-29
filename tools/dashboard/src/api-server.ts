@@ -18,9 +18,15 @@ const BASE_DIR = path.resolve(__dirname, '../../..');
 const TOOLS_DIR = path.resolve(BASE_DIR, 'tools');
 const IMAGES_DIR = path.resolve(BASE_DIR, 'assets/images');
 const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
+const MAPS_DIR = path.resolve(BASE_DIR, 'src/data/maps');
 const GAME_CONSTANTS_PATH = path.resolve(BASE_DIR, 'src/data/GameConstants.ts');
 const GAME_CONFIG_PATH = path.resolve(BASE_DIR, 'src/data/GameConfig.ts');
 const BODY_TYPE_CONFIG_PATH = path.resolve(BASE_DIR, 'src/config/BodyTypeConfig.ts');
+
+// Ensure maps directory exists
+if (!fs.existsSync(MAPS_DIR)) {
+    fs.mkdirSync(MAPS_DIR, { recursive: true });
+}
 
 // ============================================
 // UTILITY FUNCTIONS
@@ -40,6 +46,21 @@ function readJsonFile(filepath: string): unknown {
 
 function writeJsonFile(filepath: string, data: unknown): void {
     fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
+}
+
+function saveMap(filename: string, data: unknown): { success: boolean; message?: string; error?: string } {
+    try {
+        // Sanitize filename
+        const safeName = filename.replace(/[^a-zA-Z0-9_\-.]/g, '_');
+        const filepath = path.join(MAPS_DIR, safeName.endsWith('.json') ? safeName : `${safeName}.json`);
+
+        writeJsonFile(filepath, data);
+        console.log(`[API] Saved map: ${safeName}`);
+        return { success: true, message: `Map saved to ${safeName}` };
+    } catch (e) {
+        console.error(`[API] Failed to save map:`, e);
+        return { success: false, error: String(e) };
+    }
 }
 
 // ============================================
@@ -71,17 +92,19 @@ function readTsEntity(filepath: string): EntityData | null {
 
         if (!match) return null;
 
-        let jsonStr = match[1];
-
-        // Fix trailing commas for JSON parsing
-        jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1');
+        const jsonStr = match[1];
 
         try {
-            return JSON.parse(jsonStr);
-        } catch {
+            // Use Function constructor to parse JS object literal (handles single quotes, unquoted keys, etc.)
+            // This is safe because we're reading local trusted files
+            const parseFn = new Function(`return ${jsonStr};`);
+            return parseFn() as EntityData;
+        } catch (e) {
+            console.error(`[API] Failed to parse entity ${filepath}:`, e);
             return null;
         }
-    } catch {
+    } catch (e) {
+        console.error(`[API] Failed to read file ${filepath}:`, e);
         return null;
     }
 }
@@ -419,19 +442,7 @@ interface ConfigSection {
 }
 
 interface GameConfig {
-    Core: ConfigSection;
-    Hero: ConfigSection;
-    Combat: ConfigSection;
-    Interaction: ConfigSection;
-    Time: ConfigSection;
-    Weather: ConfigSection;
-    AI: ConfigSection;
-    Biome: ConfigSection;
-    Spawning: ConfigSection;
-    UnlockCosts: number[];
-    BodyTypes: Record<string, { scale: number }>;
-    WeaponDefaults: Record<string, { range: number; damage: number; attackSpeed: number }>;
-    PlayerResources: ConfigSection;
+    [key: string]: ConfigSection | any;
 }
 
 function extractSectionContent(content: string, section: string): string | null {
@@ -454,8 +465,43 @@ function parseGameConfig(): Partial<GameConfig> {
     const content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
     const result: Partial<GameConfig> = {};
 
-    // Extract each section from GameConfig.ts (tunable values only)
-    const sections = ['Hero', 'Combat', 'Interaction', 'AI', 'Spawning', 'Time', 'BodyTypes', 'WeaponDefaults', 'PlayerResources'];
+    // 1. Find DEFAULTS block
+    const defaultsStart = content.indexOf('const DEFAULTS = {');
+    if (defaultsStart === -1) return {};
+
+    // 2. Discover sections by looking for "Key: {" pattern inside DEFAULTS
+    // We assume standard formatting (Key: {) with 4 spaces indentation for top-level
+    const sections: string[] = [];
+    const sectionRegex = /^    (\w+):\s*\{/gm;
+
+    // Limit search to the DEFAULTS block to avoid false positives
+    // Extract block roughly
+    let braceCount = 0;
+    let blockEndIndex = defaultsStart;
+    let foundFirstBrace = false;
+
+    for (let i = defaultsStart; i < content.length; i++) {
+        if (content[i] === '{') {
+            braceCount++;
+            foundFirstBrace = true;
+        } else if (content[i] === '}') {
+            braceCount--;
+        }
+
+        if (foundFirstBrace && braceCount === 0) {
+            blockEndIndex = i;
+            break;
+        }
+    }
+
+    const defaultsBlock = content.substring(defaultsStart, blockEndIndex + 1);
+
+    let match;
+    while ((match = sectionRegex.exec(defaultsBlock)) !== null) {
+        sections.push(match[1]);
+    }
+
+    console.log('[API] Discovered config sections:', sections);
 
     for (const section of sections) {
         const sectionContent = extractSectionContent(content, section);
@@ -471,8 +517,8 @@ function parseGameConfig(): Partial<GameConfig> {
                 // Remove trailing commas
                 jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1');
                 result[section as keyof GameConfig] = JSON.parse(jsonStr);
-            } catch {
-                console.log(`[Config] Failed to parse section: ${section}`);
+            } catch (e) {
+                console.log(`[Config] Failed to parse section: ${section}`, e);
             }
         }
     }
@@ -498,21 +544,8 @@ function parseBodyTypeConfig(): Record<string, { scale: number }> {
 function getConfig(): GameConfig {
     const config = parseGameConfig();
 
-    return {
-        Core: {},
-        Hero: config.Hero || {},
-        Combat: config.Combat || {},
-        Interaction: config.Interaction || {},
-        Time: config.Time || {},
-        Weather: {},
-        AI: config.AI || {},
-        Biome: {},
-        Spawning: config.Spawning || {},
-        UnlockCosts: [],
-        BodyTypes: config.BodyTypes || {},
-        WeaponDefaults: config.WeaponDefaults || {},
-        PlayerResources: config.PlayerResources || {}
-    };
+    // cast to any to allow dynamic keys
+    return config as GameConfig;
 }
 
 function updateConfigValue(
@@ -732,6 +765,9 @@ export function dashboardApiPlugin() {
                         }
                         if (apiPath === '/api/save_config_defaults') {
                             return sendJson(res, saveConfigDefaults(data.section as string));
+                        }
+                        if (apiPath === '/api/save_map') {
+                            return sendJson(res, saveMap(data.filename as string, data.mapData));
                         }
                     }
 

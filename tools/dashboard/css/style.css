@@ -1,17 +1,30 @@
 /**
  * Asset Dashboard Styles
- * Refactored from monolithic asset_dashboard.html
+ * Theme: WW1 Field Command Desk
  */
 
 :root {
-    --bg-dark: #1a1a2e;
-    --bg-panel: #16213e;
-    --bg-card: #0f3460;
-    --accent: #e94560;
-    --accent-green: #4ecca3;
-    --accent-yellow: #ffc107;
-    --text: #eaeaea;
-    --text-dim: #8892b0;
+    /* Materials */
+    --bg-wood: #2c241b;
+    --bg-felt: #2e3b2a;
+    --paper-bg: #f4ecd8;
+    --paper-shadow: rgba(0, 0, 0, 0.4);
+
+    /* Ink & Metals - SHARPENED */
+    --ink-black: #000000;
+    --ink-faded: #2c2c2c;
+    /* Much darker for readability */
+    --ink-red: #c0392b;
+    --ink-green: #27ae60;
+    --ink-blue: #2980b9;
+    --brass: #bf9b30;
+    --brass-dark: #6e5714;
+    --steel: #5f6c6d;
+
+    /* Fonts */
+    --font-header: 'Cinzel', serif;
+    --font-typewriter: 'Courier Prime', monospace;
+    --font-stamp: 'Special Elite', cursive;
 }
 
 * {
@@ -21,134 +34,182 @@
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: var(--bg-dark);
-    color: var(--text);
+    font-family: var(--font-typewriter);
+    background-color: var(--bg-wood);
+    /* Wood texture pattern */
+    background-image: repeating-linear-gradient(45deg, #2c241b 0px, #2c241b 10px, #352b20 10px, #352b20 20px);
+    color: var(--ink-black);
     min-height: 100vh;
+    padding-top: 20px;
 }
 
-/* Header */
+/* =========================================
+   HEADER: The File Cabinet Tabs
+   ========================================= */
 header {
-    background: var(--bg-panel);
-    padding: 1rem 2rem;
+    background: transparent;
+    padding: 0 2rem;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid var(--accent);
-    position: sticky;
-    top: 0;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
     z-index: 100;
 }
 
 header h1 {
-    font-size: 1.5rem;
-    color: var(--accent);
+    font-family: var(--font-header);
+    font-size: 2rem;
+    color: #e0d5b7;
+    /* Gold leaf on wood */
+    text-shadow: 2px 2px 0px #000;
+    letter-spacing: 2px;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.server-badge {
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    background: var(--ink-green);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 0;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .controls {
     display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-/* Buttons */
-button {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-button:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
-button.secondary {
-    background: var(--bg-card);
-    border: 1px solid var(--text-dim);
-}
-
-button.approve {
-    background: var(--accent-green);
-}
-
-button.decline {
-    background: var(--accent);
-}
-
-/* Stats Bar */
-.stats {
-    display: flex;
-    gap: 2rem;
-    padding: 0.75rem 2rem;
-    background: var(--bg-panel);
     flex-wrap: wrap;
+    gap: 0;
+    align-items: flex-end;
+    padding-left: 1rem;
 }
 
-.stat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+/* Navigation Tabs */
+.controls button {
+    background: #e6dac3;
+    /* Lighter background for better contrast */
+    color: #111;
+    /* Near black text */
+    border: 2px solid #5a4a32;
+    /* Stronger border */
+    border-bottom: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-family: var(--font-typewriter);
+    font-weight: 700;
+    font-size: 0.9rem;
+    position: relative;
+    top: 0;
+    transition: all 0.2s;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    margin-right: -4px;
+    /* Overlap look */
 }
 
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: bold;
+.controls button:hover {
+    background: #f0e6d2;
+    top: -2px;
+    z-index: 5;
+    color: #000;
 }
 
-.stat-label {
-    color: var(--text-dim);
-    font-size: 0.85rem;
+.controls button:active,
+.controls button.active {
+    background: var(--paper-bg);
+    color: #000;
+    top: -4px;
+    z-index: 10;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    border-color: #5a4a32;
+    height: 45px;
+    /* Taller active tab */
 }
 
-.stat.pending .stat-value {
-    color: var(--accent-yellow);
+/* Category specific tab colors (subtle tints) */
+#btnHero {
+    background: #e6dac3;
 }
 
-.stat.approved .stat-value {
-    color: var(--accent-green);
+#btnEnemies {
+    background: #e6c3c3;
 }
 
-.stat.declined .stat-value {
-    color: var(--accent);
+#btnItems {
+    background: #c3d2e6;
 }
 
-.stat.clean .stat-value {
-    color: #64b5f6;
+#btnConfig {
+    background: #d2e6c3;
 }
 
-/* Sticky Filter Bar */
+/* =========================================
+   MAIN: The Case File
+   ========================================= */
+main {
+    background: var(--paper-bg);
+    margin: 0 1rem 1rem 1rem;
+    min-height: 80vh;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+    position: relative;
+    border-radius: 2px;
+}
+
+/* Paper texture overlay */
+main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Removed svg noise for cleaner look */
+    pointer-events: none;
+    opacity: 0.2;
+}
+
+/* =========================================
+   FILTERS: The Index Cards
+   ========================================= */
 .sticky-bar {
     position: sticky;
-    top: 52px;
-    z-index: 99;
-    background: var(--bg-dark);
-    border-bottom: 1px solid var(--bg-card);
+    top: 0;
+    z-index: 90;
+    background: #f4ecd8;
+    /* Solid, no blur */
+    border-bottom: 2px solid #5a4a32;
+    padding: 1rem 0;
+    margin: -2rem -2rem 2rem -2rem;
+    /* Bleed to edge */
+    padding-left: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .filters {
-    padding: 0.5rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.8rem;
 }
 
 .filter-row {
     display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
     align-items: center;
+    gap: 1rem;
 }
 
 .filter-label {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    min-width: 60px;
+    font-family: var(--font-header);
+    color: #333;
+    font-size: 0.9rem;
+    /* Larger */
+    text-transform: uppercase;
+    font-weight: 700;
 }
 
 .category-filters {
@@ -158,142 +219,238 @@ button.decline {
 }
 
 .filter-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-    border-radius: 20px;
+    border: 2px solid #555;
+    background: #fff;
+    /* Solid white background */
+    color: #333;
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    font-weight: 700;
+}
+
+.filter-btn:hover {
+    background: #eee;
+    color: #000;
+    border-color: #000;
 }
 
 .filter-btn.active {
-    box-shadow: 0 0 0 2px white;
+    background: #222;
+    color: #fff;
+    border-color: #000;
 }
 
-/* Main Content */
-main {
-    padding: 2rem;
-}
-
-.category {
-    margin-bottom: 2rem;
-}
-
-.category-header {
+/* The Status "Stamps" */
+.stats {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px dashed #dcd0b3;
     margin-bottom: 1rem;
+}
+
+.stat {
+    font-family: var(--font-typewriter);
+    color: var(--ink-faded);
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-family: var(--font-stamp);
+    font-size: 1.4rem;
+    display: inline-block;
+}
+
+.stat.pending .stat-value {
+    color: var(--ink-blue);
+}
+
+.stat.approved .stat-value {
+    color: var(--ink-green);
+}
+
+.stat.declined .stat-value {
+    color: var(--ink-red);
+}
+
+.stat.clean .stat-value {
+    color: #2980b9;
+}
+
+/* =========================================
+   ASSET CARDS: The Polaroids / Dossiers
+   ========================================= */
+.category-header {
+    border-bottom: 2px solid var(--ink-black);
+    margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--bg-card);
 }
 
 .category-title {
-    font-size: 1.2rem;
-    color: var(--accent);
-    text-transform: capitalize;
+    font-family: var(--font-header);
+    font-size: 1.5rem;
+    color: var(--ink-black);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .asset-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 /* Asset Cards */
 .asset-card {
-    background: var(--bg-card);
-    border-radius: 8px;
-    overflow: hidden;
+    background: #ffffff;
+    /* pure white paper */
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 200px;
     position: relative;
+    border: 1px solid #dcd0b3;
+    /* Paper border */
 }
 
-.asset-card.declined {
-    opacity: 0.5;
+.asset-card:hover {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    border-color: #5a4a32;
 }
 
-.asset-card.approved {
-    box-shadow: 0 0 0 3px var(--accent-green);
-}
-
-.asset-card.pending {
-    box-shadow: 0 0 0 2px var(--accent-yellow);
-}
-
+/* Image container */
 .asset-image {
     width: 100%;
     aspect-ratio: 1;
     object-fit: contain;
-    background: repeating-conic-gradient(#333 0% 25%, #222 0% 50%) 50% / 20px 20px;
-    cursor: pointer;
+    background: #f8f8f8;
+    /* Light gray backing */
+    margin-bottom: 10px;
+    border: 1px solid #eee;
+    /* Very subtle checkerboard */
+    background-image: linear-gradient(45deg, #eee 25%, transparent 25%), linear-gradient(-45deg, #eee 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #eee 75%), linear-gradient(-45deg, transparent 75%, #eee 75%);
+    background-size: 20px 20px;
 }
 
 .asset-info {
-    padding: 0.75rem;
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    color: #000;
+    /* Force Black */
 }
 
 .asset-name {
-    font-size: 0.75rem;
-    word-break: break-all;
+    font-weight: 700;
     margin-bottom: 0.5rem;
-    color: var(--text-dim);
-}
-
-.asset-status {
-    display: inline-block;
-    padding: 0.2rem 0.5rem;
-    border-radius: 3px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.status-pending {
-    background: var(--accent-yellow);
-    color: #000;
-}
-
-.status-approved {
-    background: var(--accent-green);
-    color: #000;
-}
-
-.status-declined {
-    background: var(--accent);
-    color: #fff;
-}
-
-.status-clean {
-    background: #64b5f6;
-    color: #000;
-}
-
-.status-unknown {
-    background: var(--text-dim);
-    color: #000;
-}
-
-.prompt-preview {
-    font-size: 0.65rem;
-    color: var(--accent-yellow);
-    margin-top: 0.3rem;
-    font-style: italic;
-    cursor: help;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #000 !important;
+}
+
+/* Fix Input Fields inside cards (Notes) */
+.notes-input {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.3rem;
+    font-size: 0.75rem;
+    background: #fff !important;
+    /* Force white */
+    color: #000 !important;
+    /* Force black */
+    border: 1px solid #ccc !important;
+    border-radius: 2px;
 }
 
 .asset-actions {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 5px;
+    margin-top: 10px;
 }
 
 .asset-actions button {
     flex: 1;
-    padding: 0.3rem;
+    border: 1px solid #aaa;
+    font-family: var(--font-header);
     font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 6px;
+    cursor: pointer;
+    background: #f0f0f0;
+    /* Light gray button */
+    color: #000;
+    /* Black text */
 }
 
-/* Modal */
+.asset-actions button:hover {
+    background: #e0e0e0;
+    border-color: #555;
+    color: #000;
+}
+
+.asset-actions button.approve {
+    background: #eaffea;
+    border-color: #4caf50;
+    color: #006400;
+}
+
+.asset-actions button.decline {
+    background: #ffeaea;
+    border-color: #f44336;
+    color: #8b0000;
+}
+
+/* =========================================
+   CONFIG & FORMS
+   ========================================= */
+.config-section {
+    background: #fff;
+    border: 1px solid #dcd0b3;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.section-header h3 {
+    font-family: var(--font-header);
+    border-bottom: 2px solid var(--brass);
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+.config-field label {
+    font-family: var(--font-typewriter);
+    font-size: 0.8rem;
+    color: var(--ink-faded);
+    text-transform: uppercase;
+}
+
+.config-field input {
+    font-family: var(--font-typewriter);
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed var(--ink-faded);
+    padding: 5px;
+    font-size: 1rem;
+    color: var(--ink-black);
+    width: 100%;
+}
+
+.config-field input:focus {
+    outline: none;
+    border-bottom-style: solid;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* =========================================
+   MODAL
+   ========================================= */
 .modal {
     display: none;
     position: fixed;
@@ -301,11 +458,12 @@ main {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
     z-index: 1000;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    background: rgba(26, 26, 26, 0.98);
+    backdrop-filter: blur(5px);
 }
 
 .modal.active {
@@ -313,225 +471,194 @@ main {
 }
 
 .modal img {
-    max-width: 90%;
-    max-height: 80%;
+    max-width: 95%;
+    max-height: 90%;
     object-fit: contain;
+    border: 2px solid #fff;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
 }
 
 .modal-info {
-    color: white;
-    margin-top: 1rem;
-    text-align: center;
-}
-
-.modal-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 2rem;
-    color: white;
-    cursor: pointer;
-}
-
-.modal-header {
-    position: absolute;
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.modal-toggle {
-    background: var(--bg-card);
-    color: var(--text);
-    border: 1px solid var(--text-dim);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.modal-toggle:hover {
-    background: var(--accent);
-}
-
-/* Comparison View */
-.comparison-view {
-    display: flex;
-    gap: 2rem;
-    max-width: 95%;
-    max-height: 75%;
-    align-items: center;
-}
-
-.comparison-panel {
-    flex: 1;
-    text-align: center;
-}
-
-.comparison-panel img {
-    max-width: 100%;
-    max-height: 60vh;
-    object-fit: contain;
-    background: repeating-conic-gradient(#333 0% 25%, #444 25% 50%) 50% / 20px 20px;
-    border-radius: 4px;
-}
-
-.comparison-label {
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    margin-top: 0.5rem;
-}
-
-.comparison-panel.original .comparison-label {
-    color: var(--accent-yellow);
-}
-
-.comparison-panel.clean .comparison-label {
-    color: var(--accent-green);
-}
-
-/* Utilities */
-.loading {
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-dim);
-}
-
-.error {
-    background: var(--accent);
+    font-family: var(--font-typewriter);
+    background: #000;
+    color: #0f0;
+    /* Terminal text for details? Or keep paper? Let's go terminal for metadata */
     padding: 1rem;
-    border-radius: 8px;
-    margin: 1rem 2rem;
+    border: 1px solid #333;
+    font-size: 0.9rem;
+    max-width: 600px;
 }
 
-.server-badge {
-    background: var(--accent-green);
-    color: #000;
-    padding: 0.3rem 0.6rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
+.loading {
+    font-family: var(--font-typewriter);
+    font-size: 1.5rem;
+    animation: blink 1s infinite;
 }
 
-/* Config View */
-.config-container {
-    max-width: 900px;
-    margin: 0 auto;
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
 }
 
-.config-container h2 {
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-}
+/* =========================================
+   UTILITIES (BEM-ish)
+   ========================================= */
 
-.config-description {
-    color: var(--text-dim);
-    margin-bottom: 2rem;
-}
-
-.config-sections {
+/* Flex Helpers */
+.asset-flex {
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.config-section {
-    background: var(--bg-panel);
-    border-radius: 8px;
-    padding: 1.5rem;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
+    gap: 4px;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--bg-card);
 }
 
-.section-header h3 {
-    color: var(--accent);
-    font-size: 1.1rem;
+.asset-flex--wrap {
+    flex-wrap: wrap;
 }
 
-.section-description {
-    color: var(--text-dim);
-    font-size: 0.8rem;
+.asset-flex--between {
+    justify-content: space-between;
+}
+
+.asset-flex--column {
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.asset-flex--grow {
     flex: 1;
 }
 
-.section-actions {
-    display: flex;
-    gap: 0.5rem;
+/* Badges */
+.asset-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+    background: #666;
+    /* default */
 }
 
-.section-actions button {
-    padding: 0.4rem 0.8rem;
-    border: 1px solid var(--text-dim);
-    border-radius: 4px;
-    background: transparent;
-    color: var(--text);
-    cursor: pointer;
+.asset-badge--light {
+    background: #e0e0e0;
+    color: #000;
+    text-shadow: none;
+    border-color: #aaa;
+}
+
+/* Inputs & Form Elements */
+.asset-input {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    font-family: var(--font-typewriter);
+    padding: 3px 6px;
     font-size: 0.75rem;
-    transition: all 0.2s;
 }
 
-.section-actions .btn-reset:hover {
-    border-color: var(--accent-yellow);
-    color: var(--accent-yellow);
-}
-
-.section-actions .btn-save-defaults:hover {
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-}
-
-.section-fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-}
-
-.config-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-}
-
-.config-field label {
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.config-field input {
-    background: var(--bg-card);
-    border: 1px solid var(--text-dim);
-    color: var(--text);
-    padding: 0.5rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-}
-
-.config-field input:focus {
+.asset-input:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: #000;
+    background: #fffcf0;
 }
 
-.config-field input.saving {
-    border-color: var(--accent-yellow);
+.asset-input--small {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
 }
 
-.config-field input.saved {
-    border-color: var(--accent-green);
-    background: rgba(78, 204, 163, 0.1);
+.asset-input--tiny {
+    width: 55px;
+    text-align: center;
+    font-size: 0.7rem;
 }
 
-.config-field input.error {
-    border-color: var(--accent);
-    background: rgba(233, 69, 96, 0.1);
+.asset-input--full {
+    width: 100%;
+}
+
+/* Split Card Layout */
+.split-card {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.split-card__pane {
+    flex: 1;
+    background: #f0f0f0;
+    border-radius: 6px;
+    padding: 4px;
+    border: 1px solid #dcd0b3;
+}
+
+/* Overlays (Drops/Recipes) */
+.asset-overlay {
+    position: relative;
+    cursor: pointer;
+}
+
+.asset-overlay__img {
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid #999;
+    object-fit: contain;
+}
+
+.asset-overlay__label {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    color: #000;
+    border: 1px solid #999;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: bold;
+}
+
+.asset-overlay__label--top-left {
+    top: 2px;
+    left: 2px;
+    font-size: 0.55rem;
+    font-weight: normal;
+}
+
+.asset-overlay__label--bottom-right {
+    bottom: 2px;
+    right: 2px;
+    font-size: 0.7rem;
+}
+
+.asset-overlay__label--bottom-right-small {
+    bottom: 0;
+    right: 0;
+    font-size: 0.65rem;
+}
+
+/* Stats */
+.asset-stat-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* Tier Badge Select Override */
+select.tier-badge {
+    background: #666;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    border: none;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
 }

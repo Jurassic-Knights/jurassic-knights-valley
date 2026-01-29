@@ -28,5 +28,10 @@ export default {
         }
     ],
     nodeSubtype: 'fishing',
-    tier: 3
-};
+    tier: 3,
+
+    display: {
+        sizeScale: 1,
+        width: 64,
+        height: 64
+    },};

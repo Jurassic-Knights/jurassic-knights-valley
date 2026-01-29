@@ -63,7 +63,7 @@ class WeatherSystem {
 
         // We use TimeSystem's time, but we can also track our own interval
         // Simple Real-time check is fine
-        this.nextChangeCheck -= dt / 1000;
+        this.nextChangeCheck -= dt / getConfig().Time.WEATHER_DECAY_RATE;
 
         if (this.nextChangeCheck <= 0) {
             this.tryChangeWeather();

@@ -22,6 +22,7 @@ const SystemConfig = [
 
     // --- 2. Data & Economy ---
     { global: 'GameState', priority: 0, init: true }, // Core Persistence
+    { global: 'CollisionSystem', priority: 5, init: true }, // Physics (Before AI/Movement)
     { global: 'EntityManager', priority: 5, init: true },
     { global: 'EconomySystem', priority: 1, init: true },
     { global: 'CraftingManager', priority: 2, init: true },

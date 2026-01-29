@@ -193,6 +193,28 @@ const DebugUI = {
         });
         this.addControl('Grid', gridBtn);
 
+        // Collision Debug Toggle
+        const colBtn = DOMUtils.create('button', {
+            text: 'Hitboxes',
+            onClick: () => {
+                const collisionSystem = Registry?.get('CollisionSystem') as any;
+                if (collisionSystem && typeof collisionSystem.toggleDebug === 'function') {
+                    const isActive = collisionSystem.toggleDebug();
+                    colBtn.classList.toggle('active', isActive);
+                } else {
+                    Logger.warn('[DebugUI] CollisionSystem not found or missing toggleDebug()');
+                }
+            }
+        });
+
+        // Check initial state
+        const colSys = Registry?.get('CollisionSystem') as any;
+        if (colSys && colSys.debugMode) {
+            colBtn.classList.add('active');
+        }
+
+        this.addControl('Collision', colBtn);
+
         // Profile Toggle (Performance Analysis)
         const profBtn = DOMUtils.create('button', {
             text: 'Profile',

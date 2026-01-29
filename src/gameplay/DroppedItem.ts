@@ -14,6 +14,8 @@ import { EntityTypes } from '@config/EntityTypes';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
+import { Logger } from '@core/Logger';
+import { EntityScaling } from '../utils/EntityScaling';
 
 // Unmapped modules - need manual import
 
@@ -25,6 +27,7 @@ class DroppedItem extends Entity {
     customIcon: any = null;
     rarity: string = 'common';
     rarityColor: string = '#BDC3C7';
+    scale: number = 1.0;
 
     // Visual state
     pulseTime: number = 0;
@@ -53,21 +56,26 @@ class DroppedItem extends Entity {
 
     constructor(config: any = {}) {
         // 1. Load Config
+        const typeConfig = EntityRegistry.items?.[config.resourceType] || {};
+
+        // Calculate size directly using utility (Item defaults: 96x96, smaller than entities)
+        const size = EntityScaling.calculateSize(config, typeConfig, { width: 96, height: 96 });
+
         // Defaults for dropped items
         const defaults = {
             gridSize: 0.75,
-            width: 96,
-            height: 96,
             pickupRadius: 120
         };
-        const finalConfig = { ...defaults, ...config };
+        const finalConfig = { ...defaults, ...typeConfig, ...config };
 
         super({
             entityType: EntityTypes.DROPPED_ITEM,
-            width: finalConfig.width || 108,
-            height: finalConfig.height || 108,
+            width: size.width,
+            height: size.height,
             ...config
         });
+
+        this.scale = size.scale;
 
         this.resourceType = config.resourceType || 'scraps_t1_01';
         this.amount = config.amount || 1;
@@ -82,7 +90,6 @@ class DroppedItem extends Entity {
         this.color = Resource && Resource.COLORS ? Resource.COLORS[this.resourceType] : '#888888';
 
         // Determine rarity
-        const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
         this.rarity = typeConfig.rarity || 'common';
 
         this.rarityColor =
@@ -334,6 +341,18 @@ class DroppedItem extends Entity {
             ctx.fill();
             ctx.restore();
         }
+    }
+
+    /**
+     * Refresh configuration from EntityRegistry
+     */
+    refreshConfig() {
+        const typeConfig = EntityRegistry.items?.[this.resourceType] || {};
+
+        Logger.info(`[DroppedItem] Refreshing config for ${this.resourceType}`);
+
+        // Update dimensions using standard utility
+        EntityScaling.applyToEntity(this, {}, typeConfig, { width: 96, height: 96 });
     }
 }
 

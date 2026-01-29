@@ -55,6 +55,7 @@ import './systems/RestSystem';
 
 // Systems - Combat & Progression
 import './systems/DamageSystem';
+import './systems/CollisionSystem'; // Core Physics
 import './gameplay/ProgressionSystem';
 import './systems/CombatController';
 import './ui/controllers/ForgeController';

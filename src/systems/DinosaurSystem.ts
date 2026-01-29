@@ -13,6 +13,7 @@ import { spawnManager } from './SpawnManager';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
+import { collisionSystem } from './CollisionSystem';
 import type { IGame, IEntity } from '../types/core.d';
 
 // Bounds padding constant (was from BaseCreature)
@@ -118,7 +119,7 @@ class DinosaurSystem {
                         if (Array.isArray(entry.amount)) {
                             amount = Math.floor(
                                 entry.amount[0] +
-                                    Math.random() * (entry.amount[1] - entry.amount[0] + 1)
+                                Math.random() * (entry.amount[1] - entry.amount[0] + 1)
                             );
                         } else if (entry.amount) {
                             amount = entry.amount;
@@ -160,32 +161,26 @@ class DinosaurSystem {
             this.changeDirection(dino);
         }
 
-        // Move
-        const speedPerSecond = (dino.moveSpeed || 0.5) * 60;
-        let nextX = dino.x + dino.wanderDirection.x * speedPerSecond * (dt / 1000);
-        let nextY = dino.y + dino.wanderDirection.y * speedPerSecond * (dt / 1000);
+        // Move using CollisionSystem (Physics + Terrain)
+        const speed = (dino.moveSpeed || 0.5) * 60; // Convert to px/sec
 
-        // Bounds Check - use config value for padding
-        if (dino.islandBounds) {
-            const padding = BOUNDS_PADDING;
-            if (
-                nextX < dino.islandBounds.x + padding ||
-                nextX > dino.islandBounds.x + dino.islandBounds.width - padding
-            ) {
-                dino.wanderDirection.x *= -1;
-                nextX = dino.x + dino.wanderDirection.x * 5;
-            }
-            if (
-                nextY < dino.islandBounds.y + padding ||
-                nextY > dino.islandBounds.y + dino.islandBounds.height - padding
-            ) {
-                dino.wanderDirection.y *= -1;
-                nextY = dino.y + dino.wanderDirection.y * 5;
-            }
+        // Import CollisionSystem dynamically or assume global import at top?
+        // Better to use the singleton we know exists.
+        // Assuming 'collisionSystem' is exported from '../systems/CollisionSystem'
+
+        // Use CollisionSystem for deterministic movement & resolution
+        // This handles terrain collision and entity separation
+        const moveResult = collisionSystem.updateMovement(dino, dino.wanderDirection, speed, dt);
+
+        // If we hit a wall (terrain), bounce
+        if (moveResult && moveResult.collidedX) dino.wanderDirection.x *= -1;
+        if (moveResult && moveResult.collidedY) dino.wanderDirection.y *= -1;
+
+        // If we're stuck (not moving but want to), force direction change
+        if (moveResult && moveResult.x === 0 && moveResult.y === 0 && dt > 0) {
+            this.changeDirection(dino);
         }
 
-        dino.x = nextX;
-        dino.y = nextY;
 
         // 4. Animation Frame Cycling
         dino.frameTimer += dt;
@@ -212,8 +207,8 @@ class DinosaurSystem {
             dino.wanderTimer =
                 (GameConstants?.AI?.WANDER_TIMER_MIN || 2000) +
                 Math.random() *
-                    ((GameConstants?.AI?.WANDER_TIMER_MAX || 5000) -
-                        (GameConstants?.AI?.WANDER_TIMER_MIN || 2000));
+                ((GameConstants?.AI?.WANDER_TIMER_MAX || 5000) -
+                    (GameConstants?.AI?.WANDER_TIMER_MIN || 2000));
         }
     }
 }
