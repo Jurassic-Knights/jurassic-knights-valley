@@ -10,14 +10,15 @@
 import { VFX_Templates } from './VFX_Templates';
 import { VFX_Categories } from './VFX_Categories';
 import { VFX_Sequences } from './VFX_Sequences';
+import type { ParticleOptions, VFXSequence } from '../types/vfx';
 
 // Create unified VFXConfig with proper typing
 const VFXConfig = {
     // Templates from VFX_Templates.ts
-    TEMPLATES: VFX_Templates,
+    TEMPLATES: VFX_Templates as Record<string, ParticleOptions>,
 
     // Sequences from VFX_Sequences.ts
-    SEQUENCES: VFX_Sequences,
+    SEQUENCES: VFX_Sequences as Record<string, VFXSequence>,
 
     // Domain-specific categories
     HERO: VFX_Categories.HERO,

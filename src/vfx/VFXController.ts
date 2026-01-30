@@ -14,7 +14,7 @@ import { FloatingTextManager, FloatingText } from './FloatingText';
 import { VFXConfig } from '@data/VFXConfig';
 import { GameRenderer } from '@core/GameRenderer';
 import type { IGame } from '../types/core.d';
-import type { ParticleOptions, VFXSequence } from '../types/vfx';
+import type { ParticleOptions, VFXSequence, VFXCue } from '../types/vfx';
 
 class VFXSystem {
     // Property declarations
@@ -112,16 +112,17 @@ class VFXSystem {
     /**
      * Execute a single cue from a sequence
      */
-    executeCue(cue: any, x: number, y: number, contextOptions: ParticleOptions = {}) {
+    executeCue(cue: VFXCue, x: number, y: number, contextOptions: ParticleOptions = {}) {
         // Resolve Template if present
-        let config = {};
+        let config: ParticleOptions = {};
 
-        if (cue.template && VFXConfig && (VFXConfig.TEMPLATES as any)[cue.template]) {
+        if (cue.template && VFXConfig && VFXConfig.TEMPLATES[cue.template]) {
             // Merge Template with Cue Params (Cue wins)
-            config = { ...(VFXConfig.TEMPLATES as any)[cue.template], ...(cue.params || {}) };
+            config = { ...VFXConfig.TEMPLATES[cue.template], ...(cue.params || {}) };
         } else if (cue.type) {
             // Direct definition
-            config = { type: cue.type, ...(cue.params || {}) };
+            // Cast strictly to ensure 'type' matches allowed string literals
+            config = { type: cue.type as ParticleOptions['type'], ...(cue.params || {}) };
         } else {
             // cue.template might refer to a template that doesn't exist?
             Logger.warn('[VFXSystem] Invalid cue config:', cue);
@@ -146,12 +147,12 @@ class VFXSystem {
      * @param {object} options - Optional overrides
      */
     playSequence(sequenceName: string, x: number, y: number, options: ParticleOptions = {}) {
-        if (!VFXConfig || !(VFXConfig.SEQUENCES as any)[sequenceName]) {
+        if (!VFXConfig || !VFXConfig.SEQUENCES[sequenceName]) {
             Logger.warn(`[VFXSystem] Sequence not found: ${sequenceName}`);
             return;
         }
 
-        const rawSequence = (VFXConfig.SEQUENCES as any)[sequenceName];
+        const rawSequence = VFXConfig.SEQUENCES[sequenceName];
 
         // GC Optimization: Build cues array more efficiently
         const cues = [];
@@ -186,8 +187,8 @@ class VFXSystem {
 
         // Check if string -> Template
         if (typeof configOrTemplateName === 'string') {
-            if (VFXConfig && (VFXConfig.TEMPLATES as any)[configOrTemplateName]) {
-                config = (VFXConfig.TEMPLATES as any)[configOrTemplateName];
+            if (VFXConfig && VFXConfig.TEMPLATES[configOrTemplateName]) {
+                config = VFXConfig.TEMPLATES[configOrTemplateName];
             } else {
                 Logger.warn(`[VFXSystem] Template not found: ${configOrTemplateName}`);
                 return;
@@ -244,14 +245,14 @@ class VFXSystem {
     /**
      * Legacy Compat: Play a foreground effect (above UI)
      */
-    playForeground(x: number, y: number, options: ParticleOptions | Record<string, any> = {}) {
+    playForeground(x: number, y: number, options: ParticleOptions = {}) {
         if (this.fgParticles) this.fgParticles.emit(x, y, options);
     }
 
     /**
      * Legacy Compat: Play a background effect (behind UI)
      */
-    playBackground(x: number, y: number, options: ParticleOptions | Record<string, any> = {}) {
+    playBackground(x: number, y: number, options: ParticleOptions = {}) {
         if (this.bgParticles) this.bgParticles.emit(x, y, options);
     }
 

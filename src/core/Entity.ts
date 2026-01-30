@@ -10,8 +10,9 @@ import { AssetLoader } from './AssetLoader';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { Registry } from './Registry';
 import { CollisionComponent } from '../components/CollisionComponent';
+import type { EntityConfig, IEntity } from '../types/core';
 
-class Entity {
+class Entity implements IEntity {
     // Class properties
     id: string;
     entityType: string;
@@ -39,9 +40,9 @@ class Entity {
 
     /**
      * Create an entity
-     * @param {object} config - Entity configuration
+     * @param {EntityConfig} config - Entity configuration
      */
-    constructor(config: any = {}) {
+    constructor(config: EntityConfig = {}) {
         this.id = config.id || `entity_${Date.now()}`;
         this.entityType = config.entityType || 'entity'; // For type checking instead of constructor.name
         this.x = config.x || 0;
@@ -242,7 +243,7 @@ class Entity {
      * @param {Entity} other
      * @returns {boolean}
      */
-    collidesWith(other: Entity) {
+    collidesWith(other: IEntity & { getBounds(): any }) {
         const a = this.getBounds();
         const b = other.getBounds();
 
@@ -256,10 +257,10 @@ class Entity {
 
     /**
      * Get distance to another entity
-     * @param {Entity} other
+     * @param {IEntity} other
      * @returns {number}
      */
-    distanceTo(other: Entity) {
+    distanceTo(other: IEntity) {
         const dx = other.x - this.x;
         const dy = other.y - this.y;
         return Math.sqrt(dx * dx + dy * dy);

@@ -44,7 +44,7 @@ import {
     setCategorySortOrder,
     resetCategoryFilters,
 } from './filters';
-import { setSelectedAssetId, setCurrentInspectorTab } from './state';
+import { setSelectedAssetId, setCurrentInspectorTab, setImageParam } from './state';
 import { renderCategoryView } from './categoryRenderer';
 import { renderInspector } from './inspectorRenderer';
 
@@ -285,6 +285,55 @@ export function initEventDelegation() {
         }
     });
 
+    // Drag & Drop Delegation
+    document.body.addEventListener('dragover', (e) => {
+        const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]');
+        if (target) {
+            e.preventDefault(); // Allow drop
+            e.dataTransfer!.dropEffect = 'copy';
+            (target as HTMLElement).style.borderColor = '#2196f3';
+            (target as HTMLElement).style.background = '#2196f322';
+        }
+    });
+
+    document.body.addEventListener('dragleave', (e) => {
+        const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]');
+        if (target) {
+            (target as HTMLElement).style.borderColor = '#444';
+            (target as HTMLElement).style.background = '#1a1a1a';
+        }
+    });
+
+    document.body.addEventListener('drop', async (e) => {
+        const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]') as HTMLElement;
+        if (target) {
+            e.preventDefault();
+            e.stopPropagation();
+            target.style.borderColor = '#444';
+            target.style.background = '#1a1a1a';
+
+            // Check for file
+            const path = target.dataset.path;
+            const id = target.dataset.id;
+
+            if (!path) {
+                console.warn('[Delegator] Drop: No original file path set.');
+                return;
+            }
+
+            if (e.dataTransfer?.files.length) {
+                const file = e.dataTransfer.files[0];
+                if (!file.type.startsWith('image/')) {
+                    console.warn('[Delegator] Dropped file is not an image.');
+                    return;
+                }
+
+                // Read & Upload
+                await uploadImageFile(file, path, id);
+            }
+        }
+    });
+
     document.body.addEventListener('change', async (e) => {
         const target = (e.target as HTMLElement).closest('[data-action]') as HTMLInputElement | HTMLSelectElement;
         if (!target) return;
@@ -304,4 +353,62 @@ export function initEventDelegation() {
             }
         }
     });
+}
+
+// Utility for Upload
+// Utility for Upload
+async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
+    // Silent upload without confirmation/alerts
+    try {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64 = reader.result as string;
+            const response = await fetch('/api/upload_image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path: path, image: base64 })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                console.log('[Delegator] Image uploaded successfully.');
+
+                // Add a small delay to allow filesystem to settle/cache to invalidate
+                setTimeout(() => {
+                    const timestamp = Date.now();
+
+                    // 1. Force refresh Inspector Image
+                    const inspectorImg = document.querySelector('.inspector-placeholder img, .inspector-content img') as HTMLImageElement;
+                    if (inspectorImg) {
+                        const baseSrc = inspectorImg.src.split('?')[0];
+                        inspectorImg.src = `${baseSrc}?t=${timestamp}`;
+                    }
+
+                    // 2. Force refresh Grid Card Image (if assetId provided)
+                    if (assetId) {
+                        // Selector logic: Find card by data-id, then find img inside
+                        const card = document.querySelector(`.asset-card[data-id="${assetId}"]`);
+                        if (card) {
+                            const gridImg = card.querySelector('img.asset-image') as HTMLImageElement;
+                            if (gridImg) {
+                                const baseGridSrc = gridImg.src.split('?')[0];
+                                gridImg.src = `${baseGridSrc}?t=${timestamp}`;
+                                console.log('[Delegator] Refreshed grid image for', assetId);
+                            } else {
+                                console.warn('[Delegator] Grid image not found inside card', assetId);
+                            }
+                        } else {
+                            console.warn('[Delegator] Card not found for', assetId);
+                        }
+                    }
+                }, 200);
+
+            } else {
+                console.error('[Delegator] Upload failed:', result.error);
+            }
+        };
+        reader.readAsDataURL(blob);
+    } catch (e) {
+        console.error('[Delegator] Upload error:', e);
+    }
 }

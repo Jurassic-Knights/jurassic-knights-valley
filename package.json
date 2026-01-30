@@ -17,7 +17,8 @@
         "typecheck": "tsc --noEmit",
         "prepare": "husky",
         "dashboard:build": "node tools/dashboard/scripts/build.mjs",
-        "dashboard:watch": "node tools/dashboard/scripts/build.mjs --watch"
+        "dashboard:watch": "node tools/dashboard/scripts/build.mjs --watch",
+        "dashboard": "vite -c vite.dashboard.config.ts"
     },
     "lint-staged": {
         "*.{js,ts}": [

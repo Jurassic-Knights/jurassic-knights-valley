@@ -3,7 +3,7 @@
  * Handles the "Property Panel" on the right side
  */
 
-import { categoryData, selectedAssetId, currentInspectorTab } from './state';
+import { categoryData, selectedAssetId, currentInspectorTab, imageParams } from './state';
 import {
     buildRoleDropdownHtml,
     buildWeaponDropdownHtml,
@@ -76,7 +76,7 @@ export function renderInspector(): void {
         </div>
 
         <div style="text-align:center; margin-bottom:20px; background:#111; padding:10px; border-radius:6px;">
-            <img src="${displaySrc}" style="max-width:100%; max-height:200px; object-fit:contain;">
+            <img src="${displaySrc}${asset?.id && imageParams[asset.id] ? '?t=' + imageParams[asset.id] : ''}" style="max-width:100%; max-height:200px; object-fit:contain;">
         </div>
 
         <div class="inspector-tabs">

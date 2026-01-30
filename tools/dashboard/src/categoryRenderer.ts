@@ -12,6 +12,7 @@ import {
     categoryData,
     CATEGORY_ICONS,
     lootSourceMap,
+    imageParams,
 } from './state';
 
 // ============================================
@@ -322,7 +323,7 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
 
     const imgHtml = `
         <div class="card-image-container" style="height:${categoryImageSize}px">
-             <img src="${imgPath}" class="asset-image" loading="lazy" data-action="open-modal" data-path="${imgPath}" data-name="${item.name || item.id}" data-status="${item.status || 'pending'}">
+             <img src="${imgPath}${imageParams[item.id] ? '?t=' + imageParams[item.id] : ''}" class="asset-image" loading="lazy" data-action="open-modal" data-path="${imgPath}" data-name="${item.name || item.id}" data-status="${item.status || 'pending'}">
         </div>
     `;
 

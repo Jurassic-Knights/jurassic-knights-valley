@@ -11,6 +11,7 @@ import { Logger } from '@core/Logger';
 import { RoadsData } from '@data/RoadsData';
 import { Registry } from '@core/Registry';
 import { MathUtils } from '@core/MathUtils';
+import { BiomeDef, RoadDef } from '../types/world';
 
 const BiomeManager = {
     // Biome IDs
@@ -134,11 +135,11 @@ const BiomeManager = {
                 { x: 500, y: 24000 }
             ]
         }
-    },
+    } as Record<string, BiomeDef>,
 
     // Roads data now loaded from RoadsData.js
-    get ROADS() {
-        return RoadsData?.ROADS || [];
+    get ROADS(): RoadDef[] {
+        return (RoadsData?.ROADS || []) as RoadDef[];
     },
 
     ROAD_SPEED_MULTIPLIER: 1.3,
@@ -163,7 +164,7 @@ const BiomeManager = {
         // Check each biome's polygon (order matters - Ironhaven checked first for priority)
         const priority = ['ironhaven', 'grasslands', 'tundra', 'badlands', 'desert'];
         for (const biomeId of priority) {
-            const biome = (this.BIOMES as any)[biomeId];
+            const biome = this.BIOMES[biomeId];
             if (biome.polygon && this.pointInPolygon(x, y, biome.polygon)) {
                 return biome;
             }
@@ -268,7 +269,7 @@ const BiomeManager = {
      * Get polygon points for a biome (for rendering)
      */
     getBiomePolygon(biomeId: string) {
-        return (this.BIOMES as any)[biomeId]?.polygon || [];
+        return this.BIOMES[biomeId]?.polygon || [];
     },
 
     // ==================== SPLINE MATH ====================
@@ -303,7 +304,7 @@ const BiomeManager = {
      * @param {number} segments - Number of segments to sample
      * @returns {Array} Array of {x, y, angle} objects
      */
-    getSplinePoints(road: any, segments = 20) {
+    getSplinePoints(road: RoadDef, segments = 20) {
         const result = [];
         for (let i = 0; i <= segments; i++) {
             const t = i / segments;
@@ -319,7 +320,7 @@ const BiomeManager = {
      * Calculate minimum distance from point to spline road
      * Uses sampling approach for performance
      */
-    pointToSplineDistance(px: number, py: number, road: any) {
+    pointToSplineDistance(px: number, py: number, road: RoadDef) {
         const samples = 32; // Higher = more accurate but slower
         let minDistSq = Infinity;
 
@@ -340,7 +341,7 @@ const BiomeManager = {
     /**
      * Get approximate length of a spline road
      */
-    getSplineLength(road: any) {
+    getSplineLength(road: RoadDef) {
         const samples = 20;
         let length = 0;
         let prevPos = this.evaluateBezier(0, road.points);

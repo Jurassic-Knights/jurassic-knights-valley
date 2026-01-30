@@ -16,11 +16,13 @@
 import { VFXController } from './VFXController';
 import { Registry } from '@core/Registry';
 
+import type { MeleeTrailConfig, MeleeTrailPoint } from '../types/vfx';
+
 const MeleeTrailVFX = {
     // Active trail points per weapon slot
     trails: {
-        hand1: [] as any[],
-        hand2: [] as any[]
+        hand1: [] as MeleeTrailPoint[],
+        hand2: [] as MeleeTrailPoint[]
     },
 
     // Trail configs by weapon subtype with unique render styles
@@ -156,7 +158,7 @@ const MeleeTrailVFX = {
             lifetime: 0.15,
             style: 'arc'
         }
-    },
+    } as Record<string, MeleeTrailConfig>,
 
     /**
      * Add a trail point at weapon tip position
@@ -164,8 +166,8 @@ const MeleeTrailVFX = {
     addPoint(x: number, y: number, weaponSubtype = 'sword', slot = 'hand1') {
         if (!isFinite(x) || !isFinite(y)) return;
 
-        const config = (this.configs as any)[weaponSubtype] || this.configs.default;
-        const trail = (this.trails as any)[slot] || [];
+        const config = this.configs[weaponSubtype] || this.configs.default;
+        const trail = this.trails[slot as 'hand1' | 'hand2'] || [];
 
         trail.unshift({
             x: x,
@@ -179,7 +181,7 @@ const MeleeTrailVFX = {
             trail.pop();
         }
 
-        (this.trails as any)[slot] = trail;
+        this.trails[slot as 'hand1' | 'hand2'] = trail;
 
         // Spawn particles for particle-emitting weapons
         if (config.particles && trail.length === 1 && VFXController) {
@@ -202,8 +204,8 @@ const MeleeTrailVFX = {
     update(dt: number) {
         const dtSec = dt / 1000;
 
-        for (const slot of ['hand1', 'hand2']) {
-            const trail = (this.trails as any)[slot];
+        for (const slot of ['hand1', 'hand2'] as const) {
+            const trail = this.trails[slot];
             if (!trail) continue;
 
             for (let i = trail.length - 1; i >= 0; i--) {
@@ -218,9 +220,9 @@ const MeleeTrailVFX = {
     /**
      * Render all trails
      */
-    render(ctx: CanvasRenderingContext2D, viewport: any) {
-        for (const slot of ['hand1', 'hand2']) {
-            const trail = (this.trails as any)[slot];
+    render(ctx: CanvasRenderingContext2D, viewport: { x: number; y: number }) {
+        for (const slot of ['hand1', 'hand2'] as const) {
+            const trail = this.trails[slot];
             if (!trail || trail.length < 2) continue;
 
             const config = trail[0]?.config;
@@ -262,7 +264,7 @@ const MeleeTrailVFX = {
     // ============ STYLE RENDERERS ============
 
     /** Arc style: Clean curved trail (swords) */
-    renderArc(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderArc(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -294,7 +296,7 @@ const MeleeTrailVFX = {
     },
 
     /** Afterimage style: Flickering copies (knives) */
-    renderAfterimage(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderAfterimage(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
         const time = Date.now() / 1000;
@@ -316,7 +318,7 @@ const MeleeTrailVFX = {
     },
 
     /** Heavy style: Motion blur + thick trail (greatswords) */
-    renderHeavy(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderHeavy(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         ctx.lineCap = 'round';
 
@@ -349,7 +351,7 @@ const MeleeTrailVFX = {
     },
 
     /** Debris style: Chunky particles (axes) */
-    renderDebris(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderDebris(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
 
@@ -371,7 +373,7 @@ const MeleeTrailVFX = {
     },
 
     /** Crescent style: Thick curved arc (war axe) */
-    renderCrescent(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderCrescent(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
 
@@ -399,7 +401,7 @@ const MeleeTrailVFX = {
     },
 
     /** Impact style: Burst + shockwave (hammers) */
-    renderImpact(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderImpact(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
         const newest = trail[0];
@@ -435,7 +437,7 @@ const MeleeTrailVFX = {
     },
 
     /** Thrust style: Linear pierce (lances, spears) */
-    renderThrust(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderThrust(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
 
@@ -469,7 +471,7 @@ const MeleeTrailVFX = {
     },
 
     /** Sweep style: Wide diagonal (halberds) */
-    renderSweep(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderSweep(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
 
@@ -494,7 +496,7 @@ const MeleeTrailVFX = {
     },
 
     /** Chain style: Segmented trail with ball (flails) */
-    renderChain(ctx: CanvasRenderingContext2D, trail: any[]) {
+    renderChain(ctx: CanvasRenderingContext2D, trail: MeleeTrailPoint[]) {
         ctx.save();
         const config = trail[0].config;
 

@@ -1,109 +1,70 @@
 /**
- * VFX TypeScript Interfaces
- * 
- * Types for particle systems, effects, and visual feedback.
+ * VFX Type Definitions
+ * Strict typing for the Visual Effects system.
  */
 
-// ============================================
-// PARTICLE OPTIONS
-// ============================================
-
-/**
- * Particle emission options
- */
 export interface ParticleOptions {
-    /** Particle type (e.g., 'spark', 'debris', 'smoke', 'circle', 'burst') */
-    type?: string;
-    /** Base color (CSS color string) */
+    type?: 'glow' | 'ring' | 'spark' | 'debris' | 'streak' | 'smoke' | 'text' | 'circle';
     color?: string;
-    /** Number of particles to emit */
-    count?: number;
-    /** Particle speed in pixels per second */
-    speed?: number;
-    /** Particle lifetime in milliseconds */
-    lifetime?: number;
-    /** Particle size in pixels */
     size?: number;
-    /** Gravity factor (0 = no gravity) */
-    gravity?: number;
-    /** Spread angle in degrees */
-    spread?: number;
-    /** Direction angle in degrees */
-    direction?: number;
-    /** Fade out particles */
+    lifetime?: number;
     fade?: boolean;
-    /** Scale particles over time */
-    scale?: number;
-    /** Alpha transparency (0-1) */
-    alpha?: number;
-    /** Drag resistance (0-1) */
+    blendMode?: GlobalCompositeOperation;
+    speed?: number;
+    count?: number;
+    angle?: number;
     drag?: number;
-    /** Size values over lifetime [start, end] */
-    sizeOverLifetime?: [number, number];
-    /** Blend mode for rendering */
-    blendMode?: 'source-over' | 'lighter' | 'multiply';
+    gravity?: number;
+    bias?: 'up' | 'down' | 'random';
+    sizeOverLifetime?: number[];
+    colorOverLifetime?: string[];
+    alpha?: number;
+    width?: number;
+    length?: number;
+    spread?: number;
+    sizeCheckpoints?: number[];
+    holdDuration?: number; // for floating text
+    floatDuration?: number; // for floating text
+    text?: string;
 }
 
-/**
- * Floating text configuration
- */
-export interface FloatingTextConfig {
-    /** Text color */
-    color?: string;
-    /** Font size in pixels */
-    fontSize?: number;
-    /** Font family */
-    fontFamily?: string;
-    /** Duration in milliseconds */
-    duration?: number;
-    /** Float speed */
-    floatSpeed?: number;
-    /** Whether to use outline */
-    outline?: boolean;
-    /** Outline color */
-    outlineColor?: string;
+export interface VFXCue {
+    time: number;
+    layer?: 'fg' | 'bg';
+    template?: string;
+    type?: string;
+    params?: ParticleOptions;
 }
 
-/**
- * VFX sequence step
- */
-export interface VFXSequenceStep {
-    /** Delay before this step (ms) */
-    delay?: number;
-    /** Particle options for this step */
-    particles?: ParticleOptions;
-    /** Sound to play */
-    sound?: string;
-    /** Screen shake intensity */
-    shake?: number;
+export type VFXSequence = VFXCue[];
+
+export interface MeleeTrailConfig {
+    color: string;
+    fadeColor: string;
+    width: number;
+    maxPoints: number;
+    lifetime: number;
+    style: 'afterimage' | 'arc' | 'heavy' | 'debris' | 'crescent' | 'burst' | 'impact' | 'thrust' | 'sweep' | 'chain';
+
+    // Style-specific options
+    glow?: boolean;
+    shimmer?: boolean;
+    blur?: boolean;
+    particles?: boolean;
+    sparks?: boolean;
+    embers?: boolean;
+    shockwave?: boolean;
+    flash?: boolean;
+    windTrail?: boolean;
+    afterimage?: boolean;
+    ball?: boolean;
+    flickerRate?: number;
 }
 
-/**
- * Complete VFX sequence
- */
-export interface VFXSequence {
-    /** Sequence name */
-    name?: string;
-    /** Steps to execute */
-    steps: VFXSequenceStep[];
-    /** Total duration override */
-    duration?: number;
-}
-
-// ============================================
-// WEATHER VFX
-// ============================================
-
-/**
- * Weather particle
- */
-export interface WeatherParticle {
+export interface MeleeTrailPoint {
     x: number;
     y: number;
-    vx: number;
-    vy: number;
-    size: number;
-    opacity: number;
-    lifetime: number;
-    maxLifetime: number;
+    age: number;
+    config: MeleeTrailConfig;
+    subtype: string;
 }

@@ -29,6 +29,31 @@ export interface ISystem {
 // ENTITY INTERFACE
 // ============================================
 
+export interface EntityConfig {
+    id?: string;
+    entityType?: string;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    color?: string;
+    sprite?: string;
+    islandGridX?: number;
+    islandGridY?: number;
+    collision?: {
+        bounds?: {
+            x?: number;
+            y?: number;
+            width?: number;
+            height?: number;
+            offsetX?: number;
+            offsetY?: number;
+        };
+        [key: string]: any;
+    };
+    [key: string]: any;
+}
+
 /**
  * Base interface for all game entities
  */
@@ -87,6 +112,8 @@ export interface IEntity {
     render?(ctx: CanvasRenderingContext2D): void;
     /** Render UI overlays (health bars, etc.) */
     renderUI?(ctx: CanvasRenderingContext2D): void;
+    /** Render health bar directly */
+    renderHealthBar?(ctx: CanvasRenderingContext2D): void;
     /** Get Y position for depth sorting */
     getFootY?(): number;
     /** Cleanup resources when entity is removed */

@@ -4,12 +4,14 @@ import { EntityRegistry } from '@entities/EntityLoader';
 import { Logger } from '@core/Logger';
 import { EntityScaling } from '../utils/EntityScaling';
 
+import type { EntityConfig } from '../types/core';
+
 class Prop extends Entity {
     scale: number;
     _img: HTMLImageElement | null = null;
     registryId: string | null = null;
 
-    constructor(config: any = {}) {
+    constructor(config: EntityConfig = {}) {
         // 1. Identify Registry ID
         // Priority: Explicit config.registryId > config.id (if matched) > config.sprite
         let registryId = config.registryId || null;

@@ -168,3 +168,25 @@ export interface UnlockTrigger {
     /** Island reference */
     island: Island;
 }
+
+// ============================================
+// BIOME TYPES
+// ============================================
+
+export interface BiomeDef {
+    id: string;
+    name: string;
+    description: string;
+    color: string;
+    tier: number;
+    polygon: Point[];
+}
+
+export interface RoadDef {
+    id: string;
+    tier: number;
+    name: string;
+    points: Point[];
+    width: number;
+}
+

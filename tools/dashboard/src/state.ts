@@ -141,6 +141,7 @@ export let assetLookupLoaded = false;
 // Selection State (for Inspector)
 export let selectedAssetId: string | null = null;
 export let currentInspectorTab: string = 'general';
+export let imageParams: Record<string, number> = {}; // AssetId -> Timestamp map
 
 // ============================================
 // STATE SETTERS (for module encapsulation)
@@ -224,6 +225,10 @@ export function setLootFilterValue(filter: Partial<LootFilter>): void {
 
 export function setSelectedAssetId(id: string | null): void {
     selectedAssetId = id;
+}
+
+export function setImageParam(id: string, timestamp: number): void {
+    imageParams[id] = timestamp;
 }
 
 // ============================================

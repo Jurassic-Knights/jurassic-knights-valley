@@ -284,20 +284,23 @@ export function buildFilePathsHtml(item: AssetItem, fileName: string): string {
     // Use data-field="files.original" for dot-notation update
     const container = h('div', { style: 'margin:8px 0; border-top:1px solid #333; padding-top:8px;' }, [
         h('div', { style: 'font-size:0.65rem; color:var(--text-dim); margin-bottom:4px; text-transform:uppercase;' }, ['📁 Image Path (Original):']),
-        h('div', { style: 'display:flex; gap:6px;' }, [
+        h('div', { style: 'display:flex; gap:6px; align-items:center;' }, [
             h('div', {
                 style: 'flex:1; font-family:monospace; font-size:0.7rem; color:#888; background:#111; padding:4px; border:1px solid #333; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;',
                 title: originalPath
             }, [originalPath || 'No path set']),
-            h('button', {
-                className: 'action-btn',
-                style: 'font-size:0.7rem; padding:2px 8px; background:#2196f3; color:white; border:none; border-radius:3px; cursor:pointer;',
-                title: 'Paste image from clipboard to overwrite this file',
-                'data-action': 'paste-image-to-path',
-                'data-path': originalPath,
-                'data-file': fileName,
-                'data-id': item.id
-            }, ['📋 Paste & Overwrite'])
+        ]),
+        h('div', {
+            className: 'drop-zone',
+            style: 'margin-top:4px; border:2px dashed #444; border-radius:4px; padding:12px; text-align:center; cursor:pointer; background:#1a1a1a; transition: all 0.2s;',
+            'data-action': 'image-drop-zone',
+            'data-path': originalPath,
+            'data-file': fileName,
+            'data-id': item.id
+        }, [
+            h('div', { style: 'font-size:1.2rem; margin-bottom:4px;' }, ['📥']),
+            h('div', { style: 'font-size:0.75rem; color:#888;' }, ['Drop image here']),
+            h('div', { style: 'font-size:0.6rem; color:#555;' }, ['or click to paste from clipboard'])
         ]),
         // Optional: show clean path as read-only or editable if needed
         // Optional: show clean path as read-only or editable if needed

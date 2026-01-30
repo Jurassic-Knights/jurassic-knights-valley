@@ -16,6 +16,8 @@ import { AssetLoader } from '@core/AssetLoader';
 import { entityManager } from '@core/EntityManager';
 import { EventBus } from '@core/EventBus';
 import { Registry } from '@core/Registry';
+import type { Island, Bounds } from '../types/world';
+import type { IEntity } from '../types/core';
 
 // entityManager instance is imported, but we also need the EntityManager reference for static access
 const EntityManager = entityManager;
@@ -24,11 +26,11 @@ const HomeBase = {
     treeBorderWidth: 100,
 
     // Private cache properties
-    _cachedHome: null as any | null,
-    _cachedBounds: null as any | null,
+    _cachedHome: null as Island | null,
+    _cachedBounds: null as Bounds | null,
     _treeCacheFrame: 0,
-    _cachedTrees: [] as any[],
-    _sortedTrees: [] as any[],
+    _cachedTrees: [] as IEntity[],
+    _sortedTrees: [] as IEntity[],
     _heroAtHome: false,
     _heroAtForge: false,
     _forgePos: null as { x: number; y: number; size: number } | null,

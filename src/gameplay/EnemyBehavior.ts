@@ -323,7 +323,7 @@ Enemy.prototype.triggerPackAggro = function (target) {
         if (enemy === this || enemy.groupId !== this.groupId) continue;
         if (enemy.isDead || !enemy.packAggro) continue;
 
-        const dist = this.distanceTo(enemy as any);
+        const dist = this.distanceTo(enemy);
         if (dist <= packRadius) {
             enemy.target = target;
             enemy.state = 'chase';
