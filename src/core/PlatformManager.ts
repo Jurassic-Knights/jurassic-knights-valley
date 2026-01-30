@@ -40,7 +40,7 @@ const PlatformManager = {
     },
 
     // Event listeners
-    listeners: [],
+    listeners: [] as { event: string; callback: (data: any) => void }[],
 
     /**
      * Initialize platform manager
@@ -61,7 +61,7 @@ const PlatformManager = {
      * Set platform mode manually
      * @param {string} mode - 'mobile' or 'pc'
      */
-    setMode(mode) {
+    setMode(mode: string) {
         if (mode !== this.MODES.MOBILE && mode !== this.MODES.PC) {
             Logger.error(`[PlatformManager] Invalid mode: ${mode}`);
             return;
@@ -110,7 +110,7 @@ const PlatformManager = {
         }
 
         // Update CSS variable for UI scale
-        document.documentElement.style.setProperty('--ui-scale', config.uiScale);
+        document.documentElement.style.setProperty('--ui-scale', String(config.uiScale));
     },
 
     /**
@@ -118,7 +118,7 @@ const PlatformManager = {
      * @returns {object}
      */
     getConfig() {
-        return this.configs[this.currentMode];
+        return this.configs[this.currentMode as keyof typeof this.configs];
     },
 
     /**
@@ -142,14 +142,14 @@ const PlatformManager = {
      * @param {string} event - Event name ('modechange')
      * @param {function} callback - Handler function
      */
-    on(event, callback) {
+    on(event: string, callback: (data: any) => void) {
         this.listeners.push({ event, callback });
     },
 
     /**
      * Emit event to all listeners
      */
-    emit(event, data) {
+    emit(event: string, data: any) {
         this.listeners.filter((l) => l.event === event).forEach((l) => l.callback(data));
     }
 };

@@ -97,28 +97,28 @@ class InventoryPanel {
         (uiOverlay || document.body).appendChild(this.container);
     }
 
-    _handleClick(e) {
+    _handleClick(e: MouseEvent) {
         const target = e.target;
 
         // Close or Back button
-        if (target.closest('.equip-close') || target.closest('#inv-back')) {
+        if ((target as HTMLElement).closest('.equip-close') || (target as HTMLElement).closest('#inv-back')) {
             this.close();
             return;
         }
 
         // Category buttons (footer)
-        const catBtn = target.closest('.action-btn[data-category]');
-        if (catBtn?.dataset.category) {
-            this.activeCategory = catBtn.dataset.category;
+        const catBtn = (target as HTMLElement).closest('.action-btn[data-category]');
+        if (catBtn && (catBtn as HTMLElement).dataset.category) {
+            this.activeCategory = (catBtn as HTMLElement).dataset.category!;
             this.activeType = 'all';
             this._render();
             return;
         }
 
         // Type filter buttons (tabs)
-        const typeBtn = target.closest('.btn-filter[data-type]');
-        if (typeBtn?.dataset.type) {
-            this.activeType = typeBtn.dataset.type;
+        const typeBtn = (target as HTMLElement).closest('.btn-filter[data-type]');
+        if (typeBtn && (typeBtn as HTMLElement).dataset.type) {
+            this.activeType = (typeBtn as HTMLElement).dataset.type!;
             this._render();
             return;
         }
@@ -422,7 +422,7 @@ class InventoryPanel {
     /**
      * Get unique sub-types from EntityRegistry for a category
      */
-    getSubTypes(category) {
+    getSubTypes(category: string) {
         const registry = category === 'items' ? EntityRegistry?.items : EntityRegistry?.resources;
         if (!registry) return [];
 
@@ -447,7 +447,7 @@ class InventoryPanel {
     /**
      * Get entity info from EntityRegistry
      */
-    getEntityInfo(key) {
+    getEntityInfo(key: string) {
         if (EntityRegistry?.resources?.[key]) {
             return { ...EntityRegistry.resources[key], category: 'resources' };
         } else if (EntityRegistry?.items?.[key]) {
@@ -459,7 +459,7 @@ class InventoryPanel {
     /**
      * Check if item passes current filters
      */
-    passesFilter(key) {
+    passesFilter(key: string) {
         const entity = this.getEntityInfo(key);
         if (!entity) return true;
 
@@ -513,22 +513,21 @@ class InventoryPanel {
                 <!-- Inventory Grid (reuses equip-inventory) -->
                 <div class="equip-inventory">
                     <div class="inventory-grid">
-                        ${
-                            filteredItems.length === 0
-                                ? '<div class="empty-inventory">No items match filter</div>'
-                                : filteredItems
-                                      .map(([key, amount]) => {
-                                          const entity = this.getEntityInfo(key);
-                                          const name = entity?.name || key;
-                                          return `
+                        ${filteredItems.length === 0
+                ? '<div class="empty-inventory">No items match filter</div>'
+                : filteredItems
+                    .map(([key, amount]) => {
+                        const entity = this.getEntityInfo(key);
+                        const name = entity?.name || key;
+                        return `
                                     <div class="inventory-item" data-id="${key}" title="${name}">
                                         <div class="item-icon" data-icon-id="${key}"></div>
                                         <div class="item-count">${amount}</div>
                                     </div>
                                 `;
-                                      })
-                                      .join('')
-                        }
+                    })
+                    .join('')
+            }
                     </div>
                 </div>
 

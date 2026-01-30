@@ -1,5 +1,5 @@
 import { h, renderToString } from '../domBuilder';
-import { AssetItem, currentCategoryName, categoryImageSize } from '../state';
+import { AssetItem, currentCategoryName, categoryImageSize, lootSourceMap } from '../state';
 import { getAssetInfo } from '../api';
 
 export function buildLoreDescriptionHtml(item: AssetItem, fileName: string): string {
@@ -87,12 +87,13 @@ export function buildSizeScaleHtml(item: AssetItem, fileName: string): string {
 
 
 export function buildDropsHtml(item: AssetItem): string {
-    const loot = item.loot;
+    const loot = item.loot || item.drops;
     if (!loot || loot.length === 0) return '';
 
-    const dropSize = Math.max(40, Math.floor(categoryImageSize * 0.3));
+    // Increase size for better visibility (was 0.3)
+    const dropSize = Math.max(48, Math.floor(categoryImageSize * 0.4));
 
-    const dropImages = loot.map(drop => {
+    const dropImages = loot.map((drop: any) => {
         const dropId = drop.item;
         const dropChance = drop.chance != null ? (drop.chance > 1 ? drop.chance : Math.round(drop.chance * 100)) : 100;
 
@@ -106,16 +107,18 @@ export function buildDropsHtml(item: AssetItem): string {
             title: `Click to view ${dropId}`,
             'data-action': 'navigate-asset',
             'data-category': dropCategory,
-            'data-id': dropAssetId
+            'data-id': dropAssetId,
+            style: `width:${dropSize}px; height:${dropSize}px; position: relative;`
         }, [
             h('img', {
                 className: 'asset-overlay__img',
                 src: imgPath,
                 onerror: "this.src='/images/PH.png'",
-                style: `width:${dropSize}px; height:${dropSize}px;`
+                style: `width:100%; height:100%; object-fit:contain; display:block;`
             }),
             h('span', { className: 'asset-overlay__label asset-overlay__label--bottom-right' }, [`${dropChance}%`]),
-            h('span', { className: 'asset-overlay__label asset-overlay__label--top-left' }, [dropId])
+            // Removed ID label to declutter visual, rely on title/tooltip
+            // h('span', { className: 'asset-overlay__label asset-overlay__label--top-left' }, [dropId])
         ]);
     });
 
@@ -185,35 +188,53 @@ export function buildRecipeHtml(item: AssetItem): string {
 }
 
 export function buildSourceHtml(item: AssetItem): string {
-    if (!item.source || currentCategoryName !== 'resources') return '';
+    if (currentCategoryName !== 'resources' && currentCategoryName !== 'items') return '';
 
-    const sourceSize = Math.max(40, Math.floor(categoryImageSize * 0.3));
-    const sourceName = item.source;
-    const nodeInfo = getAssetInfo(sourceName);
-    const imgPath = nodeInfo ? `/images/${nodeInfo.path}` : '/images/PH.png';
-    const nodeCategory = nodeInfo?.category || 'nodes';
-    const nodeAssetId = nodeInfo?.id || sourceName;
+    // 1. Explicit Source (Legacy/Specific)
+    const explicitSource = item.source;
+
+    // 2. Dynamic Sources (Reverse Lookup from Drops)
+    const simpleId = item.id.replace(/^(item_|items_|resource_|resources_|equipment_|node_|nodes_)/, '');
+    const dynamicSources = [
+        ...(lootSourceMap[item.id] || []),
+        ...(lootSourceMap[simpleId] || [])
+    ];
+
+    // Combine and Deduplicate
+    const allSources = new Set<string>();
+    if (explicitSource) allSources.add(explicitSource);
+    dynamicSources.forEach(s => allSources.add(s));
+
+    if (allSources.size === 0) return '';
+
+    const sourceImages = Array.from(allSources).map(sourceId => {
+        const assetInfo = getAssetInfo(sourceId);
+        const sourceName = assetInfo ? assetInfo.name || sourceId : sourceId;
+        const imgPath = assetInfo ? `/images/${assetInfo.path}` : '/images/PH.png';
+        const category = assetInfo?.category || 'nodes'; // Default to nodes if unknown, or maybe 'enemies'
+        // If it's an enemy, category should be enemies. assetInfo will have it. 
+        // If missing assetInfo, we can't deep link easily, but we can guess.
+
+        return h('div', {
+            className: 'asset-overlay',
+            title: `Source: ${sourceName}`,
+            'data-action': 'navigate-asset',
+            'data-category': category,
+            'data-id': sourceId
+        }, [
+            h('img', {
+                className: 'asset-overlay__img',
+                src: imgPath,
+                onerror: "this.src='/images/PH.png'",
+                style: `width:40px; height:40px; border:2px solid var(--accent-cyan);`
+            }),
+            h('span', { className: 'asset-overlay__label asset-overlay__label--top-left' }, [sourceName])
+        ]);
+    });
 
     const container = h('div', { style: 'margin:8px 0;' }, [
-        h('div', { style: 'font-size:0.7rem; color:var(--accent-cyan); margin-bottom:4px;' }, ['⛏️ Source:']),
-        h('div', { style: 'display:flex; gap:8px; align-items:center;' }, [
-            h('div', {
-                style: 'position:relative; cursor:pointer;',
-                title: `Click to view ${sourceName}`,
-                'data-action': 'navigate-asset',
-                'data-category': nodeCategory,
-                'data-id': nodeAssetId
-            }, [
-                h('img', {
-                    src: imgPath,
-                    onerror: "this.src='/images/PH.png'",
-                    style: `width:${sourceSize}px; height:${sourceSize}px; object-fit:contain; background:#222; border-radius:6px; border:2px solid #17a2b8;`
-                }),
-                h('span', {
-                    style: 'position:absolute; top:2px; left:2px; font-size:0.55rem; background:#000d; padding:1px 4px; border-radius:3px;'
-                }, [sourceName])
-            ])
-        ])
+        h('div', { style: 'font-size:0.7rem; color:var(--accent-cyan); margin-bottom:4px;' }, ['⛏️ Sources / Drops From:']),
+        h('div', { style: 'display:flex; gap:8px; flex-wrap:wrap;' }, sourceImages)
     ]);
 
     return renderToString(container);
@@ -250,6 +271,37 @@ export function buildResourceDropHtml(item: AssetItem): string {
                 }, [resourceName])
             ])
         ])
+    ]);
+
+    return renderToString(container);
+}
+
+export function buildFilePathsHtml(item: AssetItem, fileName: string): string {
+    const originalPath = item.files?.original || '';
+    const cleanPath = item.files?.clean || '';
+
+    // Create editable field for Original Image
+    // Use data-field="files.original" for dot-notation update
+    const container = h('div', { style: 'margin:8px 0; border-top:1px solid #333; padding-top:8px;' }, [
+        h('div', { style: 'font-size:0.65rem; color:var(--text-dim); margin-bottom:4px; text-transform:uppercase;' }, ['📁 Image Path (Original):']),
+        h('div', { style: 'display:flex; gap:6px;' }, [
+            h('div', {
+                style: 'flex:1; font-family:monospace; font-size:0.7rem; color:#888; background:#111; padding:4px; border:1px solid #333; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;',
+                title: originalPath
+            }, [originalPath || 'No path set']),
+            h('button', {
+                className: 'action-btn',
+                style: 'font-size:0.7rem; padding:2px 8px; background:#2196f3; color:white; border:none; border-radius:3px; cursor:pointer;',
+                title: 'Paste image from clipboard to overwrite this file',
+                'data-action': 'paste-image-to-path',
+                'data-path': originalPath,
+                'data-file': fileName,
+                'data-id': item.id
+            }, ['📋 Paste & Overwrite'])
+        ]),
+        // Optional: show clean path as read-only or editable if needed
+        // Optional: show clean path as read-only or editable if needed
+        cleanPath ? h('div', { style: 'font-size:0.6rem; color:#555; margin-top:2px; font-style:italic;' }, [`Clean: ${cleanPath}`]) : null
     ]);
 
     return renderToString(container);

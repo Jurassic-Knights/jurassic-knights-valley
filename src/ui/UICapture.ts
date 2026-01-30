@@ -29,7 +29,7 @@ const UICapture = {
     /**
      * Captures a specific DOM element as a transparent PNG.
      */
-    async captureElement(selector, filename) {
+    async captureElement(selector: string, filename: string) {
         const el = document.querySelector(selector);
         if (!el) {
             Logger.warn('[UICapture]', `Element not found: ${selector}`);
@@ -42,7 +42,7 @@ const UICapture = {
                 backgroundColor: null,
                 scale: 1,
                 useCORS: true,
-                ignoreElements: (element) => {
+                ignoreElements: (element: HTMLElement) => {
                     if (element.tagName === 'CANVAS') return true;
                     if (element.tagName === 'IMG' || element.tagName === 'VIDEO') return true;
                     return false;

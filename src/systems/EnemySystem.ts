@@ -15,7 +15,7 @@ import { VFXConfig } from '@data/VFXConfig';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
 import { MathUtils } from '@core/MathUtils';
-import type { IGame, IEntity } from '../types/core.d';
+import type { IGame, IEntity } from '@app-types/core';
 
 // Events from GameConstants
 const Events = GameConstants.Events;
@@ -46,26 +46,28 @@ class EnemySystem {
         }
     }
 
-    update(dt) {
+    update(dt: number) {
         if (!entityManager) return;
         const enemies = entityManager.getByType('Enemy');
         const hero = this.game?.hero;
 
-        for (const enemy of enemies) {
+        for (const enemy_ of enemies) {
+            const enemy = enemy_ as any;
             if (enemy.active && enemy.state !== 'dead') {
                 this.updateEnemy(enemy, hero, dt);
             }
         }
     }
 
-    updateEnemy(enemy, hero, dt) {
+    updateEnemy(enemy: IEntity, hero: IEntity | null, dt: number) {
         // Update interpolation state (per fixed tick)
         enemy.prevX = enemy.x;
         enemy.prevY = enemy.y;
 
         // Sync HealthComponent to Entity property for Renderer/UI
-        if (enemy.components.health) {
-            enemy.health = enemy.components.health.health;
+        const healthComp = enemy.components?.health;
+        if (healthComp) {
+            enemy.health = healthComp.health;
         }
 
         const ai = enemy.components?.ai;
@@ -91,8 +93,8 @@ class EnemySystem {
         }
     }
 
-    handleWander(enemy, hero, dt) {
-        const ai = enemy.components.ai;
+    handleWander(enemy: IEntity, hero: IEntity | null, dt: number) {
+        const ai = enemy.components?.ai;
 
         // Check for aggro
         if (hero && ai.canAggro(hero)) {
@@ -126,7 +128,7 @@ class EnemySystem {
         const nextY = enemy.y + dy;
 
         // Clamp to patrol radius
-        const patrolRadius = enemy.patrolRadius || 150;
+        const patrolRadius = (enemy as any).patrolRadius || 150;
         const dist = MathUtils.distance(nextX, nextY, enemy.spawnX, enemy.spawnY);
 
         if (dist > patrolRadius) {
@@ -143,7 +145,7 @@ class EnemySystem {
     /**
      * Alert pack members when one enemy aggros
      */
-    alertPackMembers(aggroEnemy, target) {
+    alertPackMembers(aggroEnemy: IEntity, target: IEntity) {
         if (!entityManager) return;
 
         const enemies = entityManager.getByType('Enemy');
@@ -170,8 +172,8 @@ class EnemySystem {
         }
     }
 
-    handleChase(enemy, hero, dt) {
-        const ai = enemy.components.ai;
+    handleChase(enemy: IEntity, hero: IEntity, dt: number) {
+        const ai = enemy.components?.ai;
 
         // Check leash
         if (ai.shouldLeash()) {
@@ -202,7 +204,7 @@ class EnemySystem {
         }
     }
 
-    applyMovement(enemy, dx, dy) {
+    applyMovement(enemy: IEntity, dx: number, dy: number) {
         const collisionSystem = this.game?.getSystem('CollisionSystem') as any;
         if (collisionSystem && typeof collisionSystem.move === 'function') {
             collisionSystem.move(enemy, dx, dy);
@@ -212,8 +214,8 @@ class EnemySystem {
         }
     }
 
-    handleAttack(enemy, hero, dt) {
-        const ai = enemy.components.ai;
+    handleAttack(enemy: IEntity, hero: IEntity, dt: number) {
+        const ai = enemy.components?.ai;
         const combat = enemy.components?.combat;
 
         // Check if still in range
@@ -254,8 +256,8 @@ class EnemySystem {
         }
     }
 
-    handleLeashReturn(enemy, dt) {
-        const ai = enemy.components.ai;
+    handleLeashReturn(enemy: IEntity, dt: number) {
+        const ai = (enemy.components ? enemy.components.ai : null) as any;
 
         // Move back to spawn
         const dxRaw = enemy.spawnX - enemy.x;
@@ -273,7 +275,7 @@ class EnemySystem {
         this.applyMovement(enemy, dx, dy);
     }
 
-    onEntityDamaged(data) {
+    onEntityDamaged(data: EntityEvent) {
         const { entity, amount } = data;
         if (!entity) return;
 
@@ -296,7 +298,7 @@ class EnemySystem {
         // Blood VFX - Multi-layered realistic gore (uses DINO config for all creatures)
         if (VFXController && VFXConfig) {
             Logger.info(
-                `[EnemySystem] Blood VFX for ${entity.enemyType} at (${Math.round(entity.x)}, ${Math.round(entity.y)})`
+                `[EnemySystem] Blood VFX for ${entity.entityType} at (${Math.round(entity.x)}, ${Math.round(entity.y)})`
             );
             // Primary blood spray
             VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
@@ -311,7 +313,7 @@ class EnemySystem {
         }
     }
 
-    onEntityDied(data) {
+    onEntityDied(data: EntityEvent) {
         const { entity } = data;
         if (!entity) return;
 

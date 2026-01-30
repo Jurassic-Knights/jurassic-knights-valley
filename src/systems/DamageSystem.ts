@@ -69,7 +69,7 @@ class DamageSystem {
         // 1. Apply Damage (using component if available)
         // Check for StatsComponent (Hero/Complex Entities)
         let finalDamage = amount;
-        const healthComponent = entity.components?.health || entity.components?.stats;
+        const healthComponent = (entity.components?.health || entity.components?.stats) as any;
 
         // Apply Armor reduction (simple flat reduction for now)
         if (entity.defense) {

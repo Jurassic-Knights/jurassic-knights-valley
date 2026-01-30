@@ -8,19 +8,30 @@
 import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
+import { IEntity, IViewport } from '@app-types/core';
+import { RenderTiming } from './RenderProfiler';
+
+interface IVisibleBounds {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+}
 
 // Unmapped modules - need manual import
 
 const EntityRenderService = {
     // GC Optimization: Pre-allocated array for Y-sorting
-    _sortableEntities: [],
+    _sortableEntities: [] as IEntity[],
 
     /**
      * Collect visible entities from entityManager and Y-sort them
      * @param {object} visibleBounds - {left, top, right, bottom, width, height}
      * @returns {array} Sorted array of active entities
      */
-    collectAndSort(visibleBounds) {
+    collectAndSort(visibleBounds: IVisibleBounds) {
         const sortableEntities = this._sortableEntities;
         sortableEntities.length = 0; // Clear without deallocation
 
@@ -79,7 +90,7 @@ const EntityRenderService = {
      * @param {object} timing - Optional timing object for profiling
      * @param {number} alpha - Interpolation factor
      */
-    renderEntity(ctx, entity, renderers, timing = null, alpha = 1) {
+    renderEntity(ctx: CanvasRenderingContext2D, entity: IEntity, renderers: any, timing: RenderTiming | null = null, alpha = 1) {
         const tSub = timing ? performance.now() : 0;
         const type = entity.entityType;
 
@@ -130,7 +141,7 @@ const EntityRenderService = {
      * @param {object} timing - Optional profiling object
      * @param {number} alpha - Interpolation factor (0-1)
      */
-    renderAll(ctx, entities, renderers, timing = null, alpha = 1) {
+    renderAll(ctx: CanvasRenderingContext2D, entities: IEntity[], renderers: any, timing: RenderTiming | null = null, alpha = 1) {
         // Initialize timing counters
         if (timing) {
             timing.entHeroTime = timing.entHeroTime || 0;
@@ -151,7 +162,7 @@ const EntityRenderService = {
      * @param {array} entities
      * @param {object} timing
      */
-    renderUIOverlays(ctx, entities, timing = null) {
+    renderUIOverlays(ctx: CanvasRenderingContext2D, entities: IEntity[], timing: RenderTiming | null = null) {
         const tSub = timing ? performance.now() : 0;
 
         for (const entity of entities) {

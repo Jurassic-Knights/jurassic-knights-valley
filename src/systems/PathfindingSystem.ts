@@ -28,7 +28,7 @@ class PathfindingSystem {
         Logger.info('[PathfindingSystem] Constructed');
     }
 
-    init(game) {
+    init(game: any) {
         this.game = game;
         Logger.info('[PathfindingSystem] Initialized');
         return true;
@@ -42,7 +42,7 @@ class PathfindingSystem {
      * @param {number} endY - End world Y
      * @returns {Array<{x: number, y: number}>} Array of waypoints, or empty if no path
      */
-    findPath(startX, startY, endX, endY) {
+    findPath(startX: number, startY: number, endX: number, endY: number) {
         // Convert to grid coordinates
         const startNode = this.worldToGrid(startX, startY);
         const endNode = this.worldToGrid(endX, endY);
@@ -152,14 +152,14 @@ class PathfindingSystem {
     /**
      * Heuristic function (Manhattan distance)
      */
-    heuristic(a, b) {
+    heuristic(a: any, b: any) {
         return Math.abs(a.gx - b.gx) + Math.abs(a.gy - b.gy);
     }
 
     /**
      * Reconstruct path from A* result
      */
-    reconstructPath(cameFrom, current, endX, endY) {
+    reconstructPath(cameFrom: Map<string, any>, current: any, endX: number, endY: number) {
         const path = [];
         let node = current;
 
@@ -181,7 +181,7 @@ class PathfindingSystem {
     /**
      * Simplify path by removing collinear points
      */
-    simplifyPath(path) {
+    simplifyPath(path: { x: number; y: number }[]) {
         if (path.length <= 2) return path;
 
         const simplified = [path[0]];
@@ -209,7 +209,7 @@ class PathfindingSystem {
     /**
      * Get valid neighbor cells
      */
-    getNeighbors(gx, gy) {
+    getNeighbors(gx: number, gy: number) {
         const neighbors = [];
         const dirs = [
             { dx: 0, dy: -1 }, // N
@@ -242,7 +242,7 @@ class PathfindingSystem {
     /**
      * Check if a grid cell is blocked
      */
-    isGridBlocked(gx, gy) {
+    isGridBlocked(gx: number, gy: number) {
         const worldPos = this.gridToWorld(gx, gy);
         const im = IslandManager;
 
@@ -255,7 +255,7 @@ class PathfindingSystem {
     /**
      * Find nearest valid cell from a blocked position
      */
-    findNearestValidCell(gx, gy) {
+    findNearestValidCell(gx: number, gy: number) {
         for (let radius = 1; radius <= 5; radius++) {
             for (let dx = -radius; dx <= radius; dx++) {
                 for (let dy = -radius; dy <= radius; dy++) {
@@ -276,7 +276,7 @@ class PathfindingSystem {
     /**
      * Convert world coordinates to pathfinding grid
      */
-    worldToGrid(x, y) {
+    worldToGrid(x: number, y: number) {
         return {
             gx: Math.floor(x / this.gridSize),
             gy: Math.floor(y / this.gridSize)
@@ -286,7 +286,7 @@ class PathfindingSystem {
     /**
      * Convert pathfinding grid to world coordinates (cell center)
      */
-    gridToWorld(gx, gy) {
+    gridToWorld(gx: number, gy: number) {
         return {
             x: gx * this.gridSize + this.gridSize / 2,
             y: gy * this.gridSize + this.gridSize / 2

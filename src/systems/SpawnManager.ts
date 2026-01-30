@@ -16,6 +16,7 @@ import { GameConstants, getConfig } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 import { GameState } from '@core/State';
 import { IslandManager } from '../world/IslandManager';
+import { IGame } from '../types/core';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { Hero } from '../gameplay/Hero';
 import { Registry } from '@core/Registry';
@@ -29,7 +30,7 @@ import { PropConfig } from '@data/PropConfig';
 // Unmapped modules - need manual import
 
 class SpawnManagerService {
-    private game: any;
+    private game: IGame | null = null;
     private merchants: any[] = [];
     private propSpawner: any = null;
     private resourceSpawner: any = null;
@@ -171,7 +172,7 @@ class SpawnManagerService {
                 (b: any) => b.to.col === island.gridX && b.to.row === island.gridY
             );
 
-            const config = getConfig().Spawning;
+            const config = getConfig().Spawning as any;
             let merchantX = bounds.x + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT_OFFSET_X);
             let merchantY = bounds.y + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT_OFFSET_Y);
             const padding = PropConfig?.MERCHANT?.PADDING || config.MERCHANT_PADDING;

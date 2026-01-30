@@ -2,7 +2,7 @@
  * Entity: enemy_dinosaur_t1_01
  * Auto-generated. Edit in dashboard.
  */
-import type { EnemyEntity } from '@types/entities';
+import type { EnemyEntity } from '@app-types/entities';
 
 export default {
     "id": "enemy_dinosaur_t1_01",
@@ -14,7 +14,6 @@ export default {
     "files": {
         "original": "assets/images/enemies/dinosaur_t1_01_original.png"
     },
-    "tier": 1,
     "biome": "grasslands",
     "stats": {
         "health": "25",
@@ -72,5 +71,6 @@ export default {
         "width": 128,
         "height": 128
     },
-    "declineNote": ""
+    "declineNote": "",
+    "tier": null
 } satisfies EnemyEntity;

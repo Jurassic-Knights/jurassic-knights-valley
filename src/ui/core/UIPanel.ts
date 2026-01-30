@@ -109,14 +109,14 @@ class UIPanel {
     /**
      * Lifecycle hooks
      */
-    onOpen() {}
-    onClose() {}
+    onOpen() { }
+    onClose() { }
 
     /**
      * Apply a layout mode (called by LayoutStrategies)
      * @param {string} mode 'mobile' | 'desktop'
      */
-    applyLayout(mode) {
+    applyLayout(mode: string) {
         if (!this.config.dockable) return;
 
         if (mode === 'desktop') {

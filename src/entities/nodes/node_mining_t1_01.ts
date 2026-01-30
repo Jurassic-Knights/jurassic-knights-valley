@@ -3,6 +3,9 @@
  * Auto-generated from JSON.
  */
 
+
+import type { NodeEntity } from '@app-types/entities';
+
 export default {
     id: 'node_mining_t1_01',
     name: 'Copper Vein',
@@ -22,4 +25,12 @@ export default {
         sizeScale: 1,
         width: 64,
         height: 64
-    },};
+    },
+    drops: [
+        {
+            item: "minerals_t1_02",
+            chance: 1,
+            amount: [1, 3]
+        }
+    ]
+} satisfies NodeEntity;

@@ -3,13 +3,17 @@
         "target": "ES2022",
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "lib": [
+            "ES2022",
+            "DOM",
+            "DOM.Iterable"
+        ],
         "allowJs": true,
         "checkJs": false,
         "noEmit": true,
-        "strict": false,
+        "strict": true,
         "strictNullChecks": false,
-        "noImplicitAny": false,
+        "noImplicitAny": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "skipLibCheck": true,
@@ -19,19 +23,48 @@
         "isolatedModules": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["src/*"],
-            "@core/*": ["src/core/*"],
-            "@systems/*": ["src/systems/*"],
-            "@entities/*": ["src/entities/*"],
-            "@vfx/*": ["src/vfx/*"],
-            "@ui/*": ["src/ui/*"],
-            "@app-types/*": ["src/types/*"],
-            "@config/*": ["src/config/*"],
-            "@data/*": ["src/data/*"],
-            "@audio/*": ["src/audio/*"],
-            "@dashboard/*": ["tools/dashboard/src/*"]
+            "@/*": [
+                "src/*"
+            ],
+            "@core/*": [
+                "src/core/*"
+            ],
+            "@systems/*": [
+                "src/systems/*"
+            ],
+            "@entities/*": [
+                "src/entities/*"
+            ],
+            "@vfx/*": [
+                "src/vfx/*"
+            ],
+            "@ui/*": [
+                "src/ui/*"
+            ],
+            "@app-types/*": [
+                "src/types/*"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
+            "@data/*": [
+                "src/data/*"
+            ],
+            "@audio/*": [
+                "src/audio/*"
+            ],
+            "@dashboard/*": [
+                "tools/dashboard/src/*"
+            ]
         }
     },
-    "include": ["src/**/*", "src/types/**/*.d.ts", "tools/dashboard/src/**/*"],
-    "exclude": ["node_modules", "dist"]
+    "include": [
+        "src/**/*",
+        "src/types/**/*.d.ts",
+        "tools/dashboard/src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
 }

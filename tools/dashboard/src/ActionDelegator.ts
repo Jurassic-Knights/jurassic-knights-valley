@@ -42,7 +42,36 @@ import {
     setCategoryNodeSubtypeFilter,
     setCategoryImageSize,
     setCategorySortOrder,
+    resetCategoryFilters,
 } from './filters';
+import { setSelectedAssetId, setCurrentInspectorTab } from './state';
+import { renderCategoryView } from './categoryRenderer';
+import { renderInspector } from './inspectorRenderer';
+
+// Helper to switch tabs in inspector
+function switchInspectorTab(tabName: string, target: HTMLElement) {
+    // 0. Update State
+    setCurrentInspectorTab(tabName);
+
+    // 1. Update Buttons
+    const container = target.closest('.inspector-tabs');
+    if (container) {
+        container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+    }
+
+    // 2. toggle Content
+    const inspector = document.getElementById('inspectorPanel'); // Check if ID is correct, inspectorRenderer uses ID 'inspectorContent' but parent is probably panel
+    // Actually inspectorRenderer uses 'inspectorContent'. Let's check where 'inspectorPanel' is coming from.
+    // The previous code had 'inspectorPanel'. I will assume it renders into a container.
+    // However, looking at inspectorRenderer.ts: const container = document.getElementById('inspectorContent');
+    // So we should query inside 'inspectorContent' or just query document.
+
+    // Safer to query document for the active content
+    document.querySelectorAll('.tab-content').forEach((el) => ((el as HTMLElement).style.display = 'none'));
+    const activeContent = document.getElementById(`tab-${tabName}`);
+    if (activeContent) activeContent.style.display = 'block';
+}
 
 // Action Handler Signature
 type ActionHandler = (dataset: DOMStringMap, target: HTMLElement) => void | Promise<void>;
@@ -57,6 +86,21 @@ const actions: Record<string, ActionHandler> = {
     'refresh-manifest': () => loadManifest(),
     'save-map-data': () => saveMapData(),
 
+    // Selection & Inspector
+    'select-asset': (d) => {
+        setSelectedAssetId(d.id!);
+        // Re-render grid to update selection highlight
+        renderCategoryView();
+        // Render inspector
+        renderInspector();
+    },
+    'switch-tab': (d, t) => switchInspectorTab(d.tab!, t),
+    'copy-id': (d) => {
+        navigator.clipboard.writeText(d.id!);
+        // Visual feedback?
+        console.log('Copied ID:', d.id);
+    },
+
     // Status
     'approve-item': (d) => approveCategoryItem(d.category!, d.file!, d.id!),
     'decline-item': (d) => declineCategoryItem(d.category!, d.file!, d.id!, d.safeId!),
@@ -68,12 +112,92 @@ const actions: Record<string, ActionHandler> = {
     'decline-asset-prompt': (d) => declineAssetPrompt(d.path!, d.name!),
     'remake-asset': (d) => remakeAsset(d.path!, d.name!, d.safeId!),
 
+    // Quick Actions (Category Cards)
+    'quick-approve': async (d, t) => {
+        // Prevent selecting the card when clicking the button
+        // (Handled by stopPropagation in delegator, but good to note)
+        await approveCategoryItem(d.category!, d.file!, d.id!);
+    },
+    'quick-decline': async (d, t) => {
+        // Try to find a sibling input in the card footer
+        const footer = t.closest('.card-footer');
+        const input = footer?.querySelector('.feedback-input') as HTMLInputElement;
+
+        let reason = input ? input.value : null;
+
+        if (!reason) {
+            // Fallback to prompt if no input or empty (optional? maybe force input use?)
+            // User requested "missing feedback text input", implying they want to use it.
+            // If empty, we can still prompt or just mark as declined with generic note.
+            // Let's prompt if empty to be safe, but pre-fill if they typed something.
+            const promptVal = prompt('Decline reason?', reason || '');
+            if (promptVal === null) return; // Cancelled
+            reason = promptVal;
+        }
+
+        if (reason !== null) {
+            await updateCategoryStatus(d.category!, d.file!, d.id!, 'declined', reason);
+        }
+    },
+
     // Field Updates
     'update-status': (d) => updateCategoryStatus(d.category!, d.file!, d.id!, d.value!),
     // 'update-consumed-status' handled globally below to support notes
     'update-tier': (d) => updateItemTier(d.category!, d.file!, d.id!, parseInt(d.value!)),
     'update-weapon': (d) => updateItemWeapon(d.category!, d.file!, d.id!, d.value!),
     'update-field': (d) => updateItemField(d.category!, d.file!, d.id!, d.field!, parseValue(d.value!)),
+
+    'paste-image-to-path': async (d) => {
+        const path = d.path;
+        if (!path) {
+            alert('No original file path set for this asset. Set one in the source code first.');
+            return;
+        }
+
+        try {
+            const items = await navigator.clipboard.read();
+            for (const item of items) {
+                if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
+                    const blob = await item.getType(item.types.includes('image/png') ? 'image/png' : 'image/jpeg');
+
+                    // Convert to base64
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                        const base64 = reader.result as string;
+                        // Confirm
+                        if (!confirm(`Overwrite ${path} with clipboard image?`)) return;
+
+                        // Send to server
+                        const response = await fetch('/api/upload_image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ path: path, image: base64 })
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            alert('Image updated! Refreshing...');
+                            // Force refresh image by appending timestamp to src in DOM? 
+                            // Easier to just reload the inspector
+                            const inspectorImg = document.querySelector('.inspector-placeholder img, .inspector-content img') as HTMLImageElement;
+                            if (inspectorImg) inspectorImg.src = inspectorImg.src.split('?')[0] + '?t=' + Date.now();
+
+                            // Also refresh the main grid image
+                            renderCategoryView();
+                        } else {
+                            alert('Failed: ' + result.error);
+                        }
+                    };
+                    reader.readAsDataURL(blob);
+                    return;
+                }
+            }
+            alert("No image found on clipboard!");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to read clipboard. Ensure you accepted permissions.");
+        }
+    },
     'update-display': (d) => updateDisplayField(d.category!, d.file!, d.id!, d.field!, parseFloat(d.value!)),
     'update-display-size': (d) => updateDisplaySize(d.category!, d.file!, d.id!, parseInt(d.value!)),
 
@@ -100,6 +224,7 @@ const actions: Record<string, ActionHandler> = {
     'set-category-subtype': (d) => setCategoryNodeSubtypeFilter(d.value!),
     'set-category-size': (d) => setCategoryImageSize(parseInt(d.value!)),
     'set-category-sort': (d) => setCategorySortOrder(d.value!),
+    'reset-filters': () => resetCategoryFilters(),
 
     // Advanced Image Actions (Split View)
     'decline-item-by-id': (d) => declineCategoryItemById(d.category!, d.file!, d.id!, d.noteInputId!),
@@ -130,10 +255,15 @@ function parseValue(val: string): string | number | boolean {
 
 export function initEventDelegation() {
     document.body.addEventListener('click', async (e) => {
+        // Log all clicks for debugging
+        // console.log('[Delegator] Click on:', e.target);
+
         const target = (e.target as HTMLElement).closest('[data-action]') as HTMLElement;
         if (!target) return;
 
         const actionName = target.dataset.action;
+        console.log('[ActionDelegator] Action triggering:', actionName, target.dataset);
+
         if (actionName && actions[actionName]) {
             e.stopPropagation(); // Prevent bubbling if handled
             try {
@@ -144,7 +274,17 @@ export function initEventDelegation() {
         }
     });
 
+
+
     // Handle Input Changes (delegated change events)
+    document.body.addEventListener('input', (e) => {
+        const target = e.target as HTMLElement;
+        if (target && target.matches('textarea.feedback-input')) {
+            target.style.height = 'auto';
+            target.style.height = target.scrollHeight + 'px';
+        }
+    });
+
     document.body.addEventListener('change', async (e) => {
         const target = (e.target as HTMLElement).closest('[data-action]') as HTMLInputElement | HTMLSelectElement;
         if (!target) return;

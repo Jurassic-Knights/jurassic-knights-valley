@@ -27,7 +27,7 @@ const EnemyAI = {
      * @param {Enemy} enemy - The enemy to update
      * @param {number} dt - Delta time in ms
      */
-    updateState(enemy, dt) {
+    updateState(enemy: any, dt: number) {
         if (!enemy.active || enemy.isDead) return;
 
         switch (enemy.state) {
@@ -50,7 +50,7 @@ const EnemyAI = {
     /**
      * Wander behavior with aggro detection
      */
-    updateWander(enemy, dt) {
+    updateWander(enemy: any, dt: number) {
         // Check for hero aggro
         const hero = entityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
         if (hero && !hero.isDead && this.canSee(enemy, hero)) {
@@ -87,7 +87,7 @@ const EnemyAI = {
     /**
      * Chase behavior with leash distance check
      */
-    updateChase(enemy, dt) {
+    updateChase(enemy: any, dt: number) {
         if (!enemy.target) {
             enemy.state = 'returning';
             return;
@@ -116,7 +116,7 @@ const EnemyAI = {
     /**
      * Attack behavior
      */
-    updateAttack(enemy, dt) {
+    updateAttack(enemy: any, dt: number) {
         if (!enemy.target) {
             enemy.state = 'wander';
             return;
@@ -140,7 +140,7 @@ const EnemyAI = {
     /**
      * Return to spawn behavior
      */
-    updateReturning(enemy, dt) {
+    updateReturning(enemy: any, dt: number) {
         const dist = MathUtils.distance(enemy.spawnX, enemy.spawnY, enemy.x, enemy.y);
 
         if (dist < 20) {
@@ -158,7 +158,7 @@ const EnemyAI = {
     /**
      * Perform attack on target
      */
-    performAttack(enemy) {
+    performAttack(enemy: any) {
         if (!enemy.target) return;
 
         if (EventBus && GameConstants?.Events) {
@@ -182,7 +182,7 @@ const EnemyAI = {
     /**
      * Trigger pack aggro for group members
      */
-    triggerPackAggro(enemy, target) {
+    triggerPackAggro(enemy: any, target: any) {
         if (!entityManager || !enemy.groupId) return;
 
         // Read pack aggro radius from config for live tuning
@@ -214,7 +214,7 @@ const EnemyAI = {
     /**
      * Check if enemy can see hero (in aggro range)
      */
-    canSee(enemy, hero) {
+    canSee(enemy: any, hero: any) {
         if (!hero || enemy.isDead) return false;
         return enemy.distanceTo(hero) <= enemy.aggroRange;
     }

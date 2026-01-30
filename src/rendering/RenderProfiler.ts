@@ -9,8 +9,23 @@
 
 import { Logger } from '@core/Logger';
 
+export interface RenderTiming {
+    frames: number;
+    world: number;
+    vfxBg: number;
+    entitySort: number;
+    shadows: number;
+    entities: number;
+    ambient: number;
+    fog: number;
+    vfxFg: number;
+    envOverlay: number;
+    entOtherTypes?: Record<string, number>;
+    [key: string]: any;
+}
+
 const RenderProfiler = {
-    timing: null,
+    timing: null as RenderTiming | null,
 
     /**
      * Start detailed render profiling
@@ -41,7 +56,7 @@ const RenderProfiler = {
 
         Logger.info('=== RENDER PHASE BREAKDOWN ===');
         Logger.info(`Frames: ${t.frames}`);
-        const phases = [
+        const phases: [string, number][] = [
             ['World', t.world],
             ['VFX BG', t.vfxBg],
             ['Entity Sort', t.entitySort],
@@ -60,7 +75,7 @@ const RenderProfiler = {
 
         // World sub-phase breakdown
         Logger.info('--- World Sub-Phases ---');
-        const worldPhases = [
+        const worldPhases: [string, number][] = [
             ['Water/BG', t.worldWater || 0],
             ['Islands', t.worldIslands || 0],
             ['Debug', t.worldDebug || 0]
@@ -73,7 +88,7 @@ const RenderProfiler = {
 
         // Shadow sub-phase breakdown
         Logger.info('--- Shadow Sub-Phases ---');
-        const shadowPhases = [
+        const shadowPhases: [string, number][] = [
             ['Clear', t.shadowClear || 0],
             ['Composite', t.shadowComposite || 0],
             ['Hero', t.shadowHero || 0],

@@ -12,6 +12,7 @@ import {
     setCurrentCategoryName,
     globalAssetLookup,
     setGlobalAssetLookup,
+    setLootSourceMap,
     sfxRegenerationQueue,
     setSfxRegenerationQueue,
     currentCategoryName,
@@ -477,8 +478,12 @@ export async function syncEntitiesToJson(): Promise<void> {
 
 export async function loadGlobalAssetLookup(): Promise<void> {
     try {
-        const categories = ['resources', 'items', 'equipment', 'nodes'];
+        const categories = [
+            'resources', 'items', 'equipment', 'nodes',
+            'enemies', 'bosses', 'props', 'buildings'
+        ];
         const lookup: Record<string, AssetInfo> = {};
+        const sourceMap: Record<string, string[]> = {};
 
         for (const cat of categories) {
             const response = await fetch('/api/get_category', {
@@ -488,29 +493,94 @@ export async function loadGlobalAssetLookup(): Promise<void> {
             });
             const data = await response.json();
 
+            // Helper to process an item for lookup key and source map
+            const processItem = (item: any) => {
+                // 1. Build Lookup
+                const imgPath = item.files?.clean || item.files?.original;
+                if (imgPath) {
+                    const displayPath = imgPath.replace(/^(assets\/)?images\//, '');
+                    lookup[item.id] = {
+                        id: item.id,
+                        path: displayPath,
+                        name: item.name,
+                        category: cat,
+                    };
+                    if (item.name) {
+                        lookup[item.name] = lookup[item.id];
+                    }
+                }
+
+                // 2. Build Loot Source Map
+                // A. Check LOOT (Enemies)
+                if (item.loot && Array.isArray(item.loot)) {
+                    for (const drop of item.loot) {
+                        if (!sourceMap[drop.item]) sourceMap[drop.item] = [];
+                        if (!sourceMap[drop.item].includes(item.id)) {
+                            sourceMap[drop.item].push(item.id);
+                        }
+                    }
+                }
+
+                // B. Check DROPS (Nodes - New Standard)
+                if (item.drops && Array.isArray(item.drops)) {
+                    for (const drop of item.drops) {
+                        const dropId = drop.item;
+                        if (!sourceMap[dropId]) sourceMap[dropId] = [];
+                        if (!sourceMap[dropId].includes(item.id)) {
+                            sourceMap[dropId].push(item.id);
+                        }
+                    }
+                }
+
+                // C. Check RECIPE (Items - Reverse Ingredient Lookup)
+                if (item.recipe) {
+                    // Logic to extract ingredients from recipe string/object/array
+                    // Simplified: just check if we can parse it easily
+                    let ingredients: string[] = [];
+                    if (Array.isArray(item.recipe)) {
+                        ingredients = item.recipe.map((r: any) => r.item);
+                    } else if (typeof item.recipe === 'object') {
+                        ingredients = Object.keys(item.recipe);
+                    }
+                    // String parsing is safer done elsewhere or simplified here
+
+                    for (const ing of ingredients) {
+                        if (!sourceMap[ing]) sourceMap[ing] = [];
+                        if (!sourceMap[ing].includes(item.id)) {
+                            sourceMap[ing].push(item.id); // "Used To Craft" relationship
+                        }
+                    }
+                }
+
+                // D. Check RESOURCE DROP (Nodes - Legacy)
+                if (item.resourceDrop) {
+                    if (!sourceMap[item.resourceDrop]) sourceMap[item.resourceDrop] = [];
+                    if (!sourceMap[item.resourceDrop].includes(item.id)) {
+                        sourceMap[item.resourceDrop].push(item.id);
+                    }
+                }
+            };
+
+            // Process 'files' (scanned from disk)
             if (data.files) {
                 for (const [, items] of Object.entries(data.files as Record<string, AssetItem[]>)) {
                     for (const item of items) {
-                        const imgPath = item.files?.clean || item.files?.original;
-                        if (imgPath) {
-                            const displayPath = imgPath.replace(/^(assets\/)?images\//, '');
-                            lookup[item.id] = {
-                                id: item.id,
-                                path: displayPath,
-                                name: item.name,
-                                category: cat,
-                            };
-                            if (item.name) {
-                                lookup[item.name] = lookup[item.id];
-                            }
-                        }
+                        processItem(item);
                     }
+                }
+            }
+
+            // Process 'entities' (code definitions, source of truth for logic)
+            if (data.entities && Array.isArray(data.entities)) {
+                for (const item of data.entities) {
+                    processItem(item);
                 }
             }
         }
 
         setGlobalAssetLookup(lookup);
-        console.log(`[Dashboard] Loaded ${Object.keys(lookup).length} assets into lookup`);
+        setLootSourceMap(sourceMap);
+        console.log(`[Dashboard] Loaded ${Object.keys(lookup).length} assets and ${Object.keys(sourceMap).length} drop keys`);
     } catch (err) {
         console.error('[Dashboard] Failed to load asset lookup:', err);
     }

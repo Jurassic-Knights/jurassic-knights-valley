@@ -47,7 +47,7 @@ class Prop extends Entity {
      * Render the prop with lazy-loading support
      * @param {CanvasRenderingContext2D} ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         // Draw shadow first (underneath)

@@ -15,7 +15,7 @@ import { QuestManager } from '../gameplay/QuestManager';
 import { VFXTriggerService } from './VFXTriggerService';
 import { Registry } from '@core/Registry';
 
-import type { IGame } from '../types/core.d';
+import type { IGame, IEntity } from '../types/core.d';
 
 class InteractionSystem {
     game: IGame | null = null;
@@ -37,7 +37,7 @@ class InteractionSystem {
         }
     }
 
-    update(dt) {
+    update(dt: number) {
         if (!entityManager || !this.game.hero) return;
 
         const hero = this.game.hero;
@@ -65,7 +65,7 @@ class InteractionSystem {
      * Check for spatial triggers (Merchant, Bridge)
      * Replaces Game.updateUITriggers
      */
-    updateSpatialTriggers(hero) {
+    updateSpatialTriggers(hero: IEntity) {
         // Merchant Button
         if (spawnManager && EventBus) {
             const nearbyMerchant = spawnManager.getMerchantNearHero(hero);
@@ -90,11 +90,11 @@ class InteractionSystem {
     /**
      * Handle item collection
      */
-    collectItem(hero, item) {
+    collectItem(hero: IEntity, item: IEntity) {
         // Hero logic (add to inventory)
         // Hero logic (add to inventory)
         const type = item.resourceType;
-        const amount = item.amount || 1;
+        const amount = (item as any).amount || 1;
 
         // SFX - play for EVERY item pickup (no debounce)
         if (AudioManager) {
@@ -124,7 +124,7 @@ class InteractionSystem {
 
         // Events & Feedback
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
+            EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.components.inventory);
         }
 
         // SFX is handled by Hero.collect or specific item logic usually,
@@ -158,7 +158,7 @@ class InteractionSystem {
     /**
      * Trigger "Singularity" VFX when all magnetized items arrive
      */
-    triggerMagnetCompletionVFX(hero) {
+    triggerMagnetCompletionVFX(hero: IEntity) {
         if (VFXTriggerService) {
             VFXTriggerService.triggerMagnetCompletionVFX(hero);
         }

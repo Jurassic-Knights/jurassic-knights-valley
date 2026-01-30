@@ -23,14 +23,18 @@ class Hero extends Entity {
     // Class properties
     components: Record<string, any>;
     equipment: any;
-    isAtHomeOutpost: boolean;
-    locked: boolean;
-    prevX: number;
-    prevY: number;
+    isAtHomeOutpost: boolean = false;
+    locked: boolean = false;
+    isAttacking: boolean = false;
+    hand1Attacking: boolean = false;
+    hand2Attacking: boolean = false;
+    targetResource: any = null;
+
     footstepTimer: number;
     footstepInterval: number;
     attackTimer: number;
     selectedSkin: string | null = null;
+    inputMove: { x: number; y: number } = { x: 0, y: 0 };
 
     /** Check if hero is dead */
     isDead(): boolean {

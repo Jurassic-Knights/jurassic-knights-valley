@@ -13,7 +13,7 @@ import { Logger } from '@core/Logger';
 /**
  * Update animation frame
  */
-Enemy.prototype.updateAnimation = function (dt) {
+Enemy.prototype.updateAnimation = function (dt: number) {
     this.frameTimer += dt;
     if (this.frameTimer >= this.frameInterval) {
         this.frameTimer = 0;
@@ -49,7 +49,7 @@ Enemy.prototype._loadSprite = function () {
         this._spriteLoaded = true;
         Logger.info(`[Enemy] Sprite loaded: ${assetKey}`);
     });
-    this._sprite.onerror = (e) => {
+    this._sprite.onerror = (e: any) => {
         Logger.error(`[Enemy] Failed to load sprite: ${assetKey}, path: ${path}`, e);
         this._spriteLoaded = false;
     };
@@ -58,7 +58,7 @@ Enemy.prototype._loadSprite = function () {
 /**
  * Render enemy (with elite glow if applicable)
  */
-Enemy.prototype.render = function (ctx) {
+Enemy.prototype.render = function (ctx: CanvasRenderingContext2D) {
     if (!this.active) return;
 
     // Elite glow effect
@@ -108,7 +108,7 @@ Enemy.prototype.render = function (ctx) {
 /**
  * Render health bar above enemy
  */
-Enemy.prototype.renderHealthBar = function (ctx) {
+Enemy.prototype.renderHealthBar = function (ctx: CanvasRenderingContext2D) {
     const barWidth = 50;
     const barHeight = 6;
     const barX = this.x - barWidth / 2;
@@ -137,7 +137,7 @@ Enemy.prototype.renderHealthBar = function (ctx) {
 /**
  * Render threat level indicator
  */
-Enemy.prototype.renderThreatIndicator = function (ctx) {
+Enemy.prototype.renderThreatIndicator = function (ctx: CanvasRenderingContext2D) {
     const indicatorY = this.y - this.height / 2 - 25;
 
     ctx.save();

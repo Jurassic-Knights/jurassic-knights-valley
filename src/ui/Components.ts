@@ -12,7 +12,7 @@ const Components = {
      * @param {string} assetId - Asset registry ID
      * @param {string} fallback - Fallback text if image fails
      */
-    img(assetId, fallback = '') {
+    img(assetId: string, fallback: string = '') {
         const path = AssetLoader.getImagePath(assetId);
         if (!path) {
             return `<span class="icon-fallback">${fallback}</span>`;
@@ -27,7 +27,7 @@ const Components = {
      * @param {string} id - Optional ID attribute
      * @param {object} data - Optional data attributes
      */
-    button(text, className = 'btn-primary', id = '', data = {}) {
+    button(text: string, className: string = 'btn-primary', id: string = '', data: Record<string, string> = {}) {
         const idAttr = id ? `id="${id}"` : '';
         const dataAttrs = Object.entries(data).map(([k, v]) => `data-${k}="${v}"`).join(' ');
         return `<button class="btn ${className}" ${idAttr} ${dataAttrs}>${text}</button>`;
@@ -36,14 +36,14 @@ const Components = {
     /**
      * Create a close button (?)
      */
-    closeButton(id = '', className = '') {
+    closeButton(id: string = '', className: string = '') {
         return `<button class="btn btn-close ${className}" ${id ? `id="${id}"` : ''}>?</button>`;
     },
 
     /**
      * Create a back button (? Back)
      */
-    backButton(id = '', className = '') {
+    backButton(id: string = '', className: string = '') {
         return `<button class="btn btn-back ${className}" ${id ? `id="${id}"` : ''}>? Back</button>`;
     },
 
@@ -54,7 +54,7 @@ const Components = {
      * @param {string} id - Button ID  
      * @param {object} data - Data attributes
      */
-    footerButton(iconId, label, id = '', data = {}) {
+    footerButton(iconId: string, label: string, id: string = '', data: Record<string, string> = {}) {
         const dataAttrs = Object.entries(data).map(([k, v]) => `data-${k}="${v}"`).join(' ');
         return `
             <button class="action-btn" ${id ? `id="${id}"` : ''} ${dataAttrs}>
@@ -67,14 +67,14 @@ const Components = {
     /**
      * Create a tab button for category filtering
      */
-    tabButton(label, category, isActive = false) {
+    tabButton(label: string, category: string, isActive: boolean = false) {
         return `<button class="btn-filter ${isActive ? 'active' : ''}" data-category="${category}">${label}</button>`;
     },
 
     /**
      * Create a card component
      */
-    card(content, className = '') {
+    card(content: string, className: string = '') {
         return `<div class="card ${className}">${content}</div>`;
     },
 
@@ -85,7 +85,7 @@ const Components = {
      * @param {string} content - Modal body content
      * @param {boolean} showClose - Whether to show close button
      */
-    modal(id, title, content, showClose = true) {
+    modal(id: string, title: string, content: string, showClose: boolean = true) {
         return `
             <div id="${id}" class="modal-overlay">
                 <div class="modal-backdrop"></div>
@@ -101,7 +101,7 @@ const Components = {
     /**
      * Create a grid of selectable items
      */
-    selectableGrid(items, selectedId = null) {
+    selectableGrid(items: any[], selectedId: string | null = null) {
         return `
             <div class="selectable-grid">
                 ${items.map(item => `

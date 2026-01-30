@@ -8,13 +8,14 @@ import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { Registry } from '@core/Registry';
 import { environmentRenderer } from './EnvironmentRenderer';
+import { Dinosaur } from '../gameplay/Dinosaur';
 
 class DinosaurRendererService {
     constructor() {
         Logger.info('[DinosaurRenderer] Initialized');
     }
 
-    render(ctx, dino, includeShadow = true, alpha = 1) {
+    render(ctx: CanvasRenderingContext2D, dino: Dinosaur, includeShadow = true, alpha = 1) {
         if (!dino.active) return;
 
         // Interpolation
@@ -63,7 +64,7 @@ class DinosaurRendererService {
     }
 
     // ... rest of methods ...
-    renderShadow(ctx, dino, forceOpaque = false) {
+    renderShadow(ctx: CanvasRenderingContext2D, dino: Dinosaur, forceOpaque = false) {
         // Check environmentRenderer singleton for dynamic shadows
         const env = environmentRenderer;
 
@@ -115,16 +116,18 @@ class DinosaurRendererService {
 
         // 1. Sprite Render (Silhouette)
         // We need to find the correct sprite frame just like render() does
-        let sprite = dino._sprites ? dino._sprites[dino.spriteId] : null;
-        let spriteName = dino.spriteId;
+        // 1. Sprite Render (Silhouette)
+        // Use _sprite directly
+        let sprite = dino._sprite;
 
-        if (!sprite && dino.walkFrames) {
-            const currentFrameKey = dino.walkFrames[dino.frameIndex];
-            sprite = dino._sprites ? dino._sprites[currentFrameKey] : null;
-            spriteName = currentFrameKey;
+        if (dino.walkFrames && dino.walkFrames.length > 0) {
+            const frame = dino.walkFrames[dino.frameIndex];
+            if (frame instanceof HTMLImageElement) {
+                sprite = frame;
+            }
         }
 
-        if (dino._spritesLoaded && sprite) {
+        if (dino._spriteLoaded && sprite) {
             const flipX = dino.wanderDirection.x < 0;
 
             // Handle Horizontal Flip
@@ -133,17 +136,20 @@ class DinosaurRendererService {
             }
 
             // PERF: Cache shadow on entity (retry until successful)
-            if (!dino._shadowImg) {
+            const dinoAny = dino as any;
+
+            if (!dinoAny._shadowImg) {
                 if (MaterialLibrary) {
                     const baseShadowId = 'dino_' + (dino.dinoType || 'base') + '_base';
-                    dino._shadowImg = MaterialLibrary.get(baseShadowId, 'shadow', {});
+                    dinoAny._shadowImg = MaterialLibrary.get(baseShadowId, 'shadow', {});
                 }
             }
 
-            if (dino._shadowImg) {
+            if (dinoAny._shadowImg) {
                 // Draw anchored at bottom
+                // Use actual dimensions
                 ctx.drawImage(
-                    dino._shadowImg,
+                    dinoAny._shadowImg,
                     -dino.width / 2,
                     -dino.height,
                     dino.width,
@@ -155,7 +161,7 @@ class DinosaurRendererService {
         ctx.restore();
     }
 
-    renderDead(ctx, dino) {
+    renderDead(ctx: CanvasRenderingContext2D, dino: Dinosaur) {
         ctx.save();
         ctx.fillStyle = '#444';
         ctx.beginPath();
@@ -181,7 +187,7 @@ class DinosaurRendererService {
         ctx.restore();
     }
 
-    renderUI(ctx, dino) {
+    renderUI(ctx: CanvasRenderingContext2D, dino: Dinosaur) {
         if (!dino.active) return;
 
         // Dead State: Respawn Bar
@@ -192,7 +198,7 @@ class DinosaurRendererService {
             const barX = dino.x - barWidth / 2;
             const barY = dino.y - 60;
 
-            const totalDuration = dino.currentRespawnDuration || dino.maxRespawnTime;
+            const totalDuration = dino.maxRespawnTime;
             const pct = Math.max(0, 1 - dino.respawnTimer / totalDuration);
 
             if (ProgressBarRenderer) {

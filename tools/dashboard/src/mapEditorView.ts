@@ -32,7 +32,7 @@ export async function saveMapData(): Promise<void> {
     Logger.info('Saving map...');
     // In the future this will call editorInstance.serialize()
     // For now just test the API
-    const testData = { tiles: [], name: 'test_map' };
+    const testData = { tiles: [] as any[], name: 'test_map' };
 
     try {
         const res = await fetch('/api/save_map', {

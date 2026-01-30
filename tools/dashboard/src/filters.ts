@@ -94,3 +94,15 @@ export function setTierFilter(tier: string | number): void {
         });
     });
 }
+export function resetCategoryFilters(): void {
+    setCategoryFilterValue({
+        status: 'all',
+        biome: 'all',
+        tier: 'all',
+        file: 'all',
+        weaponType: 'all',
+        hands: 'all',
+        nodeSubtype: 'all'
+    });
+    renderCategoryView();
+}

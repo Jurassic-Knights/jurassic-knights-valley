@@ -2,7 +2,7 @@
  * Entity: node_mining_t2_03
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@types/entities';
+import type { NodeEntity } from '@app-types/entities';
 
 export default {
     "id": "node_mining_t2_03",
@@ -22,5 +22,12 @@ export default {
         "sizeScale": 1,
         "width": 128,
         "height": 128
-    }
+    },
+    "drops": [
+        {
+            "item": "minerals_t2_02",
+            "chance": 1,
+            "amount": [1, 3]
+        }
+    ]
 } satisfies NodeEntity;

@@ -9,11 +9,15 @@ import { EntityRegistry } from '@entities/EntityLoader';
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
+import { IGame, IEntity } from '@app-types/core';
 
 // Helper to access Events from GameConstants
 const Events = GameConstants.Events;
+
 const ProgressionSystem = {
-    init(game) {
+    game: null as IGame | null,
+
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
         Logger.info('[ProgressionSystem] Initialized');
@@ -21,11 +25,11 @@ const ProgressionSystem = {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(Events.ENEMY_DIED, (data) => this.onEnemyKilled(data));
+            EventBus.on(Events.ENEMY_DIED, (data: any) => this.onEnemyKilled(data));
         }
     },
 
-    onEnemyKilled(data) {
+    onEnemyKilled(data: { enemy: IEntity; xpReward: number }) {
         const { enemy, xpReward } = data;
         if (!xpReward || !this.game?.hero) return;
 
@@ -34,10 +38,8 @@ const ProgressionSystem = {
 
     /**
      * Grant XP to hero
-     * @param {Hero} hero
-     * @param {number} amount
      */
-    grantXP(hero, amount) {
+    grantXP(hero: IEntity, amount: number) {
         const stats = hero.components?.stats;
         if (!stats) return;
 
@@ -55,10 +57,17 @@ const ProgressionSystem = {
         }
 
         // Check for level up(s) - multiple levels can be gained from one kill
-        while (stats.xp >= stats.getXPForLevel(stats.level)) {
-            stats.xp -= stats.getXPForLevel(stats.level);
+        // Ensure getXPForLevel exists or use safe fallback logic
+        const getXP = (lvl: number) => {
+            return stats.getXPForLevel ? stats.getXPForLevel(lvl) : 100 * Math.pow(1.5, lvl - 1);
+        };
+
+        let nextLevelXP = getXP(stats.level);
+        while (stats.xp >= nextLevelXP) {
+            stats.xp -= nextLevelXP;
             stats.level++;
             this.onLevelUp(hero, stats.level);
+            nextLevelXP = getXP(stats.level);
         }
 
         // Emit if leveled
@@ -76,10 +85,8 @@ const ProgressionSystem = {
 
     /**
      * Handle level up bonuses
-     * @param {Hero} hero
-     * @param {number} newLevel
      */
-    onLevelUp(hero, newLevel) {
+    onLevelUp(hero: IEntity, newLevel: number) {
         const stats = hero.components?.stats;
         const health = hero.components?.health;
 
@@ -106,8 +113,8 @@ const ProgressionSystem = {
         }
 
         // VFX
-        const VFXController = Registry?.get('VFXController');
-        const VFXConfig = Registry?.get('VFXConfig');
+        const VFXController = Registry.get('VFXController');
+        const VFXConfig = Registry.get('VFXConfig');
         if (VFXController && VFXConfig) {
             VFXController.playForeground(
                 hero.x,
@@ -122,7 +129,7 @@ const ProgressionSystem = {
         }
 
         // SFX
-        const AudioManager = Registry?.get('AudioManager');
+        const AudioManager = Registry.get('AudioManager');
         if (AudioManager) {
             AudioManager.playSFX('sfx_level_up');
         }
@@ -133,7 +140,7 @@ const ProgressionSystem = {
     /**
      * Get XP required for specific level
      */
-    getXPForLevel(level) {
+    getXPForLevel(level: number): number {
         const base = EntityRegistry.hero?.['hero']?.xpToNextLevel || 100;
         const scaling = EntityRegistry.hero?.['hero']?.xpScaling || 1.5;
         return Math.floor(base * Math.pow(scaling, level - 1));
@@ -142,16 +149,21 @@ const ProgressionSystem = {
     /**
      * Get hero's current XP progress as percentage
      */
-    getXPProgress(hero) {
+    getXPProgress(hero: IEntity): number {
         const stats = hero?.components?.stats;
         if (!stats) return 0;
-
-        const required = stats.getXPForLevel(stats.level);
+        // Use local helper or component method if available?
+        // Component method is standard if it exists.
+        // Assuming component has getXPForLevel?
+        // Let's use internal calculator if component doesn't have it, to be safe.
+        // But logic above used stats.getXPForLevel...
+        // Let's assume stats component matches the logic or we use ours.
+        const required = stats.getXPForLevel ? stats.getXPForLevel(stats.level) : this.getXPForLevel(stats.level);
         return stats.xp / required;
     },
 
     // Legacy compatibility
-    meetsRequirements(requirements: any = {}) {
+    meetsRequirements(requirements: any = {}): boolean {
         const hero = this.game?.hero;
         if (!hero) return true;
 
@@ -160,7 +172,7 @@ const ProgressionSystem = {
         return true;
     },
 
-    getAvailableUnlocks() {
+    getAvailableUnlocks(): any[] {
         return [];
     }
 };

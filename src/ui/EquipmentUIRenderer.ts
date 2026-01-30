@@ -17,7 +17,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @returns {string} HTML string
      */
-    static renderPanel(ui) {
+    static renderPanel(ui: any) {
         const hero = GameInstance?.hero;
         const stats = hero?.components?.stats;
         const equipment = hero?.equipment;
@@ -103,10 +103,10 @@ class EquipmentUIRenderer {
      * @param {EquipmentManager} equipment - Hero equipment manager
      * @returns {string} HTML string
      */
-    static renderEquippedSlots(ui, equipment) {
+    static renderEquippedSlots(ui: any, equipment: any) {
         // Tool mode: show 4 dedicated tool slots in a single row
         if (ui.selectedMode === 'tool') {
-            const toolSlotLabels = {
+            const toolSlotLabels: Record<string, string> = {
                 tool_mining: '?? Mining',
                 tool_woodcutting: '?? Woodcut',
                 tool_harvesting: '?? Harvest',
@@ -123,7 +123,7 @@ class EquipmentUIRenderer {
         // Weapon mode: show Set 1 and Set 2 weapon slots with labels and toggle
         if (ui.selectedMode === 'weapon') {
             const targetSet = ui.targetEquipSet || 1;
-            const weaponSlotLabels = {
+            const weaponSlotLabels: Record<string, string> = {
                 hand1: 'Main',
                 hand2: 'Off',
                 hand1_alt: 'Main',
@@ -151,7 +151,7 @@ class EquipmentUIRenderer {
         }
 
         // Armor mode: show armor and accessory slots only
-        const armorSlotLabels = {
+        const armorSlotLabels: Record<string, string> = {
             head: 'Helmet',
             body: 'Armor',
             hands: 'Gloves',
@@ -178,7 +178,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentManager} equipment - Hero equipment manager
      * @returns {string} HTML string
      */
-    static renderSlot(ui, slotId, label, equipment) {
+    static renderSlot(ui: any, slotId: string, label: string, equipment: any) {
         const item = equipment?.getSlot?.(slotId);
         const imgPath = item ? EquipmentUIRenderer.getItemIcon(item.id) : '';
 
@@ -226,7 +226,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @returns {string} HTML string
      */
-    static renderInventoryGrid(ui) {
+    static renderInventoryGrid(ui: any) {
         // cachedEquipment is already filtered by _loadEquipment based on mode + category + modifier
         const filtered = ui.cachedEquipment;
 
@@ -237,14 +237,14 @@ class EquipmentUIRenderer {
         return `
             <div class="inventory-grid">
                 ${filtered
-                    .map(
-                        (item) => `
+                .map(
+                    (item: any) => `
                     <div class="inventory-item ${ui.selectedItem?.id === item.id ? 'selected' : ''}" data-id="${item.id}">
                         <div class="item-icon" style="background-image: url('${EquipmentUIRenderer.getItemIcon(item.id)}')"></div>
                     </div>
                 `
-                    )
-                    .join('')}
+                )
+                .join('')}
             </div>
         `;
     }
@@ -254,7 +254,7 @@ class EquipmentUIRenderer {
      * @param {string} itemId - Item identifier
      * @returns {string} Image path
      */
-    static getItemIcon(itemId) {
+    static getItemIcon(itemId: string) {
         if (AssetLoader && AssetLoader.getImagePath) {
             return AssetLoader.getImagePath(itemId);
         }
@@ -274,7 +274,7 @@ class EquipmentUIRenderer {
      * @param {string} skinId - Skin ID
      * @returns {string} Image path
      */
-    static getSkinImagePath(skinId) {
+    static getSkinImagePath(skinId: string) {
         if (AssetLoader && AssetLoader.getImagePath) {
             return AssetLoader.getImagePath(skinId);
         }
@@ -286,14 +286,14 @@ class EquipmentUIRenderer {
      * Load icons using AssetLoader
      * @param {HTMLElement} container - Container element
      */
-    static loadIcons(container) {
+    static loadIcons(container: HTMLElement) {
         const loader = AssetLoader as any;
         if (loader?.loadIcons) {
             loader.loadIcons(container);
         }
 
         // Also load hero skin portrait
-        const skinEl = container.querySelector('.character-sprite[data-skin-id]');
+        const skinEl = container.querySelector('.character-sprite[data-skin-id]') as HTMLElement;
         if (skinEl) {
             const skinId = skinEl.dataset.skinId;
             const path = EquipmentUIRenderer.getSkinImagePath(skinId);
@@ -311,7 +311,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentItem} item - Equipment item
      * @returns {string} HTML string
      */
-    static renderItemStats(item) {
+    static renderItemStats(item: any) {
         if (!item?.stats) {
             return '<div class="summary-stat empty">No stats</div>';
         }
@@ -363,8 +363,8 @@ class EquipmentUIRenderer {
             statCount <= 1
                 ? '1fr'
                 : statCount <= 4
-                  ? `repeat(${statCount}, 1fr)`
-                  : 'repeat(5, 1fr)';
+                    ? `repeat(${statCount}, 1fr)`
+                    : 'repeat(5, 1fr)';
 
         return `<div class="stats-grid" style="display:grid; grid-template-columns:${gridCols}; gap:4px; width:100%; justify-items:center;">
             ${relevantStats

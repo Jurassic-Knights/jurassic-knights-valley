@@ -2,7 +2,7 @@
  * Entity: npc_merchant_01
  * Auto-generated. Edit in dashboard.
  */
-import type { NPCEntity } from '@types/entities';
+import type { NPCEntity } from '@app-types/entities';
 
 export default {
     "id": "npc_merchant_01",

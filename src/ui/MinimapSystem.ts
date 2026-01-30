@@ -240,7 +240,7 @@ class MinimapSystem {
         const viewTop = heroY - viewRadius;
 
         // Convert world coord to canvas coord
-        const toCanvas = (worldX, worldY) => ({
+        const toCanvas = (worldX: number, worldY: number) => ({
             x: (worldX - viewLeft) * this.scale,
             y: (worldY - viewTop) * this.scale
         });
@@ -427,7 +427,7 @@ class MinimapSystem {
     /**
      * Update called each frame (for live minimap)
      */
-    update(dt) {
+    update(dt: number) {
         // Re-render if open to show hero movement
         if (this.isOpen) {
             this.render();

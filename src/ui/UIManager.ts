@@ -97,7 +97,7 @@ class UIManagerService {
         if (btnMagnet) {
             btnMagnet.addEventListener('click', () => {
                 // Skip if footer is in override mode (equipment/inventory screen has taken over)
-                if ((btnMagnet as any).dataset.footerOverride) return;
+                if ((btnMagnet as HTMLElement).dataset.footerOverride) return;
                 const eventName =
                     GameConstants && GameConstants.Events
                         ? GameConstants.Events.REQUEST_MAGNET
@@ -213,7 +213,7 @@ class UIManagerService {
     }
 
     // === Platform/Layout ===
-    onPlatformChange(config) {
+    onPlatformChange(config: any) {
         const format = PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile';
         Logger.debug(
             '[UIManager]',
@@ -222,13 +222,13 @@ class UIManagerService {
         this.applyLayout(format);
     }
 
-    onResponsiveChange(data) {
+    onResponsiveChange(data: any) {
         if (PlatformManager?.isManualOverride) return;
         Logger.debug('[UIManager]', `Format changed: ${data.format} (${data.orientation})`);
         this.applyLayout(data.format);
     }
 
-    applyLayout(format) {
+    applyLayout(format: string) {
         if (!LayoutStrategies) return;
 
         const StrategyClass =
@@ -242,7 +242,7 @@ class UIManagerService {
     }
 
     // === Quest Panel ===
-    updateQuest(quest, animate = false) {
+    updateQuest(quest: any, animate = false) {
         if (!quest) {
             this.hideQuestPanel();
             return;
@@ -278,7 +278,7 @@ class UIManagerService {
     }
 
     // === Screen Fade ===
-    fadeInOut(onMidpoint) {
+    fadeInOut(onMidpoint: any) {
         const overlay = document.getElementById('fade-overlay');
         if (!overlay) {
             if (onMidpoint) onMidpoint();
@@ -295,7 +295,7 @@ class UIManagerService {
     }
 
     // === Panel Registry ===
-    registerPanel(panel) {
+    registerPanel(panel: any) {
         if (!this.panels.has(panel.id)) {
             this.panels.set(panel.id, panel);
             Logger.debug('[UIManager]', `Registered panel: ${panel.id}`);
@@ -310,11 +310,11 @@ class UIManagerService {
         }
     }
 
-    getPanel(id) {
+    getPanel(id: string) {
         return this.panels.get(id);
     }
 
-    handleAccordion(openingPanel) {
+    handleAccordion(openingPanel: any) {
         this.panels.forEach((panel) => {
             if (
                 panel !== openingPanel &&
@@ -332,7 +332,7 @@ class UIManagerService {
      * Register a fullscreen UI (call in the UI's constructor)
      * @param {Object} ui - UI object with isOpen and close() method
      */
-    registerFullscreenUI(ui) {
+    registerFullscreenUI(ui: any) {
         this.fullscreenUIs.add(ui);
     }
 
@@ -340,7 +340,7 @@ class UIManagerService {
      * Close all other fullscreen UIs except the one being opened
      * @param {Object} exceptUI - The UI that should remain open
      */
-    closeOtherFullscreenUIs(exceptUI) {
+    closeOtherFullscreenUIs(exceptUI: any) {
         this.fullscreenUIs.forEach((ui) => {
             if (ui !== exceptUI && ui.isOpen && typeof ui.close === 'function') {
                 ui.close();
@@ -355,7 +355,7 @@ class UIManagerService {
     }
 
     // === Update Loop ===
-    update(dt) {
+    update(dt: number) {
         // UI mostly event-driven
     }
 

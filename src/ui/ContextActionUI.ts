@@ -88,7 +88,7 @@ class ContextActionService {
         if (this.label) this.label.textContent = '';
     }
 
-    show(type, data = null) {
+    show(type: string, data: any = null) {
         this.activeContext = type;
         this.contextData = data;
         if (!this.isSuspended) {
@@ -96,7 +96,7 @@ class ContextActionService {
         }
     }
 
-    hide(type) {
+    hide(type: string) {
         if (this.activeContext !== type) return;
         this.activeContext = null;
         this.contextData = null;
@@ -139,15 +139,16 @@ class ContextActionService {
         }
     }
 
-    private _updateDOM(type, data) {
+    private _updateDOM(type: string, data: any) {
         if (!this.btn) return;
 
-        const config = {
+        const configMap: Record<string, { iconId: string; label: string }> = {
             rest: { iconId: 'ui_icon_rest', label: 'REST' },
             forge: { iconId: 'ui_icon_forge', label: 'FORGE' },
             unlock: { iconId: 'ui_icon_lock', label: data ? `${data.unlockCost}G` : 'UNLOCK' },
             merchant: { iconId: 'ui_icon_shop', label: 'SHOP' }
-        }[type] || { iconId: '', label: '' };
+        };
+        const config = configMap[type] || { iconId: '', label: '' };
 
         // Update Icon
         if (this.icon && AssetLoader) {

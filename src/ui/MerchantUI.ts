@@ -102,7 +102,7 @@ class MerchantPanel extends UIPanel {
         this.render();
     }
 
-    updateButtonVisibility(merchant) {
+    updateButtonVisibility(merchant: any) {
         // Always track the merchant opportunity
         if (merchant) {
             this.currentMerchant = merchant;
@@ -157,7 +157,7 @@ class MerchantPanel extends UIPanel {
         );
     }
 
-    renderUpgradeRow(type, data, label, unit, customDisplay = null) {
+    renderUpgradeRow(type: string, data: any, label: string, unit: string, customDisplay: string | null = null) {
         const levelEl = document.getElementById(`upgrade-${type}-level`);
         const costEl = document.getElementById(`upgrade-${type}-cost`);
         const btn = document.getElementById(`btn-upgrade-${type}`);
@@ -178,7 +178,7 @@ class MerchantPanel extends UIPanel {
         }
     }
 
-    purchaseUpgrade(type) {
+    purchaseUpgrade(type: string) {
         if (!this.currentMerchant || !IslandUpgrades) return;
 
         const [gridX, gridY] = this.currentMerchant.islandId.split('_').map(Number);

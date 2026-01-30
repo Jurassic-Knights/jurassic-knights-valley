@@ -1,7 +1,6 @@
-
 import { ChunkManager } from './ChunkManager';
 import { Logger } from '@core/Logger';
-import { SimplexNoise } from 'simplex-noise';
+import { createNoise2D } from 'simplex-noise';
 
 /**
  * ProceduralArchitect
@@ -12,10 +11,10 @@ import { SimplexNoise } from 'simplex-noise';
  * - Organic forest clustering
  */
 export class ProceduralArchitect {
-    private noise: SimplexNoise;
+    private noise: (x: number, y: number) => number;
 
     constructor() {
-        this.noise = new SimplexNoise();
+        this.noise = createNoise2D();
     }
 
     /**

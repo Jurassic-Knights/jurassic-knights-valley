@@ -31,7 +31,7 @@ class PropSpawner {
      * @param {number} y
      * @param {number} padding - Extra padding around bridge bounds (default 100px for prop size)
      */
-    isOnBridgeVisual(x, y, padding = 100) {
+    isOnBridgeVisual(x: number, y: number, padding: number = 100) {
         const islandManager = this.spawnManager.game?.getSystem('IslandManager');
         if (!islandManager) return false;
 
@@ -64,13 +64,13 @@ class PropSpawner {
             return;
         }
 
-        const spawnedProps = [];
+        const spawnedProps: { x: number; y: number }[] = [];
 
         for (const island of islandManager.islands) {
             if (island.type === 'home') continue;
 
-            const foliageMap = PropConfig && PropConfig.FOLIAGE_MAP ? PropConfig.FOLIAGE_MAP : {};
-            const itemMap = PropConfig && PropConfig.ITEM_MAP ? PropConfig.ITEM_MAP : {};
+            const foliageMap = (PropConfig && PropConfig.FOLIAGE_MAP ? PropConfig.FOLIAGE_MAP : {}) as Record<string, string[]>;
+            const itemMap = (PropConfig && PropConfig.ITEM_MAP ? PropConfig.ITEM_MAP : {}) as Record<string, string[]>;
             const foliageList = foliageMap[island.name];
             const itemList = itemMap[island.name];
 
@@ -85,7 +85,7 @@ class PropSpawner {
         Logger.info(`[PropSpawner] Spawned ${spawnedProps.length} props.`);
     }
 
-    spawnFoliage(island, foliageList, spawnedProps) {
+    spawnFoliage(island: any, foliageList: string[], spawnedProps: { x: number; y: number }[]) {
         const C = getConfig().Spawning.PROPS;
         const islandManager = this.spawnManager.game?.getSystem('IslandManager');
         const gap = islandManager?.waterGap || 50;
@@ -134,7 +134,7 @@ class PropSpawner {
         }
     }
 
-    spawnScatteredItems(island, itemList, spawnedProps) {
+    spawnScatteredItems(island: any, itemList: string[], spawnedProps: { x: number; y: number }[]) {
         const C = getConfig().Spawning.PROPS;
         const islandManager = this.spawnManager.game?.getSystem('IslandManager');
         const gap = islandManager?.waterGap || 50;
@@ -159,7 +159,7 @@ class PropSpawner {
         }
     }
 
-    findValidPosition(island, gap, bridgePadding, existingProps, minSpacing, maxAttempts) {
+    findValidPosition(island: any, gap: number, bridgePadding: number, existingProps: { x: number; y: number }[], minSpacing: number, maxAttempts: number) {
         const minX = island.worldX - gap;
         const maxX = island.worldX + island.width + gap;
         const minY = island.worldY - gap;
@@ -176,7 +176,7 @@ class PropSpawner {
         return null;
     }
 
-    isValidPropPosition(x, y, island, bridgePadding, existingProps, minSpacing) {
+    isValidPropPosition(x: number, y: number, island: any, bridgePadding: number, existingProps: { x: number; y: number }[], minSpacing: number) {
         // Inside Island Bounds (invalid - props go in water gap)
         if (
             x > island.worldX &&
@@ -198,7 +198,7 @@ class PropSpawner {
         return true;
     }
 
-    createProp(x, y, sprite, island) {
+    createProp(x: number, y: number, sprite: string, island: any) {
         const prop = new Prop({
             x: x,
             y: y,

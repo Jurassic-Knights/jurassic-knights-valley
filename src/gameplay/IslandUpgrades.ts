@@ -8,16 +8,31 @@
 
 import { Logger } from '@core/Logger';
 
+interface UpgradeLevel {
+    level: number;
+    max: number;
+}
+
+interface IslandUpgradeState {
+    gridX: number;
+    gridY: number;
+    name: string;
+    resourceSlots: UpgradeLevel;
+    autoChance: UpgradeLevel;
+    respawnTime: UpgradeLevel;
+    [key: string]: any; // Index signature for dynamic access
+}
+
 const IslandUpgrades = {
     // Upgrade data per island (keyed by island grid position)
-    islands: {},
+    islands: {} as Record<string, IslandUpgradeState>,
 
     // Base costs
     baseCosts: {
         resourceSlots: 100,
         autoChance: 150,
         respawnTime: 75
-    },
+    } as Record<string, number>,
 
     // Cost multiplier per level
     costMultiplier: 1.15,
@@ -32,7 +47,7 @@ const IslandUpgrades = {
     /**
      * Initialize upgrade data for all islands
      */
-    init(islands) {
+    init(islands: any[]) {
         // Defensive: ensure islands is an iterable array
         if (!islands || !Array.isArray(islands)) {
             Logger.warn('[IslandUpgrades] init called with invalid islands parameter, skipping');
@@ -58,7 +73,10 @@ const IslandUpgrades = {
      * @param {number} gridY
      * @returns {object|null}
      */
-    getIsland(gridX, gridY) {
+    /**
+     * Get upgrade state for an island
+     */
+    getIsland(gridX: number, gridY: number): IslandUpgradeState | null {
         const key = `${gridX}_${gridY}`;
         return this.islands[key] || null;
     },
@@ -66,10 +84,8 @@ const IslandUpgrades = {
     /**
      * Calculate cost for next level of an upgrade
      * @param {string} type - 'resourceSlots', 'autoChance', 'respawnTime'
-     * @param {number} currentLevel
-     * @returns {number}
      */
-    getUpgradeCost(type, currentLevel) {
+    getUpgradeCost(type: string, currentLevel: number): number {
         const baseCost = this.baseCosts[type] || 100;
         return Math.floor(baseCost * Math.pow(this.costMultiplier, currentLevel));
     },
@@ -81,7 +97,10 @@ const IslandUpgrades = {
      * @param {string} type
      * @returns {boolean}
      */
-    canUpgrade(gridX, gridY, type) {
+    /**
+     * Check if an upgrade can be purchased
+     */
+    canUpgrade(gridX: number, gridY: number, type: string): boolean {
         const island = this.getIsland(gridX, gridY);
         if (!island) return false;
 
@@ -93,12 +112,8 @@ const IslandUpgrades = {
 
     /**
      * Apply an upgrade to an island
-     * @param {number} gridX
-     * @param {number} gridY
-     * @param {string} type
-     * @returns {boolean} Success
      */
-    applyUpgrade(gridX, gridY, type) {
+    applyUpgrade(gridX: number, gridY: number, type: string): boolean {
         const island = this.getIsland(gridX, gridY);
         if (!island) return false;
 
@@ -119,7 +134,10 @@ const IslandUpgrades = {
      * @param {number} gridY
      * @returns {number} Percentage (0-80)
      */
-    getAutoChance(gridX, gridY) {
+    /**
+     * Get current auto-chance percentage for an island
+     */
+    getAutoChance(gridX: number, gridY: number): number {
         const island = this.getIsland(gridX, gridY);
         if (!island) return 0;
         return island.autoChance.level; // 1 level = 1%
@@ -127,11 +145,8 @@ const IslandUpgrades = {
 
     /**
      * Get respawn time in seconds for an island
-     * @param {number} gridX
-     * @param {number} gridY
-     * @returns {number} Seconds
      */
-    getRespawnTime(gridX, gridY, baseTime = 30) {
+    getRespawnTime(gridX: number, gridY: number, baseTime = 30): number {
         const island = this.getIsland(gridX, gridY);
         if (!island) return baseTime;
 
@@ -141,11 +156,8 @@ const IslandUpgrades = {
 
     /**
      * Calculate respawn time based on level
-     * @param {number} level
-     * @param {number} baseTime
-     * @returns {number}
      */
-    calculateRespawnTime(level, baseTime) {
+    calculateRespawnTime(level: number, baseTime: number): number {
         // Base time, speed increased by 10% per level
         // Formula: Time = Base / (1 + (Level * 0.10))
         const speedMultiplier = 1 + level * 0.1;
@@ -154,11 +166,8 @@ const IslandUpgrades = {
 
     /**
      * Get max resource slots for an island
-     * @param {number} gridX
-     * @param {number} gridY
-     * @returns {number}
      */
-    getResourceSlots(gridX, gridY) {
+    getResourceSlots(gridX: number, gridY: number): number {
         const island = this.getIsland(gridX, gridY);
         if (!island) return 1;
         return island.resourceSlots.level;

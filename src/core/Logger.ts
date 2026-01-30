@@ -36,47 +36,47 @@ const Logger = {
         ERROR: '#EF5350'
     },
 
-    setLevel(level) {
+    setLevel(level: number) {
         this.currentLevel = level;
         console.log(`[Logger] Level set to: ${this._getLevelName(level)}`);
     },
 
-    _getLevelName(level) {
-        return Object.keys(this.LEVELS).find((key) => this.LEVELS[key] === level) || 'UNKNOWN';
+    _getLevelName(level: number) {
+        return Object.keys(this.LEVELS).find((key) => this.LEVELS[key as keyof typeof this.LEVELS] === level) || 'UNKNOWN';
     },
 
-    _format(level, tag, ...args) {
+    _format(level: number, tag: string, ...args: any[]) {
         const timestamp = new Date().toISOString().substr(11, 12);
-        const color = this.colors[this._getLevelName(level)];
+        const color = this.colors[this._getLevelName(level) as keyof typeof this.colors];
         return [`%c[${timestamp}]${tag}`, `color: ${color}`, ...args];
     },
 
-    debug(tag, ...args) {
+    debug(tag: string, ...args: any[]) {
         if (this.currentLevel <= this.LEVELS.DEBUG) {
             console.log(...this._format(this.LEVELS.DEBUG, tag, ...args));
         }
     },
 
-    info(tag, ...args) {
+    info(tag: string, ...args: any[]) {
         if (this.currentLevel <= this.LEVELS.INFO) {
             console.log(...this._format(this.LEVELS.INFO, tag, ...args));
         }
     },
 
-    warn(tag, ...args) {
+    warn(tag: string, ...args: any[]) {
         if (this.currentLevel <= this.LEVELS.WARN) {
             console.warn(...this._format(this.LEVELS.WARN, tag, ...args));
         }
     },
 
-    error(tag, ...args) {
+    error(tag: string, ...args: any[]) {
         if (this.currentLevel <= this.LEVELS.ERROR) {
             console.error(...this._format(this.LEVELS.ERROR, tag, ...args));
         }
     },
 
     // Group logging for related messages
-    group(tag, label) {
+    group(tag: string, label: string) {
         if (this.currentLevel <= this.LEVELS.DEBUG) {
             console.group(`${tag} ${label}`);
         }
@@ -89,13 +89,13 @@ const Logger = {
     },
 
     // Performance timing
-    time(label) {
+    time(label: string) {
         if (this.currentLevel <= this.LEVELS.DEBUG) {
             console.time(label);
         }
     },
 
-    timeEnd(label) {
+    timeEnd(label: string) {
         if (this.currentLevel <= this.LEVELS.DEBUG) {
             console.timeEnd(label);
         }

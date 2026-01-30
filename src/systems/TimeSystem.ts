@@ -37,7 +37,7 @@ class TimeSystem {
         // Config is now a getter, no initialization needed
     }
 
-    init(game) {
+    init(game: any) {
         this.game = game;
         Logger.info('[TimeSystem] Initialized');
     }
@@ -46,7 +46,7 @@ class TimeSystem {
      * Set a time override (locks dayTime to a specific phase)
      * @param {string|null} phase - 'dawn', 'day', 'dusk', 'night' or null to disable
      */
-    setTimeOverride(phase) {
+    setTimeOverride(phase: string | null) {
         if (!phase || phase === 'auto') {
             this.overrideEnabled = false;
             this.overrideTime = null;
@@ -90,7 +90,7 @@ class TimeSystem {
      * Set a season override
      * @param {string|null} season - 'SPRING', 'SUMMER', 'AUTUMN', 'WINTER' or null/auto
      */
-    setSeasonOverride(season) {
+    setSeasonOverride(season: string | null) {
         if (!season || season === 'auto') {
             this.overrideSeason = null;
             Logger.info('[TimeSystem] Season Override Disabled');
@@ -112,7 +112,7 @@ class TimeSystem {
      * Update loop
      * @param {number} dt Delta time in ms
      */
-    update(dt) {
+    update(dt: number) {
         if (!this.isRunning) return;
 
         // If override is active, just emit tick but don't advance time

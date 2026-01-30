@@ -21,7 +21,7 @@ const ENV: any = {
 
 const Profiler = {
     enabled: false,
-    element: null,
+    element: null as HTMLElement | null,
 
     // Metrics
     fps: 0,
@@ -103,7 +103,7 @@ const Profiler = {
         // Update every 500ms
         if (delta >= 500) {
             this.fps = Math.round((this.frames * 1000) / delta);
-            this.frameTime = (delta / this.frames).toFixed(1);
+            this.frameTime = parseFloat((delta / this.frames).toFixed(1));
             this.frames = 0;
             this.lastTime = now;
 

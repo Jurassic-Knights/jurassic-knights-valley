@@ -89,8 +89,8 @@ const EquipmentSlotsConfig = {
      * @param {string} itemType
      * @returns {boolean}
      */
-    canEquip(slotId, itemType) {
-        const slot = this.slots[slotId];
+    canEquip(slotId: string, itemType: string) {
+        const slot = (this.slots as any)[slotId];
         return slot ? slot.accepts.includes(itemType) : false;
     }
 };

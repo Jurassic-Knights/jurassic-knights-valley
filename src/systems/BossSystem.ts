@@ -17,9 +17,9 @@ import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { BiomeConfig } from '@data/BiomeConfig';
+import { EntityTypes } from '@config/EntityTypes';
 import { Boss } from '../gameplay/Boss';
-
-// Unmapped modules - need manual import
+import type { IGame } from '../types/core';
 
 class BossSystem {
     game: any = null;
@@ -30,7 +30,7 @@ class BossSystem {
         Logger.info('[BossSystem] Constructed');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
 
@@ -58,14 +58,14 @@ class BossSystem {
      * Spawn boss for a biome
      * @param {string} biomeId
      */
-    spawnBoss(biomeId) {
+    spawnBoss(biomeId: string) {
         // Check if already spawned or respawning
         if (this.bosses.has(biomeId) || this.respawnTimers.has(biomeId)) {
             return null;
         }
 
         // Get biome config
-        const biome = BiomeConfig?.types?.[biomeId];
+        const biome = (BiomeConfig?.types as Record<string, any>)?.[biomeId];
         if (!biome?.bossId) {
             Logger.info(`[BossSystem] No boss configured for biome: ${biomeId}`);
             return null;
@@ -116,9 +116,9 @@ class BossSystem {
      * @param {string} biomeId
      * @returns {{x: number, y: number}}
      */
-    getBossSpawnPosition(biomeId) {
+    getBossSpawnPosition(biomeId: string) {
         // Try to get from biome config
-        const biome = BiomeConfig?.types?.[biomeId];
+        const biome = (BiomeConfig?.types as Record<string, any>)?.[biomeId];
         if (biome?.bossSpawn) {
             return biome.bossSpawn;
         }
@@ -143,13 +143,13 @@ class BossSystem {
             lava_crags: { x: offsetX + 3000, y: offsetY + 3000 } // Center of Ironhaven (for testing)
         };
 
-        return defaults[biomeId] || { x: offsetX + 3500, y: offsetY + 3500 };
+        return (defaults as Record<string, any>)[biomeId] || { x: offsetX + 3500, y: offsetY + 3500 };
     }
 
     /**
      * Handle enemy death - track boss deaths
      */
-    onEnemyDied(data) {
+    onEnemyDied(data: any) {
         const { enemy } = data;
         if (!enemy?.isBoss) return;
 
@@ -169,7 +169,7 @@ class BossSystem {
     /**
      * Handle biome entry - spawn boss if not already spawned
      */
-    onBiomeEntered(data) {
+    onBiomeEntered(data: any) {
         const { biomeId } = data;
         if (!biomeId) return;
 
@@ -183,7 +183,7 @@ class BossSystem {
      * Update respawn timers
      * @param {number} dt - Delta time in milliseconds
      */
-    update(dt) {
+    update(dt: number) {
         // Update respawn timers
         for (const [biomeId, timer] of this.respawnTimers.entries()) {
             const newTimer = timer - dt;
@@ -202,7 +202,7 @@ class BossSystem {
      * @param {string} biomeId
      * @returns {boolean}
      */
-    isBossAlive(biomeId) {
+    isBossAlive(biomeId: string) {
         const boss = this.bosses.get(biomeId);
         return boss && !boss.isDead && boss.active;
     }
@@ -212,7 +212,7 @@ class BossSystem {
      * @param {string} biomeId
      * @returns {Boss|null}
      */
-    getBoss(biomeId) {
+    getBoss(biomeId: string) {
         return this.bosses.get(biomeId) || null;
     }
 
@@ -221,7 +221,7 @@ class BossSystem {
      * @param {string} biomeId
      * @returns {number}
      */
-    getRespawnTime(biomeId) {
+    getRespawnTime(biomeId: string) {
         const timer = this.respawnTimers.get(biomeId);
         return timer ? Math.ceil(timer / 1000) : 0;
     }
@@ -234,7 +234,7 @@ class BossSystem {
         if (!biomes) return;
 
         for (const biomeId of Object.keys(biomes)) {
-            if (biomes[biomeId].bossId) {
+            if ((biomes as Record<string, any>)[biomeId].bossId) {
                 this.spawnBoss(biomeId);
             }
         }

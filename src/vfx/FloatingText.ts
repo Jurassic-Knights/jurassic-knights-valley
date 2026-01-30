@@ -48,7 +48,7 @@ class FloatingText {
         this.startY = this.y;
     }
 
-    update(dt) {
+    update(dt: number) {
         if (!this.active) return;
 
         const dtSec = dt / 1000;
@@ -79,7 +79,7 @@ class FloatingText {
         return 1.0 - (1.0 - this.shrinkScale) * progress;
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         const scale = this.getScale();
@@ -110,7 +110,7 @@ class FloatingText {
  * FloatingTextManager - Manages all floating text with stacking support
  */
 const FloatingTextManager = {
-    texts: [],
+    texts: [] as FloatingText[],
 
     // Track recent spawn positions for stacking
     recentSpawns: new Map(), // key: "x,y" -> { count, lastTime }
@@ -190,7 +190,7 @@ const FloatingTextManager = {
     /**
      * Get stack offset for position
      */
-    getStackOffset(x, y) {
+    getStackOffset(x: number, y: number) {
         const key = `${Math.round(x / 50)},${Math.round(y / 50)}`; // Round to grid
         const now = Date.now();
 
@@ -208,8 +208,8 @@ const FloatingTextManager = {
     /**
      * Spawn floating text
      */
-    spawn(x, y, text, type = 'damage') {
-        const config = this.configs[type] || this.configs.damage;
+    spawn(x: number, y: number, text: any, type: string = 'damage') {
+        const config = (this.configs as any)[type] || this.configs.damage;
         const stackOffset = this.getStackOffset(x, y);
         this.texts.push(new FloatingText(text, x, y, config, stackOffset));
     },
@@ -217,7 +217,7 @@ const FloatingTextManager = {
     /**
      * Convenience method for damage numbers
      */
-    showDamage(x, y, damage, isCritical = false) {
+    showDamage(x: number, y: number, damage: number, isCritical: boolean = false) {
         const type = isCritical ? 'critical' : 'damage';
         const text = isCritical ? `${damage}!` : damage;
         this.spawn(x, y, text, type);
@@ -226,7 +226,7 @@ const FloatingTextManager = {
     /**
      * Update all texts
      */
-    update(dt) {
+    update(dt: number) {
         for (let i = this.texts.length - 1; i >= 0; i--) {
             this.texts[i].update(dt);
             if (!this.texts[i].active) {
@@ -246,7 +246,7 @@ const FloatingTextManager = {
     /**
      * Render all texts
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         for (const text of this.texts) {
             text.render(ctx);
         }

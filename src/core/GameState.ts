@@ -62,7 +62,7 @@ class GameState {
      * Get a value
      * @param {string} key
      */
-    get(key) {
+    get(key: keyof typeof this.data) {
         return this.data[key];
     }
 
@@ -71,8 +71,8 @@ class GameState {
      * @param {string} key
      * @param {any} value
      */
-    set(key, value) {
-        this.data[key] = value;
+    set(key: keyof typeof this.data, value: any) {
+        (this.data as any)[key] = value;
         this.emitChange(key, value);
     }
 
@@ -81,7 +81,7 @@ class GameState {
      * @param {string} itemId
      * @param {number} qty
      */
-    updateInventory(itemId, qty) {
+    updateInventory(itemId: string, qty: number) {
         this.data.inventory[itemId] = qty;
 
         if (EventBus) {
@@ -90,7 +90,7 @@ class GameState {
         }
     }
 
-    emitChange(key, value) {
+    emitChange(key: string, value: any) {
         if (EventBus) {
             EventBus.emit('STATE_CHANGED', { key, value });
             // Specific events for convenience

@@ -2,7 +2,7 @@
  * Entity: node_woodcutting_t1_01
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@types/entities';
+import type { NodeEntity } from '@app-types/entities';
 
 export default {
     "id": "node_woodcutting_t1_01",
@@ -22,5 +22,12 @@ export default {
         "sizeScale": 4,
         "width": 64,
         "height": 64
-    }
+    },
+    "drops": [
+        {
+            "item": "scraps_t1_01",
+            "chance": 1,
+            "amount": [1, 3]
+        }
+    ]
 } satisfies NodeEntity;

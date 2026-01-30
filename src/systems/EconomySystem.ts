@@ -15,6 +15,7 @@ import { AudioManager } from '../audio/AudioManager';
 import { VFXTriggerService } from './VFXTriggerService';
 import { spawnManager } from './SpawnManager';
 import { Registry } from '@core/Registry';
+import type { IGame } from '../types/core';
 
 class EconomySystem {
     game: any = null;
@@ -23,7 +24,7 @@ class EconomySystem {
         Logger.info('[EconomySystem] Constructed');
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         this.initListeners();
         Logger.info('[EconomySystem] Initialized');
@@ -46,7 +47,7 @@ class EconomySystem {
         );
     }
 
-    update(dt) {
+    update(dt: number) {
         // No per-frame logic needed currently
     }
 
@@ -65,7 +66,7 @@ class EconomySystem {
      * Internal method to deduct gold
      * @param {number} amount
      */
-    spendGold(amount) {
+    spendGold(amount: number) {
         const currentGold = this.getGold();
         if (currentGold < amount) return false;
 
@@ -95,7 +96,7 @@ class EconomySystem {
      * Internal method to add gold
      * @param {number} amount
      */
-    addGold(amount) {
+    addGold(amount: number) {
         const currentGold = this.getGold();
         const newGold = currentGold + amount;
 
@@ -122,7 +123,7 @@ class EconomySystem {
      * Handle a request to unlock an island
      * @param {object} data - { gridX, gridY, cost }
      */
-    handleUnlockRequest(data) {
+    handleUnlockRequest(data: any) {
         const { gridX, gridY, cost } = data;
 
         if (this.spendGold(cost)) {
@@ -151,7 +152,7 @@ class EconomySystem {
      * Handle upgrade purchase request
      * @param {object} data - { gridX, gridY, type, cost }
      */
-    handleUpgradeRequest(data) {
+    handleUpgradeRequest(data: any) {
         const { gridX, gridY, type, cost } = data;
 
         if (this.spendGold(cost)) {

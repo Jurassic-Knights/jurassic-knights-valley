@@ -154,7 +154,7 @@ class Resource extends Entity {
      * @returns {boolean}
      */
     isInRange(hero: { x: number; y: number }) {
-        return this.active && this.state === 'ready' && this.distanceTo(hero) < this.interactRadius;
+        return this.active && this.state === 'ready' && this.distanceTo(hero as any) < this.interactRadius;
     }
 
     /**
@@ -224,7 +224,46 @@ class Resource extends Entity {
 
             // Trigger Drop
             if (spawnManager) {
-                spawnManager.spawnDrop(this.x, this.y, this.resourceType, this.amount);
+                // Look up drop config
+                const typeConfig = EntityRegistry.nodes?.[this.resourceType] || EntityRegistry.resources?.[this.resourceType] || {};
+
+                // 1. Check for explicit 'drops' array (New standard)
+                if (typeConfig.drops && Array.isArray(typeConfig.drops) && typeConfig.drops.length > 0) {
+                    // Simple random drop logic for now (pick first or random based on chance?)
+                    // For now, iterate and spawn all qualifying drops
+                    typeConfig.drops.forEach((drop: any) => {
+                        const roll = Math.random();
+                        const chance = drop.chance !== undefined ? drop.chance : 1;
+                        if (roll <= chance) {
+                            // Calculate amount
+                            let count = 1;
+                            if (Array.isArray(drop.amount)) {
+                                count = Math.floor(Math.random() * (drop.amount[1] - drop.amount[0] + 1)) + drop.amount[0];
+                            } else if (typeof drop.amount === 'number') {
+                                count = drop.amount;
+                            }
+                            spawnManager.spawnDrop(this.x, this.y, drop.item, count);
+                        }
+                    });
+                }
+                // 2. Fallback: resourceDrop string (Legacy)
+                else if (typeConfig.resourceDrop) {
+                    spawnManager.spawnDrop(this.x, this.y, typeConfig.resourceDrop, this.amount);
+                }
+                // 3. Fallback: Loot table (Enemies style, strictly shouldn't apply but safety net)
+                else if (typeConfig.loot && Array.isArray(typeConfig.loot)) {
+                    // Logic similar to above
+                    typeConfig.loot.forEach((drop: any) => {
+                        const roll = Math.random();
+                        if (roll <= (drop.chance || 1)) {
+                            spawnManager.spawnDrop(this.x, this.y, drop.item, 1);
+                        }
+                    });
+                }
+                // 4. Fallback: No drop configured
+                else {
+                    Logger.warn(`[Resource] No drop configured for ${this.resourceType}. Dropping nothing.`);
+                }
             }
 
             return true; // Yield loot

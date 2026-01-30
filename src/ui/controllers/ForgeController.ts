@@ -48,7 +48,7 @@ class ForgePanel extends UIPanel {
     /**
      * Override Update Loop
      */
-    update(dt) {
+    update(dt: number) {
         if (this.isOpen && this.currentView && this.currentView.view === 'dashboard') {
             this.updateActiveSlots();
         }
@@ -190,11 +190,11 @@ class ForgePanel extends UIPanel {
                         <div class="forge-cost">
                             <span class="cost-item">Wood: ${recipe.fuelCost}</span>
                            ${Object.entries(recipe.ingredients)
-                               .map(
-                                   ([k, v]) =>
-                                       `<span class="cost-item">${k.replace('_', ' ')}: ${v}</span>`
-                               )
-                               .join('')}
+                            .map(
+                                ([k, v]) =>
+                                    `<span class="cost-item">${k.replace('_', ' ')}: ${v}</span>`
+                            )
+                            .join('')}
                         </div>
                     </div>
                 `

@@ -40,7 +40,7 @@ class Game {
     private accumulator: number = 0;
     public hero: Hero | null = null;
     private systems: ISystem[] = [];
-    private _boundGameLoop: () => void;
+    private _boundGameLoop: (timestamp: number) => void;
     private _profile: ProfileData | null = null;
 
     constructor() {
@@ -256,7 +256,7 @@ class Game {
      * Main game loop
      * @param {number} timestamp
      */
-    gameLoop(timestamp) {
+    gameLoop(timestamp: number) {
         if (!this.isRunning) return;
 
         // Calculate delta time
@@ -289,7 +289,7 @@ class Game {
      * Update game logic (fixed timestep)
      * @param {number} dt - Delta time in ms
      */
-    update(dt) {
+    update(dt: number) {
         const profile = this._profile;
 
         // 1. Update Registered Systems

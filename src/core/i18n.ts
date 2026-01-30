@@ -25,7 +25,7 @@ class I18n {
      * Load a language file
      * @param {string} locale - Language code (en, es, fr, etc.)
      */
-    async load(locale) {
+    async load(locale: string) {
         if (this.translations[locale]) {
             return; // Already loaded
         }
@@ -38,7 +38,7 @@ class I18n {
             this.translations[locale] = await response.json();
             Logger?.info(`[i18n] Loaded ${locale}`);
         } catch (error) {
-            Logger?.warn(`[i18n] Could not load ${locale}:`, error.message);
+            Logger?.warn(`[i18n] Could not load ${locale}:`, (error as Error).message);
         }
     }
 
@@ -46,7 +46,7 @@ class I18n {
      * Set current language
      * @param {string} locale - Language code
      */
-    async setLanguage(locale) {
+    async setLanguage(locale: string) {
         await this.load(locale);
         if (this.translations[locale]) {
             this.currentLocale = locale;
@@ -60,24 +60,24 @@ class I18n {
      * @param {object} params - Interpolation params (e.g., { n: 5 })
      * @returns {string} Translated string or key if not found
      */
-    t(key, params = {}) {
+    t(key: string, params: Record<string, any> = {}) {
         const value = this._getNestedValue(key, this.currentLocale)
             || this._getNestedValue(key, this.fallbackLocale)
             || key;
 
         // Interpolate {param} placeholders
-        return value.replace(/\{(\w+)\}/g, (_, name) => params[name] ?? `{${name}}`);
+        return value.replace(/\{(\w+)\}/g, (_: string, name: string) => params[name] ?? `{${name}}`);
     }
 
     /**
      * Get value from nested object using dot notation
      * @private
      */
-    _getNestedValue(key, locale) {
+    _getNestedValue(key: string, locale: string) {
         const trans = this.translations[locale];
         if (!trans) return null;
 
-        return key.split('.').reduce((obj, k) => obj?.[k], trans);
+        return key.split('.').reduce((obj: any, k) => obj?.[k], trans);
     }
 
     /**

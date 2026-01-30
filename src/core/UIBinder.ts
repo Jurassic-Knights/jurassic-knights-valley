@@ -58,6 +58,22 @@ class UIBinderService {
     }
 
     /**
+     * Create a new element safely
+     * @param {string} tagName - HTML tag (div, span, etc)
+     * @param {object} options - { id, className, parent }
+     */
+    create(
+        tagName: string,
+        options: { id?: string; className?: string; parent?: HTMLElement } = {}
+    ): HTMLElement {
+        const el = document.createElement(tagName);
+        if (options.id) el.id = options.id;
+        if (options.className) el.className = options.className;
+        if (options.parent) options.parent.appendChild(el);
+        return el;
+    }
+
+    /**
      * Clear cache (useful if UI is completely rebuilt/reloaded)
      */
     clearCache() {

@@ -18,7 +18,7 @@ const SpriteLoader = {
      * @param {string} propName - Property name for the sprite (default: '_sprite')
      * @returns {boolean} True if sprite is ready to render
      */
-    load(entity, assetId, propName = '_sprite') {
+    load(entity: any, assetId: string, propName: string = '_sprite'): boolean { // Entity is generic object for now
         const loadedProp = propName + 'Loaded';
 
         // Already loaded?
@@ -57,7 +57,7 @@ const SpriteLoader = {
      * @param {string} propName - Property name for the sprite
      * @returns {boolean} True if sprite was drawn
      */
-    draw(ctx, entity, propName = '_sprite') {
+    draw(ctx: CanvasRenderingContext2D, entity: any, propName: string = '_sprite'): boolean {
         const loadedProp = propName + 'Loaded';
 
         if (!entity[loadedProp] || !entity[propName]) {
@@ -82,7 +82,7 @@ const SpriteLoader = {
      * @param {string} propName - Property name for the sprites object
      * @returns {boolean} True if all sprites are loaded
      */
-    loadMultiple(entity, assetIds, propName = '_sprites') {
+    loadMultiple(entity: any, assetIds: string[], propName: string = '_sprites'): boolean {
         const loadedProp = propName + 'Loaded';
 
         if (!entity[propName]) {

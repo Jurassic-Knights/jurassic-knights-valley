@@ -59,6 +59,12 @@ class Enemy extends Entity {
     attackType: string = 'melee';
     speed: number = 80;
 
+    // Boss Flag
+    isBoss?: boolean = false;
+
+    // Render methods (optional implementation)
+    renderUI?(ctx: CanvasRenderingContext2D): void;
+
     // Rewards
     xpReward: number = 10;
     lootTableId: string = 'common_enemy';
@@ -92,6 +98,7 @@ class Enemy extends Entity {
 
     // Sprite
     spriteId: string | null = null;
+    _sprite: HTMLImageElement | null = null;
     _spriteLoaded: boolean = false;
 
     // Components
@@ -149,9 +156,9 @@ class Enemy extends Entity {
         }
 
         // Apply biome difficulty multipliers if biome specified
-        if (config.biomeId && BiomeConfig.types?.[config.biomeId]) {
-            const biome = BiomeConfig.types[config.biomeId];
-            const diffMult = BiomeConfig.difficultyMultipliers?.[biome.difficulty] || {
+        if (config.biomeId && (BiomeConfig.types as any)?.[config.biomeId]) {
+            const biome = (BiomeConfig.types as any)[config.biomeId];
+            const diffMult = (BiomeConfig.difficultyMultipliers as any)?.[biome.difficulty] || {
                 health: 1,
                 damage: 1,
                 xp: 1,
@@ -338,7 +345,7 @@ class Enemy extends Entity {
      * Update enemy logic
      * @param {number} dt - Delta time in milliseconds
      */
-    update(dt) {
+    update(dt: number) {
         if (!this.active || this.isDead) {
             if (this.isDead) {
                 this.respawnTimer -= dt / 1000;

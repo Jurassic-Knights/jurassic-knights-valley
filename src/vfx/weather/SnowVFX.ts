@@ -29,7 +29,7 @@ class SnowVFX {
         }
     }
 
-    update(dt, delta, viewport, wind) {
+    update(dt: number, delta: { x: number; y: number } | null, viewport: { width: number; height: number } | null, wind: { currentX: number } | null) {
         if (!this.active) return;
 
         const timeScale = dt / 16.666;
@@ -73,7 +73,7 @@ class SnowVFX {
         }
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';

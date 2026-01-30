@@ -12,9 +12,14 @@ import { Registry } from '@core/Registry';
 import { UIBinder } from '@core/UIBinder';
 import { SFX } from '@audio/ProceduralSFX';
 
+interface InventoryState {
+    resources?: Record<string, number>;
+    gold?: number;
+}
+
 class HUDControllerClass {
     private lastPipCount: number = -1;
-    private readonly RESOLVE_PER_PIP = 5;
+    // private readonly RESOLVE_PER_PIP = 5; // Deprecated, use GameConstants
 
     constructor() {
         this.initListeners();
@@ -34,7 +39,7 @@ class HUDControllerClass {
         );
         EventBus.on(
             GameConstants.Events.INVENTORY_UPDATED,
-            (data: { resources?: Record<string, number>; gold?: number }) =>
+            (data: InventoryState) =>
                 this.updateResources(data)
         );
         EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: { isHome: boolean }) =>
@@ -54,20 +59,15 @@ class HUDControllerClass {
         if (!pipsContainer) return;
 
         // 1. Calculate Target Pip Count (Dynamic Scaling)
-        const totalPips = Math.ceil(data.max / this.RESOLVE_PER_PIP);
-        const currentActivePips = Math.ceil(data.current / this.RESOLVE_PER_PIP);
+        const totalPips = Math.ceil(data.max / GameConstants.UI.RESOLVE_PER_PIP);
+        const currentActivePips = Math.ceil(data.current / GameConstants.UI.RESOLVE_PER_PIP);
 
         // 2. Rebuild DOM if max resolve changed (or init)
         if (pipsContainer.children.length !== totalPips) {
             // Clean up old artifacts if we are rebuilding
-            const oldFill = document.getElementById('resolve-fill');
-            if (oldFill) oldFill.remove();
-
             pipsContainer.innerHTML = '';
             for (let i = 0; i < totalPips; i++) {
-                const pip = document.createElement('div');
-                pip.className = 'resolve-pip';
-                pipsContainer.appendChild(pip);
+                UIBinder.create('div', { className: 'resolve-pip', parent: pipsContainer });
             }
             // Reset last count on rebuild to avoid animation spam
             this.lastPipCount = currentActivePips;
@@ -99,7 +99,7 @@ class HUDControllerClass {
                     // Clean up animation class after it finishes to reset state strictly
                     setTimeout(() => {
                         pip.classList.remove('lost');
-                    }, 900);
+                    }, GameConstants.UI.ANIMATION_SHATTER_MS);
                 }
             }
         });
@@ -119,7 +119,7 @@ class HUDControllerClass {
         if (btn) btn.style.display = data.isHome ? 'flex' : 'none';
     }
 
-    updateResources(inventory: any) {
+    updateResources(inventory: InventoryState) {
         if (!inventory) return;
 
         const map: any = {
@@ -132,7 +132,7 @@ class HUDControllerClass {
         for (const [key, id] of Object.entries(map)) {
             const el = UIBinder.get(id as string);
             if (el) {
-                const amount = inventory[key] || 0;
+                const amount = (inventory as any)[key] || 0;
                 el.textContent = String(amount);
             }
         }

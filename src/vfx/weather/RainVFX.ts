@@ -34,7 +34,7 @@ class RainVFX {
         }
     }
 
-    update(dt, delta, viewport, wind, isStorm) {
+    update(dt: number, delta: { x: number; y: number } | null, viewport: { width: number; height: number } | null, wind: { currentX: number } | null, isStorm: boolean) {
         if (!this.active) return;
 
         this.isStorm = isStorm;
@@ -132,7 +132,7 @@ class RainVFX {
         }
     }
 
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         ctx.strokeStyle = 'rgba(174, 194, 224, 0.6)'; // Blue-ish white

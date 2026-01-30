@@ -38,7 +38,7 @@ const EnemyConfig = {
      * @param {string} id - Entity ID (e.g., 'enemy_human_t1_01')
      * @returns {object|null} Enemy definition
      */
-    get(id) {
+    get(id: string) {
         return EntityRegistry?.enemies?.[id] || null;
     },
 
@@ -76,6 +76,6 @@ const EnemyConfig = {
         melee: { range: 100, windupTime: 200, recoveryTime: 500 },
         ranged: { range: 350, projectileSpeed: 400, windupTime: 300, recoveryTime: 800 }
     }
-};
+} as any;
 
 export { EnemyConfig };

@@ -88,5 +88,6 @@ import './vfx/FloatingText';
 
 // Systems - Hero (must be late for dependencies)
 import './systems/HeroSystem';
+import './systems/HeroVisualsSystem';
 
 console.log('[SystemLoader] All systems imported for registration');

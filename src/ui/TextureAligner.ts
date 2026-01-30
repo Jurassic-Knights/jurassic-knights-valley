@@ -190,7 +190,7 @@ class TextureAlignerService {
 
         // Bind Events
         div.querySelector('#ta-target')?.addEventListener('change', (e) =>
-            this.selectTarget((e.target as HTMLInputElement).value)
+            this.selectTarget(parseInt((e.target as HTMLInputElement).value, 10))
         );
         div.querySelector('#btn-load')?.addEventListener('click', () => this.loadImage());
 
@@ -301,7 +301,7 @@ class TextureAlignerService {
         img.src = `assets/ui/${filename}`;
     }
 
-    recalculateAspect(img) {
+    recalculateAspect(img: HTMLImageElement) {
         if (!img || !img.naturalWidth) {
             this.multX = 1;
             this.multY = 1;
@@ -349,7 +349,7 @@ class TextureAlignerService {
         (this.container.querySelector('#inp-img') as HTMLInputElement).value = this.state.img || '';
     }
 
-    selectTarget(index) {
+    selectTarget(index: number) {
         this.currentTargetDef = this.targets[index];
         this.targetId = this.currentTargetDef.id;
 
@@ -386,20 +386,20 @@ class TextureAlignerService {
         this.applyStyle();
     }
 
-    updateState(key, val) {
-        val = parseFloat(val); // Ensure numeric
+    updateState(key: string, val: string | number) {
+        const numVal = parseFloat(String(val)); // Ensure numeric
 
         if (key === 'scaleX' && this.multX) {
             // Input (Virtual) -> State (CSS)
-            this.state.scaleX = val * this.multX;
+            this.state.scaleX = numVal * this.multX;
             (this.container.querySelector('#num-sx') as HTMLInputElement).value = val as any;
             (this.container.querySelector('#inp-sx') as HTMLInputElement).value = val as any;
         } else if (key === 'scaleY' && this.multY) {
-            this.state.scaleY = val * this.multY;
+            this.state.scaleY = numVal * this.multY;
             (this.container.querySelector('#num-sy') as HTMLInputElement).value = val as any;
             (this.container.querySelector('#inp-sy') as HTMLInputElement).value = val as any;
         } else {
-            this.state[key] = val;
+            (this.state as any)[key] = numVal;
             if (key !== 'img') {
                 const map: any = { x: 'num-x', y: 'num-y', scale: 'num-s' };
                 if (map[key])

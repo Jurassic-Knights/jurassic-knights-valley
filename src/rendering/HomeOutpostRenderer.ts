@@ -17,7 +17,7 @@ const HomeOutpostRenderer = {
      * @param {number} worldHeight
      * @param {Object} game - Game reference
      */
-    draw(ctx, worldWidth, worldHeight, game) {
+    draw(ctx: CanvasRenderingContext2D, worldWidth: number, worldHeight: number, game: any) {
         let centerX = worldWidth / 2;
         let centerY = worldHeight / 2;
 

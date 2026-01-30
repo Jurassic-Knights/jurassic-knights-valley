@@ -124,7 +124,7 @@ class DroppedItem extends Entity {
      * Start flying towards a target (magnet effect)
      * @param {Entity} target
      */
-    magnetize(target) {
+    magnetize(target: any) {
         if (!this.active || this.isMagnetized) return;
         this.isMagnetized = true;
         this.magnetTarget = target;
@@ -138,7 +138,7 @@ class DroppedItem extends Entity {
      * @param {number} targetX
      * @param {number} targetY
      */
-    flyTo(targetX, targetY) {
+    flyTo(targetX: number, targetY: number) {
         this.isFlying = true;
         this.flightProgress = 0;
 
@@ -216,7 +216,7 @@ class DroppedItem extends Entity {
      * Update item (pulse animation)
      * @param {number} dt - Delta time in ms
      */
-    update(dt) {
+    update(dt: number) {
         super.update(dt); // Call parent update for active/inactive logic
 
         // REWRITE: Robust dt handling
@@ -287,7 +287,7 @@ class DroppedItem extends Entity {
      * Check if item should start flying to hero (auto-pickup range)
      * @param {Hero} hero
      */
-    shouldAutoMagnetize(hero) {
+    shouldAutoMagnetize(hero: any) {
         if (!this.active || !hero) return false;
         if (this.isMagnetized || this.isFlying) return false;
 
@@ -304,7 +304,7 @@ class DroppedItem extends Entity {
      * @param {Hero} hero
      * @returns {boolean}
      */
-    canBePickedUpBy(hero) {
+    canBePickedUpBy(hero: any) {
         if (!this.active || !hero) return false;
 
         // 1. Check flight status
@@ -326,7 +326,7 @@ class DroppedItem extends Entity {
      * Render dropped item
      * @param {CanvasRenderingContext2D} ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         // Delegate to System

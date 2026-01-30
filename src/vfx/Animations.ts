@@ -10,7 +10,7 @@ const Animations = {
     /**
      * Create a ripple effect at click position
      */
-    ripple(element, event) {
+    ripple(element: HTMLElement, event: MouseEvent) {
         const rect = element.getBoundingClientRect();
         const ripple = DOMUtils.create('span', {
             className: 'ripple',
@@ -39,7 +39,7 @@ const Animations = {
     /**
      * Show floating text
      */
-    floatingText(text, x, y, type = 'gold') {
+    floatingText(text: string, x: number, y: number, type: string = 'gold') {
         const el = DOMUtils.create('div', {
             className: `floating-text floating-text--${type}`,
             text: text,

@@ -22,7 +22,7 @@ import { Logger } from '@core/Logger';
 import { DOMUtils } from '@core/DOMUtils';
 
 const MaterialLibrary = {
-    cache: new Map(),
+    cache: new Map<string, HTMLCanvasElement | HTMLImageElement>(),
 
     /**
      * Get a processed material (Canvas/Image)
@@ -32,7 +32,7 @@ const MaterialLibrary = {
      * @param {HTMLImageElement} [sourceOverride] - Optional source image if not in AssetLoader
      * @returns {HTMLCanvasElement|HTMLImageElement|null} - Processed image or null if not ready
      */
-    get(assetId, material, params = {}, sourceOverride = null) {
+    get(assetId: string, material: string, params: any = {}, sourceOverride: HTMLImageElement | null = null) {
         // 1. Get Source
         let source = sourceOverride;
         if (!source && AssetLoader) {
@@ -50,13 +50,12 @@ const MaterialLibrary = {
         }
 
         // 4. Validate Processor
-        if (typeof this[material] !== 'function') {
+        const processor = (this as any)[material];
+        if (typeof processor !== 'function') {
             Logger.warn(`[MaterialLibrary] Unknown material: ${material}`);
-            return source; // Fallback to original
+            return source;
         }
-
-        // 5. Process & Cache
-        const result = this[material](source, params);
+        const result = processor.call(this, source, params);
         if (result) {
             this.cache.set(key, result);
         }
@@ -68,7 +67,7 @@ const MaterialLibrary = {
      * Generate unique cache string
      * Optimized to avoid JSON.stringify for common cases
      */
-    _generateKey(id, mat, params) {
+    _generateKey(id: string, mat: string, params: any) {
         // Fast path: empty params object (common for shadows)
         const keys = Object.keys(params);
         if (keys.length === 0) {
@@ -85,7 +84,7 @@ const MaterialLibrary = {
     /**
      * Helper: Create offscreen canvas of same size
      */
-    _createCanvas(w, h) {
+    _createCanvas(w: number, h: number) {
         return DOMUtils.createCanvas(w, h);
     },
 
@@ -98,7 +97,7 @@ const MaterialLibrary = {
      * @param {HTMLImageElement} source
      * @param {object} params { color: '#FFF', thickness: 2 }
      */
-    outline(source, params) {
+    outline(source: HTMLImageElement, params: any) {
         const color = params.color || '#FFFFFF';
         const thickness = params.thickness || 2;
 
@@ -157,7 +156,7 @@ const MaterialLibrary = {
      * @param {HTMLImageElement} source
      * @param {object} params { color: '#F00' }
      */
-    silhouette(source, params) {
+    silhouette(source: HTMLImageElement, params: any) {
         const color = params.color || '#000000';
 
         const canvas = this._createCanvas(source.width, source.height);
@@ -180,7 +179,7 @@ const MaterialLibrary = {
      * @param {HTMLImageElement} source
      * @param {object} params { color: '#FFF', opacity: 0.5, mode: 'source-atop' }
      */
-    tint(source, params) {
+    tint(source: HTMLImageElement, params: any) {
         const color = params.color || '#FFFFFF';
         const opacity = params.opacity !== undefined ? params.opacity : 0.5;
         const mode = params.mode || 'source-atop'; // source-atop keeps alpha of source
@@ -204,7 +203,7 @@ const MaterialLibrary = {
      * Grayscale (Desaturation)
      * @param {HTMLImageElement} source
      */
-    grayscale(source) {
+    grayscale(source: HTMLImageElement) {
         const canvas = this._createCanvas(source.width, source.height);
         const ctx = canvas.getContext('2d');
 
@@ -229,7 +228,7 @@ const MaterialLibrary = {
      * Hard blacks out the image for use as a projected shadow.
      * @param {HTMLImageElement} source
      */
-    shadow(source) {
+    shadow(source: HTMLImageElement) {
         // Reuse silhouette logic with black color, explicit naming for clarity
         return this.silhouette(source, { color: '#000000' });
     }

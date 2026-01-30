@@ -25,7 +25,7 @@ const HealthBarRenderer = {
      * @param {string} [options.entityId] - Optional entity ID for tracking
      * @param {boolean} [options.animated=true] - Whether to animate
      */
-    draw(ctx, options) {
+    draw(ctx: CanvasRenderingContext2D, options: any) {
         const {
             x,
             y,
@@ -83,7 +83,7 @@ const HealthBarRenderer = {
      * @param {object} entity - Entity with x, y: number, width: number, height: number, health, maxHealth
      * @param {object} [options] - Override options
      */
-    drawForEntity(ctx, entity, options = {}) {
+    drawForEntity(ctx: CanvasRenderingContext2D, entity: any, options: any = {}) {
         const barY = entity.y - entity.height / 2 - 18;
 
         // Check for HealthComponent first
@@ -107,7 +107,7 @@ const HealthBarRenderer = {
      * @param {object} entity - Entity with x, y: number, respawnTimer, maxRespawnTime
      * @param {object} [options] - Override options
      */
-    drawRespawnForEntity(ctx, entity, options = {}) {
+    drawRespawnForEntity(ctx: CanvasRenderingContext2D, entity: any, options: any = {}) {
         const barY = entity.y - entity.height / 2 - 18;
         const totalDuration = entity.currentRespawnDuration || entity.maxRespawnTime;
         const percent = Math.max(0, 1 - entity.respawnTimer / totalDuration);

@@ -107,10 +107,10 @@ const DEFAULTS = {
 
 // Current config values - starts as copy of defaults
 // On HMR reload, this module re-executes with new DEFAULTS, creating fresh GameConfig
-const GameConfig = JSON.parse(JSON.stringify(DEFAULTS));
+const GameConfig = JSON.parse(JSON.stringify(DEFAULTS)) as typeof DEFAULTS & { [key: string]: any };
 
 // Type for the config
-export type GameConfigType = typeof DEFAULTS;
+export type GameConfigType = typeof DEFAULTS & { [key: string]: any };
 
 /**
  * getConfig() - Returns current tunable game values
@@ -169,7 +169,7 @@ export function getDefaults(): GameConfigType {
  */
 export function resetSection(section: keyof GameConfigType): void {
     const config = getConfig();
-    (config as any)[section] = JSON.parse(JSON.stringify(DEFAULTS[section]));
+    (config as any)[section] = JSON.parse(JSON.stringify((DEFAULTS as any)[section]));
 }
 
 // ============================================
@@ -196,9 +196,9 @@ if (typeof window !== 'undefined') {
                 const newWeapons = GameConfig.WeaponDefaults;
                 if (!persisted.WeaponDefaults) persisted.WeaponDefaults = {} as any;
                 for (const weaponKey of Object.keys(newWeapons)) {
-                    persisted.WeaponDefaults[weaponKey] = {
-                        ...persisted.WeaponDefaults[weaponKey],
-                        ...newWeapons[weaponKey]
+                    (persisted.WeaponDefaults as any)[weaponKey] = {
+                        ...(persisted.WeaponDefaults as any)[weaponKey],
+                        ...(newWeapons as any)[weaponKey]
                     };
                 }
             } else if (typeof GameConfig[typedKey] === 'object') {

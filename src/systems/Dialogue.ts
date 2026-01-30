@@ -31,7 +31,7 @@ const DialogueSystem = {
      * Start a dialogue by ID
      * @param {string} dialogueId - Dialogue identifier
      */
-    start(dialogueId) {
+    start(dialogueId: string) {
         const dialogue = this.dialogues[dialogueId];
         if (!dialogue) {
             Logger.warn(`[DialogueSystem] Dialogue not found: ${dialogueId}`);
@@ -48,7 +48,7 @@ const DialogueSystem = {
     /**
      * Display the current dialogue node
      */
-    showNode(nodeId) {
+    showNode(nodeId: string) {
         if (!this.currentDialogue) return;
 
         const node = this.currentDialogue.nodes?.[nodeId];
@@ -69,7 +69,7 @@ const DialogueSystem = {
      * Select a dialogue choice
      * @param {number} choiceIndex - Index of the choice
      */
-    choose(choiceIndex) {
+    choose(choiceIndex: number) {
         if (!this.currentDialogue) return;
 
         const node = this.currentDialogue.nodes?.[this.currentNode];

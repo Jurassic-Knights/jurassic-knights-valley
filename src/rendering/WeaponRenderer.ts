@@ -10,6 +10,7 @@
 import { RenderConfig } from '@config/RenderConfig';
 import { MeleeTrailVFX } from '@vfx/MeleeTrailVFX';
 import { AssetLoader } from '@core/AssetLoader';
+import { Hero } from '../gameplay/Hero';
 
 const WeaponRenderer = {
     // Image caches
@@ -26,7 +27,7 @@ const WeaponRenderer = {
      * @param {string} spriteId - Weapon sprite ID
      * @param {string} weaponSubtype - Weapon subtype for trail VFX
      */
-    drawMeleeWeapon(ctx, hero, baseAngle, facingRight, spriteId, weaponSubtype = 'sword') {
+    drawMeleeWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, spriteId: string, weaponSubtype = 'sword') {
         const cfg = RenderConfig ? RenderConfig.Hero.WEAPON.SHOVEL : null;
         if (!cfg) return;
 
@@ -109,7 +110,7 @@ const WeaponRenderer = {
     /**
      * Draw ranged weapon (rifle) with recoil animation
      */
-    drawRifle(ctx, hero, baseAngle, facingRight = true, spriteId = 'weapon_ranged_pistol_t1_01') {
+    drawRifle(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight = true, spriteId = 'weapon_ranged_pistol_t1_01') {
         const cfg = RenderConfig ? RenderConfig.Hero.WEAPON.RIFLE : null;
         if (!cfg) return;
 
@@ -171,7 +172,7 @@ const WeaponRenderer = {
      * Draw tool (shovel/pickaxe) with swing animation
      * Tool images have handle at bottom-left, tip at top-right (diagonal orientation)
      */
-    drawShovel(ctx, hero, baseAngle, facingRight = true, spriteId = 'tool_t1_01') {
+    drawShovel(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight = true, spriteId = 'tool_t1_01') {
         const cfg = RenderConfig ? RenderConfig.Hero.WEAPON.SHOVEL : null;
         if (!cfg) return;
 

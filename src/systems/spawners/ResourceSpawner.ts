@@ -60,7 +60,7 @@ class ResourceSpawner {
 
         // Get all unlocked islands (excluding home)
         const islands = islandManager
-            ? islandManager.islands.filter((i) => i.type !== 'home' && i.unlocked)
+            ? islandManager.islands.filter((i: any) => i.type !== 'home' && i.unlocked)
             : [];
 
         if (islands.length === 0) {
@@ -85,7 +85,7 @@ class ResourceSpawner {
     /**
      * Spawn resources in a grid pattern on a zone
      */
-    spawnResourcesGridOnIsland(island, count, startIndex = 0) {
+    spawnResourcesGridOnIsland(island: any, count: number, startIndex: number = 0) {
         if (!this.spawnManager.game || island.type === 'home') return;
 
         const type = island.resourceType || 'node_mining_t1_02'; // Default to Stone Pile
@@ -135,7 +135,7 @@ class ResourceSpawner {
     /**
      * Spawn dinosaurs randomly on an island
      */
-    spawnDinosaursOnIsland(island, count) {
+    spawnDinosaursOnIsland(island: any, count: number) {
         if (!Dinosaur || !this.spawnManager.game) return;
 
         const islandManager = this.spawnManager.game.getSystem('IslandManager');
@@ -158,7 +158,7 @@ class ResourceSpawner {
             const y = bounds.y + padding + Math.random() * (bounds.height - padding * 2);
 
             // Select herbivore deterministically based on zone position (same herbivore per zone)
-            const tierPool = herbivoreTiers[tier] || herbivoreTiers[1];
+            const tierPool = herbivoreTiers[tier as keyof typeof herbivoreTiers] || herbivoreTiers[1];
             const zoneIndex = (island.gridX + island.gridY) % tierPool.length;
             const dinoType = tierPool[zoneIndex];
 
@@ -208,7 +208,7 @@ class ResourceSpawner {
         const centerX = bounds.x + bounds.width / 2;
         const restAreaRadius = getConfig().Interaction?.REST_AREA_RADIUS ?? 900;
 
-        const isValidSpawnPoint = (x, y) => {
+        const isValidSpawnPoint = (x: number, y: number) => {
             const dx = x - centerX;
             const dy = y - centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -217,9 +217,9 @@ class ResourceSpawner {
         };
 
         const minSpacing = getConfig().Spawning?.MIN_SPAWN_DISTANCE ?? 50;
-        const placedTrees = [];
+        const placedTrees: { x: number; y: number }[] = [];
 
-        const hasSpacing = (x, y) => {
+        const hasSpacing = (x: number, y: number) => {
             for (const other of placedTrees) {
                 const dist = Math.sqrt((x - other.x) ** 2 + (y - other.y) ** 2);
                 if (dist < minSpacing) return false;
@@ -227,7 +227,7 @@ class ResourceSpawner {
             return true;
         };
 
-        const spawnTree = (x, y) => {
+        const spawnTree = (x: number, y: number) => {
             const tree = new Resource({
                 resourceType: 'node_woodcutting_t1_01', // Dead Tree (has image)
                 x: x,

@@ -45,7 +45,7 @@ class EnemySpawner {
     /**
      * Spawn a group of enemies at a location
      */
-    spawnEnemyGroup(biomeId, x, y, enemyId, count, options: any = {}) {
+    spawnEnemyGroup(biomeId: string, x: number, y: number, enemyId: string, count: number, options: any = {}) {
         if (!Enemy) {
             Logger.warn('[EnemySpawner] Enemy class not found');
             return [];
@@ -215,8 +215,8 @@ class EnemySpawner {
     /**
      * Get appropriate enemy level for a biome
      */
-    getEnemyLevelForBiome(biomeId) {
-        const biome = BiomeConfig.types?.[biomeId];
+    getEnemyLevelForBiome(biomeId: string) {
+        const biome = BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types];
         if (!biome || !biome.levelRange) return 1;
 
         const { min, max } = biome.levelRange;
@@ -226,13 +226,13 @@ class EnemySpawner {
     /**
      * Populate a biome area with enemy groups based on spawn table
      */
-    populateBiome(biomeId, bounds, options: any = {}) {
-        if (!Enemy || !BiomeConfig.types?.[biomeId]) {
+    populateBiome(biomeId: string, bounds: any, options: any = {}) {
+        if (!Enemy || !BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types]) {
             Logger.warn(`[EnemySpawner] Cannot populate biome: ${biomeId}`);
             return;
         }
 
-        const biome = BiomeConfig.types[biomeId];
+        const biome = BiomeConfig.types[biomeId as keyof typeof BiomeConfig.types];
         const spawnTable = biome.enemySpawnTable;
 
         if (!spawnTable || spawnTable.length === 0) {
@@ -269,8 +269,8 @@ class EnemySpawner {
     /**
      * Spawn boss enemy for a biome
      */
-    spawnBiomeBoss(biomeId, x, y) {
-        const biome = BiomeConfig.types?.[biomeId];
+    spawnBiomeBoss(biomeId: string, x: number, y: number) {
+        const biome = BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types];
         if (!biome || !biome.bossId) {
             Logger.warn(`[EnemySpawner] No boss configured for biome: ${biomeId}`);
             return null;
@@ -296,7 +296,7 @@ class EnemySpawner {
     /**
      * Get all enemies in a specific biome
      */
-    getEnemiesInBiome(biomeId) {
+    getEnemiesInBiome(biomeId: string) {
         if (!entityManager) return [];
 
         const enemies = [
@@ -310,7 +310,7 @@ class EnemySpawner {
     /**
      * Despawn all enemies in a biome
      */
-    clearBiomeEnemies(biomeId) {
+    clearBiomeEnemies(biomeId: string) {
         const enemies = this.getEnemiesInBiome(biomeId);
 
         for (const enemy of enemies) {

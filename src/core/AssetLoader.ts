@@ -13,15 +13,130 @@ import { VFXController } from '@vfx/VFXController';
 import { Registry } from './Registry';
 import { DOMUtils } from './DOMUtils';
 import { AssetManifest } from '@config/AssetManifest';
+import { GameConstants } from '@data/GameConstants';
 
 // VFXController accessed lazily to avoid circular imports
+
+const ID_PATTERNS = [
+    // Enemies
+    {
+        matches: (id: string) =>
+            id.startsWith('enemy_herbivore_') ||
+            id.startsWith('enemy_dinosaur_') ||
+            id.startsWith('enemy_human_') ||
+            id.startsWith('enemy_mounted_'),
+        build: (id: string) => `images/enemies/${id.replace('enemy_', '')}_original.png`
+    },
+    // Bosses & NPCs
+    { matches: (id: string) => id.startsWith('boss_'), build: (id: string) => `images/bosses/${id}_original.png` },
+    { matches: (id: string) => id.startsWith('npc_'), build: (id: string) => `images/npcs/${id}_original.png` },
+
+    // Weapons (Complex Subtypes)
+    {
+        matches: (id: string) => id.startsWith('weapon_melee_') || id.startsWith('weapon_ranged_'),
+        build: (id: string) => {
+            const parts = id.split('_');
+            const subtype = parts.slice(2, -2).join('_');
+            const imageName = `weapon_${subtype}_${parts.slice(-2).join('_')}`;
+            return `images/equipment/weapons/${subtype}/${imageName}_original.png`;
+        }
+    },
+    {
+        matches: (id: string) => id.startsWith('weapon_shield_'),
+        build: (id: string) => `images/equipment/shield/${id}_original.png`
+    },
+
+    // Signatures
+    {
+        matches: (id: string) =>
+            id.startsWith('signature_melee_') || id.startsWith('signature_ranged_'),
+        build: (id: string) => {
+            const parts = id.split('_');
+            const subtype = parts[2];
+            return `images/equipment/signature/${parts[1]}/${subtype}/${id}_original.png`;
+        }
+    },
+    {
+        matches: (id: string) => id.startsWith('signature_shield_'),
+        build: (id: string) => `images/equipment/signature/shield/${id}_original.png`
+    },
+
+    // Armor
+    {
+        matches: (id: string) => id.startsWith('head_'),
+        build: (id: string) => `images/equipment/armor/head/${id}_original.png`
+    },
+    {
+        matches: (id: string) => id.startsWith('chest_') || id.startsWith('torso_'),
+        build: (id: string) => `images/equipment/armor/chest/${id}_original.png`
+    },
+    {
+        matches: (id: string) => id.startsWith('body_'),
+        build: (id: string) =>
+            `images/equipment/armor/chest/${id.replace('body_', 'chest_')}_original.png`
+    },
+    {
+        matches: (id: string) => id.startsWith('hands_'),
+        build: (id: string) => `images/equipment/armor/hands/${id}_original.png`
+    },
+    {
+        matches: (id: string) => id.startsWith('legs_'),
+        build: (id: string) => `images/equipment/armor/legs/${id}_original.png`
+    },
+    {
+        matches: (id: string) => id.startsWith('feet_'),
+        build: (id: string) => `images/equipment/armor/feet/${id}_original.png`
+    },
+    {
+        matches: (id: string) => id.startsWith('accessory_'),
+        build: (id: string) => `images/equipment/${id}_original.png`
+    },
+
+    // Tools
+    {
+        matches: (id: string) => id.startsWith('tool_'),
+        build: (id: string) => {
+            const type = id.split('_')[1]; // mining, woodcutting, etc
+            return `images/equipment/tools/${type}/${id}_original.png`;
+        }
+    },
+
+    // Items (Materials)
+    {
+        matches: (id: string) =>
+            /^(food|leather|bone|wood|iron|stone|scale|feather|horn)_/.test(id),
+        build: (id: string) => `images/items/${id}_original.png`
+    },
+
+    // Nodes
+    {
+        matches: (id: string) => id.startsWith('node_'),
+        build: (id: string) => `images/nodes/${id}_original.png`
+    },
+
+    // Environment
+    {
+        matches: (id: string) =>
+            /^(arch|flora|prop|furniture|building)_/.test(id),
+        build: (id: string) => {
+            const type = id.split('_')[0];
+            return `images/environment/${type}/${id}_original.png`;
+        }
+    },
+
+    // Backgrounds
+    {
+        matches: (id: string) => id.startsWith('bg_zone_'),
+        build: (id: string) => `images/backgrounds/${id.replace('bg_', '')}_clean.png`
+    }
+];
 
 const AssetLoader = {
     cache: new Map(),
     basePath: '/assets/',
 
     // Threshold for white pixel detection (250-255 catches near-white)
-    WHITE_THRESHOLD: 250,
+    WHITE_THRESHOLD: GameConstants.Rendering.WHITE_BG_THRESHOLD,
 
     /**
      * Remove white background from an image
@@ -70,7 +185,7 @@ const AssetLoader = {
      * @param {string} id - Asset ID
      * @returns {string} - File path
      */
-    getImagePath(id) {
+    getImagePath(id: string) {
         // 1. Try static assets first (fastest)
         if (this.staticAssets[id]) {
             return this.basePath + this.staticAssets[id];
@@ -99,144 +214,14 @@ const AssetLoader = {
      * @param {string} id
      * @returns {string|null}
      */
-    _constructPathFromId(id) {
+    _constructPathFromId(id: string) {
         if (!id) return null;
 
-        // Enemy patterns
-        if (id.startsWith('enemy_herbivore_')) {
-            const sprite = id.replace('enemy_', '');
-            return `images/enemies/${sprite}_original.png`;
+        for (const pattern of ID_PATTERNS) {
+            if (pattern.matches(id)) {
+                return pattern.build(id);
+            }
         }
-        if (id.startsWith('enemy_dinosaur_')) {
-            const sprite = id.replace('enemy_', '');
-            return `images/enemies/${sprite}_original.png`;
-        }
-        if (id.startsWith('enemy_human_')) {
-            const sprite = id.replace('enemy_', '');
-            return `images/enemies/${sprite}_original.png`;
-        }
-        if (id.startsWith('enemy_mounted_')) {
-            const sprite = id.replace('enemy_', '');
-            return `images/enemies/${sprite}_original.png`;
-        }
-
-        // Boss patterns
-        if (id.startsWith('boss_')) {
-            return `images/bosses/${id}_original.png`;
-        }
-
-        // NPC patterns
-        if (id.startsWith('npc_')) {
-            return `images/npcs/${id}_original.png`;
-        }
-
-        // Equipment patterns - weapons in subtype subfolders (images named weapon_{subtype}_t{tier}_{variant})
-        if (id.startsWith('weapon_melee_')) {
-            // Extract subtype: weapon_melee_sword_t1_01 -> sword
-            const parts = id.split('_');
-            const subtype = parts.slice(2, -2).join('_'); // handles war_hammer, war_axe etc.
-            // Image naming: weapon_{subtype}_t{tier}_{variant}_original.png in weapons/{subtype}/
-            const imageName = `weapon_${subtype}_${parts.slice(-2).join('_')}`;
-            return `images/equipment/weapons/${subtype}/${imageName}_original.png`;
-        }
-        if (id.startsWith('weapon_ranged_')) {
-            // Extract subtype: weapon_ranged_pistol_t1_01 -> pistol, sniper_rifle, machine_gun etc.
-            const parts = id.split('_');
-            const subtype = parts.slice(2, -2).join('_'); // handles sniper_rifle, machine_gun etc.
-            // Image naming: weapon_{subtype}_t{tier}_{variant}_original.png in weapons/{subtype}/
-            const imageName = `weapon_${subtype}_${parts.slice(-2).join('_')}`;
-            return `images/equipment/weapons/${subtype}/${imageName}_original.png`;
-        }
-        if (id.startsWith('weapon_shield_')) {
-            return `images/equipment/shield/${id}_original.png`;
-        }
-        if (id.startsWith('signature_melee_')) {
-            const parts = id.split('_');
-            const subtype = parts[2];
-            return `images/equipment/signature/melee/${subtype}/${id}_original.png`;
-        }
-        if (id.startsWith('signature_ranged_')) {
-            const parts = id.split('_');
-            const subtype = parts[2];
-            return `images/equipment/signature/ranged/${subtype}/${id}_original.png`;
-        }
-        if (id.startsWith('signature_shield_')) {
-            return `images/equipment/signature/shield/${id}_original.png`;
-        }
-        // Armor patterns - slot-based folders
-        if (id.startsWith('head_')) {
-            return `images/equipment/armor/head/${id}_original.png`;
-        }
-        if (id.startsWith('chest_') || id.startsWith('torso_')) {
-            return `images/equipment/armor/chest/${id}_original.png`;
-        }
-        if (id.startsWith('body_')) {
-            // Body slot uses armor/chest folder (images still named chest_*)
-            return `images/equipment/armor/chest/${id.replace('body_', 'chest_')}_original.png`;
-        }
-        if (id.startsWith('hands_')) {
-            return `images/equipment/armor/hands/${id}_original.png`;
-        }
-        if (id.startsWith('legs_')) {
-            return `images/equipment/armor/legs/${id}_original.png`;
-        }
-        if (id.startsWith('feet_')) {
-            return `images/equipment/armor/feet/${id}_original.png`;
-        }
-        if (id.startsWith('accessory_')) {
-            return `images/equipment/${id}_original.png`;
-        }
-        // Tool patterns - type-based folders
-        if (id.startsWith('tool_mining_')) {
-            return `images/equipment/tools/mining/${id}_original.png`;
-        }
-        if (id.startsWith('tool_woodcutting_')) {
-            return `images/equipment/tools/woodcutting/${id}_original.png`;
-        }
-        if (id.startsWith('tool_harvesting_')) {
-            return `images/equipment/tools/harvesting/${id}_original.png`;
-        }
-        if (id.startsWith('tool_fishing_')) {
-            return `images/equipment/tools/fishing/${id}_original.png`;
-        }
-
-        // Item patterns
-        if (
-            id.startsWith('food_') ||
-            id.startsWith('leather_') ||
-            id.startsWith('bone_') ||
-            id.startsWith('wood_') ||
-            id.startsWith('iron_') ||
-            id.startsWith('stone_') ||
-            id.startsWith('scale_') ||
-            id.startsWith('feather_') ||
-            id.startsWith('horn_')
-        ) {
-            return `images/items/${id}_original.png`;
-        }
-
-        // Node patterns
-        if (id.startsWith('node_')) {
-            return `images/nodes/${id}_original.png`;
-        }
-
-        // Environment patterns
-        if (
-            id.startsWith('arch_') ||
-            id.startsWith('flora_') ||
-            id.startsWith('prop_') ||
-            id.startsWith('furniture_') ||
-            id.startsWith('building_')
-        ) {
-            const type = id.split('_')[0];
-            return `images/environment/${type}/${id}_original.png`;
-        }
-
-        // Background patterns
-        if (id.startsWith('bg_zone_')) {
-            return `images/backgrounds/${id.replace('bg_', '')}_clean.png`;
-        }
-
         return null;
     },
 
@@ -246,7 +231,7 @@ const AssetLoader = {
      * @param {string} id - Asset ID
      * @returns {string|null} - Path or null if not found
      */
-    _getEntityImagePath(id) {
+    _getEntityImagePath(id: string) {
         if (!EntityRegistry) return null;
 
         // Map of search patterns to categories
@@ -288,7 +273,7 @@ const AssetLoader = {
      * @param {object} files - Files object with clean/original paths
      * @returns {string} - Best available path
      */
-    _selectBestPath(files) {
+    _selectBestPath(files: Record<string, string>) {
         if (files.clean) return files.clean.replace('assets/', '');
         if (files.approved_original) return files.approved_original.replace('assets/', '');
         if (files.original) return files.original.replace('assets/', '');
@@ -300,7 +285,7 @@ const AssetLoader = {
      * @param {string} primaryPath - The primary path
      * @returns {string|null} - Fallback path or null
      */
-    getOriginalPath(primaryPath) {
+    getOriginalPath(primaryPath: string) {
         if (!primaryPath) return null;
 
         if (primaryPath.includes('_clean')) {
@@ -317,7 +302,7 @@ const AssetLoader = {
      * @param {string} id
      * @returns {HTMLImageElement|null}
      */
-    getImage(id) {
+    getImage(id: string) {
         const path = this.getImagePath(id);
         return this.cache.get(path) || null;
     },
@@ -394,7 +379,7 @@ const AssetLoader = {
      * @param {string} id
      * @returns {object|null}
      */
-    getAudio(id) {
+    getAudio(id: string): any {
         // Procedural audio handled by ProceduralSFX.js
         // This is only for pre-recorded files (BGM, ambient)
         return null;
@@ -405,8 +390,8 @@ const AssetLoader = {
      * @param {string} id
      * @returns {object|null}
      */
-    getVFXPreset(id) {
-        return VFXController?.presets?.[id] || null;
+    getVFXPreset(id: string) {
+        return (VFXController?.presets as any)?.[id] || null;
     }
 };
 

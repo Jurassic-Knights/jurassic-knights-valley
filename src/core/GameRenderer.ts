@@ -18,11 +18,26 @@ import { HomeOutpostRenderer } from '../rendering/HomeOutpostRenderer';
 import { DOMUtils } from './DOMUtils';
 
 const GameRenderer = {
-    canvas: null,
-    ctx: null,
-    hero: null, // Still track hero for camera centering
+    canvas: null as HTMLCanvasElement | null,
+    ctx: null as CanvasRenderingContext2D | null,
+    hero: null as any, // Still track hero for camera centering
     debugMode: false,
     gridMode: false, // Separate toggle for grid overlay
+    game: null as any,
+    shadowCanvas: null as HTMLCanvasElement | null,
+    shadowCtx: null as CanvasRenderingContext2D | null,
+    _worldRenderer: null as any,
+    _roadRenderer: null as any,
+    _vfxController: null as any,
+    _homeBase: null as any,
+    _heroRenderer: null as any,
+    _dinosaurRenderer: null as any,
+    _resourceRenderer: null as any,
+    _ambientSystem: null as any,
+    _fogSystem: null as any,
+    _envRenderer: null as any,
+    _lightingSystem: null as any,
+    _renderTiming: null as any,
 
     // Dynamic world size - uses full biome world if defined, else Ironhaven-only
     get worldWidth() {
@@ -65,14 +80,14 @@ const GameRenderer = {
     },
 
     // GC Optimization: Pre-allocated array for Y-sorting
-    _sortableEntities: [],
+    _sortableEntities: [] as any[],
 
     /**
      * Initialize the renderer
      */
-    init(game) {
+    init(game: any) {
         this.game = game;
-        this.canvas = document.getElementById('game-canvas');
+        this.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
         if (!this.canvas) {
             Logger.error('[GameRenderer] Canvas not found');
             return false;
@@ -187,14 +202,14 @@ const GameRenderer = {
      * Set the hero reference
      * @param {Hero} hero
      */
-    setHero(hero) {
+    setHero(hero: any) {
         this.hero = hero;
     },
 
     /**
      * Convert world coordinates to screen coordinates
      */
-    worldToScreen(worldX, worldY) {
+    worldToScreen(worldX: number, worldY: number) {
         return {
             x: worldX - this.viewport.x,
             y: worldY - this.viewport.y
@@ -260,7 +275,7 @@ const GameRenderer = {
      */
     simpleShadows: false,
 
-    renderShadowPass(entities) {
+    renderShadowPass(entities: any[]) {
         if (ShadowRenderer) {
             ShadowRenderer.simpleShadows = this.simpleShadows;
             ShadowRenderer.renderShadowPass(
@@ -280,7 +295,7 @@ const GameRenderer = {
     /**
      * Fast simple ellipse shadows (delegates to ShadowRenderer)
      */
-    renderSimpleShadows(entities) {
+    renderSimpleShadows(entities: any[]) {
         if (ShadowRenderer) {
             ShadowRenderer.renderSimpleShadows(this.ctx, entities, this.viewport);
         }
@@ -451,7 +466,7 @@ const GameRenderer = {
                 this.ctx.restore();
             } catch (e) {
                 this.ctx.restore();
-                Logger.warn('[GameRenderer] LightingSystem render error:', e.message);
+                Logger.warn('[GameRenderer] LightingSystem render error:', (e as Error).message);
             }
         }
         if (timing) {
@@ -556,7 +571,7 @@ const GameRenderer = {
      */
     drawHomeOutpost() {
         if (HomeOutpostRenderer) {
-            HomeOutpostRenderer.draw(this.ctx, this.worldWidth(), this.worldHeight(), this.game);
+            HomeOutpostRenderer.draw(this.ctx, this.worldWidth, this.worldHeight, this.game);
         }
     }
 };

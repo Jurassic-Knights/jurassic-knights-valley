@@ -13,6 +13,7 @@ import { GameConstants, getConfig } from '@data/GameConstants';
 import { ProceduralSFX } from '../audio/ProceduralSFX';
 import { RainVFX } from '@vfx/weather/RainVFX';
 import { SnowVFX } from '@vfx/weather/SnowVFX';
+import { IGame, IViewport } from '@app-types/core';
 
 class EnvironmentRenderer {
     // Canvas references
@@ -76,7 +77,7 @@ class EnvironmentRenderer {
         // All properties initialized as class fields above
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
 
         // Listen for Time Ticks to update lighting state
@@ -104,7 +105,7 @@ class EnvironmentRenderer {
      * Set active weather effect
      * @param {string} type - Weather Type (RAIN, SNOW, FOG, CLEAR)
      */
-    setWeather(type) {
+    setWeather(type: string) {
         Logger.info(`[EnvironmentRenderer] Weather set to: ${type}`);
         this.weatherType = type;
 
@@ -132,7 +133,7 @@ class EnvironmentRenderer {
     /**
      * Update loop (called by Game.js if registered system has update method)
      */
-    update(dt) {
+    update(dt: number) {
         // Get Camera Delta from GameRenderer
         const delta = { x: 0, y: 0 };
         let viewport = null;
@@ -175,7 +176,7 @@ class EnvironmentRenderer {
         if (this.vfx.SNOW) this.vfx.SNOW.update(dt, delta, viewport, this.wind);
     }
 
-    updateLightning(dt) {
+    updateLightning(dt: number) {
         // Flash Decay
         if (this.lightning.flashAlpha > 0) {
             this.lightning.flashAlpha -= dt / 200; // Fade in 200ms
@@ -243,7 +244,7 @@ class EnvironmentRenderer {
         Logger.info('[Weather] Lightning Strike!');
     }
 
-    updateWind(dt) {
+    updateWind(dt: number) {
         // Wind Logic
         // 1. Timer
         this.wind.timer -= dt / 1000;
@@ -294,7 +295,7 @@ class EnvironmentRenderer {
         // Add some noise to currentX? Maybe later for micro-turbulence.
     }
 
-    updateLighting(data) {
+    updateLighting(data: any) {
         const t = data.dayTime;
         const schedule = this.lightingSchedule;
 
@@ -331,7 +332,7 @@ class EnvironmentRenderer {
         this.updateShadows(data.dayTime);
     }
 
-    updateShadows(dayTime) {
+    updateShadows(dayTime: number) {
         // Continuous Cycle to prevent snapping
         // Noon (0.5) = Shortest Shadow, Highest Alpha
         // Midnight (0.0/1.0) = Longest Shadow, Lowest Alpha
@@ -372,7 +373,7 @@ class EnvironmentRenderer {
      * @param {CanvasRenderingContext2D} ctx - The game canvas context
      * @param {Object} viewport - Current camera viewport
      */
-    render(ctx, viewport) {
+    render(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         // Cache context for update loop usage
         if (!this.ctx) this.ctx = ctx;
 
@@ -403,7 +404,7 @@ class EnvironmentRenderer {
         }
     }
 
-    renderLightning(ctx) {
+    renderLightning(ctx: CanvasRenderingContext2D) {
         // Flash
         if (this.lightning.flashAlpha > 0) {
             ctx.save();

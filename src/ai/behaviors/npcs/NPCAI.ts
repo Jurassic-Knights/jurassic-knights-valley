@@ -16,7 +16,7 @@ const NPCAI = {
     /**
      * Update NPC AI state
      */
-    updateState(npc, hero, dt) {
+    updateState(npc: any, hero: any, dt: number) {
         if (!npc.active) return;
 
         switch (npc.state) {
@@ -35,7 +35,7 @@ const NPCAI = {
     /**
      * Idle behavior - check for player proximity
      */
-    updateIdle(npc, hero, dt) {
+    updateIdle(npc: any, hero: any, dt: number) {
         if (!hero) return;
 
         const dist = npc.distanceTo
@@ -65,7 +65,7 @@ const NPCAI = {
     /**
      * Patrol behavior
      */
-    updatePatrol(npc, dt) {
+    updatePatrol(npc: any, dt: number) {
         if (!npc.patrolPoints || npc.patrolPoints.length === 0) {
             npc.state = 'idle';
             return;
@@ -93,7 +93,7 @@ const NPCAI = {
     /**
      * Dialogue state (player is interacting)
      */
-    updateDialogue(npc, hero, dt) {
+    updateDialogue(npc: any, hero: any, dt: number) {
         // Face the player during dialogue
         if (hero) {
             npc.facingRight = hero.x > npc.x;
@@ -104,7 +104,7 @@ const NPCAI = {
     /**
      * Player approached NPC
      */
-    onPlayerApproach(npc, hero) {
+    onPlayerApproach(npc: any, hero: any) {
         if (EventBus) {
             EventBus.emit('NPC_PLAYER_NEARBY', {
                 npc,
@@ -116,7 +116,7 @@ const NPCAI = {
     /**
      * Player left NPC range
      */
-    onPlayerLeave(npc) {
+    onPlayerLeave(npc: any) {
         if (EventBus) {
             EventBus.emit('NPC_PLAYER_LEFT', { npc });
         }
@@ -125,7 +125,7 @@ const NPCAI = {
     /**
      * Start dialogue with NPC
      */
-    startDialogue(npc) {
+    startDialogue(npc: any) {
         npc.state = 'dialogue';
 
         if (EventBus) {
@@ -136,7 +136,7 @@ const NPCAI = {
     /**
      * End dialogue
      */
-    endDialogue(npc) {
+    endDialogue(npc: any) {
         npc.state = 'idle';
 
         if (EventBus) {

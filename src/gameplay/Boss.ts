@@ -73,7 +73,7 @@ class Boss extends Enemy {
     /**
      * Override render to add boss name plate
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         // Call parent render (draws sprite/color + health bar + threat indicator)
@@ -86,7 +86,7 @@ class Boss extends Enemy {
     /**
      * Render boss name plate above health bar
      */
-    renderNamePlate(ctx) {
+    renderNamePlate(ctx: CanvasRenderingContext2D) {
         ctx.save();
         ctx.font = 'bold 14px monospace';
         ctx.textAlign = 'center';
@@ -102,7 +102,7 @@ class Boss extends Enemy {
     /**
      * Override die to emit boss-specific death event
      */
-    die(killer = null) {
+    die(killer: any = null) {
         // Call parent die
         super.die(killer);
 
@@ -120,7 +120,7 @@ class Boss extends Enemy {
         Logger.info(`[Boss] ${this.bossName} defeated! Respawns in ${this.respawnTime}s`);
     }
 
-    update(dt) {
+    update(dt: number) {
         if (!this.active || this.isDead) {
             if (this.isDead) {
                 this.respawnTimer -= dt / 1000;

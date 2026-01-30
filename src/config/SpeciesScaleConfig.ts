@@ -91,7 +91,7 @@ const SpeciesScaleConfig = {
      * @param {boolean} isBoss - Whether this is a boss entity
      * @returns {number} Scale multiplier
      */
-    getScale(entityConfig, isBoss = false) {
+    getScale(entityConfig: any, isBoss = false) {
         const sourceFile = entityConfig.sourceFile || '';
         const species = entityConfig.species || '';
         const bodyType = entityConfig.bodyType || 'medium';
@@ -99,7 +99,7 @@ const SpeciesScaleConfig = {
         let scale = 1.0;
 
         if (sourceFile === 'human') {
-            scale = this.human[bodyType] || 1.0;
+            scale = (this.human as any)[bodyType] || 1.0;
         } else if (sourceFile === 'dinosaur') {
             scale = this._lookupSpecies(species, this.dinosaur);
         } else if (sourceFile === 'herbivore') {
@@ -127,7 +127,7 @@ const SpeciesScaleConfig = {
      * @param {object} lookup - Scale lookup table
      * @returns {number} Scale or 1.0 if not found
      */
-    _lookupSpecies(species, lookup) {
+    _lookupSpecies(species: string, lookup: Record<string, number>) {
         // Try exact match first
         if (lookup[species]) {
             return lookup[species];
@@ -154,7 +154,7 @@ const SpeciesScaleConfig = {
      * @param {boolean} isBoss - Whether this is a boss
      * @returns {{width: number, height: number, scale: number}}
      */
-    getSize(entityConfig, isBoss = false) {
+    getSize(entityConfig: any, isBoss = false) {
         // Priority: Explicit config > Species Scale
         if (entityConfig.width && entityConfig.height) {
             const explicitScale = entityConfig.sizeScale || 1.0;
@@ -166,7 +166,7 @@ const SpeciesScaleConfig = {
         }
 
         const sourceFile = entityConfig.sourceFile || 'dinosaur';
-        const baseSize = this.baseSizes[sourceFile] || 128;
+        const baseSize = (this.baseSizes as any)[sourceFile] || 128;
         const scale = this.getScale(entityConfig, isBoss);
         const finalSize = Math.round(baseSize * scale);
 

@@ -261,7 +261,7 @@ const DebugUI = {
      * @param {string} label - Control label
      * @param {HTMLElement} element - Control element
      */
-    addControl(label, element) {
+    addControl(label: string, element: HTMLElement) {
         if (!this.container) return;
 
         const wrapper = document.createElement('div');

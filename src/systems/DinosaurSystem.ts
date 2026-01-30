@@ -49,7 +49,7 @@ class DinosaurSystem {
         }
     }
 
-    onEntityDamaged(data) {
+    onEntityDamaged(data: EntityDamageEvent) {
         const { entity, amount } = data;
         if (!entity || entity.entityType !== EntityTypes.DINOSAUR) return;
 
@@ -71,7 +71,7 @@ class DinosaurSystem {
         }
     }
 
-    onEntityDied(data) {
+    onEntityDied(data: EntityDeathEvent) {
         const { entity } = data;
         if (!entity || entity.entityType !== EntityTypes.DINOSAUR) return;
 
@@ -81,7 +81,7 @@ class DinosaurSystem {
         // Death logic handled in updateDino via HealthComponent sync
     }
 
-    update(dt) {
+    update(dt: number) {
         if (!entityManager) return;
         const dinos = entityManager.getByType('Dinosaur');
         for (const dino of dinos) {
@@ -91,7 +91,7 @@ class DinosaurSystem {
         }
     }
 
-    updateDino(dino, dt) {
+    updateDino(dino: any, dt: number) {
         // Sync with HealthComponent
         if (dino.components.health) {
             dino.health = dino.components.health.health;
@@ -192,7 +192,7 @@ class DinosaurSystem {
         }
     }
 
-    changeDirection(dino) {
+    changeDirection(dino: any) {
         if (dino.components.ai) {
             dino.components.ai.randomizeWander();
         } else {

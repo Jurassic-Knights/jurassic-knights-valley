@@ -61,7 +61,7 @@ class VFXSystem {
     /**
      * Update all VFX systems
      */
-    update(dt) {
+    update(dt: number) {
         if (!this.initialized) return;
 
         if (this.bgParticles) this.bgParticles.update(dt);
@@ -112,13 +112,13 @@ class VFXSystem {
     /**
      * Execute a single cue from a sequence
      */
-    executeCue(cue, x, y, contextOptions = {}) {
+    executeCue(cue: any, x: number, y: number, contextOptions: ParticleOptions = {}) {
         // Resolve Template if present
         let config = {};
 
-        if (cue.template && VFXConfig && VFXConfig.TEMPLATES[cue.template]) {
+        if (cue.template && VFXConfig && (VFXConfig.TEMPLATES as any)[cue.template]) {
             // Merge Template with Cue Params (Cue wins)
-            config = { ...VFXConfig.TEMPLATES[cue.template], ...(cue.params || {}) };
+            config = { ...(VFXConfig.TEMPLATES as any)[cue.template], ...(cue.params || {}) };
         } else if (cue.type) {
             // Direct definition
             config = { type: cue.type, ...(cue.params || {}) };
@@ -145,13 +145,13 @@ class VFXSystem {
      * @param {number} y - World Y
      * @param {object} options - Optional overrides
      */
-    playSequence(sequenceName, x, y, options = {}) {
-        if (!VFXConfig || !VFXConfig.SEQUENCES[sequenceName]) {
+    playSequence(sequenceName: string, x: number, y: number, options: ParticleOptions = {}) {
+        if (!VFXConfig || !(VFXConfig.SEQUENCES as any)[sequenceName]) {
             Logger.warn(`[VFXSystem] Sequence not found: ${sequenceName}`);
             return;
         }
 
-        const rawSequence = VFXConfig.SEQUENCES[sequenceName];
+        const rawSequence = (VFXConfig.SEQUENCES as any)[sequenceName];
 
         // GC Optimization: Build cues array more efficiently
         const cues = [];
@@ -181,13 +181,13 @@ class VFXSystem {
     /**
      * Helper: Play a generic effect immediately (using Template or raw config)
      */
-    playEffect(configOrTemplateName, x, y, layer = 'fg') {
+    playEffect(configOrTemplateName: string | ParticleOptions, x: number, y: number, layer = 'fg') {
         let config = configOrTemplateName;
 
         // Check if string -> Template
         if (typeof configOrTemplateName === 'string') {
-            if (VFXConfig && VFXConfig.TEMPLATES[configOrTemplateName]) {
-                config = VFXConfig.TEMPLATES[configOrTemplateName];
+            if (VFXConfig && (VFXConfig.TEMPLATES as any)[configOrTemplateName]) {
+                config = (VFXConfig.TEMPLATES as any)[configOrTemplateName];
             } else {
                 Logger.warn(`[VFXSystem] Template not found: ${configOrTemplateName}`);
                 return;
@@ -201,7 +201,7 @@ class VFXSystem {
     /**
      * Render (Called by GameRenderer with main context)
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.initialized) return;
 
         // Render all floating texts to the game canvas
@@ -244,14 +244,14 @@ class VFXSystem {
     /**
      * Legacy Compat: Play a foreground effect (above UI)
      */
-    playForeground(x, y, options = {}) {
+    playForeground(x: number, y: number, options: ParticleOptions | Record<string, any> = {}) {
         if (this.fgParticles) this.fgParticles.emit(x, y, options);
     }
 
     /**
      * Legacy Compat: Play a background effect (behind UI)
      */
-    playBackground(x, y, options = {}) {
+    playBackground(x: number, y: number, options: ParticleOptions | Record<string, any> = {}) {
         if (this.bgParticles) this.bgParticles.emit(x, y, options);
     }
 
@@ -275,7 +275,7 @@ class VFXSystem {
     /**
      * Spawn floating text at world coordinates
      */
-    spawnFloatingText(text, worldX, worldY, color = '#FFD700', duration = 2000) {
+    spawnFloatingText(text: string, worldX: number, worldY: number, color = '#FFD700', duration = 2000) {
         if (FloatingText) {
             // FloatingText expects a config object, not separate color/duration params
             const config = {
@@ -292,7 +292,7 @@ class VFXSystem {
     // Utility Methods
     // -------------------------------------------------------------------------
 
-    createExplosion(x, y) {
+    createExplosion(x: number, y: number) {
         // Redirect to sequence system
         this.playSequence('EXPLOSION_GENERIC', x, y);
     }

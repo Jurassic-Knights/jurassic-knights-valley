@@ -38,7 +38,7 @@ class EquipmentUI {
     slotSelectionMode: boolean;
     pendingEquipItem: EquipmentItem | null;
     targetEquipSet: number;
-    originalFooterConfigs: any;
+    originalFooterConfigs: any = null;
     slots: string[];
     toolSlots: string[];
     modeCategories: Record<string, { id: string; label: string }[]>;
@@ -162,8 +162,8 @@ class EquipmentUI {
     }
 
     // Event delegation - handles ALL clicks in the container
-    _handleClick(e) {
-        const target = e.target;
+    _handleClick(e: MouseEvent) {
+        const target = e.target as HTMLElement;
 
         // Close button
         if (target.closest('#equip-close') || target.closest('#equip-back')) {
@@ -179,7 +179,7 @@ class EquipmentUI {
         }
 
         // Hero skin selector modal - select skin
-        const skinOption = target.closest('.hero-skin-option');
+        const skinOption = target.closest('.hero-skin-option') as HTMLElement;
         if (skinOption?.dataset.skinId) {
             const charSprite = this.container?.querySelector(
                 '.character-sprite'
@@ -220,7 +220,7 @@ class EquipmentUI {
         }
 
         // Category tabs (fallback or specific buttons)
-        const tab = target.closest('.btn-filter');
+        const tab = target.closest('.btn-filter') as HTMLElement;
         if (tab?.dataset.category) {
             this.selectedCategory = tab.dataset.category;
             this._render();
@@ -228,7 +228,7 @@ class EquipmentUI {
         }
 
         // Mode buttons (footer)
-        const modeBtn = target.closest('.action-btn[data-mode]');
+        const modeBtn = target.closest('.action-btn[data-mode]') as HTMLElement;
         if (modeBtn?.dataset.mode) {
             this.selectedMode = modeBtn.dataset.mode;
             this.selectedCategory = 'all';
@@ -239,7 +239,7 @@ class EquipmentUI {
         }
 
         // Weapon set toggle buttons - also sets active weapon set in game
-        const setToggle = target.closest('.set-toggle-btn');
+        const setToggle = target.closest('.set-toggle-btn') as HTMLElement;
         if (setToggle?.dataset.targetSet) {
             const targetSet = parseInt(setToggle.dataset.targetSet);
             this.targetEquipSet = targetSet;
@@ -261,7 +261,7 @@ class EquipmentUI {
         }
 
         // Inventory items - manual double-click detection
-        const invItem = target.closest('.inventory-item');
+        const invItem = target.closest('.inventory-item') as HTMLElement;
         if (invItem?.dataset.id) {
             const itemId = invItem.dataset.id;
             const now = Date.now();
@@ -285,7 +285,7 @@ class EquipmentUI {
         }
 
         // Equipped slots
-        const slot = target.closest('.equip-slot');
+        const slot = target.closest('.equip-slot') as HTMLElement;
         if (slot?.dataset.slot) {
             const slotId = slot.dataset.slot;
 
@@ -313,10 +313,10 @@ class EquipmentUI {
         }
     }
 
-    _handleDoubleClick(e) {
-        const invItem = e.target.closest('.inventory-item');
-        if (invItem?.dataset.id) {
-            EquipmentSlotManager.equipItem(this, invItem.dataset.id);
+    _handleDoubleClick(e: MouseEvent) {
+        const invItem = (e.target as HTMLElement).closest('.inventory-item');
+        if ((invItem as HTMLElement)?.dataset.id) {
+            EquipmentSlotManager.equipItem(this, (invItem as HTMLElement).dataset.id!);
         }
     }
 
@@ -819,7 +819,7 @@ class EquipmentUI {
         EquipmentUIRenderer.loadIcons(this.container);
     }
 
-    _selectItemNoRender(itemId) {
+    _selectItemNoRender(itemId: string) {
         const item = this.cachedEquipment.find((e) => e.id === itemId);
         this.selectedItem = item || null;
 
@@ -841,13 +841,13 @@ class EquipmentUI {
         }
     }
 
-    _selectItem(itemId) {
+    _selectItem(itemId: string) {
         const item = this.cachedEquipment.find((e) => e.id === itemId);
         this.selectedItem = item || null;
         this._render();
     }
 
-    _selectEquippedSlot(slotId) {
+    _selectEquippedSlot(slotId: string) {
         const hero = GameInstance?.hero;
         const equippedItem = hero?.equipment?.getSlot(slotId);
 

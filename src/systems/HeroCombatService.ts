@@ -28,7 +28,7 @@ const HeroCombatService = {
      * Initialize service with game reference
      * @param {Game} game
      */
-    init(game) {
+    init(game: any) {
         this.game = game;
     },
 
@@ -37,7 +37,7 @@ const HeroCombatService = {
      * @param {number} dt - Delta time in ms
      * @param {Hero} hero
      */
-    update(dt, hero) {
+    update(dt: number, hero: any) {
         // Update attack timer
         if (hero.attackTimer > 0) {
             hero.attackTimer -= dt / 1000;
@@ -76,7 +76,7 @@ const HeroCombatService = {
      * @param {Hero} hero
      * @returns {Entity|null}
      */
-    findTarget(hero) {
+    findTarget(hero: any) {
         if (!entityManager) return null;
 
         let target = null;
@@ -154,7 +154,7 @@ const HeroCombatService = {
      * @param {Entity} target
      * @returns {boolean} Whether the target was killed
      */
-    tryAttack(hero, target) {
+    tryAttack(hero: any, target: any) {
         if (!target || !target.active) return false;
 
         // Determine target type
@@ -302,7 +302,7 @@ const HeroCombatService = {
      * @param {Entity} target
      * @param {string} slotId - 'hand1' or 'hand2'
      */
-    playMuzzleFlashForSlot(hero, target, slotId) {
+    playMuzzleFlashForSlot(hero: any, target: any, slotId: string) {
         if (!ProjectileVFX) return;
 
         const item = hero.equipment?.getSlot?.(slotId);
@@ -317,7 +317,7 @@ const HeroCombatService = {
      * @param {Entity} target
      * @param {boolean} isRangedTarget
      */
-    playMuzzleFlash(hero, target, isRangedTarget) {
+    playMuzzleFlash(hero: any, target: any, isRangedTarget: boolean) {
         if (!isRangedTarget) return;
 
         // Use new ProjectileVFX system

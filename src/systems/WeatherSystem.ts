@@ -43,7 +43,7 @@ class WeatherSystem {
      * Set a weather override
      * @param {string|null} type - Weather type or 'auto' to disable
      */
-    setWeatherOverride(type) {
+    setWeatherOverride(type: string | null) {
         if (!type || type === 'auto') {
             this.overrideEnabled = false;
             Logger.info('[WeatherSystem] Override Disabled (Auto)');
@@ -57,13 +57,13 @@ class WeatherSystem {
         Logger.info(`[WeatherSystem] Override Enabled: ${type}`);
     }
 
-    update(dt) {
+    update(dt: number) {
         // Skip auto changes when override is active
         if (this.overrideEnabled) return;
 
         // We use TimeSystem's time, but we can also track our own interval
         // Simple Real-time check is fine
-        this.nextChangeCheck -= dt / getConfig().Time.WEATHER_DECAY_RATE;
+        this.nextChangeCheck -= dt / (getConfig().Time as any).WEATHER_DECAY_RATE;
 
         if (this.nextChangeCheck <= 0) {
             this.tryChangeWeather();
@@ -71,7 +71,7 @@ class WeatherSystem {
         }
     }
 
-    handleSeasonChange(data) {
+    handleSeasonChange(data: any) {
         this.currentSeason = data.season;
         Logger.info(
             `[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`
@@ -93,7 +93,7 @@ class WeatherSystem {
 
     rollWeather() {
         // Get probabilities for current season
-        const probs = this.config.PROBABILITIES[this.currentSeason];
+        const probs = this.config.PROBABILITIES[this.currentSeason as keyof typeof this.config.PROBABILITIES];
         if (!probs) return;
 
         const roll = Math.random();
@@ -113,7 +113,7 @@ class WeatherSystem {
         }
     }
 
-    setWeather(type) {
+    setWeather(type: string) {
         this.currentWeather = type;
         Logger.info(`[WeatherSystem] Weather Changed to: ${type}`);
 

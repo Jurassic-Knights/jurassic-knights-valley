@@ -190,7 +190,7 @@ class Dinosaur extends Entity {
             this._spriteLoaded = true;
             Logger.info(`[Dinosaur] Sprite loaded: ${this.dinoType}`);
         });
-        this._sprite.onerror = (e) => {
+        this._sprite.onerror = (e: any) => {
             Logger.error(`[Dinosaur] Failed to load sprite: ${this.dinoType}, path: ${path}`, e);
             this._spriteLoaded = false;
         };
@@ -215,7 +215,7 @@ class Dinosaur extends Entity {
      * Logic moved to HerbivoreSystem.ts (ECS)
      * @param {number} dt - Delta time in ms
      */
-    update(_dt) {
+    update(_dt: number) {
         // Handled by HerbivoreSystem
     }
 
@@ -231,7 +231,7 @@ class Dinosaur extends Entity {
      * Check if in range for interaction (e.g. gun range checked by Hero/Game)
      * For Entity base compat
      */
-    isInRange(hero) {
+    isInRange(hero: any) {
         if (!this.active || !hero) return false;
         if (this.state === 'dead') return false;
         // Use config value for interaction range
@@ -239,11 +239,11 @@ class Dinosaur extends Entity {
         return this.distanceTo(hero) < range;
     }
 
-    render(_ctx) {
+    render(_ctx: CanvasRenderingContext2D) {
         // Handled by DinosaurRenderer
     }
 
-    renderUI(ctx) {
+    renderUI(ctx: CanvasRenderingContext2D) {
         // Delegated to System
         if (DinosaurRenderer) {
             DinosaurRenderer.renderUI(ctx, this);

@@ -23,7 +23,7 @@ class ResourceSystem {
         this.game = game;
     }
 
-    update(dt) {
+    update(dt: number) {
         if (!entityManager) return;
         const resources = entityManager.getByType('Resource');
         for (const res of resources) {
@@ -33,7 +33,7 @@ class ResourceSystem {
         }
     }
 
-    updateResource(res, dt) {
+    updateResource(res: any, dt: number) {
         if (res.state === 'depleted') {
             res.respawnTimer -= dt / 1000;
             if (res.respawnTimer <= 0) {
@@ -42,7 +42,7 @@ class ResourceSystem {
         }
     }
 
-    respawn(res) {
+    respawn(res: any) {
         res.state = 'ready';
         res.health = res.maxHealth;
         res.respawnTimer = 0;

@@ -2,7 +2,7 @@
  * Entity: enemy_dinosaur_t1_04
  * Auto-generated. Edit in dashboard.
  */
-import type { EnemyEntity } from '@types/entities';
+import type { EnemyEntity } from '@app-types/entities';
 
 export default {
     "id": "enemy_dinosaur_t1_04",

@@ -18,7 +18,7 @@ class ResourceRendererService {
         Logger.info('[ResourceRenderer] Initialized');
     }
 
-    render(ctx, res, includeShadow = true) {
+    render(ctx: CanvasRenderingContext2D, res: any, includeShadow = true) {
         if (!res.active) return;
 
         // Shadow
@@ -41,7 +41,7 @@ class ResourceRendererService {
     }
 
     // ... rest of methods ...
-    renderShadow(ctx, res, forceOpaque = false) {
+    renderShadow(ctx: CanvasRenderingContext2D, res: any, forceOpaque = false) {
         // Check environmentRenderer singleton for dynamic shadows
         const env = environmentRenderer;
 
@@ -126,7 +126,7 @@ class ResourceRendererService {
         ctx.restore();
     }
 
-    renderDepleted(ctx, res) {
+    renderDepleted(ctx: CanvasRenderingContext2D, res: any) {
         // For node_* types, use resourceType directly as base asset ID
         let baseAssetId = null;
         if (res.resourceType && res.resourceType.startsWith('node_')) {
@@ -196,7 +196,7 @@ class ResourceRendererService {
         }
     }
 
-    renderActive(ctx, res) {
+    renderActive(ctx: CanvasRenderingContext2D, res: any) {
         // For node_* types, use resourceType directly as asset key (matches AssetLoader)
         let assetId = null;
         if (res.resourceType && res.resourceType.startsWith('node_')) {
@@ -291,7 +291,7 @@ class ResourceRendererService {
      * @param {CanvasRenderingContext2D} ctx
      * @param {DroppedItem} item
      */
-    renderDroppedItem(ctx, item) {
+    renderDroppedItem(ctx: CanvasRenderingContext2D, item: any) {
         if (!item.active) return;
 
         // Render Trail (Stream) - only when magnetized

@@ -89,12 +89,29 @@ export function showImagesView(): void {
 // CATEGORY VIEW
 // ============================================
 
-export async function showCategoryView(categoryName: string): Promise<void> {
+export async function showCategoryView(categoryName: string, pushState: boolean = true): Promise<void> {
     const container = document.getElementById('mainContent');
     if (!container) return;
 
     container.innerHTML = '<div class="loading">Loading category data...</div>';
     setCurrentCategoryName(categoryName);
+
+    // Update URL History
+    if (pushState) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('category', categoryName);
+        window.history.pushState({ category: categoryName }, '', url.toString());
+    }
+
+    // Update Sidebar Active State
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        const btnCat = btn.getAttribute('data-category');
+        if (btnCat === categoryName) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 
     // Reset filters when switching categories
     setCategoryFilterValue({
@@ -131,15 +148,23 @@ export async function navigateToAsset(category: string, assetId: string): Promis
     await showCategoryView(category);
 
     // Wait for render and scroll to asset
+    // Wait for render and scroll to asset
     setTimeout(() => {
-        const safeId = assetId.replace(/[^a-zA-Z0-9]/g, '_');
-        const card = document.querySelector(`[data-item-id="${safeId}"]`) as HTMLElement | null;
+        // Use exact ID match as stored in dataset.id in categoryRenderer
+        const card = document.querySelector(`.asset-card[data-id="${assetId}"]`) as HTMLElement | null;
         if (card) {
-            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            card.style.outline = '3px solid var(--accent)';
+            card.scrollIntoView({ behavior: 'auto', block: 'center' });
+
+            // Remove class if it exists to restart animation
+            card.classList.remove('highlight-flash');
+            void card.offsetWidth; // Trigger reflow
+            card.classList.add('highlight-flash');
+
             setTimeout(() => {
-                card.style.outline = '';
+                card.classList.remove('highlight-flash');
             }, 2000);
+        } else {
+            console.warn(`[Navigation] Target card not found for ID: ${assetId}`);
         }
     }, 500);
 }

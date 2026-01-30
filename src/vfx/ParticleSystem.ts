@@ -13,11 +13,11 @@ const ParticleSystem = {
     canvas: null as HTMLCanvasElement | null,
     ctx: null as CanvasRenderingContext2D | null,
 
-    init(canvasId) {
+    init(canvasId: string) {
         // Fix: Ensure each instance has its own particle array
         this.particles = [];
 
-        this.canvas = document.getElementById(canvasId);
+        this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         if (this.canvas) {
             this.ctx = this.canvas.getContext('2d');
             this.resize();
@@ -127,18 +127,18 @@ const ParticleSystem = {
     },
 
     // Helper: Hex to RGB
-    hexToRgb(hex) {
+    hexToRgb(hex: string) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result
             ? {
-                  r: parseInt(result[1], 16),
-                  g: parseInt(result[2], 16),
-                  b: parseInt(result[3], 16)
-              }
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            }
             : { r: 255, g: 255, b: 255 };
     },
 
-    update(dt) {
+    update(dt: number) {
         const aliveParticles = [];
         const newParticles = [];
 
@@ -242,7 +242,7 @@ const ParticleSystem = {
         this.particles = aliveParticles.concat(newParticles);
     },
 
-    render(overrideCtx = null) {
+    render(overrideCtx: CanvasRenderingContext2D | null = null) {
         const ctx = overrideCtx || this.ctx;
         if (!ctx) return;
 

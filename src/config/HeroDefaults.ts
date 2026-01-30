@@ -14,7 +14,7 @@ const HeroDefaults = {
         body: 'chest_t1_01', // Cloth Tunic
         hands: 'hands_t1_01', // Cloth Gloves
         legs: 'feet_t1_01', // Cloth Boots
-        accessory: null, // No accessory by default
+        accessory: null as string | null, // No accessory by default
         hand1: 'weapon_ranged_pistol_t1_01', // Nagant Revolver (pistol)
         hand2: 'weapon_melee_sword_t1_01', // Heavy Knife (sword)
         tool_mining: 'tool_mining_t1_01', // Stone Pickaxe
@@ -48,8 +48,8 @@ const HeroDefaults = {
      * @param {string} slotId - Equipment slot
      * @returns {Object|null} Equipment entity data or null
      */
-    getEquipmentForSlot(slotId) {
-        const entityId = this.equipment[slotId];
+    getEquipmentForSlot(slotId: string) {
+        const entityId = (this.equipment as any)[slotId];
         if (!entityId) return null;
 
         // Try to load from EntityRegistry.equipment

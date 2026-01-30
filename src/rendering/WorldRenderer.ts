@@ -8,6 +8,7 @@ import { Logger } from '@core/Logger';
 import { GameRenderer } from '@core/GameRenderer';
 import { Registry } from '@core/Registry';
 import { getConfig } from '@data/GameConfig';
+import { IGame, IViewport } from '../types/core.d';
 
 class WorldRenderer {
     game: any = null;
@@ -25,7 +26,7 @@ class WorldRenderer {
         Logger.info('[WorldRenderer] Constructed');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         // Cache system references for performance
         this._assetLoader = game.getSystem('AssetLoader');
@@ -84,7 +85,7 @@ class WorldRenderer {
      * @param {CanvasRenderingContext2D} ctx
      * @param {object} viewport
      */
-    render(ctx, viewport) {
+    render(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         if (!this.game) return;
 
         // Hook into GameRenderer timing if available
@@ -116,7 +117,7 @@ class WorldRenderer {
     /**
      * Draw the scrolling water background
      */
-    drawWater(ctx, viewport) {
+    drawWater(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         ctx.save();
 
         // Use cached ref with fallback
@@ -161,7 +162,7 @@ class WorldRenderer {
     /**
      * Draw Islands, Bridges, and Home Outpost
      */
-    drawWorld(ctx, viewport) {
+    drawWorld(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         // Use cached refs with fallback
         const islandManager =
             this._islandManager || (this.game && this.game.getSystem('IslandManager'));
@@ -278,7 +279,7 @@ class WorldRenderer {
         ctx.restore();
     }
 
-    drawBridges(ctx, islandManager, assetLoader) {
+    drawBridges(ctx: CanvasRenderingContext2D, islandManager: any, assetLoader: any) {
         const bridges = islandManager.getBridges();
         let planksImg = null;
 
@@ -343,7 +344,7 @@ class WorldRenderer {
         }
     }
 
-    drawLockedOverlay(ctx, island) {
+    drawLockedOverlay(ctx: CanvasRenderingContext2D, island: any) {
         // FOG VFX REMOVED - Placeholder for new implementation
         // Just draw Lock icon and cost for now
 
@@ -368,7 +369,7 @@ class WorldRenderer {
         );
     }
 
-    drawHomeOutpost(ctx, islandManager) {
+    drawHomeOutpost(ctx: CanvasRenderingContext2D, islandManager: any) {
         const home = islandManager.getHomeIsland();
         if (!home) return;
 
@@ -407,7 +408,7 @@ class WorldRenderer {
         ctx.fillText('REST AREA', centerX, centerY);
     }
 
-    drawFallbackGrid(ctx, viewport) {
+    drawFallbackGrid(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         const gridSize = 50;
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.lineWidth = 1;
@@ -427,7 +428,7 @@ class WorldRenderer {
         }
     }
 
-    drawDebug(ctx, viewport) {
+    drawDebug(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         // Debug visualization removed - collision blocks are now shown in GameRenderer
     }
 }

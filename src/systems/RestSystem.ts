@@ -18,6 +18,7 @@ import { GameState } from '@core/State';
 import { Registry } from '@core/Registry';
 
 import type { IGame } from '../types/core.d';
+import type { Hero } from '../gameplay/Hero';
 
 class RestSystem {
     game: IGame | null = null;
@@ -40,7 +41,7 @@ class RestSystem {
 
     handleRest() {
         if (!this.game || !this.game.hero) return;
-        const hero = this.game.hero;
+        const hero = this.game.hero as Hero;
 
         // Validation (Double check location)
         if (!hero.isAtHomeOutpost) {
@@ -68,7 +69,7 @@ class RestSystem {
         }
     }
 
-    performRestLogic(hero) {
+    performRestLogic(hero: Hero) {
         Logger.info('[RestSystem] Performing rest logic (Restore stats)...');
 
         // Feature: Resilience Bonus

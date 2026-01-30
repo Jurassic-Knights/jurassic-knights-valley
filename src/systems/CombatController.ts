@@ -13,6 +13,7 @@ import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { heroSystem } from './HeroSystem';
 import { MathUtils } from '@core/MathUtils';
+import type { IGame, IEntity } from '../types/core';
 
 // Reference entityManager as EntityManager for global usage pattern
 const EntityManager = entityManager;
@@ -29,7 +30,7 @@ class CombatController {
      * Initialize with game reference
      * @param {Game} game
      */
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         Logger.info('[CombatController] Initialized');
     }
@@ -38,7 +39,7 @@ class CombatController {
      * Update combat logic
      * @param {number} dt - Delta time
      */
-    update(dt) {
+    update(dt: number) {
         if (!this.game || !this.game.hero) return;
 
         // Debug Throttle (every ~60 frames)
@@ -152,7 +153,7 @@ class CombatController {
      * @param {Entity} target
      * @param {string} type - 'resource' or 'dinosaur'
      */
-    handleTargetDestruction(target, type) {
+    handleTargetDestruction(target: IEntity, type: string) {
         // Drops are handled by the entity's own takeDamage method
         // This method is now only used for any additional destruction effects
         // (Currently none - preserved for future extension like VFX, audio, etc.)

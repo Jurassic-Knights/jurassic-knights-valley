@@ -14,125 +14,128 @@
 </head>
 
 <body>
-    <header>
-        <h1>🦖 Asset Dashboard <span class="server-badge">Vite + HMR</span></h1>
-        <div class="controls">
-            <button id="btnTemplates" class="secondary" data-action="toggle-templates">📝 Templates</button>
-
-            <button id="btnHero" class="secondary" data-action="navigate-category" data-category="hero"
-                style="background:#2196f3;">🛡️
-                Hero</button>
-            <button id="btnEnemies" class="secondary" data-action="navigate-category" data-category="enemies"
-                style="background:#e91e63;">🦖 Enemies</button>
-            <button id="btnBosses" class="secondary" data-action="navigate-category" data-category="bosses"
-                style="background:#9c27b0;">👑
-                Bosses</button>
-            <button id="btnNpcs" class="secondary" data-action="navigate-category" data-category="npcs"
-                style="background:#4caf50;">👤
-                NPCs</button>
-            <button id="btnItems" class="secondary" data-action="navigate-category" data-category="items"
-                style="background:#795548;">🧱
-                Items</button>
-            <button id="btnEquipment" class="secondary" data-action="navigate-category" data-category="equipment"
-                style="background:#9c27b0;">⚔️ Equipment</button>
-            <button id="btnResources" class="secondary" data-action="navigate-category" data-category="resources"
-                style="background:#ff9800;">🪨 Resources</button>
-            <button id="btnNodes" class="secondary" data-action="navigate-category" data-category="nodes"
-                style="background:#6d4c41;">⛏️
-                Nodes</button>
-            <button id="btnEnvironment" class="secondary" data-action="navigate-category" data-category="environment"
-                style="background:#8bc34a;">🌲 Environment</button>
-            <button id="btnUI" class="secondary" data-action="navigate-category" data-category="ui"
-                style="background:#03a9f4;">🖼️
-                UI</button>
-            <button id="btnConfig" class="secondary" data-action="toggle-config" style="background:#607d8b;">⚙️
-                Config</button>
-            <button id="btnMapEditor" class="secondary" data-action="toggle-map-editor"
-                style="background:#3f51b5; border: 1px solid #7986cb;">🌍
-                Map Editor</button>
-            <button id="btnRefresh" class="secondary" data-action="refresh-manifest">🔄</button>
-        </div>
-    </header>
-
-    <div class="stats">
-        <div class="stat pending"><span class="stat-value" id="statPending">-</span><span
-                class="stat-label">Pending</span></div>
-        <div class="stat approved"><span class="stat-value" id="statApproved">-</span><span
-                class="stat-label">Approved</span></div>
-        <div class="stat declined"><span class="stat-value" id="statDeclined">-</span><span
-                class="stat-label">Declined</span></div>
-        <div class="stat clean"><span class="stat-value" id="statClean">-</span><span class="stat-label">Clean</span>
-        </div>
-    </div>
-
-    <div class="sticky-bar">
-        <div class="filters">
-            <div class="filter-row">
-                <span class="filter-label">Status:</span>
-                <button class="filter-btn secondary active" data-filter="all">All</button>
-                <button class="filter-btn secondary" data-filter="pending">Pending</button>
-                <button class="filter-btn secondary" data-filter="approved">Approved</button>
-                <button class="filter-btn secondary" data-filter="declined">Declined</button>
-                <button class="filter-btn secondary" data-filter="clean">Clean</button>
-                <button class="filter-btn secondary" data-filter="missing" style="border-color: var(--accent);">⚠️
-                    Missing</button>
+    <div class="app-shell">
+        <!-- LEFT SIDEBAR: Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>🦕 COMMAND</h2>
             </div>
-            <div class="filter-row">
-                <span class="filter-label">Folder:</span>
-                <div class="category-filters" id="categoryFilters"></div>
-            </div>
-        </div>
-    </div>
 
-    <main id="mainContent">
-        <div class="loading">Loading assets...</div>
-    </main>
+            <div class="nav-group">
+                <h3>Entities</h3>
+                <button class="nav-item active" data-action="navigate-category" data-category="hero">🛡️ Hero</button>
+                <button class="nav-item" data-action="navigate-category" data-category="enemies">🦖 Enemies</button>
+                <button class="nav-item" data-action="navigate-category" data-category="bosses">👑 Bosses</button>
+                <button class="nav-item" data-action="navigate-category" data-category="npcs">👤 NPCs</button>
+            </div>
+
+            <div class="nav-group">
+                <h3>World</h3>
+                <button class="nav-item" data-action="navigate-category" data-category="environment">🌲
+                    Environment</button>
+                <button class="nav-item" data-action="navigate-category" data-category="nodes">⛏️ Nodes</button>
+                <button class="nav-item" data-action="navigate-category" data-category="buildings">🏠 Buildings</button>
+            </div>
+
+            <div class="nav-group">
+                <h3>Inventory</h3>
+                <button class="nav-item" data-action="navigate-category" data-category="items">🧱 Items</button>
+                <button class="nav-item" data-action="navigate-category" data-category="equipment">⚔️ Equipment</button>
+                <button class="nav-item" data-action="navigate-category" data-category="resources">🪨 Resources</button>
+            </div>
+
+            <div class="nav-group">
+                <h3>System</h3>
+                <button class="nav-item" data-action="navigate-category" data-category="ui">🖼️ UI</button>
+                <button class="nav-item" data-action="navigate-category" data-category="vfx">✨ VFX</button>
+                <button class="nav-item" data-action="navigate-category" data-category="audio">🔊 Audio</button>
+                <button class="nav-item" data-action="toggle-config">⚙️ Config</button>
+                <button class="nav-item" data-action="toggle-map-editor">🌍 Map Editor</button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="status-summary">
+                    <div class="status-row"><span class="dot pending"></span> Pending: <span id="statPending">-</span>
+                    </div>
+                    <div class="status-row"><span class="dot approved"></span> Approved: <span
+                            id="statApproved">-</span></div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- CENTER: Workbench (The Grid) -->
+        <main class="workbench">
+            <header class="toolbar">
+                <div class="toolbar-left">
+                    <h1 id="pageTitle">DASHBOARD</h1>
+                </div>
+                <div class="toolbar-center">
+                    <div class="filter-container" id="filterContainer">
+                        <!-- All filters rendered dynamically via categoryRenderer.ts -->
+                    </div>
+                </div>
+                <div class="toolbar-right">
+                    <div class="zoom-controls">
+                        <input type="range" id="imageSizeSlider" min="100" max="400" value="200"
+                            data-action="set-category-size" data-capture-value="true">
+                        <span id="imageSizeValue">200px</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="mainContent" class="asset-grid-container">
+                <div class="loading">Initializing Command Console...</div>
+            </div>
+        </main>
+
+        <!-- RIGHT: Inspector (Properties) -->
+        <aside class="inspector" id="inspectorPanel">
+            <div class="inspector-placeholder">
+                <span class="icon">👈</span>
+                <p>Select an asset to view details</p>
+            </div>
+            <!-- Content injected here via TS -->
+            <div id="inspectorContent" style="display:none;"></div>
+        </aside>
+    </div>
 
     <!-- Map Editor Container (Full Screen Overlay) -->
     <div id="map-editor-container"
-        style="display:none; position:fixed; top:80px; left:0; right:0; bottom:0; background:#1a1a1a; z-index:100;">
-        <!-- Sidebar (Palette) -->
+        style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#1a1a1a; z-index:200;">
         <div id="map-editor-sidebar"
             style="position:absolute; top:0; left:0; width:300px; bottom:0; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd;">
             <h3>Asset Palette</h3>
             <div id="palette-content"></div>
         </div>
-
-        <!-- Canvas Area -->
         <div id="map-editor-canvas" style="position:absolute; top:0; left:300px; right:0; bottom:0; overflow:hidden;">
         </div>
-
-        <!-- Toolbar (Top Right) -->
         <div id="map-editor-toolbar"
-            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; pointer-events:none;">
+            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white;">
             <div>Coords: <span id="cursor-coords">0, 0</span></div>
-            <div>Phase: <span id="editor-phase">Painting</span></div>
-            <div style="margin-top:5px; pointer-events:auto;">
-                <button data-action="save-map-data">💾 Save Map</button>
-            </div>
+            <button data-action="save-map-data">💾 Save</button>
+            <button data-action="toggle-map-editor">❌ Close</button>
         </div>
     </div>
 
+    <!-- Image Modal -->
     <div class="modal" id="imageModal">
         <span class="modal-close" data-action="close-modal">×</span>
         <div class="modal-header">
             <button class="modal-toggle" id="toggleComparison" data-action="toggle-comparison">📊 Compare</button>
         </div>
-        <img id="modalImage" src="" alt="Preview" style="display:block;">
+        <img id="modalImage" src="" alt="Preview">
         <div class="comparison-view" id="comparisonView" style="display:none;">
             <div class="comparison-panel original">
                 <img id="compareOriginal" src="" alt="Original">
-                <div class="comparison-label">Original</div>
+                <span>Original</span>
             </div>
             <div class="comparison-panel clean">
                 <img id="compareClean" src="" alt="Clean">
-                <div class="comparison-label">Clean</div>
+                <span>Clean</span>
             </div>
         </div>
-        <div class="modal-info" id="modalInfo"></div>
     </div>
 
-    <!-- Vite handles TypeScript directly - no pre-compilation needed -->
     <script type="module" src="./src/main.ts"></script>
 </body>
 

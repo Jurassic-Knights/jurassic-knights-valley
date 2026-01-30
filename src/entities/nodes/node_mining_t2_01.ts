@@ -3,6 +3,9 @@
  * Auto-generated from JSON.
  */
 
+
+import type { NodeEntity } from '@app-types/entities';
+
 export default {
     id: 'node_mining_t2_01',
     name: 'Dark Iron Vein',
@@ -23,4 +26,12 @@ export default {
         sizeScale: 1,
         width: 64,
         height: 64
-    },};
+    },
+    drops: [
+        {
+            item: "minerals_t2_01",
+            chance: 1,
+            "amount": [1, 3]
+        }
+    ]
+} satisfies NodeEntity;

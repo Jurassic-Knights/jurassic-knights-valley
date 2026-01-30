@@ -159,11 +159,11 @@ const BiomeManager = {
     /**
      * Get the biome at a given world position using polygon hit test
      */
-    getBiomeAt(x, y) {
+    getBiomeAt(x: number, y: number) {
         // Check each biome's polygon (order matters - Ironhaven checked first for priority)
         const priority = ['ironhaven', 'grasslands', 'tundra', 'badlands', 'desert'];
         for (const biomeId of priority) {
-            const biome = this.BIOMES[biomeId];
+            const biome = (this.BIOMES as any)[biomeId];
             if (biome.polygon && this.pointInPolygon(x, y, biome.polygon)) {
                 return biome;
             }
@@ -174,7 +174,7 @@ const BiomeManager = {
     /**
      * Point-in-polygon test using ray casting algorithm
      */
-    pointInPolygon(x, y, polygon) {
+    pointInPolygon(x: number, y: number, polygon: { x: number; y: number }[]) {
         let inside = false;
         const n = polygon.length;
 
@@ -191,12 +191,12 @@ const BiomeManager = {
         return inside;
     },
 
-    getBiomeIdAt(x, y) {
+    getBiomeIdAt(x: number, y: number) {
         const biome = this.getBiomeAt(x, y);
         return biome ? biome.id : this.BIOME_IDS.OCEAN;
     },
 
-    isOnRoad(x, y) {
+    isOnRoad(x: number, y: number) {
         for (const road of this.ROADS) {
             if (this.pointToSplineDistance(x, y, road) <= road.width / 2) {
                 return true;
@@ -205,11 +205,11 @@ const BiomeManager = {
         return false;
     },
 
-    getSpeedMultiplier(x, y) {
+    getSpeedMultiplier(x: number, y: number) {
         return this.isOnRoad(x, y) ? this.ROAD_SPEED_MULTIPLIER : 1.0;
     },
 
-    pointToLineDistance(px, py, from, to) {
+    pointToLineDistance(px: number, py: number, from: { x: number; y: number }, to: { x: number; y: number }) {
         const dx = to.x - from.x;
         const dy = to.y - from.y;
         const lengthSq = dx * dx + dy * dy;
@@ -228,7 +228,7 @@ const BiomeManager = {
         return MathUtils.distance(px, py, projX, projY);
     },
 
-    evaluateBezierTangent(t, points) {
+    evaluateBezierTangent(t: number, points: { x: number; y: number }[]) {
         const [p0, p1, p2, p3] = points;
         const mt = 1 - t;
         const mt2 = mt * mt;
@@ -242,18 +242,18 @@ const BiomeManager = {
         return { x: dx / len, y: dy / len };
     },
 
-    isValidPosition(x, y) {
+    isValidPosition(x: number, y: number) {
         return this.getBiomeAt(x, y) !== null;
     },
 
-    ironhavenToWorld(localX, localY) {
+    ironhavenToWorld(localX: number, localY: number) {
         return {
             x: localX + this.IRONHAVEN_OFFSET.x,
             y: localY + this.IRONHAVEN_OFFSET.y
         };
     },
 
-    worldToIronhaven(worldX, worldY) {
+    worldToIronhaven(worldX: number, worldY: number) {
         return {
             x: worldX - this.IRONHAVEN_OFFSET.x,
             y: worldY - this.IRONHAVEN_OFFSET.y
@@ -267,8 +267,8 @@ const BiomeManager = {
     /**
      * Get polygon points for a biome (for rendering)
      */
-    getBiomePolygon(biomeId) {
-        return this.BIOMES[biomeId]?.polygon || [];
+    getBiomePolygon(biomeId: string) {
+        return (this.BIOMES as any)[biomeId]?.polygon || [];
     },
 
     // ==================== SPLINE MATH ====================
@@ -279,7 +279,7 @@ const BiomeManager = {
      * @param {Array} points - Array of 4 control points [{x, y}, ...]
      * @returns {{x: number, y: number}}
      */
-    evaluateBezier(t, points) {
+    evaluateBezier(t: number, points: { x: number; y: number }[]) {
         const [p0, p1, p2, p3] = points;
         const mt = 1 - t;
         const mt2 = mt * mt;
@@ -303,7 +303,7 @@ const BiomeManager = {
      * @param {number} segments - Number of segments to sample
      * @returns {Array} Array of {x, y, angle} objects
      */
-    getSplinePoints(road, segments = 20) {
+    getSplinePoints(road: any, segments = 20) {
         const result = [];
         for (let i = 0; i <= segments; i++) {
             const t = i / segments;
@@ -319,7 +319,7 @@ const BiomeManager = {
      * Calculate minimum distance from point to spline road
      * Uses sampling approach for performance
      */
-    pointToSplineDistance(px, py, road) {
+    pointToSplineDistance(px: number, py: number, road: any) {
         const samples = 32; // Higher = more accurate but slower
         let minDistSq = Infinity;
 
@@ -340,7 +340,7 @@ const BiomeManager = {
     /**
      * Get approximate length of a spline road
      */
-    getSplineLength(road) {
+    getSplineLength(road: any) {
         const samples = 20;
         let length = 0;
         let prevPos = this.evaluateBezier(0, road.points);
@@ -355,7 +355,7 @@ const BiomeManager = {
         return length;
     },
 
-    getDebugInfo(x, y) {
+    getDebugInfo(x: number, y: number) {
         const biome = this.getBiomeAt(x, y);
         const onRoad = this.isOnRoad(x, y);
         const biomeName = biome ? biome.name : 'Ocean';

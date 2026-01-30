@@ -57,7 +57,9 @@ const GameConstants = {
     // Hero Settings
     Hero: {
         SPEED: 1400,
-        MAX_HEALTH: 1000
+        MAX_HEALTH: 1000,
+        RESPAWN_DELAY_MS: 2000,
+        STAMINA_EMIT_THROTTLE: 100
     },
 
     // Combat Settings
@@ -188,7 +190,13 @@ const GameConstants = {
         BRIDGE_VISUAL_PADDING: 100,
         PROP_SPAWN_PADDING: 70,
         HEALTH_BAR_WIDTH: 120,
-        PROGRESS_BAR_WIDTH: 100
+        PROGRESS_BAR_WIDTH: 100,
+        RESOLVE_PER_PIP: 5,
+        ANIMATION_SHATTER_MS: 900
+    },
+
+    Rendering: {
+        WHITE_BG_THRESHOLD: 250
     },
 
     // AI Behavior

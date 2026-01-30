@@ -44,7 +44,7 @@ class AmbientCreature {
             this.image = AssetLoader.getImage(this.type);
             if (!this.image) {
                 AssetLoader.preloadImage(this.type).then(
-                    (img: HTMLImageElement) => (this.image = img)
+                    (img: any) => (this.image = img as HTMLImageElement)
                 );
             }
         }

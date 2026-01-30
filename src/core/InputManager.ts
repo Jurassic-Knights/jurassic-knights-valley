@@ -21,7 +21,7 @@ const InputManager = {
         ArrowLeft: false,
         ArrowDown: false,
         ArrowRight: false
-    },
+    } as Record<string, boolean>,
 
     // Touch joystick state
     joystick: {
@@ -154,7 +154,7 @@ const InputManager = {
     /**
      * Handle key down
      */
-    onKeyDown(e) {
+    onKeyDown(e: KeyboardEvent) {
         if (this.keys.hasOwnProperty(e.key)) {
             this.keys[e.key] = true;
             this.updateKeyboardMovement();
@@ -165,7 +165,7 @@ const InputManager = {
     /**
      * Handle key up
      */
-    onKeyUp(e) {
+    onKeyUp(e: KeyboardEvent) {
         if (this.keys.hasOwnProperty(e.key)) {
             this.keys[e.key] = false;
             this.updateKeyboardMovement();

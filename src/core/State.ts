@@ -9,7 +9,7 @@ type StateCallback = (newValue: any, oldValue?: any) => void;
 type GlobalStateCallback = (key: string, newValue: any, oldValue?: any) => void;
 
 class State {
-    data: Record<string, any>;
+    data: Record<string, unknown>;
     listeners: Record<string, (StateCallback | GlobalStateCallback)[]>;
     saveKey: string;
 
@@ -33,7 +33,7 @@ class State {
      * Get a value from state
      */
     get<T = any>(key: string): T {
-        return this.data[key];
+        return this.data[key] as T;
     }
 
     /**

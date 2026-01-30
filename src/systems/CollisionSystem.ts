@@ -128,17 +128,25 @@ export class CollisionSystem implements ISystem {
         // Resolve X
         const originalX = entity.x;
         entity.x += dx;
-        const colX = this.resolveCollision(entity, true);
+        let colX = false;
+        if (this.checkCollision(entity)) {
+            entity.x = originalX;
+            colX = true;
+        }
         const movedX = entity.x - originalX;
 
         // Resolve Y
         const originalY = entity.y;
         entity.y += dy;
-        const colY = this.resolveCollision(entity, false);
+        let colY = false;
+        if (this.checkCollision(entity)) {
+            entity.y = originalY;
+            colY = true;
+        }
         const movedY = entity.y - originalY;
 
-        // Update Prev Position for interpolation
-        entity.prevX = originalX;
+        // Update Prev Position for interpolation (at end of frame usually, but here is fine for now)
+        entity.prevX = originalX; // Note: This might be updated elsewhere too
         entity.prevY = originalY;
 
         return {

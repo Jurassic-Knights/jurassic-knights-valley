@@ -91,7 +91,7 @@ class EquipmentManager {
      * @param {Object} equipmentData - Full equipment object with id, stats, etc.
      * @returns {boolean} Success
      */
-    equip(slotId, equipmentData) {
+    equip(slotId: string, equipmentData: any) {
         if (!this.slots.hasOwnProperty(slotId)) {
             Logger.warn(`[EquipmentManager] Invalid slot: ${slotId}`);
             return false;
@@ -130,7 +130,7 @@ class EquipmentManager {
      * @param {string} slotId
      * @returns {Object|null} The unequipped item or null
      */
-    unequip(slotId) {
+    unequip(slotId: string) {
         if (!this.slots.hasOwnProperty(slotId)) {
             return null;
         }
@@ -171,7 +171,7 @@ class EquipmentManager {
      * @param {string} slotId
      * @returns {Object|null}
      */
-    getSlot(slotId) {
+    getSlot(slotId: string) {
         return this.slots[slotId] || null;
     }
 
@@ -182,7 +182,7 @@ class EquipmentManager {
      * @param {string} statKey - e.g., 'damage', 'armor', 'critChance'
      * @returns {number}
      */
-    getStatBonus(statKey) {
+    getStatBonus(statKey: string): number {
         let total = 0;
 
         // Sum from equipped items (excluding inactive weapon set)
@@ -208,7 +208,7 @@ class EquipmentManager {
      * @param {string} effectKey - e.g., 'bleed', 'stagger'
      * @returns {boolean}
      */
-    hasEffect(effectKey) {
+    hasEffect(effectKey: string): boolean {
         for (const item of this.getEquippedItems()) {
             if (item.stats && item.stats[effectKey] === true) {
                 return true;
@@ -223,7 +223,7 @@ class EquipmentManager {
      * @param {string} statKey
      * @returns {number}
      */
-    getMaxStat(statKey) {
+    getMaxStat(statKey: string) {
         let max = 0;
         for (const item of this.getEquippedItems()) {
             if (item.stats && typeof item.stats[statKey] === 'number') {
@@ -241,7 +241,7 @@ class EquipmentManager {
         if (!SetBonusesConfig) return [];
 
         const equippedIds = this.getEquippedIds();
-        const setCounts = {};
+        const setCounts: Record<string, number> = {};
         const result = [];
 
         // Count pieces per set
@@ -254,7 +254,7 @@ class EquipmentManager {
 
         // Build result
         for (const [setId, count] of Object.entries(setCounts) as [string, number][]) {
-            const set = SetBonusesConfig.sets[setId];
+            const set = (SetBonusesConfig.sets as any)[setId];
             const activeBonuses: any = {};
 
             for (const [threshold, stats] of Object.entries(set.bonuses) as [string, any][]) {

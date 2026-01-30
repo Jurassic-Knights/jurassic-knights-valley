@@ -10,6 +10,7 @@
 import { GameRenderer } from '@core/GameRenderer';
 import { environmentRenderer } from './EnvironmentRenderer';
 import { EntityTypes } from '@config/EntityTypes';
+import type { IViewport } from '../types/core';
 
 // Unmapped modules - need manual import
 
@@ -24,7 +25,7 @@ const ShadowRenderer = {
      * @param {Object} renderers - { hero, dinosaur, resource } renderer refs
      * @param {Object} timing - Optional profiling timing object
      */
-    renderShadowPass(ctx, entities, viewport, renderers, timing = null) {
+    renderShadowPass(ctx: CanvasRenderingContext2D, entities: any[], viewport: IViewport, renderers: any, timing: any = null) {
         if (!ctx || !environmentRenderer) return;
 
         // PERFORMANCE MODE: Simple ellipse shadows
@@ -79,7 +80,7 @@ const ShadowRenderer = {
     /**
      * Fast simple ellipse shadows (performance mode)
      */
-    renderSimpleShadows(ctx, entities, viewport) {
+    renderSimpleShadows(ctx: CanvasRenderingContext2D, entities: any[], viewport: IViewport) {
         const alpha = environmentRenderer?.shadowAlpha || 0.3;
 
         ctx.save();

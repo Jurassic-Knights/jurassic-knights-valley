@@ -47,37 +47,26 @@ export interface IEntity {
     width: number;
     /** Height for collision/rendering */
     height: number;
-    height: number;
     /** Whether entity is active */
     active: boolean;
-    /** Current state (idle, move, attack, dead) */
-    state?: string;
-    /** Whether entity is dead */
-    isDead?: boolean;
+    lootTableId?: string;
+
+    /** Sprite image ID for rendering */
+    sprite?: string | null;
+    /** Visual scale multiplier */
+    scale?: number;
 
     // Combat Properties (Optional)
     health?: number;
     maxHealth?: number;
     defense?: number;
     xpReward?: number;
-    lootTableId?: string;
-
-    /** Component container */
-    components?: {
-        [key: string]: any;
-        health?: any;
-        stats?: any;
-    };
-    /** Sprite image for rendering */
-    sprite?: HTMLImageElement | null;
-    /** Visual scale multiplier */
-    scale?: number;
 
     // Common optional properties used by various systems
     /** Entity state (e.g., 'idle', 'attacking', 'dead') */
     state?: string;
     /** Component container */
-    components?: Record<string, unknown>;
+
     /** Biome the entity belongs to */
     biomeId?: string;
     /** Island grid X coordinate */
@@ -96,6 +85,8 @@ export interface IEntity {
     update?(dt: number): void;
     /** Render the entity */
     render?(ctx: CanvasRenderingContext2D): void;
+    /** Render UI overlays (health bars, etc.) */
+    renderUI?(ctx: CanvasRenderingContext2D): void;
     /** Get Y position for depth sorting */
     getFootY?(): number;
     /** Cleanup resources when entity is removed */
@@ -145,7 +136,8 @@ export interface IEntity {
     /** Footstep interval for VFX */
     footstepInterval?: number;
     /** Component container for health, etc. */
-    components?: { health?: { respawn(): void } } & Record<string, unknown>;
+    /** Component container for health, etc. */
+    components?: IComponents;
 }
 
 /**
@@ -247,7 +239,68 @@ export interface IRenderer {
 // COMPONENT TYPES
 // ============================================
 
-export interface IComponent {
-    type: string;
-    entity?: IEntity;
+export interface HealthComponent extends IComponent {
+    health: number;
+    maxHealth: number;
+    damage(amount: number): void;
+    heal(amount: number): void;
+    isDead(): boolean;
+}
+
+export interface StatsComponent extends IComponent {
+    level: number;
+    xp: number;
+    nextLevelXp: number;
+    strength: number;
+    dexterity: number;
+    constitution: number;
+    intelligence: number;
+    attack: number;
+    defense: number;
+    maxStamina: number;
+    stamina: number;
+    getXPForLevel?(level: number): number;
+    getStat(name: string): number;
+}
+
+export interface InventoryComponent extends IComponent {
+    items: any[]; // TODO: Define IItem
+    capacity: number;
+    add(itemId: string, amount?: number): boolean;
+    remove(itemId: string, amount?: number): boolean;
+    has(itemId: string, amount?: number): boolean;
+}
+
+export interface CombatComponent extends IComponent {
+    attackDamage: number;
+    attackRange: number;
+    attackSpeed: number;
+    startAttack(target: IEntity): void;
+    stopAttack(): void;
+    canAttack: boolean;
+    attack(): boolean;
+    damage: number;
+    update(dt: number): void;
+}
+
+export interface AIComponent extends IComponent {
+    state: string;
+    target: IEntity | null;
+    update(dt: number): void;
+    canAggro(target: IEntity): boolean;
+    setState(state: string): void;
+    wanderTimer?: number;
+    randomizeWander?(): void;
+    wanderDirection?: { x: number; y: number };
+    shouldLeash?(): boolean;
+    inAttackRange?(target: IEntity): boolean;
+}
+
+export interface IComponents {
+    health?: HealthComponent;
+    stats?: StatsComponent;
+    inventory?: InventoryComponent;
+    combat?: CombatComponent;
+    ai?: AIComponent;
+    [key: string]: IComponent | undefined; // Allow loose components for now, but strictly typed where known
 }

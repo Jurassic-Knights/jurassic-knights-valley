@@ -48,7 +48,7 @@ class AISystem {
      * @param {string} type - AI type identifier
      * @param {object} handler - Behavior module with updateState(entity, dt) method
      */
-    registerBehavior(type, handler) {
+    registerBehavior(type: string, handler: any) {
         this.behaviors[type] = handler;
         Logger.info(`[AISystem] Registered behavior: ${type}`);
     }
@@ -56,7 +56,7 @@ class AISystem {
     /**
      * Main update loop - processes all AI entities
      */
-    update(dt) {
+    update(dt: number) {
         if (!EntityManager) return;
 
         const hero = this.game?.hero;
@@ -83,7 +83,7 @@ class AISystem {
     /**
      * Update a single entity's AI
      */
-    updateEntity(entity, hero, dt, forceType: string | null = null) {
+    updateEntity(entity: any, hero: any, dt: number, forceType: string | null = null) {
         // Determine AI type: explicit > entityType-based > default
         const aiType = forceType || entity.aiType || this.getDefaultAIType(entity);
         const behavior = this.behaviors[aiType];
@@ -100,7 +100,7 @@ class AISystem {
     /**
      * Get default AI type based on entity properties
      */
-    getDefaultAIType(entity) {
+    getDefaultAIType(entity: any) {
         if (entity.isBoss) return 'boss';
         if (entity.entityType?.includes('enemy')) return 'enemy';
         if (entity.entityType?.includes('npc')) return 'npc';
@@ -117,7 +117,7 @@ class AISystem {
         }
     }
 
-    onEntityDamaged(data) {
+    onEntityDamaged(data: any) {
         const { entity, source } = data;
         if (!entity) return;
 
@@ -133,7 +133,7 @@ class AISystem {
         }
     }
 
-    onEntityDied(data) {
+    onEntityDied(data: any) {
         const { entity } = data;
         if (!entity) return;
 

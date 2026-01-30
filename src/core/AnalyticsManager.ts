@@ -54,7 +54,7 @@ const Analytics = {
     /**
      * Track game progression (level complete, boss killed, etc.)
      */
-    trackProgression(status, area, step = null) {
+    trackProgression(status: string, area: string, step: string | null = null) {
         if (!this.initialized) return;
 
         // status: 'Start', 'Complete', 'Fail'
@@ -80,7 +80,7 @@ const Analytics = {
     /**
      * Track resource/economy events (gold earned, items crafted)
      */
-    trackResource(flowType, currency, amount, itemType, itemId) {
+    trackResource(flowType: string, currency: string, amount: number, itemType: string, itemId: string) {
         if (!this.initialized) return;
 
         // flowType: 'Source' (earned) or 'Sink' (spent)
@@ -101,7 +101,7 @@ const Analytics = {
     /**
      * Track custom design events
      */
-    trackEvent(eventId, value = null) {
+    trackEvent(eventId: string, value: number | null = null) {
         if (!this.initialized) return;
 
         try {
@@ -118,7 +118,7 @@ const Analytics = {
     /**
      * Track errors
      */
-    trackError(severity, message) {
+    trackError(severity: string, message: string) {
         if (!this.initialized) return;
 
         // severity: 'Debug', 'Info', 'Warning', 'Error', 'Critical'

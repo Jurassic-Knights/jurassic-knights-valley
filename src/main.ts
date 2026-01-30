@@ -31,7 +31,7 @@ console.log('[Main] All modules imported successfully');
         } else {
             throw new Error('Game initialization failed');
         }
-    } catch (error) {
+    } catch (error: any) {
         Logger.error('[FATAL]', error);
 
         // Show error screen

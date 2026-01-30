@@ -8,7 +8,7 @@
  */
 
 const GridRenderer = {
-    _zoneImages: {},
+    _zoneImages: {} as Record<string, HTMLImageElement>,
 
     /**
      * Draw islands and bridges
@@ -17,7 +17,7 @@ const GridRenderer = {
      * @param {Object} canvas - Canvas element
      * @param {Object} game - Game reference
      */
-    drawGrid(ctx, viewport, canvas, game) {
+    drawGrid(ctx: CanvasRenderingContext2D, viewport: any, canvas: HTMLCanvasElement, game: any) {
         const islandManager = game ? game.getSystem('IslandManager') : null;
         const assetLoader = game ? game.getSystem('AssetLoader') : null;
 
@@ -41,7 +41,7 @@ const GridRenderer = {
     /**
      * Fallback grid when IslandManager not available
      */
-    drawFallbackGrid(ctx, viewport, canvas) {
+    drawFallbackGrid(ctx: CanvasRenderingContext2D, viewport: any, canvas: HTMLCanvasElement) {
         const gridSize = 50;
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.lineWidth = 1;
@@ -65,7 +65,7 @@ const GridRenderer = {
     /**
      * Draw all islands
      */
-    drawIslands(ctx, islandManager, assetLoader) {
+    drawIslands(ctx: CanvasRenderingContext2D, islandManager: any, assetLoader: any) {
         const islandColor = '#4A5D23';
         const islandBorder = '#3A4D13';
 
@@ -120,7 +120,7 @@ const GridRenderer = {
     /**
      * Draw lock overlay for locked islands
      */
-    drawLockOverlay(ctx, island) {
+    drawLockOverlay(ctx: CanvasRenderingContext2D, island: any) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.font = 'bold 80px "Courier New", sans-serif';
         ctx.textAlign = 'center';
@@ -143,7 +143,7 @@ const GridRenderer = {
     /**
      * Draw all bridges
      */
-    drawBridges(ctx, islandManager, assetLoader) {
+    drawBridges(ctx: CanvasRenderingContext2D, islandManager: any, assetLoader: any) {
         const bridges = islandManager.getBridges();
         let planksImg = null;
 

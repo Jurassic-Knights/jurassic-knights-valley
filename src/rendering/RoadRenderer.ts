@@ -12,6 +12,7 @@ import { AssetLoader } from '@core/AssetLoader';
 import { BiomeManager } from '../world/BiomeManager';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
+import type { IViewport, IGame } from '../types/core';
 
 class RoadRenderer {
     game: any = null;
@@ -23,7 +24,7 @@ class RoadRenderer {
         Logger.info('[RoadRenderer] Constructed');
     }
 
-    init(game) {
+    init(game: IGame) {
         this.game = game;
         this.loadRoadTile();
         Logger.info('[RoadRenderer] Initialized');
@@ -94,7 +95,7 @@ class RoadRenderer {
      * @param {CanvasRenderingContext2D} ctx
      * @param {object} viewport - { x, y, width, height }
      */
-    render(ctx, viewport) {
+    render(ctx: CanvasRenderingContext2D, viewport: IViewport) {
         if (!this.tileLoaded || !BiomeManager) return;
 
         ctx.save();
@@ -109,7 +110,7 @@ class RoadRenderer {
     /**
      * Render a single spline road with tiled texture
      */
-    renderSplineRoad(ctx, road, viewport) {
+    renderSplineRoad(ctx: CanvasRenderingContext2D, road: any, viewport: IViewport) {
         if (!road.points || road.points.length < 4) return;
 
         // Get the approximate length of the spline
@@ -159,7 +160,7 @@ class RoadRenderer {
     /**
      * Update (placeholder for animations)
      */
-    update(dt) {
+    update(dt: number) {
         // Could add animated road effects here
     }
 }

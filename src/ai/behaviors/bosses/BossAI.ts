@@ -23,7 +23,7 @@ const BossAI = {
     /**
      * Update boss AI state
      */
-    updateState(boss, hero, dt) {
+    updateState(boss: any, hero: any, dt: number) {
         if (!boss.active || boss.isDead) return;
 
         // Update phase based on health
@@ -58,7 +58,7 @@ const BossAI = {
     /**
      * Update boss phase based on health percentage
      */
-    updatePhase(boss) {
+    updatePhase(boss: any) {
         const healthPercent = boss.health / boss.maxHealth;
         const oldPhase = boss.phase || 1;
 
@@ -75,7 +75,7 @@ const BossAI = {
     /**
      * Handle phase transition
      */
-    onPhaseChange(boss, oldPhase, newPhase) {
+    onPhaseChange(boss: any, oldPhase: number, newPhase: number) {
         Logger.info(`[BossAI] ${boss.enemyName} entered Phase ${newPhase}`);
 
         // Phase-specific buffs
@@ -102,7 +102,7 @@ const BossAI = {
     /**
      * Use special ability
      */
-    updateAbility(boss, hero, dt) {
+    updateAbility(boss: any, hero: any, dt: number) {
         // Ability execution - can be extended per boss type
         if (boss.currentAbility && boss.abilityTimer > 0) {
             boss.abilityTimer -= dt;
@@ -119,7 +119,7 @@ const BossAI = {
     /**
      * Execute specific ability
      */
-    executeAbility(boss, hero) {
+    executeAbility(boss: any, hero: any) {
         const ability = boss.currentAbility;
         Logger.info(`[BossAI] ${boss.enemyName} uses ${ability}`);
 
@@ -135,7 +135,7 @@ const BossAI = {
     /**
      * Wander (bosses rarely wander, mostly patrol)
      */
-    updateWander(boss, hero, dt) {
+    updateWander(boss: any, hero: any, dt: number) {
         // Bosses have large aggro range
         if (hero && !hero.isDead && BaseAI?.canSee(boss, hero)) {
             boss.target = hero;
@@ -156,7 +156,7 @@ const BossAI = {
     /**
      * Chase with ability checks
      */
-    updateChase(boss, hero, dt) {
+    updateChase(boss: any, hero: any, dt: number) {
         if (!boss.target) {
             boss.state = 'returning';
             return;
@@ -186,7 +186,7 @@ const BossAI = {
     /**
      * Start an ability
      */
-    startAbility(boss) {
+    startAbility(boss: any) {
         const abilities = boss.abilities || [];
         if (abilities.length === 0) return;
 
@@ -199,7 +199,7 @@ const BossAI = {
     /**
      * Attack (delegated to EnemyAI)
      */
-    updateAttack(boss, hero, dt) {
+    updateAttack(boss: any, hero: any, dt: number) {
         if (EnemyAI) {
             EnemyAI.updateAttack(boss, dt);
         }
@@ -208,7 +208,7 @@ const BossAI = {
     /**
      * Return to spawn
      */
-    updateReturning(boss, dt) {
+    updateReturning(boss: any, dt: number) {
         if (EnemyAI) {
             EnemyAI.updateReturning(boss, dt);
         }

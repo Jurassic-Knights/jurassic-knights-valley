@@ -2,7 +2,7 @@
  * Entity: node_mining_t2_04
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@types/entities';
+import type { NodeEntity } from '@app-types/entities';
 
 export default {
     "id": "node_mining_t2_04",

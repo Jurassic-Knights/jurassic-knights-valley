@@ -38,7 +38,7 @@ class LightingSystemClass {
      * @param {number} angle - Optional direction angle (radians) for oblong lights
      * @param {number} elongation - Optional elongation factor (1.0 = circle, 2.0 = twice as long)
      */
-    addLight(x, y, radius, color, alpha = 1.0, angle = 0, elongation = 1.0) {
+    addLight(x: number, y: number, radius: number, color: string, alpha: number = 1.0, angle: number = 0, elongation: number = 1.0) {
         this.lights.push({ x, y, radius, color, alpha, angle, elongation });
     }
 
@@ -46,7 +46,7 @@ class LightingSystemClass {
      * Render all submitted lights
      * @param {CanvasRenderingContext2D} ctx - Canvas context (must be translated/world space)
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!ctx || this.lights.length === 0) return;
 
         ctx.save();
@@ -86,7 +86,7 @@ class LightingSystemClass {
                 ctx.restore();
             } catch (e) {
                 // Skip this light if rendering fails
-                Logger.warn('[LightingSystem] Failed to render light:', e.message);
+                Logger.warn('[LightingSystem] Failed to render light:', (e as Error).message);
             }
         }
 
@@ -100,7 +100,7 @@ class LightingSystemClass {
      * Helper to create a transparent version of a color
      * Very basic hex/rgba parser
      */
-    fadeColor(color, alpha) {
+    fadeColor(color: string, alpha: number) {
         if (!color || typeof color !== 'string') {
             return `rgba(255, 255, 255, ${alpha})`; // Default white
         }

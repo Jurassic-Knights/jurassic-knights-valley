@@ -29,7 +29,8 @@ export interface AssetItem {
     sourceCategory?: string;
     stats?: Record<string, unknown> | string;
     combat?: Record<string, unknown>;
-    loot?: Array<{ item: string; chance?: number; amount?: number }>;
+    loot?: Array<{ item: string; chance?: number; amount?: number; min?: number; max?: number }>;
+    drops?: Array<{ item: string; chance?: number; amount?: number[] }>; // Fishing/Node style
     recipe?: Array<{ item: string; amount?: number }> | Record<string, number> | string;
     source?: string;
     resourceDrop?: string;
@@ -134,11 +135,20 @@ export let sfxRegenerationQueue: Array<{ assetId: string; sfxIds: string[] }> = 
 
 // Global asset lookup (for drops/recipes)
 export let globalAssetLookup: Record<string, AssetInfo> = {};
+export let lootSourceMap: Record<string, string[]> = {}; // itemId -> [sourceIds]
 export let assetLookupLoaded = false;
+
+// Selection State (for Inspector)
+export let selectedAssetId: string | null = null;
+export let currentInspectorTab: string = 'general';
 
 // ============================================
 // STATE SETTERS (for module encapsulation)
 // ============================================
+
+export function setCurrentInspectorTab(tab: string): void {
+    currentInspectorTab = tab;
+}
 
 export function setManifest(m: Manifest | null): void {
     manifest = m;
@@ -177,6 +187,10 @@ export function setGlobalAssetLookup(lookup: Record<string, AssetInfo>): void {
     assetLookupLoaded = true;
 }
 
+export function setLootSourceMap(data: Record<string, string[]>): void {
+    lootSourceMap = data;
+}
+
 export function setSfxRegenerationQueue(queue: Array<{ assetId: string; sfxIds: string[] }>): void {
     sfxRegenerationQueue = queue;
     localStorage.setItem('sfxRegenerationQueue', JSON.stringify(queue));
@@ -206,6 +220,10 @@ export function setCategoryFilterValue(filter: Partial<CategoryFilter>): void {
 
 export function setLootFilterValue(filter: Partial<LootFilter>): void {
     Object.assign(lootFilter, filter);
+}
+
+export function setSelectedAssetId(id: string | null): void {
+    selectedAssetId = id;
 }
 
 // ============================================

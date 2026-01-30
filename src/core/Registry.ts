@@ -7,7 +7,7 @@
 import { Logger } from './Logger';
 
 class ServiceRegistry {
-    services: Map<string, any>;
+    services: Map<string, unknown>;
 
     constructor() {
         this.services = new Map();
@@ -32,7 +32,7 @@ class ServiceRegistry {
      * Get a registered service (Safe, returns undefined if missing)
      */
     get<T = any>(name: string): T | undefined {
-        return this.services.get(name);
+        return this.services.get(name) as T | undefined;
     }
 
     /**
@@ -44,7 +44,7 @@ class ServiceRegistry {
             Logger.error(`[Registry] Missing critical dependency: ${name}`);
             throw new Error(`[Registry] Critical dependency missing: ${name}`);
         }
-        return service;
+        return service as T;
     }
 
     /**

@@ -16,14 +16,14 @@
 import { Logger } from '@core/Logger';
 
 const SFX = {
-    ctx: null,
-    masterGain: null,
+    ctx: null as AudioContext | null,
+    masterGain: null as GainNode | null,
     TARGET_VOLUME: 0.5,
 
     // Sound handlers registry - populated by category files
-    handlers: {},
+    handlers: {} as Record<string, Function>,
 
-    init(audioContext, masterGain) {
+    init(audioContext: AudioContext, masterGain: GainNode) {
         this.ctx = audioContext;
         this.masterGain = masterGain;
         Logger.info('[SFX] Core initialized');
@@ -32,14 +32,14 @@ const SFX = {
     /**
      * Register sound handlers from category modules
      */
-    register(categoryHandlers) {
+    register(categoryHandlers: Record<string, Function>) {
         Object.assign(this.handlers, categoryHandlers);
     },
 
     /**
      * Play a sound by ID
      */
-    play(id) {
+    play(id: string) {
         if (!this.ctx) return;
 
         const handler = this.handlers[id];
@@ -64,7 +64,7 @@ const SFX = {
         return buffer;
     },
 
-    playNoise(duration, attack, decay, volume = 0.3, filterFreq = 2000) {
+    playNoise(duration: number, attack: number, decay: number, volume = 0.3, filterFreq = 2000) {
         if (!this.ctx) return { noise: null, gain: null, filter: null };
 
         const noise = this.ctx.createBufferSource();
@@ -88,7 +88,7 @@ const SFX = {
         return { noise, gain, filter };
     },
 
-    playTone(freq, duration, type = 'sine', volume = 0.3, attack = 0.01, decay = null) {
+    playTone(freq: number, duration: number, type: OscillatorType = 'sine', volume = 0.3, attack = 0.01, decay: number | null = null) {
         if (!this.ctx) return { osc: null, gain: null };
 
         const osc = this.ctx.createOscillator();
@@ -109,7 +109,7 @@ const SFX = {
     },
 
     // Weather ambience (stub - implement proper looping ambience later)
-    setWeather(type) {
+    setWeather(type: string) {
         Logger.info(`[SFX] Weather ambience: ${type}`);
         // TODO: Implement looping rain/storm ambience
     },

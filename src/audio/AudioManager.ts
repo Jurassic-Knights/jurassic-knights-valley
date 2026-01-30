@@ -82,7 +82,7 @@ const AudioManager = {
      * Play a sound effect by ID
      * @param {string} id - Asset ID from registry
      */
-    playSFX(id) {
+    playSFX(id: string) {
         if (!this.initialized) {
             // Try to warm up on first SFX call
             this.warmUp();
@@ -99,7 +99,7 @@ const AudioManager = {
      * Play background music by ID
      * @param {string} id - Asset ID from registry
      */
-    playBGM(id) {
+    playBGM(id: string) {
         if (!this.initialized) return;
 
         const config = AssetLoader.getAudio(id);
@@ -111,15 +111,15 @@ const AudioManager = {
     /**
      * Set volume for a category
      */
-    setVolume(category, value) {
+    setVolume(category: string, value: number) {
         const gain =
             category === 'master'
                 ? this.masterGain
                 : category === 'sfx'
-                  ? this.sfxGain
-                  : category === 'music'
-                    ? this.musicGain
-                    : null;
+                    ? this.sfxGain
+                    : category === 'music'
+                        ? this.musicGain
+                        : null;
 
         if (gain) {
             gain.gain.value = Math.max(0, Math.min(1, value));

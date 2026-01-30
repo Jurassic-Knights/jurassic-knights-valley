@@ -133,8 +133,8 @@ const ProjectileVFX = {
      * @param {Object} target - {x, y} world coordinates of target
      * @param {string} weaponType - Weapon subtype (pistol, rifle, etc)
      */
-    spawn(origin, target, weaponType = 'pistol') {
-        const config = this.configs[weaponType] || this.configs.default;
+    spawn(origin: { x: number; y: number }, target: { x: number; y: number }, weaponType = 'pistol') {
+        const config = (this.configs as any)[weaponType] || this.configs.default;
 
         // Calculate trajectory
         const dx = target.x - origin.x;
@@ -189,7 +189,7 @@ const ProjectileVFX = {
     /**
      * Create a single projectile
      */
-    createProjectile(x, y, angle, distance, config, target) {
+    createProjectile(x: number, y: number, angle: number, distance: number, config: any, target: { x: number; y: number }) {
         const projectile = {
             x: x,
             y: y,
@@ -218,7 +218,7 @@ const ProjectileVFX = {
      * Spawn realistic multi-layered muzzle flash VFX
      * Combines: bright core flash, directional sparks, and smoke
      */
-    spawnMuzzleFlash(x, y, angle, config) {
+    spawnMuzzleFlash(x: number, y: number, angle: number, config: any) {
         if (!VFXController) return;
 
         // Layer 1: Bright white-hot core flash (instant)
@@ -293,7 +293,7 @@ const ProjectileVFX = {
      * Update all active projectiles
      * @param {number} dt - Delta time in milliseconds
      */
-    update(dt) {
+    update(dt: number) {
         // Convert dt from milliseconds to seconds
         const dtSeconds = dt / 1000;
 
@@ -352,7 +352,7 @@ const ProjectileVFX = {
      * Render all active projectiles
      * @param {CanvasRenderingContext2D} ctx - Canvas context (already translated by viewport)
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!ctx) return;
 
         for (const p of this.projectiles) {
@@ -427,7 +427,7 @@ const ProjectileVFX = {
      * @param {Object} hero - Hero entity
      * @returns {string} Weapon subtype (pistol, rifle, sword, etc)
      */
-    getWeaponType(hero) {
+    getWeaponType(hero: any) {
         if (!hero?.equipment) return 'pistol';
 
         // Check hand1 for weapon

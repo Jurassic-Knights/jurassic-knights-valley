@@ -9,10 +9,22 @@
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
 
+interface QuestConfig {
+    id: string;
+    type: string;
+    resource: string;
+    target: number;
+    description: string;
+}
+
+interface ActiveQuest extends QuestConfig {
+    current: number;
+}
+
 class QuestManagerService {
     // Property declarations
-    activeQuest: any;
-    quests: any[];
+    activeQuest: ActiveQuest | null;
+    quests: QuestConfig[];
     questIndex: number;
 
     constructor() {
@@ -55,14 +67,17 @@ class QuestManagerService {
     /**
      * Update loop (required for System registration)
      */
-    update(dt) {
+    /**
+     * Update loop (required for System registration)
+     */
+    update(dt: number) {
         // Quest update logic if needed
     }
 
     /**
      * Start a specific quest
      */
-    startQuest(questConfig) {
+    startQuest(questConfig: QuestConfig | null) {
         if (!questConfig) {
             Logger.info('[QuestManager] No more quests!');
             this.activeQuest = null;
@@ -83,7 +98,10 @@ class QuestManagerService {
     /**
      * Handle resource collection event
      */
-    onCollect(resourceType, amount) {
+    /**
+     * Handle resource collection event
+     */
+    onCollect(resourceType: string, amount: number) {
         if (!this.activeQuest) return;
 
         // Check if collected resource matches quest requirement
@@ -144,7 +162,7 @@ class QuestManagerService {
     /**
      * Update UI elements
      */
-    updateUI(animate = false) {
+    updateUI(animate: boolean = false) {
         const UIManager = Registry?.get('UIManager');
         if (!UIManager) return;
         UIManager.updateQuest(this.activeQuest, animate);

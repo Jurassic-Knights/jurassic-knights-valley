@@ -15,13 +15,14 @@ import { IslandManager } from '../world/IslandManager';
 const getAssetLoader = () => Registry?.get('AssetLoader');
 
 const FogOfWarSystem = {
-    islands: new Map(),
-    fogTexture: null,
+    islands: new Map<string, any>(),
+    fogTexture: null as HTMLImageElement | null,
     textureLoaded: false,
+    game: null as any,
 
     COVERAGE_PADDING: 100,
 
-    init(game) {
+    init(game: any) {
         this.game = game;
         Logger.info('[FogOfWarSystem] Initialized');
 
@@ -45,7 +46,7 @@ const FogOfWarSystem = {
         }
     },
 
-    update(dt) {
+    update(dt: number) {
         if (!IslandManager) return;
 
         for (const island of IslandManager.islands) {
@@ -66,7 +67,7 @@ const FogOfWarSystem = {
         }
     },
 
-    createFogForIsland(island, id) {
+    createFogForIsland(island: any, id: string) {
         const pad = this.COVERAGE_PADDING;
 
         this.islands.set(id, {
@@ -84,7 +85,7 @@ const FogOfWarSystem = {
         });
     },
 
-    generateClouds(island, id) {
+    generateClouds(island: any, id: string) {
         const clouds = [];
         const numClouds = 5 + Math.floor(Math.random() * 3); // 5-7 cloud instances
 
@@ -120,7 +121,7 @@ const FogOfWarSystem = {
         return clouds;
     },
 
-    updateFog(data, dt) {
+    updateFog(data: any, dt: number) {
         const dtSec = dt / 1000;
         data.time += dtSec;
 
@@ -139,7 +140,7 @@ const FogOfWarSystem = {
         }
     },
 
-    onIslandUnlocked(eventData) {
+    onIslandUnlocked(eventData: any) {
         const id = `${eventData.gridX}_${eventData.gridY}`;
         const data = this.islands.get(id);
 
@@ -159,12 +160,12 @@ const FogOfWarSystem = {
         }
     },
 
-    noise(x, y) {
+    noise(x: number, y: number) {
         const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
         return n - Math.floor(n);
     },
 
-    render(ctx, viewport) {
+    render(ctx: CanvasRenderingContext2D, viewport: any) {
         if (!this.textureLoaded) return;
 
         ctx.save();
@@ -232,7 +233,7 @@ const FogOfWarSystem = {
         ctx.restore();
     },
 
-    renderPixelOverlay(ctx, data, time) {
+    renderPixelOverlay(ctx: CanvasRenderingContext2D, data: any, time: number) {
         // PERFORMANCE: Skip pixel overlay entirely - it's very expensive
         // The cloud textures provide enough visual interest
         return;

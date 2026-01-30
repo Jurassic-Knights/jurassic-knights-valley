@@ -21,9 +21,9 @@ import {
     updateWeaponMeta,
     syncEntitiesToJson,
     markSfxForRegeneration,
-    markAllSfxForRegeneration,
     saveRegenerationQueueToFile,
     updateDisplaySize,
+    loadGlobalAssetLookup,
 } from './api';
 import { openModal, closeModal, toggleComparisonView, initModalHandlers } from './modals';
 import {
@@ -168,6 +168,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Event Delegation (Replaces inline onclicks)
     initEventDelegation();
 
+    // Load Global Asset Lookup (for Drops/Sources)
+    loadGlobalAssetLookup().then(() => {
+        // If we are already on a view, re-render to show drops/sources
+        if (window.currentViewCategory) {
+            import('./categoryRenderer').then(({ renderCategoryView }) => {
+                renderCategoryView();
+            });
+        }
+    });
+
     // Set up filter button listeners
     document.querySelectorAll('.filter-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -192,8 +202,24 @@ document.addEventListener('DOMContentLoaded', () => {
         saveRegenerationQueueToFile();
     }
 
-    // Load landing page
-    loadManifest();
+    // Handle Browser Navigation (Back/Forward)
+    window.addEventListener('popstate', (event) => {
+        if (event.state && event.state.category) {
+            showCategoryView(event.state.category, false);
+        } else {
+            loadManifest();
+        }
+    });
+
+    // Check URL for initial category
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCategory = urlParams.get('category');
+
+    if (initialCategory) {
+        showCategoryView(initialCategory, false);
+    } else {
+        loadManifest();
+    }
 
     // Start live polling
     startLivePolling();

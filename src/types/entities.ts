@@ -73,3 +73,33 @@ export interface EquipmentEntity {
     display?: any;
     [key: string]: any;
 }
+
+export interface NodeEntity {
+    id: string;
+    name: string;
+    sourceCategory?: string;
+    sourceFile?: string;
+    sprite?: string;
+    status?: string;
+    files?: Record<string, string>;
+    type?: string;
+    biome?: string;
+    nodeSubtype?: string;
+    tier?: number;
+    display?: any;
+    [key: string]: any;
+}
+
+export interface NPCEntity {
+    id: string;
+    name: string;
+    sourceCategory?: string;
+    sourceFile?: string;
+    sprite?: string;
+    status?: string;
+    files?: Record<string, string>;
+    type?: string;
+    biome?: string;
+    display?: any;
+    [key: string]: any;
+}

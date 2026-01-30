@@ -23,7 +23,34 @@ const EntityManager = entityManager;
 const HomeBase = {
     treeBorderWidth: 100,
 
-    // Private cache properties (accessed dynamically)
+    // Private cache properties
+    _cachedHome: null as any | null,
+    _cachedBounds: null as any | null,
+    _treeCacheFrame: 0,
+    _cachedTrees: [] as any[],
+    _sortedTrees: [] as any[],
+    _heroAtHome: false,
+    _heroAtForge: false,
+    _forgePos: null as { x: number; y: number; size: number } | null,
+
+    // Image Paths
+    _outpostPath: null as string | null,
+    _forgePath: null as string | null,
+    _treePath: null as string | null,
+    _treeConsumedPath: null as string | null,
+
+    // Image Elements
+    _outpostImg: null as HTMLImageElement | null,
+    _forgeImg: null as HTMLImageElement | null,
+    _treeImage: null as HTMLImageElement | null,
+    _treeConsumedImage: null as HTMLImageElement | null,
+
+    // Loading State
+    _treeLoaded: false,
+    _treeConsumedLoaded: false,
+
+    // Debug
+    _debugSpawnZone: null as any | null,
 
     /**
      * Get tree resources from EntityManager (cached per frame)
@@ -87,7 +114,7 @@ const HomeBase = {
         // Forge Button binding removed - CraftingUI not implemented
     },
 
-    update(dt) {
+    update(dt: number) {
         if (!GameRenderer || !GameRenderer.hero) return;
 
         const hero = GameRenderer.hero;
@@ -149,7 +176,7 @@ const HomeBase = {
      * Called from GameRenderer after islands are drawn
      * @param {CanvasRenderingContext2D} ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         // PERF: Lazy init if init() was called before IslandManager was ready
         if (!this._cachedBounds && IslandManager) {
             const home = IslandManager.getHomeIsland();

@@ -38,7 +38,7 @@ declare global {
     }
 }
 
-const EntityRegistry: any =
+const EntityRegistry: Record<string, any> =
     typeof window !== 'undefined' && window.__ENTITY_REGISTRY__ ? window.__ENTITY_REGISTRY__ : {};
 
 if (typeof window !== 'undefined') {
@@ -80,7 +80,7 @@ const EntityLoader = {
             respawnTime: 180,
             xpReward: 200
         }
-    },
+    } as Record<string, any>,
 
     /**
      * Initialize - called by Game.js via SystemConfig
@@ -133,7 +133,8 @@ const EntityLoader = {
                 .filter(Boolean);
             Logger.info(`[EntityLoader] Loaded: ${counts.join(', ')}`);
             return true;
-        } catch (error) {
+            return true;
+        } catch (error: any) {
             Logger.error(`[EntityLoader] Failed to load: ${error.message}`);
             return false;
         }
@@ -142,7 +143,10 @@ const EntityLoader = {
     /**
      * Load entities from manifest
      */
-    async loadFromManifest(manifest) {
+    /**
+     * Load entities from manifest
+     */
+    async loadFromManifest(manifest: any) {
         const promises = [];
 
         // All entity categories
@@ -178,7 +182,7 @@ const EntityLoader = {
      * Load a generic entity TypeScript module into the correct registry category
      * Uses pre-loaded entityModules from Vite's import.meta.glob
      */
-    async loadGenericEntity(category, id) {
+    async loadGenericEntity(category: string, id: string) {
         try {
             // Build the module path key to lookup in pre-loaded entityModules
             let modulePath: string;
@@ -222,7 +226,7 @@ const EntityLoader = {
 
             const data = module.default;
             return this.storeEntity(category, id, data);
-        } catch (e) {
+        } catch (e: any) {
             Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
             return null;
         }
@@ -272,7 +276,11 @@ const EntityLoader = {
      * Extract weapon subtype from weapon ID
      * e.g. weapon_melee_sword_t1_01 -> sword, weapon_ranged_pistol_t1_01 -> pistol
      */
-    getWeaponSubtype(id) {
+    /**
+     * Extract weapon subtype from weapon ID
+     * e.g. weapon_melee_sword_t1_01 -> sword, weapon_ranged_pistol_t1_01 -> pistol
+     */
+    getWeaponSubtype(id: string) {
         const match = id.match(/^weapon_(melee|ranged)_([a-z_]+?)_t\d/);
         if (match) {
             return match[2]; // e.g. "sword", "pistol", "machine_gun"
@@ -284,7 +292,7 @@ const EntityLoader = {
      * Extract tool type from tool ID
      * e.g. tool_mining_t1_01 -> mining, tool_woodcutting_t2_01 -> woodcutting
      */
-    getToolType(id) {
+    getToolType(id: string) {
         const match = id.match(/^tool_([a-z_]+?)_t\d/);
         if (match) {
             return match[1]; // e.g. "mining", "woodcutting", "fishing"
@@ -295,13 +303,16 @@ const EntityLoader = {
     /**
      * Load all entities from a category folder
      */
-    async loadCategory(category) {
+    /**
+     * Load all entities from a category folder
+     */
+    async loadCategory(category: string) {
         try {
             const indexResp = await fetch(`${this.basePath}${category}/index.json`);
             if (!indexResp.ok) return;
 
             const index = await indexResp.json();
-            const promises = index.map((id) => this.loadEntity(category, id));
+            const promises = index.map((id: string) => this.loadEntity(category, id));
             await Promise.all(promises);
         } catch (e) {
             Logger.warn(`[EntityLoader] Could not load category ${category}`);
@@ -311,7 +322,7 @@ const EntityLoader = {
     /**
      * Load a single entity JSON file
      */
-    async loadEntity(category, id) {
+    async loadEntity(category: string, id: string) {
         try {
             const resp = await fetch(`${this.basePath}${category}/${id}.json`);
             if (!resp.ok) return null;
@@ -328,7 +339,7 @@ const EntityLoader = {
             }
 
             return entity;
-        } catch (e) {
+        } catch (e: any) {
             Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
             return null;
         }
@@ -358,9 +369,19 @@ const EntityLoader = {
     },
 
     /**
+     * Alias for backward compatibility
+     */
+    async loadHero() {
+        return this.loadLegacyHero();
+    },
+
+    /**
      * Process entity data: flatten nested structures, apply defaults
      */
-    processEntity(data, category) {
+    /**
+     * Process entity data: flatten nested structures, apply defaults
+     */
+    processEntity(data: any, category: string) {
         const defaults = category === 'bosses' ? this.defaults.boss : this.defaults.enemy;
         const entity = {
             entityType: category === 'bosses' ? 'Boss' : 'Enemy',
@@ -416,7 +437,7 @@ const EntityLoader = {
 
         // Handle loot
         if (data.loot) {
-            entity.lootTable = data.loot.map((l) => ({
+            entity.lootTable = data.loot.map((l: any) => ({
                 item: l.item,
                 chance: l.chance,
                 amount: Array.isArray(l.amount)
@@ -476,7 +497,9 @@ const EntityLoader = {
 
     // ============ Lookup Helpers ============
 
-    getEnemy(id) {
+    // ============ Lookup Helpers ============
+
+    getEnemy(id: string) {
         return EntityRegistry?.enemies?.[id] || null;
     },
 

@@ -48,6 +48,35 @@ function writeJsonFile(filepath: string, data: unknown): void {
     fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
 }
 
+function saveImage(relPath: string, base64Data: string): { success: boolean; message?: string; error?: string } {
+    try {
+        // Validation
+        if (!relPath || relPath.includes('..')) return { success: false, error: 'Invalid path' };
+
+        let absPath;
+        if (relPath.startsWith('assets/') || relPath.startsWith('images/')) {
+            absPath = path.join(BASE_DIR, relPath);
+        } else {
+            absPath = path.join(BASE_DIR, 'assets', relPath);
+        }
+
+        // Ensure directory exists
+        const dir = path.dirname(absPath);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+        // Remove header if present (data:image/png;base64,...)
+        const base64Image = base64Data.split(';base64,').pop();
+        if (!base64Image) return { success: false, error: 'Invalid base64 data' };
+
+        fs.writeFileSync(absPath, base64Image, { encoding: 'base64' });
+        console.log(`[API] Saved image to ${relPath}`);
+        return { success: true, message: 'Image saved' };
+    } catch (e) {
+        console.error(`[API] Failed to save image:`, e);
+        return { success: false, error: String(e) };
+    }
+}
+
 function saveMap(filename: string, data: unknown): { success: boolean; message?: string; error?: string } {
     try {
         // Sanitize filename
@@ -768,6 +797,9 @@ export function dashboardApiPlugin() {
                         }
                         if (apiPath === '/api/save_map') {
                             return sendJson(res, saveMap(data.filename as string, data.mapData));
+                        }
+                        if (apiPath === '/api/upload_image') {
+                            return sendJson(res, saveImage(data.path as string, data.image as string));
                         }
                     }
 

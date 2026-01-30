@@ -19,13 +19,36 @@ import { IslandManager } from '../world/IslandManager';
 
 import { economySystem as EconomySystem } from '@systems/EconomySystem';
 
+interface CraftingRecipe {
+    id: string;
+    name: string;
+    description: string;
+    type: string;
+    fuelCost: number;
+    ingredients: Record<string, number>;
+    duration: number; // in seconds
+    sellPrice: number;
+    outputIcon: string;
+}
+
+interface CraftingSlot {
+    id: number;
+    unlocked: boolean;
+    status: 'idle' | 'crafting' | 'complete';
+    recipeId: string | null;
+    quantity: number;
+    startTime: number;
+    duration: number;
+    item: any | null; // Placeholder for future item object
+}
+
 const CraftingManager = {
     // Configuration
     maxSlots: 12,
     unlockedSlots: 1, // Start with 1, others purchased
 
     // State
-    slots: [], // Array of slot objects { id, status: 'idle'|'crafting'|'complete', recipeId, quantity, startTime, duration }
+    slots: [] as CraftingSlot[],
 
     // Recipe Registry (Using entity IDs from src/entities/)
     recipes: [
@@ -62,7 +85,7 @@ const CraftingManager = {
             sellPrice: 40,
             outputIcon: 'mechanical_t1_01'
         }
-    ],
+    ] as CraftingRecipe[],
 
     init() {
         // Load from GameState
@@ -89,15 +112,14 @@ const CraftingManager = {
         }
     },
 
-    getRecipe(id) {
+    getRecipe(id: string): CraftingRecipe | undefined {
         return this.recipes.find((r) => r.id === id);
     },
 
     /**
      * Unlock a specific slot
-     * @param {number} slotId
      */
-    unlockSlot(slotId) {
+    unlockSlot(slotId: number): boolean {
         if (slotId < 0 || slotId >= this.maxSlots) return false;
 
         // Cost: 1000 Gold (Fixed for now)
@@ -130,11 +152,8 @@ const CraftingManager = {
 
     /**
      * Start crafting process
-     * @param {number} slotId
-     * @param {string} recipeId
-     * @param {number} quantity
      */
-    startCrafting(slotId, recipeId, quantity) {
+    startCrafting(slotId: number, recipeId: string, quantity: number): boolean {
         const slot = this.slots[slotId];
         if (!slot) {
             Logger.error(`[Crafting] Invalid slot ${slotId}`);
@@ -179,7 +198,7 @@ const CraftingManager = {
      * Update loop (called by Game.js)
      * Handles timer completion
      */
-    update(dt) {
+    update(dt: number) {
         const now = Date.now();
 
         for (const slot of this.slots) {
@@ -193,7 +212,7 @@ const CraftingManager = {
         }
     },
 
-    completeCrafting(slot) {
+    completeCrafting(slot: CraftingSlot) {
         const recipe = this.getRecipe(slot.recipeId);
         if (!recipe) return;
 
@@ -260,7 +279,7 @@ const CraftingManager = {
         }
     },
 
-    canAfford(recipe, quantity) {
+    canAfford(recipe: CraftingRecipe, quantity: number): boolean {
         // Dependencies
         if (!GameInstance || !GameInstance.hero || !GameInstance.hero.inventory) {
             // Fallback
@@ -282,7 +301,7 @@ const CraftingManager = {
         return true;
     },
 
-    consumeResources(recipe, quantity) {
+    consumeResources(recipe: CraftingRecipe, quantity: number) {
         if (!GameInstance || !GameInstance.hero || !GameInstance.hero.inventory) return;
 
         const inv = GameInstance.hero.inventory;
@@ -301,7 +320,7 @@ const CraftingManager = {
         }
     },
 
-    getMaxCraftable(recipe) {
+    getMaxCraftable(recipe: CraftingRecipe): number {
         if (!GameInstance || !GameInstance.hero || !GameInstance.hero.inventory) return 0;
 
         const inv = GameInstance.hero.inventory;

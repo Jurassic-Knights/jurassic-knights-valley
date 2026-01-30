@@ -105,7 +105,7 @@ class Quadtree {
      * @param {Object} pRect Bounds of the object {x, y, width, height}
      * @return {number} Index of the subnode (0-3), or -1 if it doesn't fit completely
      */
-    getIndex(pRect) {
+    getIndex(pRect: Rect): number {
         let index = -1;
         const verticalMidpoint = this.bounds.x + this.bounds.width / 2;
         const horizontalMidpoint = this.bounds.y + this.bounds.height / 2;
@@ -139,7 +139,7 @@ class Quadtree {
     /**
      * Insert the object into the quadtree
      */
-    insert(pRect) {
+    insert(pRect: Rect) {
         if (this.nodes.length) {
             const index = this.getIndex(pRect);
 
@@ -173,7 +173,7 @@ class Quadtree {
      * @param {Object} pRect Bounds of the object
      * @return {Array} Array of objects
      */
-    retrieve(pRect) {
+    retrieve(pRect: Rect): any[] {
         let returnObjects = this.objects;
         const index = this.getIndex(pRect);
 
@@ -219,7 +219,7 @@ class Quadtree {
         return found;
     }
 
-    intersects(a, b) {
+    intersects(a: Rect, b: Rect) {
         return (
             a.x < b.x + b.width &&
             a.x + a.width > b.x &&

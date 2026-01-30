@@ -55,7 +55,7 @@ const VFXTriggerService = {
             VFXController.playForeground(x, y, VFXConfig.UNLOCK.DIVINE_GLINT);
 
             // 5. Heavy Debris
-            VFXConfig.UNLOCK.DEBRIS_COLORS.forEach((col) => {
+            VFXConfig.UNLOCK.DEBRIS_COLORS.forEach((col: string) => {
                 VFXController.playForeground(x, y, { ...VFXConfig.UNLOCK.DEBRIS_BASE, color: col });
             });
         }

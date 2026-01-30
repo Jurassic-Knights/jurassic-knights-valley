@@ -14,14 +14,14 @@ class EquipmentSlotManager {
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @param {string} itemId - Item to equip
      */
-    static equipItem(ui, itemId) {
+    static equipItem(ui: any, itemId: string) {
         const hero = GameInstance?.hero;
         if (!hero?.equipment) {
             Logger.warn('[EquipmentSlotManager] Cannot equip - hero.equipment not available');
             return;
         }
 
-        const item = ui.cachedEquipment.find((e) => e.id === itemId);
+        const item = ui.cachedEquipment.find((e: any) => e.id === itemId);
         if (!item) {
             Logger.warn(`[EquipmentSlotManager] Item not found: ${itemId}`);
             return;
@@ -75,7 +75,7 @@ class EquipmentSlotManager {
         // Tools go to type-specific tool slots
         else if (item.sourceFile === 'tool' || item.slot === 'tool') {
             // Route to specific tool slot based on toolSubtype
-            const toolSlotMap = {
+            const toolSlotMap: Record<string, string> = {
                 mining: 'tool_mining',
                 woodcutting: 'tool_woodcutting',
                 harvesting: 'tool_harvesting',
@@ -105,7 +105,7 @@ class EquipmentSlotManager {
      * @param {Object} item - Item to equip
      * @param {string} targetSlot - Target slot ID
      */
-    static equipToSlot(ui, item, targetSlot) {
+    static equipToSlot(ui: any, item: any, targetSlot: string) {
         const hero = GameInstance?.hero;
         if (!hero?.equipment) return;
 
@@ -127,7 +127,7 @@ class EquipmentSlotManager {
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @param {string} slotId - Slot to unequip
      */
-    static unequipSlot(ui, slotId) {
+    static unequipSlot(ui: any, slotId: string) {
         const hero = GameInstance?.hero;
         if (!hero?.equipment) return;
 
@@ -141,7 +141,7 @@ class EquipmentSlotManager {
      * @param {string} slotId - Selected slot
      * @returns {boolean} True if handled
      */
-    static handleSlotSelection(ui, slotId) {
+    static handleSlotSelection(ui: any, slotId: string) {
         if (!ui.slotSelectionMode || !ui.pendingEquipItem) return false;
         if (slotId !== 'hand1' && slotId !== 'hand2') return false;
 

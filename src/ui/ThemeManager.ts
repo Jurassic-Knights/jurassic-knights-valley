@@ -49,7 +49,7 @@ class ThemeManagerService {
     observeDOM() {
         if (this.observer) return;
 
-        let debounceTimer;
+        let debounceTimer: ReturnType<typeof setTimeout>;
         this.observer = new MutationObserver((mutations) => {
             let shouldUpdate = false;
             for (const mutation of mutations) {
@@ -105,7 +105,7 @@ class ThemeManagerService {
         }
     }
 
-    applyToTarget(id, def) {
+    applyToTarget(id: string, def: any) {
         const selector = this.targets[id];
         if (!selector) return;
 

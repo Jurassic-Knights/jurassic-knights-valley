@@ -12,7 +12,7 @@ const ProgressBarRenderer = {
     // Track damage trails per entity (simple cache)
     damageTrails: new Map(),
 
-    update(dt) {
+    update(dt: number) {
         this.time += dt / 1000;
 
         // Decay damage trails
@@ -29,7 +29,7 @@ const ProgressBarRenderer = {
      * @param {CanvasRenderingContext2D} ctx
      * @param {object} options
      */
-    draw(ctx, options) {
+    draw(ctx: CanvasRenderingContext2D, options: any) {
         const {
             x,
             y,
@@ -165,7 +165,7 @@ const ProgressBarRenderer = {
      * @param {string} entityId
      * @param {number} oldPercent
      */
-    reportDamage(entityId, oldPercent) {
+    reportDamage(entityId: string, oldPercent: number) {
         if (entityId) {
             this.damageTrails.set(entityId, { percent: oldPercent });
         }

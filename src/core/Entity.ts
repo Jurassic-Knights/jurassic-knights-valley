@@ -20,7 +20,7 @@ class Entity {
     width: number;
     height: number;
     color: string;
-    sprite: HTMLImageElement | null;
+    sprite: string | null;
     active: boolean;
     islandGridX?: number;
     islandGridY?: number;
@@ -193,7 +193,7 @@ class Entity {
      * Update entity (override in subclass)
      * @param {number} dt - Delta time in ms
      */
-    update(_dt) {
+    update(_dt: number) {
         // Override in subclass
     }
 
@@ -201,7 +201,7 @@ class Entity {
      * Render entity
      * @param {CanvasRenderingContext2D} ctx
      */
-    render(ctx) {
+    render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
         // Draw sprite if available, else colored rectangle
@@ -242,7 +242,7 @@ class Entity {
      * @param {Entity} other
      * @returns {boolean}
      */
-    collidesWith(other) {
+    collidesWith(other: Entity) {
         const a = this.getBounds();
         const b = other.getBounds();
 
@@ -259,7 +259,7 @@ class Entity {
      * @param {Entity} other
      * @returns {number}
      */
-    distanceTo(other) {
+    distanceTo(other: Entity) {
         const dx = other.x - this.x;
         const dy = other.y - this.y;
         return Math.sqrt(dx * dx + dy * dy);

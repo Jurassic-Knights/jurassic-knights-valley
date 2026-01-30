@@ -308,6 +308,8 @@ const VFX_Categories = {
         }
     },
 
+
+
     // === PROJECTILES ===
     // Maps weapon types to their projectile VFX template keys
     PROJECTILES: {
@@ -343,10 +345,10 @@ const VFX_Categories = {
             'machinegun': 'PROJECTILE_MACHINEGUN',
             'smg': 'PROJECTILE_MACHINEGUN',
             'default': 'PROJECTILE_PISTOL'
-        },
+        } as Record<string, string | null>, // Explicit type for index access
 
         // Get template key for a weapon type
-        getTemplateForWeapon(weaponType) {
+        getTemplateForWeapon(weaponType: string) {
             return this.WEAPON_MAP[weaponType?.toLowerCase()] || this.WEAPON_MAP.default;
         },
 
@@ -368,13 +370,13 @@ const VFX_Categories = {
             'sniper': { distance: 250, size: 80, spread: 0.1 },
             'machinegun': { distance: 180, size: 50, spread: 0.25 },
             'default': { distance: 150, size: 50, spread: 0.3 }
-        },
+        } as Record<string, any>, // Explicit type for index access
 
-        getMuzzleFlash(weaponType) {
+        getMuzzleFlash(weaponType: string) {
             return this.MUZZLE_FLASH[weaponType?.toLowerCase()] || this.MUZZLE_FLASH.default;
         }
     }
-};
+} as Record<string, any>; // Main object as Record for flexible categorization
 
 
 // ES6 Module Export
