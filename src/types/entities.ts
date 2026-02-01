@@ -33,9 +33,9 @@ export interface EnemyEntity {
         attackRange: number;
         attackSpeed?: number;
     };
-    combat?: Record<string, any>;
+    combat?: Record<string, number | string | boolean>;
     lootTable?: string;
-    loot?: any[];
+    loot?: Array<{ item: string; chance: number; min: number; max: number }>;
     files?: Record<string, string>;
     sourceCategory?: string;
     sourceFile?: string;
@@ -44,10 +44,10 @@ export interface EnemyEntity {
     xpReward?: number | string;
     species?: string;
     weaponType?: string;
-    display?: any;
-    sfx?: any;
-    spawning?: any;
-    [key: string]: any;
+    display?: { sizeScale?: number; width?: number; height?: number };
+    sfx?: Record<string, string | { id: string }>;
+    spawning?: { biomes?: string[]; weight?: number };
+    [key: string]: unknown;
 }
 
 export interface EquipmentEntity {
@@ -70,8 +70,8 @@ export interface EquipmentEntity {
     sourceCategory?: string;
     sourceFile?: string;
     sprite?: string;
-    display?: any;
-    [key: string]: any;
+    display?: { sizeScale?: number; width?: number; height?: number };
+    [key: string]: unknown;
 }
 
 export interface NodeEntity {
@@ -86,8 +86,8 @@ export interface NodeEntity {
     biome?: string;
     nodeSubtype?: string;
     tier?: number;
-    display?: any;
-    [key: string]: any;
+    display?: { sizeScale?: number; width?: number; height?: number };
+    [key: string]: unknown;
 }
 
 export interface NPCEntity {
@@ -100,6 +100,6 @@ export interface NPCEntity {
     files?: Record<string, string>;
     type?: string;
     biome?: string;
-    display?: any;
-    [key: string]: any;
+    display?: { sizeScale?: number; width?: number; height?: number };
+    [key: string]: unknown;
 }

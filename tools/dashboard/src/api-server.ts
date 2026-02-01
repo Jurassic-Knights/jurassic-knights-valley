@@ -57,11 +57,19 @@ function saveImage(relPath: string, base64Data: string): { success: boolean; mes
         if (!relPath || relPath.includes('..')) return { success: false, error: 'Invalid path' };
 
         let absPath;
-        if (relPath.startsWith('assets/') || relPath.startsWith('images/')) {
+        // Normalize: paths like 'images/...' should map to 'assets/images/...'
+        // Paths like 'assets/images/...' stay as-is
+        if (relPath.startsWith('assets/')) {
             absPath = path.join(BASE_DIR, relPath);
-        } else {
+        } else if (relPath.startsWith('images/')) {
+            // Map 'images/...' to 'assets/images/...'
             absPath = path.join(BASE_DIR, 'assets', relPath);
+        } else {
+            // Assume it's a relative path within assets/images
+            absPath = path.join(BASE_DIR, 'assets/images', relPath);
         }
+
+        console.log(`[API] Saving image: relPath='${relPath}' -> absPath='${absPath}'`);
 
         // Ensure directory exists
         const dir = path.dirname(absPath);
@@ -72,7 +80,7 @@ function saveImage(relPath: string, base64Data: string): { success: boolean; mes
         if (!base64Image) return { success: false, error: 'Invalid base64 data' };
 
         fs.writeFileSync(absPath, base64Image, { encoding: 'base64' });
-        console.log(`[API] Saved image to ${relPath}`);
+        console.log(`[API] Saved image to ${absPath}`);
         return { success: true, message: 'Image saved' };
     } catch (e) {
         console.error(`[API] Failed to save image:`, e);
@@ -121,6 +129,11 @@ function readTsEntity(filepath: string): EntityData | null {
             // Try simpler pattern: export default { ... }; (with possible newline before ;)
             match = content.match(/export\s+default\s+(\{[\s\S]*\})\s*;?\s*$/);
         }
+        if (!match) {
+            // Try variable definition pattern: const entity: Type = { ... }; export default entity;
+            // We capture the object literal assigned to the variable
+            match = content.match(/const\s+\w+\s*(?::\s*[^=]+)?\s*=\s*(\{[\s\S]*?\})\s*;?[\s\n]*export\s+default/);
+        }
 
         if (!match) return null;
 
@@ -130,7 +143,9 @@ function readTsEntity(filepath: string): EntityData | null {
             // Use Function constructor to parse JS object literal (handles single quotes, unquoted keys, etc.)
             // This is safe because we're reading local trusted files
             const parseFn = new Function(`return ${jsonStr};`);
-            return parseFn() as EntityData;
+            const parsed = parseFn() as EntityData;
+
+            return parsed;
         } catch (e) {
             console.error(`[API] Failed to parse entity ${filepath}:`, e);
             return null;
@@ -212,7 +227,7 @@ function findEntityFile(category: string, itemId: string): string | null {
 // CATEGORY HANDLERS
 // ============================================
 
-const CATEGORIES = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'environment', 'nodes', 'ui', 'hero'];
+const CATEGORIES = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'environment', 'ground', 'nodes', 'ui', 'hero'];
 
 function getManifest(): { categories: Record<string, { name: string; count: number }> } {
     const categories: Record<string, { name: string; count: number }> = {};
@@ -309,6 +324,10 @@ function getCategoryData(category: string): { files: Record<string, EntityData[]
         const sourceFile = (entity.sourceFile as string) || category;
         if (!files[sourceFile]) files[sourceFile] = [];
         files[sourceFile].push(entity);
+
+        if (entity.id === 'node_mining_t1_01') {
+            console.log('[API Debug] Sending entity node_mining_t1_01:', JSON.stringify(entity));
+        }
     }
 
     return { files, category, entities };
@@ -828,7 +847,8 @@ export function dashboardApiPlugin() {
 
             // Serve images from assets/images
             server.middlewares.use('/images', (req, res, next) => {
-                const imagePath = path.join(IMAGES_DIR, req.url || '');
+                const urlPath = (req.url || '').split('?')[0]; // Strip query params
+                const imagePath = path.join(IMAGES_DIR, urlPath);
                 if (fs.existsSync(imagePath)) {
                     const ext = path.extname(imagePath).toLowerCase();
                     const mimeTypes: Record<string, string> = {

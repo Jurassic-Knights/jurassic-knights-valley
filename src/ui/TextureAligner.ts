@@ -5,17 +5,45 @@
  */
 import { Logger } from '@core/Logger';
 import { DOMUtils } from '@core/DOMUtils';
+// Minimal FileSystem API types
+interface FileSystemHandle {
+    kind: 'file' | 'directory';
+    name: string;
+}
+interface FileSystemWritableFileStream extends WritableStream {
+    write(data: string | BufferSource | Blob): Promise<void>;
+    close(): Promise<void>;
+}
+interface FilePickerOptions {
+    types?: {
+        description?: string;
+        accept: Record<string, string[]>;
+    }[];
+    excludeAcceptAllOption?: boolean;
+    multiple?: boolean;
+}
+
+interface FileSystemFileHandle extends FileSystemHandle {
+    kind: 'file';
+    createWritable(options?: { keepExistingData?: boolean }): Promise<FileSystemWritableFileStream>;
+    getFile(): Promise<File>;
+}
+declare function showOpenFilePicker(options?: FilePickerOptions): Promise<FileSystemFileHandle[]>;
+
+// Global Manifest
+declare const UI_MANIFEST: string[];
+
 class TextureAlignerService {
     // Property declarations
     active: boolean;
     target: HTMLElement | null;
     targetId: string | null;
     container: HTMLElement | null;
-    fileHandle: any;
+    fileHandle: FileSystemFileHandle | null;
     targets: { id: string; name: string; selector: string }[];
     state: { x: number; y: number; scale: number; scaleX?: number; scaleY?: number; img: string };
     availableImages: string[];
-    currentTargetDef: any;
+    currentTargetDef: { id: string; name: string; selector: string } | null;
     targetsList: NodeListOf<Element> | null = null;
     multX: number = 1;
     multY: number = 1;
@@ -337,14 +365,14 @@ class TextureAlignerService {
         );
 
         // Virtual Values: State (CSS) / Multiplier = Slider (Image Relative)
-        const virtX = this.multX ? Math.round(this.state.scaleX / this.multX) : this.state.scaleX;
-        const virtY = this.multY ? Math.round(this.state.scaleY / this.multY) : this.state.scaleY;
+        const virtX = this.multX ? Math.round((this.state.scaleX || 500) / this.multX) : (this.state.scaleX || 500);
+        const virtY = this.multY ? Math.round((this.state.scaleY || 500) / this.multY) : (this.state.scaleY || 500);
 
-        (this.container.querySelector('#inp-sx') as HTMLInputElement).value = virtX as any;
-        (this.container.querySelector('#num-sx') as HTMLInputElement).value = virtX as any;
+        (this.container.querySelector('#inp-sx') as HTMLInputElement).value = String(virtX);
+        (this.container.querySelector('#num-sx') as HTMLInputElement).value = String(virtX);
 
-        (this.container.querySelector('#inp-sy') as HTMLInputElement).value = virtY as any;
-        (this.container.querySelector('#num-sy') as HTMLInputElement).value = virtY as any;
+        (this.container.querySelector('#inp-sy') as HTMLInputElement).value = String(virtY);
+        (this.container.querySelector('#num-sy') as HTMLInputElement).value = String(virtY);
 
         (this.container.querySelector('#inp-img') as HTMLInputElement).value = this.state.img || '';
     }
@@ -392,25 +420,30 @@ class TextureAlignerService {
         if (key === 'scaleX' && this.multX) {
             // Input (Virtual) -> State (CSS)
             this.state.scaleX = numVal * this.multX;
-            (this.container.querySelector('#num-sx') as HTMLInputElement).value = val as any;
-            (this.container.querySelector('#inp-sx') as HTMLInputElement).value = val as any;
+            (this.container.querySelector('#num-sx') as HTMLInputElement).value = String(val);
+            (this.container.querySelector('#inp-sx') as HTMLInputElement).value = String(val);
         } else if (key === 'scaleY' && this.multY) {
             this.state.scaleY = numVal * this.multY;
-            (this.container.querySelector('#num-sy') as HTMLInputElement).value = val as any;
-            (this.container.querySelector('#inp-sy') as HTMLInputElement).value = val as any;
+            (this.container.querySelector('#num-sy') as HTMLInputElement).value = String(val);
+            (this.container.querySelector('#inp-sy') as HTMLInputElement).value = String(val);
         } else {
-            (this.state as any)[key] = numVal;
-            if (key !== 'img') {
-                const map: any = { x: 'num-x', y: 'num-y', scale: 'num-s' };
-                if (map[key])
-                    (this.container.querySelector(`#${map[key]}`) as HTMLInputElement).value =
-                        val as any;
+            // Safe assignment with key checking
+            if (key in this.state && key !== 'img') {
+                const stateKey = key as keyof Omit<typeof this.state, 'img'>;
+                this.state[stateKey] = numVal;
+
+                const map: Record<string, string> = { x: 'num-x', y: 'num-y', scale: 'num-s' };
+                if (map[key]) {
+                    const input = this.container.querySelector(`#${map[key]}`) as HTMLInputElement;
+                    if (input) input.value = String(val);
+                }
 
                 // Don't auto-update scaleX/Y inputs here as they are virtual
-                const inpMap: any = { x: 'inp-x', y: 'inp-y', scale: 'inp-s' };
-                if (inpMap[key])
-                    (this.container.querySelector(`#${inpMap[key]}`) as HTMLInputElement).value =
-                        val as any;
+                const inpMap: Record<string, string> = { x: 'inp-x', y: 'inp-y', scale: 'inp-s' };
+                if (inpMap[key]) {
+                    const input = this.container.querySelector(`#${inpMap[key]}`) as HTMLInputElement;
+                    if (input) input.value = String(val);
+                }
             }
         }
 
@@ -452,9 +485,9 @@ class TextureAlignerService {
 
     persist() {
         // Save to Runtime Global + LocalStorage
-        if (!UI_THEME_RUNTIME) UI_THEME_RUNTIME = {};
+        if (!UI_THEME_RUNTIME) (window as Window).UI_THEME_RUNTIME = {};
 
-        UI_THEME_RUNTIME[this.targetId] = { ...this.state };
+        UI_THEME_RUNTIME[this.targetId as string] = { ...this.state };
 
         localStorage.setItem('JURASSIC_UI_THEME', JSON.stringify(UI_THEME_RUNTIME));
     }

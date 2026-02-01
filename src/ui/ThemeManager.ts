@@ -7,15 +7,34 @@
 import { Logger } from '@core/Logger';
 
 // UI_THEME is optional config - default to empty object
-const UI_THEME: any = {};
-// Runtime variable for TextureAligner access
-let UI_THEME_RUNTIME: any = {};
+// Interface definitions
+export interface IThemeDef {
+    x?: number;
+    y?: number;
+    scale?: number;
+    scaleX?: number;
+    scaleY?: number;
+    img?: string;
+    useInner?: boolean;
+}
+
+export type IThemeConfig = Record<string, IThemeDef>;
+
+// UI_THEME is optional config - default to empty object
+const UI_THEME: IThemeConfig = {};
+
+// Runtime variable for TextureAligner access - attached to window for sharing
+// Runtime variable for TextureAligner access - attached to window for sharing
+const globalScope = typeof window !== 'undefined' ? window : ({} as unknown as Window);
+if (!globalScope.UI_THEME_RUNTIME) {
+    (globalScope as Window).UI_THEME_RUNTIME = {};
+}
 
 class ThemeManagerService {
     // Property declarations
     targets: Record<string, string>;
     observer: MutationObserver | null = null;
-    config: any = {};
+    config: IThemeConfig = {};
 
     constructor() {
         this.targets = {
@@ -33,10 +52,12 @@ class ThemeManagerService {
         };
 
         // Wait for DOM
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.init());
-        } else {
-            this.init();
+        if (typeof document !== 'undefined') {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.init());
+            } else {
+                this.init();
+            }
         }
     }
 
@@ -48,6 +69,7 @@ class ThemeManagerService {
 
     observeDOM() {
         if (this.observer) return;
+        if (typeof document === 'undefined') return;
 
         let debounceTimer: ReturnType<typeof setTimeout>;
         this.observer = new MutationObserver((mutations) => {
@@ -75,41 +97,45 @@ class ThemeManagerService {
 
     loadOverrides() {
         // 1. Start with File Config
-        let config = UI_THEME || {};
+        let config: IThemeConfig = UI_THEME || {};
 
         // 2. Overlay LocalStorage (Dev overrides)
-        const saved = localStorage.getItem('JURASSIC_UI_THEME');
-        if (saved) {
-            try {
-                const locals = JSON.parse(saved);
-                // Deep merge or simple assign
-                config = { ...config, ...locals };
-                Logger.info('[ThemeManager] Loaded local overrides');
-            } catch (e) {
-                Logger.warn('[ThemeManager] Corrupt local storage', e);
+        if (typeof localStorage !== 'undefined') {
+            const saved = localStorage.getItem('JURASSIC_UI_THEME');
+            if (saved) {
+                try {
+                    const locals = JSON.parse(saved);
+                    // Deep merge or simple assign
+                    config = { ...config, ...locals };
+                    Logger.info('[ThemeManager] Loaded local overrides');
+                } catch (e) {
+                    Logger.warn('[ThemeManager] Corrupt local storage', e);
+                }
             }
         }
 
         this.config = config;
         // Expose for TextureAligner
-        UI_THEME_RUNTIME = this.config;
+        globalScope.UI_THEME_RUNTIME = this.config;
     }
 
     applyAll() {
         // DISABLED: Comment out this line to re-enable texture overlays
         return; // <-- TEMPORARILY DISABLED
 
+        /*
         for (const [id, def] of Object.entries(this.config)) {
             if (!def) continue;
             this.applyToTarget(id, def);
         }
+        */
     }
 
-    applyToTarget(id: string, def: any) {
+    applyToTarget(id: string, def: IThemeDef) {
         const selector = this.targets[id];
         if (!selector) return;
 
-        const specificSelector = def.useInner ? `${selector} .inner-frame` : selector; // potential logic extension
+        // const specificSelector = def.useInner ? `${selector} .inner-frame` : selector; // potential logic extension
 
         const els = document.querySelectorAll(selector);
         els.forEach((element) => {
@@ -120,10 +146,6 @@ class ThemeManagerService {
                 el.style.backgroundColor = 'transparent'; // Override default colors
                 el.style.border = 'none';
                 el.style.boxShadow = 'none';
-            }
-
-            if (def.x !== undefined && def.y !== undefined) {
-                el.style.backgroundPosition = `${def.x}% ${def.y}%`;
             }
 
             if (def.x !== undefined && def.y !== undefined) {

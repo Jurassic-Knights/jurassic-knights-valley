@@ -2,11 +2,11 @@
  * Entity: node_woodcutting_t1_01
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@app-types/entities';
+import type { NodeEntity } from '@types/entities';
 
 export default {
     "id": "node_woodcutting_t1_01",
-    "name": "Dead Tree",
+    "name": "Oak Tree",
     "sourceCategory": "nodes",
     "sourceFile": "nodes",
     "sprite": "node_woodcutting_t1_01",
@@ -27,7 +27,10 @@ export default {
         {
             "item": "scraps_t1_01",
             "chance": 1,
-            "amount": [1, 3]
+            "amount": [
+                1,
+                3
+            ]
         }
     ]
 } satisfies NodeEntity;

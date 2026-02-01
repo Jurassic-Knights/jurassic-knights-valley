@@ -1,5 +1,4 @@
-
-import { ISystem, IEntity } from '../types/core';
+import { ISystem, IGame, IEntity } from '../types/core';
 import { Entity } from '../core/Entity';
 import { Logger } from '../core/Logger';
 import { CollisionComponent, CollisionLayers } from '../components/CollisionComponent';
@@ -7,6 +6,7 @@ import { IslandManager } from '../world/IslandManager';
 import { GameConstants } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
 import { Registry } from '../core/Registry';
+import { EntityManagerService } from '../core/EntityManager';
 
 export class CollisionSystem implements ISystem {
     private entities: Entity[] = [];
@@ -21,25 +21,27 @@ export class CollisionSystem implements ISystem {
         this.activeCollisions = new Map();
     }
 
-    init(game: any): void {
+    init(game: IGame): void {
         Logger.info('[CollisionSystem] Initialized');
 
         // Listen for entity registration
-        EventBus.on(GameConstants.Events.ENTITY_ADDED, (data: any) => {
+        EventBus.on(GameConstants.Events.ENTITY_ADDED, (data: { entity: Entity }) => {
             if (data && data.entity) {
-                this.register(data.entity as Entity);
+                this.register(data.entity);
                 Logger.info(`[CollisionSystem] Event ADDED: ${data.entity.id}`);
             }
         });
 
-        EventBus.on(GameConstants.Events.ENTITY_REMOVED, (data: any) => {
-            if (data && data.entity) this.unregister(data.entity as Entity);
+        EventBus.on(GameConstants.Events.ENTITY_REMOVED, (data: { entity: Entity }) => {
+            if (data && data.entity) this.unregister(data.entity);
         });
 
         // Initial Sync (Get existing entities from EntityManager)
-        const entityManager = Registry.get('EntityManager') as any;
+        const entityManager = Registry.get<EntityManagerService>('EntityManager');
         if (entityManager) {
-            const existing = entityManager.getAll();
+            // EntityManager returns IEntity[], but we need Entity[] locally if we rely on Entity class features
+            // In practice, all entities are instances of Entity class
+            const existing = entityManager.getAll() as Entity[]; // Safe cast as we know runtime types
             existing.forEach((e: Entity) => this.register(e));
             Logger.info(`[CollisionSystem] Synced ${existing.length} initial entities`);
         }
@@ -48,6 +50,10 @@ export class CollisionSystem implements ISystem {
     toggleDebug(): boolean {
         this.debugMode = !this.debugMode;
         Logger.info(`[CollisionSystem] Debug Mode: ${this.debugMode}`);
+        return this.debugMode;
+    }
+
+    public get isDebugMode(): boolean {
         return this.debugMode;
     }
 
@@ -82,8 +88,7 @@ export class CollisionSystem implements ISystem {
         for (const entity of this.entities) {
             if (!entity.active) continue;
             // We only strictly *need* to hash entities that CAN collide.
-            // If we add a `collision` component check here:
-            if ((entity as any).collision) {
+            if (entity.collision) {
                 this.updateSpatialHash(entity);
             }
         }
@@ -97,7 +102,7 @@ export class CollisionSystem implements ISystem {
      * Add entity to spatial hash buckets
      */
     private updateSpatialHash(entity: Entity) {
-        const bounds = (entity as any).collision ? this.getCollisionBounds(entity) : entity.getBounds();
+        const bounds = entity.collision ? this.getCollisionBounds(entity) : entity.getBounds();
 
         const startX = Math.floor(bounds.x / this.cellSize);
         const startY = Math.floor(bounds.y / this.cellSize);
@@ -162,7 +167,7 @@ export class CollisionSystem implements ISystem {
      * Returns the ACTUAL amount moved.
      */
     move(entity: Entity, dx: number, dy: number): { x: number, y: number } {
-        const col = (entity as any).collision as CollisionComponent;
+        const col = entity.collision;
         if (!col || !col.enabled) {
             // No collision, just move
             entity.x += dx;
@@ -217,7 +222,7 @@ export class CollisionSystem implements ISystem {
      * Check if entity collides with anything in its current position
      */
     private checkCollision(entity: Entity): boolean {
-        const col = (entity as any).collision as CollisionComponent;
+        const col = entity.collision;
         const bounds = this.getCollisionBounds(entity);
 
         // 1. Terrain Check (Static Grid)
@@ -245,7 +250,7 @@ export class CollisionSystem implements ISystem {
                     if (other === entity) continue;
                     if (!other.active) continue;
 
-                    const otherCol = (other as any).collision as CollisionComponent;
+                    const otherCol = other.collision;
                     if (!otherCol || !otherCol.enabled) continue;
 
                     // Mask Check: Does my layer collide with their layer?
@@ -256,7 +261,7 @@ export class CollisionSystem implements ISystem {
                     // We only return TRUE (Stop) if it's a blocking collision.
 
                     // Case 1: Hard Collision (Stop)
-                    if (this.isHardCollision(col, otherCol)) {
+                    if (col && this.isHardCollision(col, otherCol)) {
                         if (entity.collidesWith(other)) {
                             return true;
                         }
@@ -275,7 +280,7 @@ export class CollisionSystem implements ISystem {
      * Check for overlaps and manage Trigger Events (Start/End)
      */
     private checkTriggers(entity: Entity) {
-        const col = (entity as any).collision as CollisionComponent;
+        const col = entity.collision;
         if (!col) return;
 
         const bounds = this.getCollisionBounds(entity);
@@ -296,7 +301,7 @@ export class CollisionSystem implements ISystem {
                 for (const other of neighbors) {
                     if (other === entity || !other.active) continue;
 
-                    const otherCol = (other as any).collision as CollisionComponent;
+                    const otherCol = other.collision;
                     if (!otherCol || !otherCol.enabled) continue;
 
                     // Trigger Check: Must involve a trigger or matching mask
@@ -383,7 +388,7 @@ export class CollisionSystem implements ISystem {
     }
 
     private getCollisionBounds(entity: Entity) {
-        const col = (entity as any).collision as CollisionComponent;
+        const col = entity.collision;
         if (col) {
             return {
                 x: entity.x - col.bounds.width / 2 + col.bounds.offsetX,
@@ -404,10 +409,10 @@ export class CollisionSystem implements ISystem {
 
         // Trace once per second to avoid spam (simple throttle)
         if (Math.random() < 0.05) {
-            const activeWithCol = this.entities.filter(e => e.active && (e as any).collision).length;
+            const activeWithCol = this.entities.filter(e => e.active && e.collision).length;
             Logger.info(`[CollisionSystem] Rendering... Entities: ${this.entities.length}, Drawable: ${activeWithCol}`);
             if (activeWithCol > 0) {
-                const sample = this.entities.find(e => e.active && (e as any).collision);
+                const sample = this.entities.find(e => e.active && e.collision);
                 if (sample) Logger.info(`[CollisionSystem] Sample: ${sample.id} at ${sample.x},${sample.y}`);
             }
         }
@@ -430,7 +435,7 @@ export class CollisionSystem implements ISystem {
         for (const entity of this.entities) {
             if (!entity.active) continue;
 
-            const col = (entity as any).collision as CollisionComponent;
+            const col = entity.collision;
             if (!col || !col.enabled) continue;
 
             const bounds = this.getCollisionBounds(entity);
@@ -456,7 +461,17 @@ export class CollisionSystem implements ISystem {
             ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
             // Draw Velocity/Direction (if active)
-            // (entity as any).inputMove ? ...
+            // Use safe check for inputMove
+            if ('inputMove' in entity) {
+                const move = (entity as any).inputMove;
+                if (move && (move.x !== 0 || move.y !== 0)) {
+                    ctx.beginPath();
+                    ctx.moveTo(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+                    ctx.lineTo(bounds.x + bounds.width / 2 + move.x * 20, bounds.y + bounds.height / 2 + move.y * 20);
+                    ctx.strokeStyle = 'cyan';
+                    ctx.stroke();
+                }
+            }
         }
         ctx.restore();
     }

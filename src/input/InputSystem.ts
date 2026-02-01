@@ -13,11 +13,20 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
+import type { IGame } from '../types/core';
+
+interface InputAdapter {
+    poll(): {
+        move?: { x: number; y: number };
+        action?: boolean;
+        heldKeys?: Set<string>;
+    } | null;
+}
 
 class InputSystem {
     // game reference stored via init()
-    private game: any = null;
-    private adapters: any[] = [];
+    private game: IGame | null = null;
+    private adapters: InputAdapter[] = [];
     private inputState = {
         move: { x: 0, y: 0 },
         action: false,
@@ -34,11 +43,11 @@ class InputSystem {
         Logger.info('[InputSystem] Initialized');
     }
 
-    init(game: any): void {
+    init(game: IGame): void {
         this.game = game;
     }
 
-    registerAdapter(adapter: any): void {
+    registerAdapter(adapter: InputAdapter): void {
         this.adapters.push(adapter);
     }
 

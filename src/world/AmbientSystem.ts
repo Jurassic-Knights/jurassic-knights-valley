@@ -10,6 +10,7 @@ import { AssetLoader } from '@core/AssetLoader';
 import { GameRenderer } from '@core/GameRenderer';
 import { AudioManager } from '../audio/AudioManager';
 import { Registry } from '@core/Registry';
+import { AmbientCreatureConfig } from '../types/vfx';
 
 class AmbientCreature {
     type: string;
@@ -28,7 +29,7 @@ class AmbientCreature {
     trailInterval: number = 0.05;
     shadowOffset: number = 160;
 
-    constructor(config: any) {
+    constructor(config: AmbientCreatureConfig) {
         this.type = config.type || 'dino_pteranodon_base';
         this.x = config.x || 0;
         this.y = config.y || 0;
@@ -44,7 +45,7 @@ class AmbientCreature {
             this.image = AssetLoader.getImage(this.type);
             if (!this.image) {
                 AssetLoader.preloadImage(this.type).then(
-                    (img: any) => (this.image = img as HTMLImageElement)
+                    (img: unknown) => (this.image = img as HTMLImageElement)
                 );
             }
         }

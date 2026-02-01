@@ -202,8 +202,14 @@ class BossSystem {
     
     getBossSpawnPosition(biomeId) {
         // TODO: Get from biome config or calculate
-        // For now, return center of biome area
-        return { x: 2000, y: 2000 }; // Placeholder
+        switch (biomeId) {
+            case 'desert':
+                return { x: 25000, y: 30000 };
+            case 'badlands':
+                return { x: 30000, y: 30000 };
+            default:
+                return { x: 2000, y: 2000 }; // Default placeholder
+        }
     }
     
     onEnemyKilled(data) {

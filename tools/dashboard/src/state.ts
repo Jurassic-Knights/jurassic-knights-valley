@@ -7,6 +7,25 @@
 // TYPES
 // ============================================
 
+export interface LootItem {
+    item: string;
+    chance?: number;
+    amount?: number;
+    min?: number;
+    max?: number;
+}
+
+export interface DropItem {
+    item: string;
+    chance?: number;
+    amount?: number[];
+}
+
+export interface RecipeItem {
+    item: string;
+    amount?: number;
+}
+
 export interface AssetItem {
     id: string;
     name?: string;
@@ -24,14 +43,15 @@ export interface AssetItem {
     biome?: string;
     tier?: number;
     enemyType?: string;
+    nodeSubtype?: string;
     type?: string;
     sourceFile?: string;
     sourceCategory?: string;
     stats?: Record<string, unknown> | string;
     combat?: Record<string, unknown>;
-    loot?: Array<{ item: string; chance?: number; amount?: number; min?: number; max?: number }>;
-    drops?: Array<{ item: string; chance?: number; amount?: number[] }>; // Fishing/Node style
-    recipe?: Array<{ item: string; amount?: number }> | Record<string, number> | string;
+    loot?: LootItem[];
+    drops?: DropItem[]; // Fishing/Node style
+    recipe?: RecipeItem[] | Record<string, number> | string;
     source?: string;
     resourceDrop?: string;
     sfx?: Record<string, string | { id: string; status?: string }>;
@@ -121,6 +141,16 @@ export let categoryFilter: CategoryFilter = {
 };
 export let categoryImageSize = parseInt(localStorage.getItem('categoryImageSize') || '200');
 export let categorySort = localStorage.getItem('categorySort') || 'tier';
+export let categoryFiltersCache: Record<string, Partial<CategoryFilter>> = JSON.parse(localStorage.getItem('categoryFiltersCache') || '{}');
+
+export function saveCategoryFiltersCache(category: string, filters: Partial<CategoryFilter>) {
+    categoryFiltersCache[category] = { ...filters };
+    localStorage.setItem('categoryFiltersCache', JSON.stringify(categoryFiltersCache));
+}
+
+export function getCategoryFiltersFromCache(category: string): Partial<CategoryFilter> {
+    return categoryFiltersCache[category] || {};
+}
 
 // Loot view state
 export let lootData: unknown = null;
@@ -136,6 +166,7 @@ export let sfxRegenerationQueue: Array<{ assetId: string; sfxIds: string[] }> = 
 // Global asset lookup (for drops/recipes)
 export let globalAssetLookup: Record<string, AssetInfo> = {};
 export let lootSourceMap: Record<string, string[]> = {}; // itemId -> [sourceIds]
+export let recipeUsageMap: Record<string, string[]> = {}; // itemId -> [recipeIds] (Used To Craft)
 export let assetLookupLoaded = false;
 
 // Selection State (for Inspector)
@@ -190,6 +221,10 @@ export function setGlobalAssetLookup(lookup: Record<string, AssetInfo>): void {
 
 export function setLootSourceMap(data: Record<string, string[]>): void {
     lootSourceMap = data;
+}
+
+export function setRecipeUsageMap(data: Record<string, string[]>): void {
+    recipeUsageMap = data;
 }
 
 export function setSfxRegenerationQueue(queue: Array<{ assetId: string; sfxIds: string[] }>): void {
@@ -253,6 +288,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
     audio: '🔊',
     config: '⚙️',
     hero: '🛡️',
+    ground: '⛰️',
 };
 
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -271,6 +307,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
     audio: '#9c27b0',
     config: '#607d8b',
     hero: '#2196f3',
+    ground: '#795548',
 };
 
 // Weapon types - mirrors GameConstants.Weapons from game code

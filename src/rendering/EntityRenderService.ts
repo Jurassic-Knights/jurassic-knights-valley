@@ -10,6 +10,8 @@ import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
 import { IEntity, IViewport } from '@app-types/core';
 import { RenderTiming } from './RenderProfiler';
+import { RendererCollection } from '../types/rendering';
+import { isRenderable } from '../utils/typeGuards';
 
 interface IVisibleBounds {
     left: number;
@@ -53,7 +55,7 @@ const EntityRenderService = {
         }
 
         // Helper to determine render layer priority
-        const getRenderLayer = (e: any) => {
+        const getRenderLayer = (e: IEntity) => {
             if (e.entityType === EntityTypes.DROPPED_ITEM) return 2; // Top priority
             if (e.entityType === EntityTypes.HERO || e.id === 'hero') return 1; // Middle priority (above nodes)
             return 0; // Standard (nodes, enemies, etc.)
@@ -90,7 +92,7 @@ const EntityRenderService = {
      * @param {object} timing - Optional timing object for profiling
      * @param {number} alpha - Interpolation factor
      */
-    renderEntity(ctx: CanvasRenderingContext2D, entity: IEntity, renderers: any, timing: RenderTiming | null = null, alpha = 1) {
+    renderEntity(ctx: CanvasRenderingContext2D, entity: IEntity, renderers: RendererCollection, timing: RenderTiming | null = null, alpha = 1) {
         const tSub = timing ? performance.now() : 0;
         const type = entity.entityType;
 
@@ -98,7 +100,7 @@ const EntityRenderService = {
         if (entity === renderers.hero) {
             if (renderers.heroRenderer) {
                 renderers.heroRenderer.render(ctx, renderers.hero, false, alpha);
-            } else if (typeof entity.render === 'function') {
+            } else if (isRenderable(entity)) {
                 entity.render(ctx);
             }
             if (timing) timing.entHeroTime = (timing.entHeroTime || 0) + performance.now() - tSub;
@@ -109,22 +111,22 @@ const EntityRenderService = {
             renderers.resourceRenderer.render(ctx, entity, false);
             if (timing) timing.entResTime = (timing.entResTime || 0) + performance.now() - tSub;
         } else if (type === EntityTypes.MERCHANT) {
-            if (typeof entity.render === 'function') entity.render(ctx);
+            if (isRenderable(entity)) entity.render(ctx);
             if (timing) {
                 timing.entMerchantTime = (timing.entMerchantTime || 0) + performance.now() - tSub;
                 timing.entMerchantCount = (timing.entMerchantCount || 0) + 1;
             }
         } else if (type === EntityTypes.DROPPED_ITEM) {
-            if (typeof entity.render === 'function') entity.render(ctx);
+            if (isRenderable(entity)) entity.render(ctx);
             if (timing) {
                 timing.entDroppedTime = (timing.entDroppedTime || 0) + performance.now() - tSub;
                 timing.entDroppedCount = (timing.entDroppedCount || 0) + 1;
             }
         } else {
-            if (typeof entity.render === 'function') entity.render(ctx);
+            if (isRenderable(entity)) entity.render(ctx);
             if (timing) {
                 timing.entOtherTime = (timing.entOtherTime || 0) + performance.now() - tSub;
-                const typeName = type || entity.constructor?.name || 'unknown';
+                const typeName = type || (entity.constructor?.name) || 'unknown';
                 timing.entOtherTypes = timing.entOtherTypes || {};
                 timing.entOtherTypes[typeName] = (timing.entOtherTypes[typeName] || 0) + 1;
             }
@@ -141,7 +143,7 @@ const EntityRenderService = {
      * @param {object} timing - Optional profiling object
      * @param {number} alpha - Interpolation factor (0-1)
      */
-    renderAll(ctx: CanvasRenderingContext2D, entities: IEntity[], renderers: any, timing: RenderTiming | null = null, alpha = 1) {
+    renderAll(ctx: CanvasRenderingContext2D, entities: IEntity[], renderers: RendererCollection, timing: RenderTiming | null = null, alpha = 1) {
         // Initialize timing counters
         if (timing) {
             timing.entHeroTime = timing.entHeroTime || 0;
@@ -166,8 +168,8 @@ const EntityRenderService = {
         const tSub = timing ? performance.now() : 0;
 
         for (const entity of entities) {
-            if (typeof entity.renderUI === 'function') {
-                entity.renderUI(ctx);
+            if (typeof (entity as any).renderUI === 'function') {
+                (entity as any).renderUI(ctx);
             }
         }
 

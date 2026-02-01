@@ -17,7 +17,7 @@ class HeroVisualsSystem {
     game: IGame | null = null;
     hero: IEntity | null = null;
     _dustConfig: ParticleOptions;
-    _vfxController: any;
+    _vfxController: typeof VFXController | null = null;
 
     constructor() {
         // GC Optimization: Reusable config object
@@ -41,7 +41,7 @@ class HeroVisualsSystem {
     init(game: IGame) {
         this.game = game;
         this.hero = game.hero;
-        this._vfxController = Registry.get('VFXController');
+        this._vfxController = Registry.get<typeof VFXController>('VFXController');
     }
 
     initListeners() {
@@ -63,7 +63,7 @@ class HeroVisualsSystem {
         this.updateDustTread(dt, hero);
     }
 
-    updateDustTread(dt: number, hero: any) {
+    updateDustTread(dt: number, hero: IEntity) {
         const dtSec = dt / 1000;
         // Check if hero moved (simple check against prevX/Y set by HeroSystem)
         // Note: HeroSystem must run BEFORE this system to update prevX/Y correctly
@@ -113,7 +113,7 @@ class HeroVisualsSystem {
                 hero.x,
                 hero.y,
                 VFXConfig.TEMPLATES?.HERO_DEATH_FX || {
-                    type: 'burst',
+                    type: 'circle',
                     color: '#FF0000',
                     count: 15
                 }

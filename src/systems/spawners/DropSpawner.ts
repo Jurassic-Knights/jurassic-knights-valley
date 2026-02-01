@@ -12,11 +12,19 @@ import { entityManager } from '@core/EntityManager';
 import { IslandManager } from '../../world/IslandManager';
 import { DroppedItem } from '../../gameplay/DroppedItem';
 import { Registry } from '@core/Registry';
+import type { SpawnManagerService } from '../SpawnManager';
+
+interface CraftedItemOptions {
+    amount?: number;
+    icon?: string | null;
+    targetX?: number;
+    targetY?: number;
+}
 
 class DropSpawner {
-    spawnManager: any;
+    spawnManager: SpawnManagerService;
 
-    constructor(spawnManager: any) {
+    constructor(spawnManager: SpawnManagerService) {
         this.spawnManager = spawnManager;
     }
 
@@ -49,10 +57,10 @@ class DropSpawner {
     /**
      * Spawn an item crafted by the player (flying out from Forge)
      */
-    spawnCraftedItem(x: number, y: number, type: string, options: any = {}) {
+    spawnCraftedItem(x: number, y: number, type: string, options: CraftedItemOptions = {}) {
         if (!DroppedItem || !entityManager) return;
 
-        const { amount = 1, icon = null } = options as { amount?: number; icon?: any };
+        const { amount = 1, icon = null } = options;
 
         const drop = new DroppedItem({
             x: x,

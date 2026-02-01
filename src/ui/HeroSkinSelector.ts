@@ -12,6 +12,19 @@ import { HeroRenderer } from '../rendering/HeroRenderer';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { DOMUtils } from '@core/DOMUtils';
 
+interface IHeroSkinFiles {
+    clean?: string;
+    original?: string;
+    [key: string]: unknown;
+}
+
+interface IHeroSkin {
+    id: string;
+    name?: string;
+    files?: IHeroSkinFiles;
+    [key: string]: unknown;
+}
+
 /**
  * Hero skin selector modal manager
  */
@@ -41,15 +54,15 @@ class HeroSkinSelectorClass {
                 <div class="hero-skin-modal-title">Select Hero Skin</div>
                 <div class="hero-skin-grid">
                     ${heroSkins
-                        .map(
-                            (skin) => `
+                .map(
+                    (skin) => `
                         <div class="hero-skin-option ${skin.id === currentSkin ? 'selected' : ''}" data-skin-id="${skin.id}">
                             <div class="hero-skin-image" data-icon-id="${skin.id}"></div>
                             <div class="hero-skin-name">${skin.name}</div>
                         </div>
                     `
-                        )
-                        .join('')}
+                )
+                .join('')}
                     ${heroSkins.length === 0 ? '<div class="hero-skin-empty">No hero skins available</div>' : ''}
                 </div>
             </div>
@@ -118,12 +131,12 @@ class HeroSkinSelectorClass {
     /**
      * Get available hero skins from EntityRegistry
      */
-    getAvailableSkins(): Array<{ id: string; name: string; files: any }> {
+    getAvailableSkins(): Array<{ id: string; name: string; files: IHeroSkinFiles }> {
         if (EntityRegistry?.hero) {
-            return Object.values(EntityRegistry.hero).map((skin: any) => ({
+            return Object.values(EntityRegistry.hero as Record<string, IHeroSkin>).map((skin) => ({
                 id: skin.id,
                 name: skin.name || skin.id,
-                files: skin.files
+                files: skin.files || {}
             }));
         }
         return [];
@@ -145,9 +158,12 @@ class HeroSkinSelectorClass {
      */
     private _loadSkinImages(container: HTMLElement) {
         const skinImages = container.querySelectorAll('.hero-skin-image[data-icon-id]');
-        skinImages.forEach((el: any) => {
+        skinImages.forEach((element) => {
+            const el = element as HTMLElement;
             const iconId = el.dataset.iconId;
-            const skinData = EntityRegistry?.hero?.[iconId];
+            if (!iconId) return;
+
+            const skinData = (EntityRegistry?.hero as Record<string, IHeroSkin>)?.[iconId];
             let path = null;
             if (skinData?.files?.clean) {
                 path = 'assets/' + skinData.files.clean;
@@ -155,7 +171,7 @@ class HeroSkinSelectorClass {
                 path = 'assets/' + skinData.files.original;
             }
             if (path) {
-                el.style.backgroundImage = `url(${path})`;
+                el.style.backgroundImage = `url('${path}')`;
                 el.style.backgroundSize = 'cover';
                 el.style.backgroundPosition = 'center';
             }

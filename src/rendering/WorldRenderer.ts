@@ -9,15 +9,27 @@ import { GameRenderer } from '@core/GameRenderer';
 import { Registry } from '@core/Registry';
 import { getConfig } from '@data/GameConfig';
 import { IGame, IViewport } from '../types/core.d';
+import { AssetLoader } from '@core/AssetLoader';
+import { IslandManagerService } from '../world/IslandManagerCore';
+import { Island } from '../types/world';
+
+// Extended interface for runtime caching
+interface CachedIsland extends Island {
+    _cachedAssetId?: string;
+    _scaledW?: number;
+    _scaledH?: number;
+    _drawX?: number;
+    _drawY?: number;
+}
 
 class WorldRenderer {
-    game: any = null;
+    game: IGame | null = null;
     backgroundPattern: CanvasPattern | null = null;
     _zoneImages: Record<string, HTMLImageElement> = {};
     _fogPattern: CanvasPattern | null = null;
-    _assetLoader: any = null;
-    _islandManager: any = null;
-    _gameRenderer: any = null;
+    _assetLoader: typeof AssetLoader | null = null;
+    _islandManager: IslandManagerService | null = null;
+    _gameRenderer: typeof GameRenderer | null = null;
     _preloadDone: boolean = false;
     _baseLayerImg: HTMLImageElement | null = null;
     _baseLayerLoaded: boolean = false;
@@ -29,9 +41,9 @@ class WorldRenderer {
     init(game: IGame) {
         this.game = game;
         // Cache system references for performance
-        this._assetLoader = game.getSystem('AssetLoader');
-        this._islandManager = game.getSystem('IslandManager');
-        this._gameRenderer = game.getSystem('GameRenderer');
+        this._assetLoader = game.getSystem<typeof AssetLoader>('AssetLoader');
+        this._islandManager = game.getSystem<IslandManagerService>('IslandManager');
+        this._gameRenderer = game.getSystem<typeof GameRenderer>('GameRenderer');
 
         // PERF: Pre-load all zone images at init time
         this._preloadZoneImages();
@@ -46,7 +58,7 @@ class WorldRenderer {
         if (!this._assetLoader || !this._islandManager) return;
 
         const assetLoader = this._assetLoader;
-        const islands = this._islandManager.islands || [];
+        const islands = (this._islandManager.islands || []) as CachedIsland[];
 
         for (const island of islands) {
             // Cache asset ID on island
@@ -192,7 +204,9 @@ class WorldRenderer {
         const islandColor = '#4A5D23'; // Muddy green
         const islandBorder = '#3A4D13'; // Darker border
 
-        for (const island of islandManager.islands) {
+        for (const rawIsland of islandManager.islands) {
+            const island = rawIsland as CachedIsland;
+
             // Viewport culling - skip islands not visible
             if (
                 island.worldX + island.width < vpLeft ||
@@ -279,7 +293,7 @@ class WorldRenderer {
         ctx.restore();
     }
 
-    drawBridges(ctx: CanvasRenderingContext2D, islandManager: any, assetLoader: any) {
+    drawBridges(ctx: CanvasRenderingContext2D, islandManager: IslandManagerService, assetLoader: typeof AssetLoader | null) {
         const bridges = islandManager.getBridges();
         let planksImg = null;
 
@@ -344,7 +358,7 @@ class WorldRenderer {
         }
     }
 
-    drawLockedOverlay(ctx: CanvasRenderingContext2D, island: any) {
+    drawLockedOverlay(ctx: CanvasRenderingContext2D, island: Island) {
         // FOG VFX REMOVED - Placeholder for new implementation
         // Just draw Lock icon and cost for now
 
@@ -369,7 +383,7 @@ class WorldRenderer {
         );
     }
 
-    drawHomeOutpost(ctx: CanvasRenderingContext2D, islandManager: any) {
+    drawHomeOutpost(ctx: CanvasRenderingContext2D, islandManager: IslandManagerService) {
         const home = islandManager.getHomeIsland();
         if (!home) return;
 

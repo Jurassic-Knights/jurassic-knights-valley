@@ -73,9 +73,9 @@ const BiomeConfig = {
             bossId: 'boss_saurian_t4_01',
             bossRespawnTime: 420
         },
-        lava_crags: {
-            id: 'lava_crags',
-            name: 'The Burning Crags',
+        badlands: {
+            id: 'badlands',
+            name: 'The Badlands',
             description: 'Volcanic hellscape of ash and flame.',
             difficulty: 4,
             levelRange: { min: 30, max: 40 },

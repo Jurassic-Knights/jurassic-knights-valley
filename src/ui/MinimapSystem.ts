@@ -16,7 +16,9 @@ import { BiomeManager } from '../world/BiomeManager';
 import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
+import { IslandManager } from '../world/IslandManager';
 import type { IGame } from '../types/core.d';
+import type { BiomeDef } from '../types/world';
 
 class MinimapSystem {
     // Property declarations
@@ -29,7 +31,7 @@ class MinimapSystem {
     maxZoom: number;
     zoomStep: number;
     baseViewRadius: number;
-    game: any;
+    game: IGame | null;
     scale: number = 1;
 
     constructor() {
@@ -247,7 +249,8 @@ class MinimapSystem {
 
         // Draw biome backgrounds as polygons
         if (BiomeManager) {
-            for (const biome of Object.values(BiomeManager.BIOMES) as any[]) {
+            // BiomeManager.BIOMES is typed as Record<string, BiomeDef>
+            for (const biome of Object.values(BiomeManager.BIOMES)) {
                 const polygon = biome.polygon;
                 if (!polygon || polygon.length < 3) continue;
 
@@ -312,9 +315,9 @@ class MinimapSystem {
         }
 
         // Draw Ironhaven islands
-        const islandManager = this.game?.getSystem('IslandManager');
-        if (islandManager) {
-            const islands = islandManager.islands || [];
+        // Use proper IslandManager import instead of casting game system
+        if (IslandManager) {
+            const islands = IslandManager.islands || [];
             for (const island of islands) {
                 const pos = toCanvas(island.worldX, island.worldY);
                 const w = island.width * this.scale;

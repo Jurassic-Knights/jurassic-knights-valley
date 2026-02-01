@@ -22,19 +22,24 @@ import { getWeaponStats } from '@data/GameConfig';
 import { MathUtils } from '@core/MathUtils';
 import { DOMUtils } from '@core/DOMUtils';
 import { Hero } from '../gameplay/Hero';
-import type { IEntity } from '../types/core';
+import type { IEntity, IGame, ISystem } from '../types/core';
 
-class HeroRendererSystem {
+class HeroRendererSystem implements ISystem {
     // Cached image properties
     private _heroPath: string | null = null;
     private _heroImg: HTMLImageElement | null = null;
     private _heroCanvas: HTMLCanvasElement | null = null;
     private _heroW: number | null = null;
     private _heroH: number | null = null;
-    private _shadowImg: HTMLImageElement | null = null;
+    private _shadowImg: HTMLImageElement | HTMLCanvasElement | null = null;
 
     constructor() {
         Logger.info('[HeroRenderer] Initialized');
+    }
+
+    /** System initialization */
+    init(game: IGame): void {
+        // No specific init logic needed yet
     }
 
     /**

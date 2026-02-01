@@ -7,6 +7,7 @@
  * Owner: VFX Specialist
  */
 import { Registry } from '@core/Registry';
+import { FloatingTextConfig } from '../types/vfx';
 
 class FloatingText {
     text: string;
@@ -25,7 +26,13 @@ class FloatingText {
     active: boolean;
     startY: number;
 
-    constructor(text: any, x: number, y: number, config: any = {}, stackOffset: number = 0) {
+    constructor(
+        text: string | number,
+        x: number,
+        y: number,
+        config: FloatingTextConfig = {},
+        stackOffset: number = 0
+    ) {
         this.text = String(text);
         this.x = x + (config.offsetX || 0);
         this.y = y + (config.offsetY || -60) - stackOffset; // Stack offset moves up
@@ -185,7 +192,7 @@ const FloatingTextManager = {
             shrinkScale: 0.5,
             offsetY: -60
         }
-    },
+    } as Record<string, FloatingTextConfig>,
 
     /**
      * Get stack offset for position
@@ -208,8 +215,8 @@ const FloatingTextManager = {
     /**
      * Spawn floating text
      */
-    spawn(x: number, y: number, text: any, type: string = 'damage') {
-        const config = (this.configs as any)[type] || this.configs.damage;
+    spawn(x: number, y: number, text: string | number, type: string = 'damage') {
+        const config = (this.configs as Record<string, FloatingTextConfig>)[type] || this.configs.damage;
         const stackOffset = this.getStackOffset(x, y);
         this.texts.push(new FloatingText(text, x, y, config, stackOffset));
     },

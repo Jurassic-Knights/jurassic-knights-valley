@@ -5,8 +5,30 @@
  * Owner: Animator
  */
 
+interface TweenOptions {
+    delay?: number;
+    easing?: string;
+    onComplete?: () => void;
+    loop?: boolean;
+    yoyo?: boolean;
+}
+
+interface TweenTask {
+    target: any;
+    startProps: Record<string, number>;
+    endProps: Record<string, number>;
+    duration: number;
+    elapsed: number;
+    delay: number;
+    easing: (t: number) => number;
+    onComplete?: () => void;
+    loop: boolean;
+    yoyo: boolean;
+    direction: number;
+}
+
 const Tween = {
-    activeTweens: [] as any[],
+    activeTweens: [] as TweenTask[],
 
     easing: {
         linear: (t: number) => t,
@@ -24,15 +46,15 @@ const Tween = {
         }
     },
 
-    to(target: any, props: any, duration: number, options: any = {}) {
-        const tween = {
+    to(target: any, props: Record<string, number>, duration: number, options: TweenOptions = {}) {
+        const tween: TweenTask = {
             target,
-            startProps: {} as any,
+            startProps: {},
             endProps: props,
             duration,
             elapsed: 0,
             delay: options.delay || 0,
-            easing: (this.easing as any)[options.easing] || this.easing.easeOut,
+            easing: (this.easing as any)[options.easing || 'easeOut'] || this.easing.easeOut,
             onComplete: options.onComplete,
             loop: options.loop || false,
             yoyo: options.yoyo || false,

@@ -7,38 +7,35 @@
  * - Layout State Management
  */
 
-import { UIManager } from '../UIManager';
+import { UIManager } from '../../ui/UIManager';
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
+import { UIPanelConfig, UIPanelOptions } from '../../types/ui';
 
 class UIPanel {
     // Property declarations
     id: string;
-    config: {
-        dockable: boolean;
-        defaultDock: string;
-        modalClass: string;
-        dockedClass: string;
-    };
+    config: UIPanelOptions;
     el: HTMLElement | null;
     isOpen: boolean;
     isDocked: boolean;
 
     /**
      * @param {string} id - DOM Element ID
-     * @param {Object} config - Configuration options
-     * @param {boolean} config.dockable - Can this panel be docked in sidebar?
-     * @param {string} config.defaultDock - Target container ID when docked (e.g. 'ui-hud-right')
+     * @param {UIPanelOptions} config - Configuration options
      */
-    constructor(id: string, config: any = {}) {
+    constructor(id: string, config: Partial<UIPanelOptions> = {}) {
         this.id = id;
         this.config = Object.assign(
             {
+                id: id,
+                visible: false,
                 dockable: true,
                 defaultDock: 'ui-hud-right',
                 modalClass: 'modal-panel',
-                dockedClass: 'docked-panel'
-            },
+                dockedClass: 'docked-panel',
+                isOpen: false
+            } as UIPanelOptions,
             config
         );
 

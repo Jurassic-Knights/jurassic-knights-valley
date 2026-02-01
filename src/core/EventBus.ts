@@ -6,9 +6,10 @@
  *        EventBus.on('EVENT_NAME', (data) => { ... })
  */
 import { Logger } from './Logger';
+import type { EventCallback } from '../types/core';
 
 class EventBusHub {
-    listeners: Record<string, ((data: any) => void)[]>;
+    listeners: Record<string, EventCallback[]>;
 
     constructor() {
         this.listeners = {};
@@ -20,11 +21,11 @@ class EventBusHub {
      * @param {string} eventName
      * @param {function} callback
      */
-    on(eventName: string, callback: (data: any) => void) {
+    on<T = unknown>(eventName: string, callback: EventCallback<T>) {
         if (!this.listeners[eventName]) {
             this.listeners[eventName] = [];
         }
-        this.listeners[eventName].push(callback);
+        this.listeners[eventName].push(callback as EventCallback);
     }
 
     /**
@@ -32,9 +33,9 @@ class EventBusHub {
      * @param {string} eventName
      * @param {function} callback
      */
-    off(eventName: string, callback: (data: any) => void) {
+    off<T = unknown>(eventName: string, callback: EventCallback<T>) {
         if (!this.listeners[eventName]) return;
-        this.listeners[eventName] = this.listeners[eventName].filter((cb) => cb !== callback);
+        this.listeners[eventName] = this.listeners[eventName].filter((cb) => cb !== callback as EventCallback);
     }
 
     /**
@@ -42,7 +43,7 @@ class EventBusHub {
      * @param {string} eventName
      * @param {any} data
      */
-    emit(eventName: string, data?: any) {
+    emit<T = unknown>(eventName: string, data?: T) {
         if (!this.listeners[eventName]) return;
         this.listeners[eventName].forEach((callback) => {
             try {

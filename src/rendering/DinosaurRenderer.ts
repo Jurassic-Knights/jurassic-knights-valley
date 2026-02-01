@@ -9,11 +9,14 @@ import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { Registry } from '@core/Registry';
 import { environmentRenderer } from './EnvironmentRenderer';
 import { Dinosaur } from '../gameplay/Dinosaur';
+import type { IGame, ISystem } from '../types/core';
 
-class DinosaurRendererService {
+class DinosaurRendererService implements ISystem {
     constructor() {
         Logger.info('[DinosaurRenderer] Initialized');
     }
+
+    init(game: IGame): void { }
 
     render(ctx: CanvasRenderingContext2D, dino: Dinosaur, includeShadow = true, alpha = 1) {
         if (!dino.active) return;
@@ -29,8 +32,8 @@ class DinosaurRendererService {
         const originalY = dino.y;
 
         // Apply interpolated coordinates for rendering
-        (dino as any).x = renderX;
-        (dino as any).y = renderY;
+        dino.x = renderX;
+        dino.y = renderY;
 
         try {
             // Shadow
@@ -58,8 +61,8 @@ class DinosaurRendererService {
 
             ctx.restore();
         } finally {
-            (dino as any).x = originalX;
-            (dino as any).y = originalY;
+            dino.x = originalX;
+            dino.y = originalY;
         }
     }
 
@@ -136,20 +139,18 @@ class DinosaurRendererService {
             }
 
             // PERF: Cache shadow on entity (retry until successful)
-            const dinoAny = dino as any;
-
-            if (!dinoAny._shadowImg) {
+            if (!dino._shadowImg) {
                 if (MaterialLibrary) {
                     const baseShadowId = 'dino_' + (dino.dinoType || 'base') + '_base';
-                    dinoAny._shadowImg = MaterialLibrary.get(baseShadowId, 'shadow', {});
+                    dino._shadowImg = MaterialLibrary.get(baseShadowId, 'shadow', {});
                 }
             }
 
-            if (dinoAny._shadowImg) {
+            if (dino._shadowImg) {
                 // Draw anchored at bottom
                 // Use actual dimensions
                 ctx.drawImage(
-                    dinoAny._shadowImg,
+                    dino._shadowImg,
                     -dino.width / 2,
                     -dino.height,
                     dino.width,

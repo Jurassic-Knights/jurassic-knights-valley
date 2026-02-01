@@ -15,6 +15,8 @@ import { weatherSystem } from '@systems/WeatherSystem';
 import { GameInstance } from '@core/Game';
 import { Registry } from '@core/Registry';
 import { GameState } from '@core/State';
+import { entityManager } from '@core/EntityManager';
+import { CollisionSystem } from '@systems/CollisionSystem';
 
 import { DOMUtils } from '@core/DOMUtils';
 
@@ -63,13 +65,18 @@ const DebugUI = {
         const tpBtn = DOMUtils.create('button', {
             text: 'Go to Merchant',
             onClick: () => {
-                const isMgr = IslandManager as any;
-                if (isMgr && GameInstance?.hero) {
-                    const merchant = isMgr.merchants?.[0];
+                if (entityManager && GameInstance?.hero) {
+                    // Merchant is a type of entity now, usually 'Merchant' or 'NPC'
+                    // Pivot: Using EntityManager to find the first Merchant
+                    const merchants = entityManager.getByType('Merchant');
+                    const merchant = merchants[0];
+
                     if (merchant) {
                         GameInstance.hero.x = merchant.x;
                         GameInstance.hero.y = merchant.y - 50; // Slightly above
-                        Logger.info('[DebugUI] Teleported to merchant at', merchant.islandName);
+                        Logger.info('[DebugUI] Teleported to merchant');
+                    } else {
+                        Logger.warn('[DebugUI] No merchants found');
                     }
                 }
             }
@@ -130,7 +137,7 @@ const DebugUI = {
 
         // Hook into event bus to update UI
         if (EventBus) {
-            EventBus.on(GameConstants.Events.TIME_TICK, (data: any) => {
+            EventBus.on(GameConstants.Events.TIME_TICK, (data: { dayCount: number, season: string, phase: string }) => {
                 const season = data.season ? data.season.substring(0, 3) : '???';
                 const weather = weatherSystem ? weatherSystem.currentWeather : '---';
                 stats.textContent = `D${data.dayCount} ${season} | ${data.phase} | ${weather}`;
@@ -197,7 +204,7 @@ const DebugUI = {
         const colBtn = DOMUtils.create('button', {
             text: 'Hitboxes',
             onClick: () => {
-                const collisionSystem = Registry?.get('CollisionSystem') as any;
+                const collisionSystem = Registry?.get('CollisionSystem') as CollisionSystem;
                 if (collisionSystem && typeof collisionSystem.toggleDebug === 'function') {
                     const isActive = collisionSystem.toggleDebug();
                     colBtn.classList.toggle('active', isActive);
@@ -208,9 +215,11 @@ const DebugUI = {
         });
 
         // Check initial state
-        const colSys = Registry?.get('CollisionSystem') as any;
-        if (colSys && colSys.debugMode) {
-            colBtn.classList.add('active');
+        const colSys = Registry?.get('CollisionSystem') as CollisionSystem;
+        if (colSys && colSys['debugMode']) { // Accessing private property in JS style for check
+            if (colSys && colSys.isDebugMode) {
+                colBtn.classList.add('active');
+            }
         }
 
         this.addControl('Collision', colBtn);

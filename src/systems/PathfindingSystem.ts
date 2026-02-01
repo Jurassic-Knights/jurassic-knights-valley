@@ -11,15 +11,27 @@ import { Logger } from '@core/Logger';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { IslandManager } from '../world/IslandManager';
 import { Registry } from '@core/Registry';
+import type { ISystem, IGame } from '../types/core';
 
-class PathfindingSystem {
-    game: any = null;
+interface PathNode {
+    gx: number;
+    gy: number;
+    key?: string;
+}
+
+interface CachedPath {
+    path: { x: number; y: number }[];
+    time: number;
+}
+
+class PathfindingSystem implements ISystem {
+    game: IGame | null = null;
     gridSize: number = 64;
-    pathCache: Map<string, any> = new Map();
+    pathCache: Map<string, CachedPath> = new Map();
     cacheTimeout: number;
-    _openSet: any[] = [];
+    _openSet: PathNode[] = [];
     _closedSet: Set<string> = new Set();
-    _cameFrom: Map<string, any> = new Map();
+    _cameFrom: Map<string, PathNode> = new Map();
     _gScore: Map<string, number> = new Map();
     _fScore: Map<string, number> = new Map();
 
@@ -28,7 +40,7 @@ class PathfindingSystem {
         Logger.info('[PathfindingSystem] Constructed');
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         Logger.info('[PathfindingSystem] Initialized');
         return true;
@@ -104,9 +116,9 @@ class PathfindingSystem {
 
             // Get node with lowest fScore
             openSet.sort(
-                (a, b) => (fScore.get(a.key) || Infinity) - (fScore.get(b.key) || Infinity)
+                (a, b) => (fScore.get(a.key!) || Infinity) - (fScore.get(b.key!) || Infinity)
             );
-            const current = openSet.shift();
+            const current = openSet.shift()!;
 
             // Reached goal?
             if (current.key === endKey) {
@@ -115,7 +127,7 @@ class PathfindingSystem {
                 return path;
             }
 
-            closedSet.add(current.key);
+            closedSet.add(current.key!);
 
             // Check neighbors (8 directions)
             const neighbors = this.getNeighbors(current.gx, current.gy);
@@ -130,7 +142,7 @@ class PathfindingSystem {
                 const isDiagonal = neighbor.gx !== current.gx && neighbor.gy !== current.gy;
                 const moveCost = isDiagonal ? 1.414 : 1;
 
-                const tentativeG = (gScore.get(current.key) || 0) + moveCost;
+                const tentativeG = (gScore.get(current.key!) || 0) + moveCost;
 
                 if (tentativeG < (gScore.get(neighborKey) || Infinity)) {
                     cameFrom.set(neighborKey, current);
@@ -152,18 +164,18 @@ class PathfindingSystem {
     /**
      * Heuristic function (Manhattan distance)
      */
-    heuristic(a: any, b: any) {
+    heuristic(a: PathNode, b: PathNode) {
         return Math.abs(a.gx - b.gx) + Math.abs(a.gy - b.gy);
     }
 
     /**
      * Reconstruct path from A* result
      */
-    reconstructPath(cameFrom: Map<string, any>, current: any, endX: number, endY: number) {
-        const path = [];
-        let node = current;
+    reconstructPath(cameFrom: Map<string, PathNode>, current: PathNode, endX: number, endY: number) {
+        const path: { x: number; y: number }[] = [];
+        let node: PathNode | undefined = current;
 
-        while (node) {
+        while (node && node.key) {
             const worldPos = this.gridToWorld(node.gx, node.gy);
             path.unshift(worldPos);
             node = cameFrom.get(node.key);
@@ -209,8 +221,8 @@ class PathfindingSystem {
     /**
      * Get valid neighbor cells
      */
-    getNeighbors(gx: number, gy: number) {
-        const neighbors = [];
+    getNeighbors(gx: number, gy: number): PathNode[] {
+        const neighbors: PathNode[] = [];
         const dirs = [
             { dx: 0, dy: -1 }, // N
             { dx: 1, dy: -1 }, // NE
@@ -255,7 +267,7 @@ class PathfindingSystem {
     /**
      * Find nearest valid cell from a blocked position
      */
-    findNearestValidCell(gx: number, gy: number) {
+    findNearestValidCell(gx: number, gy: number): PathNode | null {
         for (let radius = 1; radius <= 5; radius++) {
             for (let dx = -radius; dx <= radius; dx++) {
                 for (let dy = -radius; dy <= radius; dy++) {
@@ -276,7 +288,7 @@ class PathfindingSystem {
     /**
      * Convert world coordinates to pathfinding grid
      */
-    worldToGrid(x: number, y: number) {
+    worldToGrid(x: number, y: number): PathNode {
         return {
             gx: Math.floor(x / this.gridSize),
             gy: Math.floor(y / this.gridSize)

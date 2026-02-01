@@ -5,9 +5,19 @@
  */
 import { MathUtils } from '@core/MathUtils';
 
+interface RainParticle {
+    x: number;
+    y: number;
+    len: number;
+    speed: number;
+    alpha: number;
+    renderDx?: number;
+    renderDy?: number;
+}
+
 class RainVFX {
     active: boolean;
-    particles: any[];
+    particles: RainParticle[];
     count: number;
     speedBase: number;
     angle: number;

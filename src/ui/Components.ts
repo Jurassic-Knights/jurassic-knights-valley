@@ -101,15 +101,19 @@ const Components = {
     /**
      * Create a grid of selectable items
      */
-    selectableGrid(items: any[], selectedId: string | null = null) {
+    selectableGrid(items: { id: string; name?: string }[], selectedId: string | null = null) {
         return `
             <div class="selectable-grid">
-                ${items.map(item => `
+                ${items
+                .map(
+                    (item) => `
                     <div class="selectable-item ${item.id === selectedId ? 'selected' : ''}" data-id="${item.id}">
                         <div class="item-image" data-icon-id="${item.id}"></div>
                         <div class="item-name">${item.name || item.id}</div>
                     </div>
-                `).join('')}
+                `
+                )
+                .join('')}
             </div>
         `;
     }

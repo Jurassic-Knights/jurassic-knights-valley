@@ -6,11 +6,22 @@
  * Owner: Director (VFX/UI)
  */
 
+export interface ProgressBarOptions {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    percent: number;
+    mode?: 'health' | 'respawn';
+    entityId?: string | null;
+    animated?: boolean;
+}
+
 const ProgressBarRenderer = {
     time: 0,
 
     // Track damage trails per entity (simple cache)
-    damageTrails: new Map(),
+    damageTrails: new Map<string, { percent: number }>(),
 
     update(dt: number) {
         this.time += dt / 1000;
@@ -27,9 +38,9 @@ const ProgressBarRenderer = {
     /**
      * Draw a VFX-style progress bar
      * @param {CanvasRenderingContext2D} ctx
-     * @param {object} options
+     * @param {ProgressBarOptions} options
      */
-    draw(ctx: CanvasRenderingContext2D, options: any) {
+    draw(ctx: CanvasRenderingContext2D, options: ProgressBarOptions) {
         const {
             x,
             y,

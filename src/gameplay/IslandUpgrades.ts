@@ -8,12 +8,12 @@
 
 import { Logger } from '@core/Logger';
 
-interface UpgradeLevel {
+export interface UpgradeLevel {
     level: number;
     max: number;
 }
 
-interface IslandUpgradeState {
+export interface IslandUpgradeState {
     gridX: number;
     gridY: number;
     name: string;

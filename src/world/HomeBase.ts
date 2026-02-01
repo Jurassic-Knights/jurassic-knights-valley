@@ -52,7 +52,15 @@ const HomeBase = {
     _treeConsumedLoaded: false,
 
     // Debug
-    _debugSpawnZone: null as any | null,
+    _debugSpawnZone: null as {
+        minX: number;
+        minY: number;
+        maxX: number;
+        maxY: number;
+        centerX: number;
+        centerY: number;
+        restAreaRadius: number;
+    } | null,
 
     /**
      * Get tree resources from EntityManager (cached per frame)
@@ -60,7 +68,8 @@ const HomeBase = {
      */
     get treeResources() {
         // Return cached if same frame
-        const frame = (GameRenderer as any)?._renderTiming?.frames || 0;
+        const renderer = GameRenderer as unknown as { _renderTiming?: { frames: number } };
+        const frame = renderer?._renderTiming?.frames || 0;
         if (this._treeCacheFrame === frame && this._cachedTrees) {
             return this._cachedTrees;
         }
@@ -351,7 +360,7 @@ const HomeBase = {
      * Check if blocking by trees - now always returns false (trees don't block)
      * @returns {boolean}
      */
-    isBlockedByTrees() {
+    isBlockedByTrees(_x: number, _y: number) {
         return false; // Trees are resources, not barriers
     }
 };

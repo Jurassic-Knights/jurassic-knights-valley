@@ -10,6 +10,7 @@ import { EventBus } from '@core/EventBus';
 import { entityManager } from '@core/EntityManager';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
+import { VFXController } from '@vfx/VFXController';
 import { ProjectileVFX } from '@vfx/ProjectileVFX';
 import { VFXConfig } from '@data/VFXConfig';
 import { FloatingTextManager } from '@vfx/FloatingText';
@@ -20,15 +21,18 @@ import { getWeaponStats } from '@data/GameConfig';
 import { MathUtils } from '@core/MathUtils';
 
 // Unmapped modules - need manual import
+import type { Hero } from '../gameplay/Hero';
+import type { IEntity } from '../types/core';
+import type { Game } from '@core/Game';
 
 const HeroCombatService = {
-    game: null as any,
+    game: null as Game | null,
 
     /**
      * Initialize service with game reference
      * @param {Game} game
      */
-    init(game: any) {
+    init(game: Game) {
         this.game = game;
     },
 
@@ -37,7 +41,7 @@ const HeroCombatService = {
      * @param {number} dt - Delta time in ms
      * @param {Hero} hero
      */
-    update(dt: number, hero: any) {
+    update(dt: number, hero: Hero) {
         // Update attack timer
         if (hero.attackTimer > 0) {
             hero.attackTimer -= dt / 1000;
@@ -74,12 +78,12 @@ const HeroCombatService = {
      * Find nearest valid target for auto-attacking
      * Priority: Enemies > Dinosaurs > Resources
      * @param {Hero} hero
-     * @returns {Entity|null}
+     * @returns {IEntity|null}
      */
-    findTarget(hero: any) {
+    findTarget(hero: Hero): IEntity | null {
         if (!entityManager) return null;
 
-        let target = null;
+        let target: IEntity | null = null;
         let minDistSq = Infinity;
 
         // Compute scan range as max of equipped weapon ranges using getWeaponStats
@@ -99,7 +103,7 @@ const HeroCombatService = {
         for (const enemyType of enemyTypes) {
             const candidates = entityManager.getByType(enemyType);
             for (const candidate of candidates) {
-                if (!candidate.active || candidate.isDead) continue;
+                if (!candidate.active || (candidate as unknown as { isDead: boolean }).isDead) continue; // Cast for isDead if not on base Entity
 
                 const distSq = MathUtils.distanceSq(hero.x, hero.y, candidate.x, candidate.y);
                 const rangeSq = scanRange * scanRange;
@@ -115,7 +119,7 @@ const HeroCombatService = {
         if (!target) {
             const candidates = entityManager.getInRadius(hero.x, hero.y, scanRange, 'Dinosaur');
             for (const candidate of candidates) {
-                if (!candidate.active || candidate.state === 'dead') continue;
+                if (!candidate.active || (candidate as unknown as { state: string }).state === 'dead') continue;
 
                 const dx = candidate.x - hero.x;
                 const dy = candidate.y - hero.y;
@@ -132,7 +136,7 @@ const HeroCombatService = {
             const miningRange = hero.miningRange || getConfig().Combat.DEFAULT_MINING_RANGE;
             const candidates = entityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
             for (const candidate of candidates) {
-                if (!candidate.active || candidate.state === 'depleted') continue;
+                if (!candidate.active || (candidate as unknown as { state: string }).state === 'depleted') continue;
 
                 const dx = candidate.x - hero.x;
                 const dy = candidate.y - hero.y;
@@ -148,28 +152,28 @@ const HeroCombatService = {
     },
 
     /**
-     * Attempt to attack a target with each equipped weapon independently
+     * Play muzzle flash for a specific weapon slot
      * Each weapon only attacks if target is within its range
      * @param {Hero} hero
-     * @param {Entity} target
+     * @param {IEntity} target
      * @returns {boolean} Whether the target was killed
      */
-    tryAttack(hero: any, target: any) {
+    tryAttack(hero: Hero, target: IEntity) {
         if (!target || !target.active) return false;
 
         // Determine target type
         const isEnemy =
             target.constructor.name === 'Enemy' ||
             target.constructor.name === 'Boss' ||
-            target.isBoss === true;
+            (target as unknown as { isBoss: boolean }).isBoss === true;
         const isDino =
             target.constructor.name === 'Dinosaur' || target.entityType === EntityTypes?.DINOSAUR;
         const isRangedTarget = isDino || isEnemy;
 
         // Skip if resource is depleted (but not for enemies/dinos)
-        if (!isRangedTarget && target.state === 'depleted') return false;
+        if (!isRangedTarget && (target as unknown as { state: string }).state === 'depleted') return false;
         // Skip if enemy is dead
-        if (isEnemy && target.isDead) return false;
+        if (isEnemy && (target as unknown as { isDead: boolean }).isDead) return false;
 
         // Calculate distance to target
         const dist = MathUtils.distance(hero.x, hero.y, target.x, target.y);
@@ -194,8 +198,8 @@ const HeroCombatService = {
         }
 
         // Determine which weapons can attack based on range
-        const hand1InRange = isRangedTarget && hand1Item && dist <= hand1Range;
-        const hand2InRange = isRangedTarget && hand2Item && dist <= hand2Range;
+        const hand1InRange = isRangedTarget && !!hand1Item && dist <= hand1Range;
+        const hand2InRange = isRangedTarget && !!hand2Item && dist <= hand2Range;
 
         // For ranged targets, at least one weapon must be in range
         if (isRangedTarget && !hand1InRange && !hand2InRange) return false;
@@ -220,7 +224,7 @@ const HeroCombatService = {
         let totalDmg = 0;
 
         // Hand1 Attack
-        if (hand1InRange) {
+        if (hand1InRange && hand1Item) {
             const weaponStats = getWeaponStats(hand1Item);
             const weaponDmg = weaponStats.damage;
             totalDmg += weaponDmg;
@@ -239,7 +243,7 @@ const HeroCombatService = {
         }
 
         // Hand2 Attack
-        if (hand2InRange) {
+        if (hand2InRange && hand2Item) {
             const weaponStats = getWeaponStats(hand2Item);
             const weaponDmg = weaponStats.damage;
             totalDmg += weaponDmg;
@@ -299,10 +303,10 @@ const HeroCombatService = {
     /**
      * Play muzzle flash for a specific weapon slot
      * @param {Hero} hero
-     * @param {Entity} target
+     * @param {IEntity} target
      * @param {string} slotId - 'hand1' or 'hand2'
      */
-    playMuzzleFlashForSlot(hero: any, target: any, slotId: string) {
+    playMuzzleFlashForSlot(hero: Hero, target: IEntity, slotId: string) {
         if (!ProjectileVFX) return;
 
         const item = hero.equipment?.getSlot?.(slotId);
@@ -314,10 +318,10 @@ const HeroCombatService = {
     /**
      * Play muzzle flash and projectile VFX when attacking ranged targets
      * @param {Hero} hero
-     * @param {Entity} target
+     * @param {IEntity} target
      * @param {boolean} isRangedTarget
      */
-    playMuzzleFlash(hero: any, target: any, isRangedTarget: boolean) {
+    playMuzzleFlash(hero: Hero, target: IEntity, isRangedTarget: boolean) {
         if (!isRangedTarget) return;
 
         // Use new ProjectileVFX system
@@ -330,7 +334,7 @@ const HeroCombatService = {
         // Fallback to legacy VFX system
         if (!VFXConfig || !this.game) return;
 
-        const vfxController = this.game.getSystem('VFXController');
+        const vfxController = this.game.getSystem('VFXController') as typeof VFXController; // Cast until VFXController strictly typed in Game.ts
         if (!vfxController) return;
 
         const cfg = VFXConfig.HERO.MUZZLE_FLASH;

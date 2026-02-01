@@ -1,6 +1,102 @@
 import { h, renderToString } from '../domBuilder';
-import { AssetItem, currentCategoryName, categoryImageSize, lootSourceMap } from '../state';
+import { AssetItem, currentCategoryName, categoryImageSize, lootSourceMap, recipeUsageMap, LootItem, DropItem, assetPrompts } from '../state';
 import { getAssetInfo } from '../api';
+
+// ... (existing functions) ...
+
+export function buildSourceHtml(item: AssetItem): string {
+    // Enabled for all categories (Equipment, Enemies, etc.)
+    // if (currentCategoryName !== 'resources' && currentCategoryName !== 'items') return '';
+
+    // 1. Explicit Source (Legacy/Specific)
+    const explicitSource = item.source;
+
+    // 2. Dynamic Sources (Reverse Lookup from Drops)
+    const simpleId = item.id.replace(/^(item_|items_|resource_|resources_|equipment_|node_|nodes_)/, '');
+    const dynamicSources = [
+        ...(lootSourceMap[item.id] || []),
+        ...(lootSourceMap[simpleId] || [])
+    ];
+
+    // Combine and Deduplicate
+    const allSources = new Set<string>();
+    if (explicitSource) allSources.add(explicitSource);
+    dynamicSources.forEach(s => allSources.add(s));
+
+    if (allSources.size === 0) return '';
+
+    const sourceImages = Array.from(allSources).map(sourceId => {
+        const assetInfo = getAssetInfo(sourceId);
+        const sourceName = assetInfo ? assetInfo.name || sourceId : sourceId;
+        const imgPath = assetInfo ? `/images/${assetInfo.path}` : '/images/PH.png';
+        const category = assetInfo?.category || 'nodes';
+
+        return h('div', {
+            className: 'asset-overlay',
+            title: `Source: ${sourceName}`,
+            'data-action': 'navigate-asset',
+            'data-category': category,
+            'data-id': sourceId
+        }, [
+            h('img', {
+                className: 'asset-overlay__img',
+                src: imgPath,
+                onerror: "this.src='/images/PH.png'",
+                style: `width:40px; height:40px; border:2px solid var(--accent-cyan);`
+            }),
+            h('span', { className: 'asset-overlay__label asset-overlay__label--top-left' }, [sourceName])
+        ]);
+    });
+
+    const container = h('div', { style: 'margin:8px 0;' }, [
+        h('div', { style: 'font-size:0.7rem; color:var(--accent-cyan); margin-bottom:4px;' }, ['⛏️ Sources / Drops From:']),
+        h('div', { style: 'display:flex; gap:8px; flex-wrap:wrap;' }, sourceImages)
+    ]);
+
+    return renderToString(container);
+}
+
+export function buildUsageHtml(item: AssetItem): string {
+    const simpleId = item.id.replace(/^(item_|items_|resource_|resources_|equipment_|node_|nodes_)/, '');
+    const usages = [
+        ...(recipeUsageMap[item.id] || []),
+        ...(recipeUsageMap[simpleId] || [])
+    ];
+
+    if (usages.length === 0) return '';
+
+    const uniqueUsages = [...new Set(usages)];
+
+    const usageImages = uniqueUsages.map(usageId => {
+        const assetInfo = getAssetInfo(usageId);
+        const usageName = assetInfo ? assetInfo.name || usageId : usageId;
+        const imgPath = assetInfo ? `/images/${assetInfo.path}` : '/images/PH.png';
+        const category = assetInfo?.category || 'items';
+
+        return h('div', {
+            className: 'asset-overlay',
+            title: `Used in: ${usageName}`,
+            'data-action': 'navigate-asset',
+            'data-category': category,
+            'data-id': usageId
+        }, [
+            h('img', {
+                className: 'asset-overlay__img',
+                src: imgPath,
+                onerror: "this.src='/images/PH.png'",
+                style: `width:40px; height:40px; border:2px solid var(--accent-yellow);`
+            }),
+            h('span', { className: 'asset-overlay__label asset-overlay__label--top-left' }, [usageName])
+        ]);
+    });
+
+    const container = h('div', { style: 'margin:8px 0;' }, [
+        h('div', { style: 'font-size:0.7rem; color:var(--accent-yellow); margin-bottom:4px;' }, ['🔨 Used In Recipe:']),
+        h('div', { style: 'display:flex; gap:8px; flex-wrap:wrap;' }, usageImages)
+    ]);
+
+    return renderToString(container);
+}
 
 export function buildLoreDescriptionHtml(item: AssetItem, fileName: string): string {
     const showForCategories = ['enemies', 'bosses', 'npcs'];
@@ -87,13 +183,13 @@ export function buildSizeScaleHtml(item: AssetItem, fileName: string): string {
 
 
 export function buildDropsHtml(item: AssetItem): string {
-    const loot = item.loot || item.drops;
+    const loot = (item.loot || item.drops) as Array<LootItem | DropItem> | undefined;
     if (!loot || loot.length === 0) return '';
 
     // Increase size for better visibility (was 0.3)
     const dropSize = Math.max(48, Math.floor(categoryImageSize * 0.4));
 
-    const dropImages = loot.map((drop: any) => {
+    const dropImages = loot.map((drop) => {
         const dropId = drop.item;
         const dropChance = drop.chance != null ? (drop.chance > 1 ? drop.chance : Math.round(drop.chance * 100)) : 100;
 
@@ -135,7 +231,7 @@ export function buildRecipeHtml(item: AssetItem): string {
 
     let parsedRecipe: Array<{ item: string; amount: number }> = [];
     if (Array.isArray(item.recipe)) {
-        parsedRecipe = item.recipe.map((r: any) => ({ item: r.item, amount: r.amount || 1 }));
+        parsedRecipe = item.recipe.map((r) => ({ item: r.item, amount: r.amount || 1 }));
     } else if (typeof item.recipe === 'string') {
         const parts = item.recipe.split('+').map((p) => p.trim());
         for (const part of parts) {
@@ -187,58 +283,7 @@ export function buildRecipeHtml(item: AssetItem): string {
     return renderToString(container);
 }
 
-export function buildSourceHtml(item: AssetItem): string {
-    if (currentCategoryName !== 'resources' && currentCategoryName !== 'items') return '';
 
-    // 1. Explicit Source (Legacy/Specific)
-    const explicitSource = item.source;
-
-    // 2. Dynamic Sources (Reverse Lookup from Drops)
-    const simpleId = item.id.replace(/^(item_|items_|resource_|resources_|equipment_|node_|nodes_)/, '');
-    const dynamicSources = [
-        ...(lootSourceMap[item.id] || []),
-        ...(lootSourceMap[simpleId] || [])
-    ];
-
-    // Combine and Deduplicate
-    const allSources = new Set<string>();
-    if (explicitSource) allSources.add(explicitSource);
-    dynamicSources.forEach(s => allSources.add(s));
-
-    if (allSources.size === 0) return '';
-
-    const sourceImages = Array.from(allSources).map(sourceId => {
-        const assetInfo = getAssetInfo(sourceId);
-        const sourceName = assetInfo ? assetInfo.name || sourceId : sourceId;
-        const imgPath = assetInfo ? `/images/${assetInfo.path}` : '/images/PH.png';
-        const category = assetInfo?.category || 'nodes'; // Default to nodes if unknown, or maybe 'enemies'
-        // If it's an enemy, category should be enemies. assetInfo will have it. 
-        // If missing assetInfo, we can't deep link easily, but we can guess.
-
-        return h('div', {
-            className: 'asset-overlay',
-            title: `Source: ${sourceName}`,
-            'data-action': 'navigate-asset',
-            'data-category': category,
-            'data-id': sourceId
-        }, [
-            h('img', {
-                className: 'asset-overlay__img',
-                src: imgPath,
-                onerror: "this.src='/images/PH.png'",
-                style: `width:40px; height:40px; border:2px solid var(--accent-cyan);`
-            }),
-            h('span', { className: 'asset-overlay__label asset-overlay__label--top-left' }, [sourceName])
-        ]);
-    });
-
-    const container = h('div', { style: 'margin:8px 0;' }, [
-        h('div', { style: 'font-size:0.7rem; color:var(--accent-cyan); margin-bottom:4px;' }, ['⛏️ Sources / Drops From:']),
-        h('div', { style: 'display:flex; gap:8px; flex-wrap:wrap;' }, sourceImages)
-    ]);
-
-    return renderToString(container);
-}
 
 export function buildResourceDropHtml(item: AssetItem): string {
     if (!item.resourceDrop || currentCategoryName !== 'nodes') return '';
@@ -333,12 +378,35 @@ export function buildOtherFieldsHtml(item: AssetItem): string {
     if (fields.length === 0) return '';
 
     // Join with bullets manually since h() creates elements
-    const children: any[] = [];
+    const children: Array<string | HTMLElement> = [];
     fields.forEach((f, i) => {
         children.push(f);
         if (i < fields.length - 1) children.push(' • ');
     });
 
     const container = h('div', {}, children);
+    return renderToString(container);
+}
+
+export function buildPromptHtml(item: AssetItem): string {
+    const prompt = assetPrompts[item.id] || '';
+
+    // Auto-resize logic is handled by global delegation for 'textarea.feedback-input' 
+    // referencing the class helps, but we can also set rows based on length
+    const lines = Math.max(3, Math.ceil(prompt.length / 50));
+
+    const container = h('div', { style: 'margin:8px 0;' }, [
+        h('div', { style: 'font-size:0.65rem; color:var(--text-dim); margin-bottom:4px;' }, ['🎨 Generation Prompt:']),
+        h('textarea', {
+            className: 'asset-input asset-input--full feedback-input',
+            style: 'resize:vertical; line-height:1.4; font-family:monospace; font-size:0.75rem; color:#aaa;',
+            rows: Math.min(lines, 10),
+            placeholder: 'No prompt saved...',
+            'data-action': 'update-prompt',
+            'data-id': item.id,
+            'data-capture-value': 'true'
+        }, [prompt])
+    ]);
+
     return renderToString(container);
 }

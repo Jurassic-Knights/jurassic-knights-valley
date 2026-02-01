@@ -19,7 +19,7 @@ import { IslandManager } from '../world/IslandManager';
 
 import { economySystem as EconomySystem } from '@systems/EconomySystem';
 
-interface CraftingRecipe {
+export interface CraftingRecipe {
     id: string;
     name: string;
     description: string;
@@ -31,7 +31,7 @@ interface CraftingRecipe {
     outputIcon: string;
 }
 
-interface CraftingSlot {
+export interface CraftingSlot {
     id: number;
     unlocked: boolean;
     status: 'idle' | 'crafting' | 'complete';
@@ -39,7 +39,7 @@ interface CraftingSlot {
     quantity: number;
     startTime: number;
     duration: number;
-    item: any | null; // Placeholder for future item object
+    item: unknown | null; // Placeholder for future item object
 }
 
 const CraftingManager = {
@@ -221,10 +221,9 @@ const CraftingManager = {
             const inv = GameInstance.hero.inventory;
             inv[recipe.id] = (inv[recipe.id] || 0) + 1;
 
-            // Update UI immediately if open
-            const uiMgr = UIManager as any;
-            if (uiMgr?.updateResources) {
-                uiMgr.updateResources(inv);
+            // Update UI via EventBus
+            if (EventBus) {
+                EventBus.emit('INVENTORY_UPDATED', inv);
             }
         }
 

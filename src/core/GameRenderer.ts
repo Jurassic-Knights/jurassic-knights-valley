@@ -11,33 +11,49 @@ import { Registry } from './Registry';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { EntityRenderService } from '../rendering/EntityRenderService';
-import { RenderProfiler } from '../rendering/RenderProfiler';
+import { RenderProfiler, RenderTiming } from '../rendering/RenderProfiler';
 import { GridRenderer } from '../rendering/GridRenderer';
 import { DebugOverlays } from '../rendering/DebugOverlays';
 import { HomeOutpostRenderer } from '../rendering/HomeOutpostRenderer';
 import { DOMUtils } from './DOMUtils';
+import { IGame, IEntity, ISystem } from '../types/core';
+
+// Import specific system types
+import { PlatformManager } from './PlatformManager';
+import { VFXController } from '../vfx/VFXController';
+import { CollisionSystem } from '../systems/CollisionSystem';
+import { WorldRenderer } from '../rendering/WorldRenderer';
+import { RoadRenderer } from '../rendering/RoadRenderer';
+import { HeroRenderer } from '../rendering/HeroRenderer';
+import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
+import { ResourceRenderer } from '../rendering/ResourceRenderer';
+import { AmbientSystem } from '../world/AmbientSystem';
+import { FogOfWarSystem } from '../vfx/FogOfWarSystem';
+import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
+import { LightingSystem } from '../vfx/LightingSystem';
+import { HomeBase } from '../world/HomeBase';
 
 const GameRenderer = {
     canvas: null as HTMLCanvasElement | null,
     ctx: null as CanvasRenderingContext2D | null,
-    hero: null as any, // Still track hero for camera centering
+    hero: null as IEntity | null,
     debugMode: false,
     gridMode: false, // Separate toggle for grid overlay
-    game: null as any,
+    game: null as IGame | null,
     shadowCanvas: null as HTMLCanvasElement | null,
     shadowCtx: null as CanvasRenderingContext2D | null,
-    _worldRenderer: null as any,
-    _roadRenderer: null as any,
-    _vfxController: null as any,
-    _homeBase: null as any,
-    _heroRenderer: null as any,
-    _dinosaurRenderer: null as any,
-    _resourceRenderer: null as any,
-    _ambientSystem: null as any,
-    _fogSystem: null as any,
-    _envRenderer: null as any,
-    _lightingSystem: null as any,
-    _renderTiming: null as any,
+    _worldRenderer: null as WorldRenderer | null,
+    _roadRenderer: null as RoadRenderer | null,
+    _vfxController: null as typeof VFXController | null,
+    _homeBase: null as typeof HomeBase | null,
+    _heroRenderer: null as typeof HeroRenderer | null,
+    _dinosaurRenderer: null as typeof DinosaurRenderer | null,
+    _resourceRenderer: null as typeof ResourceRenderer | null,
+    _ambientSystem: null as typeof AmbientSystem | null,
+    _fogSystem: null as typeof FogOfWarSystem | null,
+    _envRenderer: null as EnvironmentRenderer | null,
+    _lightingSystem: null as typeof LightingSystem | null,
+    _renderTiming: null as RenderTiming | null, // Profiler data container
 
     // Dynamic world size - uses full biome world if defined, else Ironhaven-only
     get worldWidth() {
@@ -80,12 +96,12 @@ const GameRenderer = {
     },
 
     // GC Optimization: Pre-allocated array for Y-sorting
-    _sortableEntities: [] as any[],
+    _sortableEntities: [] as IEntity[],
 
     /**
      * Initialize the renderer
      */
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         this.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
         if (!this.canvas) {
@@ -102,7 +118,7 @@ const GameRenderer = {
         this.resizeShadowBuffer();
 
         // Listen for platform changes
-        const platformManager = this.game ? this.game.getSystem('PlatformManager') : null;
+        const platformManager = this.game ? this.game.getSystem<typeof PlatformManager>('PlatformManager') : null;
         if (platformManager) {
             platformManager.on('modechange', () => this.updateViewport());
             this.updateViewport();
@@ -112,25 +128,28 @@ const GameRenderer = {
 
         // Handle window resize
         addEventListener('resize', () => {
-            if (this.game && this.game.getSystem('PlatformManager').isMobile()) {
-                this.updateViewport(); // Recalculate aspect ratio on mobile
-            } else {
-                this.resize();
+            if (this.game) {
+                const pm = this.game.getSystem<typeof PlatformManager>('PlatformManager');
+                if (pm && pm.isMobile()) {
+                    this.updateViewport(); // Recalculate aspect ratio on mobile
+                } else {
+                    this.resize();
+                }
             }
         });
 
         // GC Optimization: Cache system references for render loop
-        this._worldRenderer = this.game.getSystem('WorldRenderer');
-        this._roadRenderer = this.game.getSystem('RoadRenderer');
-        this._vfxController = this.game.getSystem('VFXController');
-        this._homeBase = this.game.getSystem('HomeBase');
-        this._heroRenderer = this.game.getSystem('HeroRenderer');
-        this._dinosaurRenderer = this.game.getSystem('DinosaurRenderer');
-        this._resourceRenderer = this.game.getSystem('ResourceRenderer');
-        this._ambientSystem = this.game.getSystem('AmbientSystem');
-        this._fogSystem = this.game.getSystem('FogOfWarSystem');
-        this._envRenderer = this.game.getSystem('EnvironmentRenderer');
-        this._lightingSystem = this.game.getSystem('LightingSystem');
+        this._worldRenderer = this.game.getSystem<WorldRenderer>('WorldRenderer');
+        this._roadRenderer = this.game.getSystem<RoadRenderer>('RoadRenderer');
+        this._vfxController = this.game.getSystem<typeof VFXController>('VFXController');
+        this._homeBase = this.game.getSystem<typeof HomeBase>('HomeBase');
+        this._heroRenderer = this.game.getSystem<typeof HeroRenderer>('HeroRenderer');
+        this._dinosaurRenderer = this.game.getSystem<typeof DinosaurRenderer>('DinosaurRenderer');
+        this._resourceRenderer = this.game.getSystem<typeof ResourceRenderer>('ResourceRenderer');
+        this._ambientSystem = this.game.getSystem<typeof AmbientSystem>('AmbientSystem');
+        this._fogSystem = this.game.getSystem<typeof FogOfWarSystem>('FogOfWarSystem');
+        this._envRenderer = this.game.getSystem<EnvironmentRenderer>('EnvironmentRenderer');
+        this._lightingSystem = this.game.getSystem<typeof LightingSystem>('LightingSystem');
 
         Logger.info('[GameRenderer] Initialized');
         return true;
@@ -202,7 +221,7 @@ const GameRenderer = {
      * Set the hero reference
      * @param {Hero} hero
      */
-    setHero(hero: any) {
+    setHero(hero: IEntity) {
         this.hero = hero;
     },
 
@@ -275,7 +294,7 @@ const GameRenderer = {
      */
     simpleShadows: false,
 
-    renderShadowPass(entities: any[]) {
+    renderShadowPass(entities: IEntity[]) {
         if (ShadowRenderer) {
             ShadowRenderer.simpleShadows = this.simpleShadows;
             ShadowRenderer.renderShadowPass(
@@ -295,7 +314,7 @@ const GameRenderer = {
     /**
      * Fast simple ellipse shadows (delegates to ShadowRenderer)
      */
-    renderSimpleShadows(entities: any[]) {
+    renderSimpleShadows(entities: IEntity[]) {
         if (ShadowRenderer) {
             ShadowRenderer.renderSimpleShadows(this.ctx, entities, this.viewport);
         }
@@ -479,7 +498,7 @@ const GameRenderer = {
         }
 
         // --- COLLISION DEBUG ---
-        const collisionSystem = this.game.getSystem('CollisionSystem');
+        const collisionSystem = this.game.getSystem<CollisionSystem>('CollisionSystem');
         if (collisionSystem && typeof collisionSystem.renderDebug === 'function') {
             this.ctx.save();
             this.ctx.translate(-this.viewport.x, -this.viewport.y);

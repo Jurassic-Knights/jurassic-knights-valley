@@ -1,37 +1,42 @@
 /**
  * Entity: node_mining_t3_06
- * Auto-generated from JSON.
+ * Auto-generated. Edit in dashboard.
  */
+import type { NodeEntity } from '@types/entities';
 
 export default {
-    id: 'node_mining_t3_06',
-    name: 'Frozen Ground',
-    sourceCategory: 'nodes',
-    sourceFile: 'nodes',
-    sprite: 'node_mining_t3_06',
-    status: 'pending',
-    files: {
-        original: 'assets/images/nodes/node_mining_t3_06_original.png'
+    "id": "node_mining_t3_06",
+    "name": "Frozen Ground",
+    "sourceCategory": "nodes",
+    "sourceFile": "nodes",
+    "sprite": "node_mining_t3_06",
+    "status": "declined",
+    "files": {
+        "original": "assets/images/nodes/node_mining_t3_06_original.png"
     },
-    type: 'ore',
-    biome: 'tundra',
-    sfx: {
-        hit: 'sfx_node_hit_stone',
-        break: 'sfx_node_break_stone',
-        respawn: 'sfx_node_respawn'
+    "type": "ore",
+    "biome": "tundra",
+    "sfx": {
+        "hit": "sfx_node_hit_stone",
+        "break": "sfx_node_break_stone",
+        "respawn": "sfx_node_respawn"
     },
-    drops: [
+    "drops": [
         {
-            amount: [1, 3],
-            chance: 1,
-            item: 'minerals_t3_01'
+            "amount": [
+                1,
+                3
+            ],
+            "chance": 1,
+            "item": "minerals_t3_01"
         }
     ],
-    nodeSubtype: 'mining',
-    tier: 3,
-
-    display: {
-        sizeScale: 1,
-        width: 64,
-        height: 64
-    },};
+    "nodeSubtype": "mining",
+    "tier": 3,
+    "display": {
+        "sizeScale": 1,
+        "width": 64,
+        "height": 64
+    },
+    "declineNote": ""
+} satisfies NodeEntity;

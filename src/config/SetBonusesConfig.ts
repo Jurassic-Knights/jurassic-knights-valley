@@ -6,6 +6,14 @@
  * - pieces: Array of equipment IDs that belong to this set
  * - bonuses: Object mapping piece count to stat bonuses
  */
+import type { ItemStats } from '../types/ui';
+
+interface ArmorSet {
+    name: string;
+    pieces: string[];
+    bonuses: Record<string, ItemStats>;
+}
+
 const SetBonusesConfig = {
     sets: {
         // Example set - will be populated as armor sets are designed
@@ -35,7 +43,7 @@ const SetBonusesConfig = {
      * @returns {string|null} Set ID or null
      */
     findSetForPiece(equipmentId: string) {
-        for (const [setId, set] of Object.entries(this.sets) as [string, any][]) {
+        for (const [setId, set] of Object.entries(this.sets) as [string, ArmorSet][]) {
             if (set.pieces.includes(equipmentId)) {
                 return setId;
             }
@@ -49,8 +57,8 @@ const SetBonusesConfig = {
      * @returns {Object} Aggregated stat bonuses from sets
      */
     calculateSetBonuses(equippedIds: string[]) {
-        const bonuses: any = {};
-        const setCounts: any = {};
+        const bonuses: Record<string, number> = {};
+        const setCounts: Record<string, number> = {};
 
         // Count pieces per set
         for (const id of equippedIds) {
@@ -62,8 +70,8 @@ const SetBonusesConfig = {
 
         // Apply bonuses based on piece counts
         for (const [setId, count] of Object.entries(setCounts) as [string, number][]) {
-            const set = (this.sets as any)[setId];
-            for (const [threshold, stats] of Object.entries(set.bonuses) as [string, any][]) {
+            const set = (this.sets as Record<string, ArmorSet>)[setId];
+            for (const [threshold, stats] of Object.entries(set.bonuses) as [string, ItemStats][]) {
                 if (count >= parseInt(threshold)) {
                     for (const [stat, value] of Object.entries(stats) as [string, number][]) {
                         bonuses[stat] = (bonuses[stat] || 0) + value;

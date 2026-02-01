@@ -7,9 +7,10 @@
 
 import { GameRenderer } from '@core/GameRenderer';
 import { ParticleRenderer } from './ParticleRenderer';
+import { Particle, ParticleConfig } from '../types/vfx';
 
 const ParticleSystem = {
-    particles: [] as any[],
+    particles: [] as Particle[],
     canvas: null as HTMLCanvasElement | null,
     ctx: null as CanvasRenderingContext2D | null,
 
@@ -44,7 +45,7 @@ const ParticleSystem = {
      * @param {number} y - Y position
      * @param {object} options - Particle options
      */
-    emit(x: number, y: number, options: any = {}) {
+    emit(x: number, y: number, options: Partial<ParticleConfig> = {}) {
         const count = options.count || 10;
         const color = options.color || '#FFD700';
         const lifetime = options.lifetime || 500;
@@ -139,8 +140,8 @@ const ParticleSystem = {
     },
 
     update(dt: number) {
-        const aliveParticles = [];
-        const newParticles = [];
+        const aliveParticles: Particle[] = [];
+        const newParticles: Particle[] = [];
 
         for (const p of this.particles) {
             p.age += dt;
@@ -197,7 +198,9 @@ const ParticleSystem = {
                             age: 0,
                             type: 'circle',
                             gravity: -0.05, // Slight rise
-                            drag: 0.95
+                            drag: 0.95,
+                            rotation: 0,
+                            blendMode: 'source-over'
                         });
                     }
                 }

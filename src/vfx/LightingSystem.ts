@@ -11,11 +11,20 @@
  */
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
+import { IGame } from '../types/core';
 
 class LightingSystemClass {
-    lights: any[];
+    lights: Array<{
+        x: number;
+        y: number;
+        radius: number;
+        color: string;
+        alpha: number;
+        angle: number;
+        elongation: number;
+    }>;
     ctx: CanvasRenderingContext2D | null;
-    game: any;
+    game: IGame | null;
 
     constructor() {
         this.lights = [];
@@ -23,7 +32,7 @@ class LightingSystemClass {
         this.game = null;
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         Logger.info('[LightingSystem] Initialized');
     }

@@ -14,7 +14,7 @@
  */
 import { Entity } from '@core/Entity';
 import { Logger } from '@core/Logger';
-import { EntityConfig } from '@config/EntityConfig';
+import { EntityConfig as EntityConfigValue } from '@config/EntityConfig';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EntityTypes } from '@config/EntityTypes';
@@ -25,7 +25,9 @@ import { CombatComponent } from '../components/CombatComponent';
 import { AIComponent } from '../components/AIComponent';
 import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
 import { Registry } from '@core/Registry';
+import { Component } from '@core/Component';
 import { getConfig } from '@data/GameConstants';
+import type { EntityConfig } from '../types/core';
 
 // Unmapped modules - need manual import
 
@@ -63,21 +65,26 @@ class Enemy extends Entity {
     isBoss?: boolean = false;
 
     // Render methods (optional implementation)
-    renderUI?(ctx: CanvasRenderingContext2D): void;
+    // Render methods (optional implementation)
+    renderUI(ctx: CanvasRenderingContext2D): void {
+        if (!this.active || this.isDead) return;
+        this.renderHealthBar(ctx);
+        this.renderThreatIndicator(ctx);
+    }
 
     // Rewards
     xpReward: number = 10;
     lootTableId: string = 'common_enemy';
-    lootTable: any = null;
+    lootTable: Record<string, number> | null = null;
     lootMultiplier: number = 1.0;
 
     // SFX and context
-    sfx: any = null;
+    sfx: Record<string, string> | null = null;
     biomeId: string | null = null;
 
     // State machine
     state: string = 'idle';
-    target: any = null;
+    target: Entity | null = null;
     attackCooldown: number = 0;
 
     // Respawn
@@ -92,7 +99,7 @@ class Enemy extends Entity {
     frameInterval: number = 200;
 
     // Wander behavior
-    wanderTarget: any = null;
+    wanderTarget: { x: number; y: number } | null = null;
     wanderTimer: number = 0;
     wanderInterval: number = 3000;
 
@@ -102,33 +109,33 @@ class Enemy extends Entity {
     _spriteLoaded: boolean = false;
 
     // Components
-    components: Record<string, any> = {};
+    components: Record<string, Component> = {};
 
     // Pathfinding state
-    currentPath: any[] = [];
+    currentPath: { x: number; y: number }[] = [];
     pathIndex: number = 0;
-    pathTarget: any = null;
+    pathTarget: { x: number; y: number } | null = null;
     pathRecalcTimer: number = 0;
 
     /**
      * Create an enemy entity
-     * @param {object} config - Enemy configuration
+     * @param {EntityConfig} config - Enemy configuration
      */
-    constructor(config: any = {}) {
+    constructor(config: EntityConfig = {}) {
         // Get config hierarchy: defaults -> entity JSON -> instance config
-        const defaults = EntityConfig.defaults || EntityConfig.enemy?.defaults || {};
+        const defaults = EntityConfigValue.defaults || EntityConfigValue.enemy?.defaults || {};
 
         // Look up type config from EntityRegistry via EnemyConfig.get()
-        let typeConfig: any = {};
+        let typeConfig: EntityConfig = {};
         if (config.enemyType) {
             // Priority 1: EntityRegistry (from entity JSONs via EntityLoader)
             // Check enemies first (includes bosses), then fallbacks
             typeConfig =
                 EntityRegistry.enemies?.[config.enemyType] ||
-                EntityConfig.get?.(config.enemyType) ||
+                EntityConfigValue.get?.(config.enemyType) ||
                 // Fallback: Old EntityConfig paths (deprecated)
-                EntityConfig.enemy?.dinosaurs?.[config.enemyType] ||
-                EntityConfig.enemy?.soldiers?.[config.enemyType] ||
+                EntityConfigValue.enemy?.dinosaurs?.[config.enemyType] ||
+                EntityConfigValue.enemy?.soldiers?.[config.enemyType] ||
                 {};
         }
 
@@ -137,12 +144,12 @@ class Enemy extends Entity {
 
         // Elite Roll - 5% chance or forced via config
         const eliteChance =
-            EntityConfig.enemy?.eliteSpawnChance || BiomeConfig.Biome?.ELITE_SPAWN_CHANCE || 0.05;
+            EntityConfigValue.enemy?.eliteSpawnChance || BiomeConfig.Biome?.ELITE_SPAWN_CHANCE || 0.05;
         const isElite = config.isElite || (!config.forceNormal && Math.random() < eliteChance);
 
         // Apply elite multipliers if elite
         if (isElite) {
-            const mult = EntityConfig.enemy?.eliteMultipliers || {
+            const mult = EntityConfigValue.enemy?.eliteMultipliers || {
                 health: 2.0,
                 damage: 2.0,
                 xpReward: 3.0,
@@ -156,19 +163,19 @@ class Enemy extends Entity {
         }
 
         // Apply biome difficulty multipliers if biome specified
-        if (config.biomeId && (BiomeConfig.types as any)?.[config.biomeId]) {
-            const biome = (BiomeConfig.types as any)[config.biomeId];
-            const diffMult = (BiomeConfig.difficultyMultipliers as any)?.[biome.difficulty] || {
+        if (config.biomeId && (BiomeConfig.types as Record<string, any>)?.[config.biomeId]) {
+            const biome = (BiomeConfig.types as Record<string, any>)[config.biomeId];
+            const diffMult = (BiomeConfig.difficultyMultipliers as Record<string, any>)?.[biome.difficulty] || {
                 health: 1,
                 damage: 1,
                 xp: 1,
                 loot: 1
             };
 
-            finalConfig.health *= diffMult.health;
+            finalConfig.health = (finalConfig.health || 0) * diffMult.health;
             finalConfig.maxHealth = finalConfig.health;
-            finalConfig.damage *= diffMult.damage;
-            finalConfig.xpReward *= diffMult.xp;
+            finalConfig.damage = (finalConfig.damage || 0) * diffMult.damage;
+            finalConfig.xpReward = (finalConfig.xpReward || 0) * diffMult.xp;
         }
 
         // Determine entity type based on sourceFile or explicit entityType
@@ -233,17 +240,17 @@ class Enemy extends Entity {
         this.spawnY = config.y || 0;
         this.patrolRadius =
             finalConfig.patrolRadius ||
-            (getConfig() as any).AI?.PATROL_AREA_RADIUS ||
+            (getConfig().AI)?.PATROL_AREA_RADIUS ||
             BiomeConfig.patrolDefaults?.areaRadius ||
             300;
         this.leashDistance =
             finalConfig.leashDistance ||
-            (getConfig() as any).AI?.LEASH_DISTANCE ||
+            (getConfig().Biome)?.LEASH_DISTANCE ||
             BiomeConfig.patrolDefaults?.leashDistance ||
             500;
         this.aggroRange =
             finalConfig.aggroRange ||
-            (getConfig() as any).AI?.AGGRO_RANGE ||
+            (getConfig().Biome)?.AGGRO_RANGE ||
             BiomeConfig.patrolDefaults?.aggroRange ||
             200;
 
@@ -261,7 +268,7 @@ class Enemy extends Entity {
         this.lootTableId = finalConfig.lootTableId || 'common_enemy';
         this.lootTable = finalConfig.lootTable || null;
         this.lootMultiplier = isElite
-            ? EntityConfig.enemy?.eliteMultipliers?.lootDrops || 3.0
+            ? EntityConfigValue.enemy?.eliteMultipliers?.lootDrops || 3.0
             : 1.0;
 
         // Entity SFX (from entity JSON)
@@ -372,10 +379,10 @@ class Enemy extends Entity {
      * @param {Entity} hero
      * @returns {boolean}
      */
-    canSee(hero: any) {
+    canSee(hero: Entity) {
         if (!hero || this.isDead) return false;
         // Use dynamic config for live updates
-        const aggroRange = (getConfig() as any).AI?.AGGRO_RANGE || this.aggroRange;
+        const aggroRange = getConfig().Biome?.AGGRO_RANGE || this.aggroRange;
         return this.distanceTo(hero) <= aggroRange;
     }
 
@@ -403,14 +410,14 @@ class Enemy extends Entity {
     /**
      * Die method (stub - implemented in EnemyBehavior.ts prototype extension)
      */
-    die(_killer: any = null): void {
+    die(_killer: Entity | null = null): void {
         // Implementation in EnemyBehavior.ts via prototype
     }
 
     // ============================================
     // Prototype extension stubs (implemented in EnemyBehavior.ts)
     // ============================================
-    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): any { }
+    moveAlongPath(_targetX: number, _targetY: number, _speed: number, _dt: number): boolean { return false; }
     moveDirectly(_targetX: number, _targetY: number, _speed: number, _dt: number): boolean {
         return false;
     }
@@ -419,10 +426,10 @@ class Enemy extends Entity {
     updateAttack(_dt: number): void { }
     performAttack(): void { }
     updateReturning(_dt: number): void { }
-    takeDamage(_amount: number, _attacker?: any): void { }
-    triggerPackAggro(_target: any): void { }
-    renderHealthBar(_ctx: any): void { }
-    renderThreatIndicator(_ctx: any): void { }
+    takeDamage(_amount: number, _source: Entity | null = null): void { }
+    triggerPackAggro(_target: Entity): void { }
+    renderHealthBar(_ctx: CanvasRenderingContext2D): void { }
+    renderThreatIndicator(_ctx: CanvasRenderingContext2D): void { }
 
     /**
      * Refresh configuration from EntityRegistry
@@ -431,7 +438,7 @@ class Enemy extends Entity {
     refreshConfig() {
         // 1. Re-fetch config
         // Re-construct logic similar to constructor lookup
-        const typeConfig = this.enemyType ? EntityRegistry.enemies?.[this.enemyType] || {} : {};
+        const typeConfig: EntityConfig = this.enemyType ? EntityRegistry.enemies?.[this.enemyType] || {} : {};
 
         // 2. Re-calculate size
         const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';

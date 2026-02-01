@@ -5,6 +5,8 @@
  * Used by Entity constructors and refreshConfig() methods.
  */
 import { Logger } from '@core/Logger';
+import { Entity } from '../core/Entity';
+import type { EntityConfig } from '../types/core';
 
 export const EntityScaling = {
     /**
@@ -25,7 +27,7 @@ export const EntityScaling = {
      * @param {object} defaults - Fallback values { width, height }
      * @returns {{ width: number, height: number, scale: number }}
      */
-    calculateSize(instanceConfig: any = {}, registryConfig: any = {}, defaults: { width: number, height: number } = { width: 80, height: 80 }) {
+    calculateSize(instanceConfig: EntityConfig = {}, registryConfig: EntityConfig = {}, defaults: { width: number, height: number } = { width: 80, height: 80 }) {
         // Priority: Registry (Dashboard) > Instance (Save Data/Map) > Defaults
         // The User explicitly requested that Asset Dashboard settings must be the source of truth,
         // ignoring potential "baked" values in save files or map data.
@@ -38,9 +40,14 @@ export const EntityScaling = {
         // 2. Determine Scale
         // Registry Config wins.
         // We look for 'sizeScale' first, then 'scale'.
-        const registryScale = registryConfig.sizeScale || registryConfig.scale;
-        const instanceScale = instanceConfig.sizeScale || instanceConfig.scale;
+        // We look for 'sizeScale' first, then 'scale'
+        // Type assertion needed because these might come from [key: string]: unknown
+        const registryScale = (registryConfig.sizeScale ?? registryConfig.scale) as number | undefined;
+        const instanceScale = (instanceConfig.sizeScale ?? instanceConfig.scale) as number | undefined;
 
+        // Strict Priority: Registry > Instance > Default (1.0)
+        // If Registry has a value, USE IT. Only fallback to instance if Registry is undefined.
+        // This ensures "scale 4" in dashboard applies even if map data says "scale 1".
         // Strict Priority: Registry > Instance > Default (1.0)
         // If Registry has a value, USE IT. Only fallback to instance if Registry is undefined.
         // This ensures "scale 4" in dashboard applies even if map data says "scale 1".
@@ -70,7 +77,7 @@ export const EntityScaling = {
      * @param {Entity} entity - The entity to update
      * @param {object} config - Configuration used for logging context
      */
-    applyToEntity(entity: any, instanceConfig: any = {}, registryConfig: any = {}, defaults: { width: number, height: number }) {
+    applyToEntity(entity: Entity, instanceConfig: EntityConfig = {}, registryConfig: EntityConfig = {}, defaults: { width: number, height: number }) {
         const size = this.calculateSize(instanceConfig, registryConfig, defaults);
 
         entity.width = size.width;

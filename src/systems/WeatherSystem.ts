@@ -63,7 +63,7 @@ class WeatherSystem {
 
         // We use TimeSystem's time, but we can also track our own interval
         // Simple Real-time check is fine
-        this.nextChangeCheck -= dt / (getConfig().Time as any).WEATHER_DECAY_RATE;
+        this.nextChangeCheck -= dt / (getConfig().Time.WEATHER_DECAY_RATE || 5000);
 
         if (this.nextChangeCheck <= 0) {
             this.tryChangeWeather();
@@ -71,7 +71,7 @@ class WeatherSystem {
         }
     }
 
-    handleSeasonChange(data: any) {
+    handleSeasonChange(data: { season: string }) {
         this.currentSeason = data.season;
         Logger.info(
             `[WeatherSystem] Season updated to ${this.currentSeason}, rerolling weather...`

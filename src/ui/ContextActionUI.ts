@@ -14,6 +14,13 @@ import { MerchantUI } from './MerchantUI';
 // ForgeController accessed via Registry to avoid circular dependency
 import { Registry } from '@core/Registry';
 
+type ContextData = {
+    gridX?: number;
+    gridY?: number;
+    unlockCost?: number;
+    visible?: boolean;
+    type?: string;
+} | null;
 
 class ContextActionService {
     // Property declarations
@@ -21,7 +28,7 @@ class ContextActionService {
     icon: HTMLElement | null = null;
     label: HTMLElement | null = null;
     activeContext: string | null = null;
-    contextData: any = null;
+    contextData: ContextData = null;
     isSuspended: boolean = false;
 
     constructor() {
@@ -42,7 +49,7 @@ class ContextActionService {
             const E = GameConstants.Events;
 
             // Unlock
-            EventBus.on(E.UI_UNLOCK_PROMPT, (data: any) => this.show('unlock', data));
+            EventBus.on(E.UI_UNLOCK_PROMPT, (data: ContextData) => this.show('unlock', data));
             EventBus.on(E.UI_HIDE_UNLOCK_PROMPT, () => this.hide('unlock'));
             EventBus.on(E.ISLAND_UNLOCKED, () => this.hide('unlock'));
 
@@ -55,8 +62,8 @@ class ContextActionService {
             EventBus.on(E.FORGE_EXITED, () => this.hide('forge'));
 
             // Merchant
-            EventBus.on(E.INTERACTION_OPPORTUNITY, (data: any) => {
-                if (data.type === 'merchant') {
+            EventBus.on(E.INTERACTION_OPPORTUNITY, (data: ContextData) => {
+                if (data?.type === 'merchant') {
                     if (data.visible) this.show('merchant', data);
                     else this.hide('merchant');
                 }
@@ -88,7 +95,7 @@ class ContextActionService {
         if (this.label) this.label.textContent = '';
     }
 
-    show(type: string, data: any = null) {
+    show(type: string, data: ContextData = null) {
         this.activeContext = type;
         this.contextData = data;
         if (!this.isSuspended) {
@@ -118,14 +125,19 @@ class ContextActionService {
                 if (E && EventBus) EventBus.emit(E.REQUEST_REST);
                 break;
             case 'forge':
-                const forgeCtrl = Registry?.get('ForgeController');
+                const forgeCtrl = Registry?.get('ForgeController') as
+                    | {
+                        render: (view: string) => void;
+                        open: () => void;
+                    }
+                    | undefined;
                 if (forgeCtrl) {
                     forgeCtrl.render('dashboard');
                     forgeCtrl.open();
                 }
                 break;
             case 'unlock':
-                if (this.contextData && E && EventBus) {
+                if (this.contextData?.gridX !== undefined && E && EventBus) {
                     EventBus.emit(E.REQUEST_UNLOCK, {
                         gridX: this.contextData.gridX,
                         gridY: this.contextData.gridY,
@@ -139,13 +151,16 @@ class ContextActionService {
         }
     }
 
-    private _updateDOM(type: string, data: any) {
+    private _updateDOM(type: string, data: ContextData) {
         if (!this.btn) return;
 
         const configMap: Record<string, { iconId: string; label: string }> = {
             rest: { iconId: 'ui_icon_rest', label: 'REST' },
             forge: { iconId: 'ui_icon_forge', label: 'FORGE' },
-            unlock: { iconId: 'ui_icon_lock', label: data ? `${data.unlockCost}G` : 'UNLOCK' },
+            unlock: {
+                iconId: 'ui_icon_lock',
+                label: data?.unlockCost ? `${data.unlockCost}G` : 'UNLOCK'
+            },
             merchant: { iconId: 'ui_icon_shop', label: 'SHOP' }
         };
         const config = configMap[type] || { iconId: '', label: '' };
@@ -165,8 +180,6 @@ class ContextActionService {
         this.btn.classList.add('active');
         Logger.debug('[ContextActionUI]', `Shown: ${type}`);
     }
-
-
 }
 
 // Create singleton and export

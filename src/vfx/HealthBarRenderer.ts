@@ -7,15 +7,50 @@
  * Owner: VFX Specialist
  */
 
-import { ProgressBarRenderer } from './ProgressBarRenderer';
+import { ProgressBarRenderer, ProgressBarOptions } from './ProgressBarRenderer';
 
 // Ambient declaration for global dependency
+
+export interface HealthBarOptions {
+    x: number;
+    y: number;
+    percent: number;
+    mode?: 'health' | 'respawn';
+    width?: number;
+    height?: number;
+    entityId?: string;
+    animated?: boolean;
+}
+
+interface EntityWithPosition {
+    x: number;
+    y: number;
+    height: number;
+    id?: string;
+}
+
+export interface EntityWithHealth extends EntityWithPosition {
+    health: number;
+    maxHealth: number;
+    components?: {
+        health?: {
+            health: number;
+            maxHealth: number;
+        };
+    };
+}
+
+export interface EntityWithRespawn extends EntityWithPosition {
+    respawnTimer: number;
+    maxRespawnTime: number;
+    currentRespawnDuration?: number;
+}
 
 const HealthBarRenderer = {
     /**
      * Draw a health or respawn bar above an entity
      * @param {CanvasRenderingContext2D} ctx
-     * @param {object} options
+     * @param {HealthBarOptions} options
      * @param {number} options.x - Center X position of entity
      * @param {number} options.y - Top Y position (above entity)
      * @param {number} options.percent - Fill percentage (0-1)
@@ -25,7 +60,7 @@ const HealthBarRenderer = {
      * @param {string} [options.entityId] - Optional entity ID for tracking
      * @param {boolean} [options.animated=true] - Whether to animate
      */
-    draw(ctx: CanvasRenderingContext2D, options: any) {
+    draw(ctx: CanvasRenderingContext2D, options: HealthBarOptions) {
         const {
             x,
             y,
@@ -80,10 +115,10 @@ const HealthBarRenderer = {
     /**
      * Draw a health bar for an entity with standard positioning
      * @param {CanvasRenderingContext2D} ctx
-     * @param {object} entity - Entity with x, y: number, width: number, height: number, health, maxHealth
-     * @param {object} [options] - Override options
+     * @param {EntityWithHealth} entity - Entity with x, y: number, width: number, height: number, health, maxHealth
+     * @param {Partial<HealthBarOptions>} [options] - Override options
      */
-    drawForEntity(ctx: CanvasRenderingContext2D, entity: any, options: any = {}) {
+    drawForEntity(ctx: CanvasRenderingContext2D, entity: EntityWithHealth, options: Partial<HealthBarOptions> = {}) {
         const barY = entity.y - entity.height / 2 - 18;
 
         // Check for HealthComponent first
@@ -104,10 +139,10 @@ const HealthBarRenderer = {
     /**
      * Draw a respawn bar for an entity with standard positioning
      * @param {CanvasRenderingContext2D} ctx
-     * @param {object} entity - Entity with x, y: number, respawnTimer, maxRespawnTime
-     * @param {object} [options] - Override options
+     * @param {EntityWithRespawn} entity - Entity with x, y: number, respawnTimer, maxRespawnTime
+     * @param {Partial<HealthBarOptions>} [options] - Override options
      */
-    drawRespawnForEntity(ctx: CanvasRenderingContext2D, entity: any, options: any = {}) {
+    drawRespawnForEntity(ctx: CanvasRenderingContext2D, entity: EntityWithRespawn, options: Partial<HealthBarOptions> = {}) {
         const barY = entity.y - entity.height / 2 - 18;
         const totalDuration = entity.currentRespawnDuration || entity.maxRespawnTime;
         const percent = Math.max(0, 1 - entity.respawnTimer / totalDuration);

@@ -24,7 +24,9 @@ import {
     saveRegenerationQueueToFile,
     updateDisplaySize,
     loadGlobalAssetLookup,
+    fetchPrompts,
 } from './api';
+import { setAssetPrompts } from './state';
 import { openModal, closeModal, toggleComparisonView, initModalHandlers } from './modals';
 import {
     showLandingPage,
@@ -41,6 +43,7 @@ import {
     declineAssetPrompt,
     startAutoRefresh,
     stopAutoRefresh,
+    showConfigView,
 } from './views';
 import { renderCategoryView } from './categoryRenderer';
 import {
@@ -60,35 +63,19 @@ import {
 import { showTemplatesView } from './templates';
 import { showLootView } from './lootRenderer';
 import { buildCategoryFilters, renderAssets } from './legacyAssets';
-import { renderConfigView } from './configRenderer';
 import { showMapEditorView } from './mapEditorView';
 
-// Wrapper function for config view
-function showConfigView(): void {
-    const mainContent = document.getElementById('mainContent');
-    if (mainContent) {
-        // Hide stats and filters when showing config
-        const stats = document.querySelector('.stats') as HTMLElement;
-        const stickyBar = document.querySelector('.sticky-bar') as HTMLElement;
-        if (stats) stats.style.display = 'none';
-        if (stickyBar) stickyBar.style.display = 'none';
 
-        renderConfigView(mainContent);
-    }
-}
-
-
-import { initEventDelegation } from './ActionDelegator';
-
-// ============================================
-// LIVE POLLING
-// ============================================
+import { initEventDelegation, disposeDelegation } from './ActionDelegator';
 
 // ============================================
 // LIVE POLLING
 // ============================================
 
 function startLivePolling(): void {
+    // Prevent multiple intervals
+    stopLivePolling();
+
     window.pollingInterval = setInterval(async () => {
         if (!window.currentViewCategory) {
             return;
@@ -126,11 +113,6 @@ function stopLivePolling(): void {
 }
 
 // ============================================
-// GLOBAL EXPORTS - REMOVED!
-// All actions now handled via ActionDelegator.ts
-// ============================================
-
-// ============================================
 // EQUIPMENT STATS CONFIG
 // Defines ALL stats for each equipment category
 // ============================================
@@ -164,7 +146,9 @@ window.EquipmentStatsConfig = {
 // INITIALIZATION
 // ============================================
 
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
+    console.log('[Dashboard] Initializing App...');
+
     // Initialize Event Delegation (Replaces inline onclicks)
     initEventDelegation();
 
@@ -178,12 +162,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Load Asset Prompts
+    fetchPrompts().then((data) => {
+        setAssetPrompts(data || {});
+        // If inspector is open, we might want to re-render it, but usually this is fast enough
+    });
+
     // Set up filter button listeners
+    // Note: If these elements exist in static HTML, they might accumulate listeners on re-run
+    // Ideally we should use delegation for these too, but for now we'll assume they are safe-ish 
+    // or we should replace them to strip listeners.
     document.querySelectorAll('.filter-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
+        // Cloning removes listeners
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode?.replaceChild(newBtn, btn);
+
+        newBtn.addEventListener('click', () => {
             document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
-            btn.classList.add('active');
-            const filter = (btn as HTMLElement).dataset.filter;
+            (newBtn as HTMLElement).classList.add('active');
+            const filter = (newBtn as HTMLElement).dataset.filter;
             if (filter) {
                 import('./state').then(({ setCurrentFilter }) => {
                     setCurrentFilter(filter);
@@ -203,26 +200,77 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle Browser Navigation (Back/Forward)
-    window.addEventListener('popstate', (event) => {
-        if (event.state && event.state.category) {
+    // Clean up old popstate if it exists? 
+    // window.onpopstate is cleaner for replacement than addEventListener
+    window.onpopstate = (event) => {
+        // Always try to hide map editor first to ensure clean state
+        import('./mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+
+        if (event.state && event.state.view === 'map') {
+            showMapEditorView(false); // Don't push state again
+        } else if (event.state && event.state.view === 'config') {
+            showConfigView(false);
+        } else if (event.state && event.state.category) {
             showCategoryView(event.state.category, false);
         } else {
             loadManifest();
         }
-    });
+    };
 
-    // Check URL for initial category
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialCategory = urlParams.get('category');
+    // Check URL for initial view/category (Only on fresh load or if we want to reset view on HMR)
+    // On HMR, we probably want to keep current view.
+    // We can check if we already have a category rendered
+    if (!window.currentViewCategory) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewParam = urlParams.get('view');
+        const categoryParam = urlParams.get('category');
 
-    if (initialCategory) {
-        showCategoryView(initialCategory, false);
+        if (viewParam === 'map') {
+            showMapEditorView(false);
+        } else if (viewParam === 'config') {
+            showConfigView(false);
+        } else if (categoryParam) {
+            showCategoryView(categoryParam, false);
+        } else {
+            loadManifest();
+        }
     } else {
-        loadManifest();
+        // If we have state, just re-render current view to apply new code
+        if (window.currentViewCategory) {
+            renderCategoryView();
+        }
     }
 
     // Start live polling
     startLivePolling();
-});
+}
+
+// Boot
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 
 console.log('[Dashboard] TypeScript modules loaded');
+
+// ============================================
+// HMR Configuration
+// ============================================
+if (import.meta.hot) {
+    import.meta.hot.accept(() => {
+        console.log('[HMR] Dashboard module updated. Re-initializing...');
+        // initApp will be called because this module is re-executed
+        // But we are inside the accept callback of the *previous* module?
+        // No, import.meta.hot.accept() means "I accept updates".
+        // When update happens, the NEW module is executed.
+        // The NEW module's top level code runs.
+        // So initApp() above is called by the `else { initApp() }` block because readyState is complete.
+    });
+
+    import.meta.hot.dispose(() => {
+        console.log('[HMR] Disposing old dashboard instance...');
+        stopLivePolling();
+        disposeDelegation();
+    });
+}

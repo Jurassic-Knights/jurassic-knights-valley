@@ -21,13 +21,18 @@ import { Registry } from '@core/Registry';
 class Dinosaur extends Entity {
     // Entity type and identity
     dinoType: string = 'enemy_herbivore_t1_01';
-    lootTable: any = null;
+    lootTable: Record<string, any>[] | null = null;
     xpReward: number = 10;
     resourceType: string = 'food_t1_01';
     amount: number = 1;
 
     // Component system
-    components: Record<string, any> = {};
+    components: {
+        health?: HealthComponent;
+        stats?: StatsComponent;
+        ai?: AIComponent;
+        [key: string]: any;
+    } = {};
 
     // Health and state
     maxHealth: number = 60;
@@ -50,8 +55,9 @@ class Dinosaur extends Entity {
     frameInterval: number = 200;
     walkFrames: HTMLImageElement[] = [];
     spriteId: string = '';
-    _sprite: any = null;
+    _sprite: HTMLImageElement | null = null;
     _spriteLoaded: boolean = false;
+    _shadowImg?: HTMLImageElement | HTMLCanvasElement;
 
     constructor(config: any = {}) {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
@@ -65,11 +71,12 @@ class Dinosaur extends Entity {
         // Get size from SpeciesScaleConfig (runtime lookup by species)
         const sizeInfo = SpeciesScaleConfig.getSize(entityConfig, false) || {
             width: 150,
-            height: 150
+            height: 150,
+            scale: 1.0
         };
 
         // Debug
-        const scaleValue = (sizeInfo as any).scale;
+        const scaleValue = sizeInfo.scale;
         if (scaleValue !== 1.0) {
             Logger.info(
                 `[Dinosaur] ${config.dinoType}: species=${entityConfig.species}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`
@@ -190,7 +197,7 @@ class Dinosaur extends Entity {
             this._spriteLoaded = true;
             Logger.info(`[Dinosaur] Sprite loaded: ${this.dinoType}`);
         });
-        this._sprite.onerror = (e: any) => {
+        this._sprite.onerror = (e: Event | string) => {
             Logger.error(`[Dinosaur] Failed to load sprite: ${this.dinoType}, path: ${path}`, e);
             this._spriteLoaded = false;
         };

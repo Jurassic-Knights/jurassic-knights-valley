@@ -76,20 +76,78 @@ export const AssetManifest: Record<string, string> = {
     // Base Layers (bg_base_[biome]_## convention)
     bg_base_all_01: 'images/backgrounds/bg_base_all_01_original.png',
 
+    // Ground Textures (01-31-2026)
+    // Grasslands (Base)
+    ground_base_grass_grasslands_01: 'images/ground/ground_base_grass_grasslands_01_original.png',
+    ground_base_grass_grasslands_02: 'images/ground/ground_base_grass_grasslands_02_original.png',
+    ground_base_grass_grasslands_03: 'images/ground/ground_base_grass_grasslands_03_original.png',
+    ground_base_grass_grasslands_04: 'images/ground/ground_base_grass_grasslands_04_original.png',
+    ground_base_dirt_grasslands_01: 'images/ground/ground_base_dirt_grasslands_01_original.png',
+    ground_base_dirt_grasslands_02: 'images/ground/ground_base_dirt_grasslands_02_original.png',
+    ground_base_dirt_grasslands_03: 'images/ground/ground_base_dirt_grasslands_03_original.png',
+    ground_base_rock_grasslands_01: 'images/ground/ground_base_rock_grasslands_01_original.png',
+    ground_base_rock_grasslands_02: 'images/ground/ground_base_rock_grasslands_02_original.png',
+    ground_base_rock_grasslands_03: 'images/ground/ground_base_rock_grasslands_03_original.png',
+    ground_base_gravel_grasslands_01: 'images/ground/ground_base_gravel_grasslands_01_original.png',
+    ground_base_gravel_grasslands_02: 'images/ground/ground_base_gravel_grasslands_02_original.png',
+    ground_base_sand_grasslands_01: 'images/ground/ground_base_sand_grasslands_01_original.png',
+    ground_base_sand_grasslands_02: 'images/ground/ground_base_sand_grasslands_02_original.png',
+
+    // Grasslands (Overgrown)
+    ground_overgrown_leaves_grasslands_01: 'images/ground/ground_overgrown_leaves_grasslands_01_original.png',
+    ground_overgrown_leaves_grasslands_02: 'images/ground/ground_overgrown_leaves_grasslands_02_original.png',
+    ground_overgrown_leaves_grasslands_03: 'images/ground/ground_overgrown_leaves_grasslands_03_original.png',
+    ground_overgrown_forest_floor_grasslands_01: 'images/ground/ground_overgrown_forest_floor_grasslands_01_original.png',
+    ground_overgrown_forest_floor_grasslands_02: 'images/ground/ground_overgrown_forest_floor_grasslands_02_original.png',
+    ground_overgrown_forest_floor_grasslands_03: 'images/ground/ground_overgrown_forest_floor_grasslands_03_original.png',
+    ground_overgrown_moss_grasslands_01: 'images/ground/ground_overgrown_moss_grasslands_01_original.png',
+    ground_overgrown_moss_grasslands_02: 'images/ground/ground_overgrown_moss_grasslands_02_original.png',
+    ground_overgrown_roots_grasslands_01: 'images/ground/ground_overgrown_roots_grasslands_01_original.png',
+    ground_overgrown_roots_grasslands_02: 'images/ground/ground_overgrown_roots_grasslands_02_original.png',
+    ground_overgrown_flowers_grasslands_01: 'images/ground/ground_overgrown_flowers_grasslands_01_original.png',
+    ground_overgrown_flowers_grasslands_02: 'images/ground/ground_overgrown_flowers_grasslands_02_original.png',
+
+    // Grasslands (Interior)
+    ground_interior_planks_grasslands_01: 'images/ground/ground_interior_planks_grasslands_01_original.png',
+    ground_interior_planks_grasslands_02: 'images/ground/ground_interior_planks_grasslands_02_original.png',
+    ground_interior_planks_grasslands_03: 'images/ground/ground_interior_planks_grasslands_03_original.png',
+    ground_interior_cobblestone_grasslands_01: 'images/ground/ground_interior_cobblestone_grasslands_01_original.png',
+    ground_interior_cobblestone_grasslands_02: 'images/ground/ground_interior_cobblestone_grasslands_02_original.png',
+    ground_interior_flagstone_grasslands_01: 'images/ground/ground_interior_flagstone_grasslands_01_original.png',
+    ground_interior_flagstone_grasslands_02: 'images/ground/ground_interior_flagstone_grasslands_02_original.png',
+    ground_interior_concrete_grasslands_01: 'images/ground/ground_interior_concrete_grasslands_01_original.png',
+    ground_interior_concrete_grasslands_02: 'images/ground/ground_interior_concrete_grasslands_02_original.png',
+    ground_interior_metal_plate_grasslands_01: 'images/ground/ground_interior_metal_plate_grasslands_01_original.png',
+    ground_interior_metal_plate_grasslands_02: 'images/ground/ground_interior_metal_plate_grasslands_02_original.png',
+
+    // Grasslands (Vertical/Damage)
+    ground_vertical_cliff_rock_grasslands_01: 'images/ground/ground_vertical_cliff_rock_grasslands_01_original.png',
+    ground_vertical_cliff_rock_grasslands_02: 'images/ground/ground_vertical_cliff_rock_grasslands_02_original.png',
+    ground_vertical_cliff_rock_grasslands_03: 'images/ground/ground_vertical_cliff_rock_grasslands_03_original.png',
+    ground_vertical_earth_bank_grasslands_01: 'images/ground/ground_vertical_earth_bank_grasslands_01_original.png',
+    ground_vertical_earth_bank_grasslands_02: 'images/ground/ground_vertical_earth_bank_grasslands_02_original.png',
+    ground_vertical_earth_bank_grasslands_03: 'images/ground/ground_vertical_earth_bank_grasslands_03_original.png',
+    ground_damage_scorched_grasslands_01: 'images/ground/ground_damage_scorched_grasslands_01_original.png',
+    ground_damage_scorched_grasslands_02: 'images/ground/ground_damage_scorched_grasslands_02_original.png',
+    ground_damage_cratered_grasslands_01: 'images/ground/ground_damage_cratered_grasslands_01_original.png',
+    ground_damage_cratered_grasslands_02: 'images/ground/ground_damage_cratered_grasslands_02_original.png',
+    ground_damage_churned_grasslands_01: 'images/ground/ground_damage_churned_grasslands_01_original.png',
+    ground_damage_churned_grasslands_02: 'images/ground/ground_damage_churned_grasslands_02_original.png',
+
     // World/Background
     world_bridge_planks: 'images/environment/environment_planks.png',
-    world_hero: 'images/hero/hero_base_clean.png',
-    world_island_home: 'images/backgrounds/zone_home_clean.png',
+    world_hero: 'images/hero/hero_base_original.png',
+    world_island_home: 'images/backgrounds/zone_home_original.png',
 
     // Zone backgrounds (fallbacks if not in EntityRegistry)
-    zone_bone_valley: 'images/backgrounds/zone_bone_valley_clean.png',
-    zone_crossroads: 'images/backgrounds/zone_crossroads_clean.png',
-    zone_dead_woods: 'images/backgrounds/zone_dead_woods_clean.png',
-    zone_iron_ridge: 'images/backgrounds/zone_iron_ridge_clean.png',
-    zone_mud_flats: 'images/backgrounds/zone_mud_flats_clean.png',
-    zone_quarry_fields: 'images/backgrounds/zone_quarry_fields_clean.png',
-    zone_scrap_yard: 'images/backgrounds/zone_scrap_yard_clean.png',
-    zone_the_ruins: 'images/backgrounds/zone_the_ruins_clean.png',
+    zone_bone_valley: 'images/backgrounds/zone_bone_valley_original.png',
+    zone_crossroads: 'images/backgrounds/zone_crossroads_original.png',
+    zone_dead_woods: 'images/backgrounds/zone_dead_woods_original.png',
+    zone_iron_ridge: 'images/backgrounds/zone_iron_ridge_original.png',
+    zone_mud_flats: 'images/backgrounds/zone_mud_flats_original.png',
+    zone_quarry_fields: 'images/backgrounds/zone_quarry_fields_original.png',
+    zone_scrap_yard: 'images/backgrounds/zone_scrap_yard_original.png',
+    zone_the_ruins: 'images/backgrounds/zone_the_ruins_original.png',
 
     // Type Filters
     'ui_icon_1-hand': 'images/ui/ui_icon_1-hand_original.png',
@@ -111,8 +169,8 @@ export const AssetManifest: Record<string, string> = {
     ui_icon_sniper_rifle: 'images/ui/ui_icon_sniper_rifle_original.png',
 
     // Buildings (building_[type]_[tier] convention)
-    building_residential_01: 'images/buildings/building_residential_01_clean.png',
-    building_industrial_01: 'images/buildings/building_industrial_01_clean.png',
+    building_residential_01: 'images/buildings/building_residential_01_original.png',
+    building_industrial_01: 'images/buildings/building_industrial_01_original.png',
 
     // Fallback tools
     tool_t1_01: 'images/equipment/tools/tool_t1_01_original.png'

@@ -10,19 +10,21 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { IslandManager } from '../world/IslandManager';
+import { FogIslandData, FogCloud } from '../types/vfx';
+import { IGame } from '../types/core';
 
 // Helper to get AssetLoader from Registry (avoid circular dependency)
 const getAssetLoader = () => Registry?.get('AssetLoader');
 
 const FogOfWarSystem = {
-    islands: new Map<string, any>(),
+    islands: new Map<string, FogIslandData>(),
     fogTexture: null as HTMLImageElement | null,
     textureLoaded: false,
-    game: null as any,
+    game: null as IGame | null,
 
     COVERAGE_PADDING: 100,
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         Logger.info('[FogOfWarSystem] Initialized');
 
@@ -40,7 +42,7 @@ const FogOfWarSystem = {
         }
 
         if (EventBus && GameConstants) {
-            EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data) => {
+            EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data: { gridX: number; gridY: number }) => {
                 this.onIslandUnlocked(data);
             });
         }
@@ -67,7 +69,15 @@ const FogOfWarSystem = {
         }
     },
 
-    createFogForIsland(island: any, id: string) {
+    createFogForIsland(island: {
+        worldX: number;
+        worldY: number;
+        width: number;
+        height: number;
+        gridX: number;
+        gridY: number;
+        unlocked: boolean;
+    }, id: string) {
         const pad = this.COVERAGE_PADDING;
 
         this.islands.set(id, {
@@ -81,12 +91,12 @@ const FogOfWarSystem = {
             alpha: 1,
             dispersing: false,
             // Multiple cloud instances with different properties
-            clouds: this.generateClouds(island, id)
+            clouds: this.generateClouds(island)
         });
     },
 
-    generateClouds(island: any, id: string) {
-        const clouds = [];
+    generateClouds(island: { width: number; height: number }): FogCloud[] {
+        const clouds: FogCloud[] = [];
         const numClouds = 5 + Math.floor(Math.random() * 3); // 5-7 cloud instances
 
         for (let i = 0; i < numClouds; i++) {
@@ -121,7 +131,7 @@ const FogOfWarSystem = {
         return clouds;
     },
 
-    updateFog(data: any, dt: number) {
+    updateFog(data: FogIslandData, dt: number) {
         const dtSec = dt / 1000;
         data.time += dtSec;
 
@@ -140,7 +150,7 @@ const FogOfWarSystem = {
         }
     },
 
-    onIslandUnlocked(eventData: any) {
+    onIslandUnlocked(eventData: { gridX: number; gridY: number }) {
         const id = `${eventData.gridX}_${eventData.gridY}`;
         const data = this.islands.get(id);
 
@@ -165,7 +175,7 @@ const FogOfWarSystem = {
         return n - Math.floor(n);
     },
 
-    render(ctx: CanvasRenderingContext2D, viewport: any) {
+    render(ctx: CanvasRenderingContext2D, viewport: { x: number; y: number; width: number; height: number }) {
         if (!this.textureLoaded) return;
 
         ctx.save();
@@ -233,7 +243,7 @@ const FogOfWarSystem = {
         ctx.restore();
     },
 
-    renderPixelOverlay(ctx: CanvasRenderingContext2D, data: any, time: number) {
+    renderPixelOverlay(ctx: CanvasRenderingContext2D, data: FogIslandData, time: number) {
         // PERFORMANCE: Skip pixel overlay entirely - it's very expensive
         // The cloud textures provide enough visual interest
         return;

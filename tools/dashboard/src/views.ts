@@ -11,6 +11,9 @@ import {
     categoryData,
     currentCategoryName,
     setCategoryFilterValue,
+    categoryFilter,
+    saveCategoryFiltersCache,
+    getCategoryFiltersFromCache,
 } from './state';
 import { fetchCategory, updateCategoryStatus, loadGlobalAssetLookup } from './api';
 import { renderCategoryView } from './categoryRenderer';
@@ -47,7 +50,7 @@ export function showLandingPage(): void {
     const container = document.getElementById('mainContent');
     if (!container) return;
 
-    const categories = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'nodes', 'environment', 'ui', 'config', 'hero'];
+    const categories = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'nodes', 'environment', 'ground', 'ui', 'config', 'hero'];
 
     container.innerHTML = `
         <div style="padding:2rem; text-align:center;">
@@ -96,16 +99,25 @@ export async function showCategoryView(categoryName: string, pushState: boolean 
     container.innerHTML = '<div class="loading">Loading category data...</div>';
     setCurrentCategoryName(categoryName);
 
+    // Always try to hide map editor first
+    import('./mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+
     // Update URL History
     if (pushState) {
         const url = new URL(window.location.href);
         url.searchParams.set('category', categoryName);
+        url.searchParams.delete('view'); // Clear view param
         window.history.pushState({ category: categoryName }, '', url.toString());
     }
 
     // Update Sidebar Active State
     document.querySelectorAll('.nav-item').forEach(btn => {
         const btnCat = btn.getAttribute('data-category');
+        // Clear all action-based buttons (like map editor) if switching to category
+        if (btn.dataset.action !== 'navigate-category' && btn.dataset.action !== 'toggle-config') {
+            btn.classList.remove('active');
+        }
+
         if (btnCat === categoryName) {
             btn.classList.add('active');
         } else {
@@ -113,15 +125,24 @@ export async function showCategoryView(categoryName: string, pushState: boolean 
         }
     });
 
-    // Reset filters when switching categories
+    // 0. Save current category-specific filters before switching
+    if (currentCategoryName) {
+        saveCategoryFiltersCache(currentCategoryName, {
+            file: categoryFilter.file,
+            weaponType: categoryFilter.weaponType,
+            hands: categoryFilter.hands,
+            nodeSubtype: categoryFilter.nodeSubtype
+        });
+    }
+
+    // Restore specific filters for new category (or default to all)
+    // Shared filters (status, biome, tier) remains from global state
+    const cached = getCategoryFiltersFromCache(categoryName);
     setCategoryFilterValue({
-        status: 'all',
-        biome: 'all',
-        tier: 'all',
-        file: 'all',
-        weaponType: 'all',
-        hands: 'all',
-        nodeSubtype: 'all',
+        file: cached.file || 'all',
+        weaponType: cached.weaponType || 'all',
+        hands: cached.hands || 'all',
+        nodeSubtype: cached.nodeSubtype || 'all'
     });
 
     try {
@@ -294,15 +315,37 @@ export function stopAutoRefresh(): void {
     }
 }
 
-export function showConfigView(): void {
+export function showConfigView(pushState: boolean = true): void {
     const mainContent = document.getElementById('mainContent');
+    // Ensure map editor is hidden
+    import('./mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+
     if (mainContent) {
+        // Update URL History
+        if (pushState) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('view', 'config');
+            url.searchParams.delete('category'); // Clear category param
+            window.history.pushState({ view: 'config' }, '', url.toString());
+        }
+
         // Hide stats and filters when showing config
         const stats = document.querySelector('.stats') as HTMLElement;
         const stickyBar = document.querySelector('.sticky-bar') as HTMLElement;
         if (stats) stats.style.display = 'none';
         if (stickyBar) stickyBar.style.display = 'none';
 
+        // Sidebar Active State
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-action') === 'toggle-config') {
+                btn.classList.add('active');
+            }
+        });
+
         renderConfigView(mainContent);
+
+        // Stop polling when in config
+        window.setPollingCategory(null);
     }
 }

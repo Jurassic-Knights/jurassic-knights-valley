@@ -13,6 +13,7 @@ import {
     globalAssetLookup,
     setGlobalAssetLookup,
     setLootSourceMap,
+    setRecipeUsageMap,
     sfxRegenerationQueue,
     setSfxRegenerationQueue,
     currentCategoryName,
@@ -75,6 +76,19 @@ export async function saveNotes(assetName: string, notes: string): Promise<void>
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: assetName, notes }),
+    });
+}
+
+export async function fetchPrompts(): Promise<Record<string, string>> {
+    const response = await fetch('/api/get_prompts');
+    return response.json();
+}
+
+export async function saveAssetPrompt(assetId: string, prompt: string): Promise<void> {
+    await fetch('/api/save_prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [assetId]: prompt }),
     });
 }
 
@@ -484,6 +498,7 @@ export async function loadGlobalAssetLookup(): Promise<void> {
         ];
         const lookup: Record<string, AssetInfo> = {};
         const sourceMap: Record<string, string[]> = {};
+        const usageMap: Record<string, string[]> = {};
 
         for (const cat of categories) {
             const response = await fetch('/api/get_category', {
@@ -545,9 +560,9 @@ export async function loadGlobalAssetLookup(): Promise<void> {
                     // String parsing is safer done elsewhere or simplified here
 
                     for (const ing of ingredients) {
-                        if (!sourceMap[ing]) sourceMap[ing] = [];
-                        if (!sourceMap[ing].includes(item.id)) {
-                            sourceMap[ing].push(item.id); // "Used To Craft" relationship
+                        if (!usageMap[ing]) usageMap[ing] = [];
+                        if (!usageMap[ing].includes(item.id)) {
+                            usageMap[ing].push(item.id); // "Used To Craft" relationship
                         }
                     }
                 }
@@ -580,7 +595,8 @@ export async function loadGlobalAssetLookup(): Promise<void> {
 
         setGlobalAssetLookup(lookup);
         setLootSourceMap(sourceMap);
-        console.log(`[Dashboard] Loaded ${Object.keys(lookup).length} assets and ${Object.keys(sourceMap).length} drop keys`);
+        setRecipeUsageMap(usageMap);
+        console.log(`[Dashboard] Loaded ${Object.keys(lookup).length} assets, ${Object.keys(sourceMap).length} sources, ${Object.keys(usageMap).length} usages`);
     } catch (err) {
         console.error('[Dashboard] Failed to load asset lookup:', err);
     }

@@ -9,10 +9,15 @@ import { Logger } from '@core/Logger';
 import { DOMUtils } from '@core/DOMUtils';
 
 // Unmapped modules - need manual import
-declare const html2canvas: any; // TODO: Add proper import
+// Local type definition for html2canvas
+interface Html2CanvasOptions {
+    backgroundColor: string | null;
+    scale: number;
+    useCORS: boolean;
+    ignoreElements: (element: HTMLElement) => boolean;
+}
 
-// Unmapped modules - need manual import
-// TODO: Add proper import
+declare function html2canvas(element: HTMLElement, options?: Partial<Html2CanvasOptions>): Promise<HTMLCanvasElement>;
 
 const UICapture = {
     /**
@@ -38,7 +43,7 @@ const UICapture = {
 
         try {
             Logger.info('[UICapture]', `Capturing ${selector}...`);
-            const canvas = await html2canvas(el, {
+            const canvas = await html2canvas(el as HTMLElement, {
                 backgroundColor: null,
                 scale: 1,
                 useCORS: true,
@@ -66,7 +71,7 @@ const UICapture = {
      * Batch captures all major UI zones as separate assets.
      */
     async captureAllZones() {
-        if (!html2canvas) return alert('html2canvas missing');
+        if (typeof html2canvas === 'undefined') return alert('html2canvas missing');
 
         const wasActive = document.body.classList.contains('ui-capture-mode');
         if (!wasActive) this.toggleMode();

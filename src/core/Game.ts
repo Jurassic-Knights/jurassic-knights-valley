@@ -105,8 +105,9 @@ class Game {
                 if (name === 'IslandManager') {
                     sys = IslandManager;
                 } else {
-                    sys = Registry ? Registry.get(name) : (window as any)[name];
-                    if (!sys) sys = (window as any)[name]; // Fallback
+                    const globalWindow = window as unknown as Record<string, unknown>;
+                    sys = Registry ? Registry.get(name) : (globalWindow[name] as ISystem);
+                    if (!sys) sys = globalWindow[name] as ISystem; // Fallback
                 }
 
                 if (!sys) {
@@ -164,8 +165,9 @@ class Game {
         Logger.info('[Game] Starting systems...');
         for (const config of sortedSystems) {
             if (config.start) {
+                const globalWindow = window as unknown as Record<string, unknown>;
                 const sys =
-                    (window as any)[config.global] || (Registry && Registry.get(config.global));
+                    (globalWindow[config.global] as ISystem) || (Registry && Registry.get(config.global));
                 if (sys && typeof sys.start === 'function') {
                     sys.start();
                     Logger.info(`[Game] Started ${config.global}`);

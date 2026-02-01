@@ -14,6 +14,8 @@
  * Final size = baseSize * scale * (isBoss ? 1.4 : 1.0)
  */
 
+import { EntityConfig } from '../types/core';
+
 const SpeciesScaleConfig = {
     // Base sizes by source file / category
     baseSizes: {
@@ -83,15 +85,15 @@ const SpeciesScaleConfig = {
         medium: 1.0,
         fat: 1.15,
         muscle: 1.25
-    },
+    } as Record<string, number>,
 
     /**
      * Get scale for an entity based on its config
-     * @param {object} entityConfig - Entity data with species/bodyType/sourceFile
+     * @param {EntityConfig} entityConfig - Entity data with species/bodyType/sourceFile
      * @param {boolean} isBoss - Whether this is a boss entity
      * @returns {number} Scale multiplier
      */
-    getScale(entityConfig: any, isBoss = false) {
+    getScale(entityConfig: EntityConfig, isBoss = false) {
         const sourceFile = entityConfig.sourceFile || '';
         const species = entityConfig.species || '';
         const bodyType = entityConfig.bodyType || 'medium';
@@ -99,7 +101,7 @@ const SpeciesScaleConfig = {
         let scale = 1.0;
 
         if (sourceFile === 'human') {
-            scale = (this.human as any)[bodyType] || 1.0;
+            scale = this.human[bodyType] || 1.0;
         } else if (sourceFile === 'dinosaur') {
             scale = this._lookupSpecies(species, this.dinosaur);
         } else if (sourceFile === 'herbivore') {
@@ -128,6 +130,7 @@ const SpeciesScaleConfig = {
      * @returns {number} Scale or 1.0 if not found
      */
     _lookupSpecies(species: string, lookup: Record<string, number>) {
+        if (!species) return 1.0;
         // Try exact match first
         if (lookup[species]) {
             return lookup[species];
@@ -140,9 +143,12 @@ const SpeciesScaleConfig = {
         }
 
         // Special case: "Bull Triceratops" -> "Triceratops"
-        const lastWord = species.split(' ').pop();
-        if (lookup[lastWord]) {
-            return lookup[lastWord];
+        const parts = species.split(' ');
+        if (parts.length > 1) {
+            const lastWord = parts[parts.length - 1];
+            if (lookup[lastWord]) {
+                return lookup[lastWord];
+            }
         }
 
         return 1.0;
@@ -150,11 +156,11 @@ const SpeciesScaleConfig = {
 
     /**
      * Get final size for an entity
-     * @param {object} entityConfig - Entity data
+     * @param {EntityConfig} entityConfig - Entity data
      * @param {boolean} isBoss - Whether this is a boss
      * @returns {{width: number, height: number, scale: number}}
      */
-    getSize(entityConfig: any, isBoss = false) {
+    getSize(entityConfig: EntityConfig, isBoss = false) {
         // Priority: Explicit config > Species Scale
         if (entityConfig.width && entityConfig.height) {
             const explicitScale = entityConfig.sizeScale || 1.0;
@@ -166,14 +172,15 @@ const SpeciesScaleConfig = {
         }
 
         const sourceFile = entityConfig.sourceFile || 'dinosaur';
-        const baseSize = (this.baseSizes as any)[sourceFile] || 128;
+        const baseSize = (this.baseSizes as Record<string, number>)[sourceFile] || 128;
         const scale = this.getScale(entityConfig, isBoss);
         const finalSize = Math.round(baseSize * scale);
 
         return {
             width: finalSize,
             height: finalSize,
-            scale: scale
+            scale: scale,
+            source: sourceFile
         };
     }
 };

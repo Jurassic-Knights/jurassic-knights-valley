@@ -13,8 +13,20 @@ import { GameInstance } from './Game';
 import { Registry } from './Registry';
 import { DOMUtils } from './DOMUtils';
 
+// Chrome/Edge Helper for memory stats
+interface PerformanceMemory {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+}
+
+interface ProfilerEnv {
+    SHOW_FPS?: boolean;
+    DEBUG?: boolean;
+}
+
 // ENV fallback for runtime flags (in production this would be injected)
-const ENV: any = {
+const ENV: ProfilerEnv = {
     SHOW_FPS: false,
     DEBUG: false
 };
@@ -43,7 +55,7 @@ const Profiler = {
      */
     init() {
         // Check if should auto-enable
-        this.enabled = ENV?.SHOW_FPS || false;
+        this.enabled = ENV.SHOW_FPS || false;
 
         // Create display element
         this.element = DOMUtils.create('div', {
@@ -83,6 +95,7 @@ const Profiler = {
      * Toggle visibility
      */
     toggle() {
+        if (!this.element) return;
         this.enabled = !this.enabled;
         this.element.style.display = this.enabled ? 'block' : 'none';
     },
@@ -91,6 +104,7 @@ const Profiler = {
      * Call each frame
      */
     update() {
+        if (!this.element) return;
         const now = performance.now();
         this.deltaTime = now - this.lastFrameTime;
         this.lastFrameTime = now;
@@ -108,8 +122,9 @@ const Profiler = {
             this.lastTime = now;
 
             // Get memory if available
-            if ((performance as any).memory) {
-                this.memoryUsed = Math.round((performance as any).memory.usedJSHeapSize / 1048576);
+            const memory = (performance as unknown as { memory?: PerformanceMemory }).memory;
+            if (memory) {
+                this.memoryUsed = Math.round(memory.usedJSHeapSize / 1048576);
             }
 
             // Get entity count

@@ -8,20 +8,26 @@
 import { GameInstance } from '@core/Game';
 import { Logger } from '@core/Logger';
 
-class EquipmentSlotManager {
+import { EquipmentItem, EquipmentSlot } from '../types/ui';
+import type { EquipmentUI } from './EquipmentUI';
+
+/**
+ * Manages equipment slot logic
+ */
+export class EquipmentSlotManager {
     /**
      * Equip an item from inventory to appropriate slot
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @param {string} itemId - Item to equip
      */
-    static equipItem(ui: any, itemId: string) {
+    static equipItem(ui: EquipmentUI, itemId: string) {
         const hero = GameInstance?.hero;
         if (!hero?.equipment) {
             Logger.warn('[EquipmentSlotManager] Cannot equip - hero.equipment not available');
             return;
         }
 
-        const item = ui.cachedEquipment.find((e: any) => e.id === itemId);
+        const item = ui.cachedEquipment.find((e: EquipmentItem) => e.id === itemId);
         if (!item) {
             Logger.warn(`[EquipmentSlotManager] Item not found: ${itemId}`);
             return;
@@ -75,13 +81,17 @@ class EquipmentSlotManager {
         // Tools go to type-specific tool slots
         else if (item.sourceFile === 'tool' || item.slot === 'tool') {
             // Route to specific tool slot based on toolSubtype
-            const toolSlotMap: Record<string, string> = {
+            const toolSlotMap: Record<string, EquipmentSlot> = {
                 mining: 'tool_mining',
                 woodcutting: 'tool_woodcutting',
                 harvesting: 'tool_harvesting',
                 fishing: 'tool_fishing'
             };
-            targetSlot = toolSlotMap[item.toolSubtype] || 'tool_mining';
+            if (item.toolSubtype) {
+                targetSlot = toolSlotMap[item.toolSubtype] || 'tool_mining';
+            } else {
+                targetSlot = 'tool_mining';
+            }
         }
         // Chest armor goes to body
         else if (item.sourceFile === 'chest') {
@@ -102,10 +112,10 @@ class EquipmentSlotManager {
     /**
      * Equip an item to a specific slot
      * @param {EquipmentUI} ui - The EquipmentUI instance
-     * @param {Object} item - Item to equip
+     * @param {EquipmentItem} item - Item to equip
      * @param {string} targetSlot - Target slot ID
      */
-    static equipToSlot(ui: any, item: any, targetSlot: string) {
+    static equipToSlot(ui: EquipmentUI, item: EquipmentItem, targetSlot: string) {
         const hero = GameInstance?.hero;
         if (!hero?.equipment) return;
 
@@ -127,7 +137,7 @@ class EquipmentSlotManager {
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @param {string} slotId - Slot to unequip
      */
-    static unequipSlot(ui: any, slotId: string) {
+    static unequipSlot(ui: EquipmentUI, slotId: string) {
         const hero = GameInstance?.hero;
         if (!hero?.equipment) return;
 
@@ -141,7 +151,7 @@ class EquipmentSlotManager {
      * @param {string} slotId - Selected slot
      * @returns {boolean} True if handled
      */
-    static handleSlotSelection(ui: any, slotId: string) {
+    static handleSlotSelection(ui: EquipmentUI, slotId: string) {
         if (!ui.slotSelectionMode || !ui.pendingEquipItem) return false;
         if (slotId !== 'hand1' && slotId !== 'hand2') return false;
 
@@ -158,8 +168,5 @@ class EquipmentSlotManager {
 
 // Export
 if (typeof window !== 'undefined') {
-    (window as any).EquipmentSlotManager = EquipmentSlotManager;
+    (window as Window).EquipmentSlotManager = EquipmentSlotManager;
 }
-
-// ES6 Module Export
-export { EquipmentSlotManager };

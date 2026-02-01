@@ -31,7 +31,7 @@ const BIOME_COLORS: Record<string, string> = {
     'grasslands': '#4caf50',
     'tundra': '#3498db',
     'desert': '#e67e22',
-    'lava_crags': '#c0392b',
+    'badlands': '#c0392b',
     'global': '#7f8c8d'
 };
 
@@ -66,6 +66,37 @@ export function renderCategoryView(data?: CategoryData | null) {
         if (!main) return;
 
         main.innerHTML = `
+            <style>
+                .status-stamp {
+                    position: absolute;
+                    top: 10px;
+                    right: -25px;
+                    transform: rotate(45deg);
+                    padding: 2px 25px;
+                    font-size: 0.6rem;
+                    font-weight: 900;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    z-index: 10;
+                    pointer-events: none;
+                    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+                    border: 1px solid rgba(255,255,255,0.3);
+                }
+                .status-stamp.approved {
+                    background: #2ecc71;
+                    color: white;
+                }
+                .status-stamp.declined {
+                    background: #e74c3c;
+                    color: white;
+                }
+                .status-stamp.pending {
+                    background: #f1c40f;
+                    color: #333;
+                    text-shadow: none;
+                }
+            </style>
             <div class="sticky-bar">
                 <div class="header-row">
                     <h2 id="categoryTitle" class="category-title">${currentCategoryName.toUpperCase()}</h2>
@@ -103,16 +134,38 @@ export function renderCategoryView(data?: CategoryData | null) {
         items = items.filter(i => String(i.tier || (i.id.match(/_t(\d)_/)?.[1]) || 0) === String(categoryFilter.tier));
     }
     if (categoryFilter.file !== 'all') {
-        // 'file' filter usually maps to source file key in data.files
-        // But here we might check if item is in that specific list
-        // Or if we have a sourceFile property.
-        // Let's use the file map check if data.files is present
-        if (activeData.files && activeData.files[categoryFilter.file]) {
-            // Optimization: Just swap 'items' to this list if it's the only filter?
-            // But we need to intersect with other filters.
-            // Easier: check if item.id is in the file list.
-            const fileItems = new Set(activeData.files[categoryFilter.file].map(i => i.id));
-            items = items.filter(i => fileItems.has(i.id));
+        if (currentCategoryName === 'ground') {
+            // For ground, 'file' filter maps to 'category' part of ID
+            items = items.filter(i => {
+                const parts = i.id.split('_');
+                return parts[1] === categoryFilter.file;
+            });
+        } else {
+            // 'file' filter usually maps to source file key in data.files
+            // But here we might check if item is in that specific list
+            // Or if we have a sourceFile property.
+            // Let's use the file map check if data.files is present
+            if (activeData.files && activeData.files[categoryFilter.file]) {
+                const fileItems = new Set(activeData.files[categoryFilter.file].map(i => i.id));
+                items = items.filter(i => fileItems.has(i.id));
+            }
+        }
+    }
+    if (categoryFilter.nodeSubtype !== 'all') {
+        if (currentCategoryName === 'ground') {
+            // For ground, 'nodeSubtype' filter maps to 'material' part of ID
+            items = items.filter(i => {
+                const parts = i.id.split('_');
+                const biomes = ['grasslands', 'tundra', 'desert', 'badlands', 'global'];
+                const biomeIndex = parts.findIndex(p => biomes.includes(p));
+                if (biomeIndex > 2) {
+                    const mat = parts.slice(2, biomeIndex).join('_');
+                    return mat === categoryFilter.nodeSubtype;
+                }
+                return false;
+            });
+        } else {
+            items = items.filter(i => i.nodeSubtype === categoryFilter.nodeSubtype);
         }
     }
 
@@ -137,12 +190,6 @@ export function renderCategoryView(data?: CategoryData | null) {
     const headerTitle = document.getElementById('categoryTitle');
     if (headerTitle) {
         headerTitle.innerHTML = `${CATEGORY_ICONS[currentCategoryName] || ''} ${currentCategoryName.toUpperCase()} <span style="opacity:0.6; font-size:0.8em">(${items.length})</span>`;
-    }
-
-    // Auto-scroll to selected if present
-    if (selectedAssetId) {
-        const el = container.querySelector(`.asset-card[data-id="${selectedAssetId}"]`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
@@ -177,23 +224,100 @@ function renderDynamicFilters(container: HTMLElement, allItems: AssetItem[], fil
     });
     container.appendChild(statusGroup);
 
-    // 2. TIER MODULE
-    const tierGroup = createFilterModule('Tier');
-    const tierContent = tierGroup.querySelector('.module-content')!;
-    ['all', 1, 2, 3, 4, 5].forEach(t => {
-        const label = t === 'all' ? 'All' : `T${t}`;
-        // Lookup Tier color
-        const color = t === 'all' ? undefined : TIER_COLORS[String(t)];
+    // 2. TIER MODULE (Skip for Ground)
+    if (currentCategoryName !== 'ground') {
+        const tierGroup = createFilterModule('Tier');
+        const tierContent = tierGroup.querySelector('.module-content')!;
+        ['all', 1, 2, 3, 4, 5].forEach(t => {
+            const label = t === 'all' ? 'All' : `T${t}`;
+            // Lookup Tier color
+            const color = t === 'all' ? undefined : TIER_COLORS[String(t)];
 
-        tierContent.appendChild(createFilterBtn(
-            label,
-            'set-category-tier',
-            String(t),
-            String(categoryFilter.tier) === String(t),
-            color
-        ));
-    });
-    container.appendChild(tierGroup);
+            tierContent.appendChild(createFilterBtn(
+                label,
+                'set-category-tier',
+                String(t),
+                String(categoryFilter.tier) === String(t),
+                color
+            ));
+        });
+        container.appendChild(tierGroup);
+    }
+
+    // 2.5 GROUND SPECIFIC FILTERS (Category & Material)
+    if (currentCategoryName === 'ground') {
+        const categories = new Set<string>();
+        const materials = new Set<string>();
+
+        allItems.forEach(item => {
+            // ID Format: ground_[category]_[material]_[biome]_[index]
+            const parts = item.id.split('_');
+            if (parts.length >= 4) {
+                // ground = 0, category = 1, material = 2... (might be multi-word)
+                // Let's assume standard known categories: base, overgrown, interior, vertical, damage
+                const groundCats = ['base', 'overgrown', 'interior', 'vertical', 'damage'];
+                const cat = parts[1];
+                if (groundCats.includes(cat)) {
+                    categories.add(cat);
+                    // Material is everything between category and biome
+                    // Biome is usually known or at end-1
+                    // Let's rely on indices assuming biome is 2nd to last if last is number?
+                    // Actually, let's just grab the part after category and before biome.
+                    // Common biomes: grasslands, tundra, desert, badlands
+                    const biomes = ['grasslands', 'tundra', 'desert', 'badlands', 'global'];
+                    const biomeIndex = parts.findIndex(p => biomes.includes(p));
+
+                    if (biomeIndex > 2) {
+                        const mat = parts.slice(2, biomeIndex).join('_');
+                        materials.add(mat);
+                    }
+                }
+            }
+        });
+
+        // RENDER CATEGORY FILTER
+        if (categories.size > 0) {
+            const group = createFilterModule('Category');
+            const content = group.querySelector('.module-content')!;
+
+            // Re-purpose 'file' filter for 'category' since we don't use file filter for ground much?
+            // User requested explicit badges and filters.
+            // Let's use 'nodeSubtype' field in state for 'Category' and 'weaponType' for 'Material' hacks?
+            // OR just add new filter fields to state?
+            // For now, let's map 'Category' -> 'file' (Type) and 'Material' -> 'nodeSubtype' (Subtype)
+            // This reuses existing state fields without schema change.
+
+            content.appendChild(createFilterBtn('All', 'set-category-file', 'all', categoryFilter.file === 'all'));
+            [...categories].sort().forEach(c => {
+                content.appendChild(createFilterBtn(
+                    c.charAt(0).toUpperCase() + c.slice(1),
+                    'set-category-file',
+                    c,
+                    categoryFilter.file === c,
+                    '#9b59b6'
+                ));
+            });
+            container.appendChild(group);
+        }
+
+        // RENDER MATERIAL FILTER
+        if (materials.size > 0) {
+            const group = createFilterModule('Material');
+            const content = group.querySelector('.module-content')!;
+
+            content.appendChild(createFilterBtn('All', 'set-category-node-subtype', 'all', categoryFilter.nodeSubtype === 'all'));
+            [...materials].sort().forEach(m => {
+                content.appendChild(createFilterBtn(
+                    m.replace(/_/g, ' ').toUpperCase(),
+                    'set-category-node-subtype',
+                    m,
+                    categoryFilter.nodeSubtype === m,
+                    '#e67e22'
+                ));
+            });
+            container.appendChild(group);
+        }
+    }
 
     // 3. BIOME MODULE
     const biomes = [...new Set(allItems.map((i) => i.biome).filter((b) => b && b !== 'all'))] as string[];
@@ -237,6 +361,29 @@ function renderDynamicFilters(container: HTMLElement, allItems: AssetItem[], fil
             ));
         });
         container.appendChild(fileGroup);
+    }
+
+    // 5. NODE SUBTYPE MODULE
+    if (currentCategoryName === 'nodes') {
+        const subtypes = [...new Set(allItems.map(i => i.nodeSubtype).filter(s => s))];
+        if (subtypes.length > 0) {
+            const subGroup = createFilterModule('Subtype');
+            const subContent = subGroup.querySelector('.module-content')!;
+
+            subContent.appendChild(createFilterBtn('All', 'set-category-node-subtype', 'all', categoryFilter.nodeSubtype === 'all'));
+
+            subtypes.forEach(s => {
+                const isActive = categoryFilter.nodeSubtype === s;
+                subContent.appendChild(createFilterBtn(
+                    s!.charAt(0).toUpperCase() + s!.slice(1),
+                    'set-category-node-subtype',
+                    s!,
+                    isActive,
+                    isActive ? '#d35400' : '#e67e22'
+                ));
+            });
+            container.appendChild(subGroup);
+        }
     }
 
     // 5. ACTIONS
@@ -321,11 +468,35 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
         imgPath = `/images/${imgPath.replace(/^(assets\/)?images\//, '')}`;
     }
 
+    // Determine Upload Target (Prefer Original)
+    let uploadPath = item.files?.original || item.files?.clean || imgPath;
+    if (!uploadPath.startsWith('/') && !uploadPath.startsWith('http')) {
+        uploadPath = `/images/${uploadPath.replace(/^(assets\/)?images\//, '')}`;
+    }
+
+    // Debug: Log render state
+    // console.log('[Renderer] Rendering:', item.id, 'Param:', imageParams[item.id]);
+
+    // const debugBorder = imageParams[item.id] ? '2px solid #4caf50' : '1px solid #333';
+
+    const status = item.status || 'pending';
+    const stampLabel = status === 'approved' ? 'APPROVED' : status === 'declined' ? 'DECLINED' : 'PENDING';
+    const stampClass = status;
+
     const imgHtml = `
-        <div class="card-image-container" style="height:${categoryImageSize}px">
-             <img src="${imgPath}${imageParams[item.id] ? '?t=' + imageParams[item.id] : ''}" class="asset-image" loading="lazy" data-action="open-modal" data-path="${imgPath}" data-name="${item.name || item.id}" data-status="${item.status || 'pending'}">
-        </div>
-    `;
+        <div class="card-image-container" style="height:${categoryImageSize}px; position:relative; overflow:hidden;" 
+             data-action="image-drop-zone" 
+             data-path="${uploadPath}" 
+             data-id="${item.id}"
+             data-name="${item.name || item.id}" 
+             data-status="${item.status || 'pending'}">
+             <img src="${imgPath}${imageParams[item.id] ? '?v=' + imageParams[item.id] : ''}" class="asset-image">
+             
+             <!-- Status Stamp -->
+             <div class="status-stamp ${stampClass}">
+                ${stampLabel}
+             </div>
+        </div>`;
 
     // 3. TIER (Interactive Select)
     const tier = item.tier || (item.id.match(/_t(\d)_/)?.[1] ? parseInt(item.id.match(/_t(\d)_/)![1]) : 0);
@@ -337,9 +508,9 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
     ).join('');
 
     const tierHtml = `
-        <div class="control-wrapper" title="Tier">
+        <div class="control-wrapper" title="Tier" style="width:100%;">
             <select class="badge-select" 
-                style="color:${currentTierColor}; border:1px solid ${currentTierColor}40; background: ${currentTierColor}10;" 
+                style="width:100%; color:${currentTierColor}; border:1px solid ${currentTierColor}40; background: ${currentTierColor}10; padding:2px 0; text-align:center;" 
                 data-action="update-tier" 
                 data-category="${currentCategoryName}" 
                 data-file="${fileName}" 
@@ -352,20 +523,93 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
         </div>
     `;
 
+    // 4.5 TYPE BADGE & TIER
+    let typeLabel = '';
+    let typeField = '';
+    let typeColor = '#7f8c8d';
+    let showTier = true;
+    let groundCategory = '';
+    let groundMaterial = '';
+
+    if (currentCategoryName === 'nodes') {
+        typeLabel = item.nodeSubtype || 'Generic';
+        typeField = 'nodeSubtype';
+        typeColor = '#d35400'; // Orange/Wood/Earth
+    } else if (currentCategoryName === 'items' || currentCategoryName === 'resources') {
+        if (item.sourceFile) {
+            typeLabel = item.sourceFile.charAt(0).toUpperCase() + item.sourceFile.slice(1);
+            typeField = 'sourceFile';
+        } else {
+            typeLabel = item.type || (currentCategoryName === 'items' ? 'Item' : 'Resource');
+            typeField = 'type';
+        }
+        typeColor = currentCategoryName === 'items' ? '#8e44ad' : '#27ae60';
+    } else if (currentCategoryName === 'equipment') {
+        typeLabel = item.slot || (item.weaponType ? item.weaponType : 'Gear');
+        typeField = item.slot ? 'slot' : 'weaponType';
+        typeColor = '#2980b9'; // Blue/Gear
+    } else if (currentCategoryName === 'ground') {
+        showTier = false;
+        // Parse ID for badges
+        const parts = item.id.split('_');
+        if (parts.length >= 4) {
+            groundCategory = parts[1]; // base, overgrown...
+            const biomes = ['grasslands', 'tundra', 'desert', 'badlands', 'global'];
+            const biomeIndex = parts.findIndex(p => biomes.includes(p));
+            if (biomeIndex > 2) {
+                groundMaterial = parts.slice(2, biomeIndex).join(' ');
+            }
+        }
+    }
+
+    // Simplistic Badge (Mockup for now, could be dropdown later if we have constants)
+    let typeHtml = '';
+
+    if (currentCategoryName === 'ground') {
+        // RENDER GROUND BADGES (Cat | Mat)
+        typeHtml = `
+         <div class="control-wrapper" style="width:100%;">
+             <span class="badge-static" 
+                style="display:block; width:100%; color:#9b59b6; border:1px solid #9b59b640; background:#9b59b610; padding:2px 0; font-size:0.7rem; border-radius:4px; text-transform:uppercase; font-weight:bold;">
+                ${groundCategory}
+            </span>
+        </div>
+        <div class="control-wrapper" style="width:100%;">
+             <span class="badge-static" 
+                style="display:block; width:100%; color:#e67e22; border:1px solid #e67e2240; background:#e67e2210; padding:2px 0; font-size:0.7rem; border-radius:4px; text-transform:uppercase; font-weight:bold;">
+                ${groundMaterial}
+            </span>
+        </div>
+        `;
+    } else {
+        typeHtml = typeLabel ? `
+            <div class="control-wrapper" title="Type: ${typeLabel}" style="width:100%;">
+                <span class="badge-static" 
+                    style="display:block; width:100%; color:${typeColor}; border:1px solid ${typeColor}40; background:${typeColor}10; padding:2px 0; font-size:0.7rem; border-radius:4px; text-transform:uppercase; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    ${typeLabel}
+                </span>
+            </div>
+        ` : '<div class="control-wrapper" style="width:100%;"></div>';
+    }
+
     // 4. BIOME (Interactive Select)
     // Valid biomes from BiomeConfig + global
-    const biomes = ['grasslands', 'tundra', 'desert', 'lava_crags', 'global'];
-    const currentBiome = item.biome || 'global';
-    const biomeColor = BIOME_COLORS[currentBiome.toLowerCase()] || '#7f8c8d';
+    const biomes = ['grasslands', 'tundra', 'desert', 'badlands', 'global'];
+    const rawBiome = item.biome; // Can be undefined
+    const displayBiome = rawBiome || 'global'; // Default for selection/color
+
+    // If missing, use a distinct style (e.g. Warning/Red) to prompt user
+    const isMissing = !rawBiome;
+    const biomeColor = isMissing ? '#e74c3c' : (BIOME_COLORS[displayBiome.toLowerCase()] || '#7f8c8d');
 
     const biomeOptions = biomes.map(b =>
-        `<option value="${b}" ${b === currentBiome ? 'selected' : ''}>${b.toUpperCase()}</option>`
+        `<option value="${b}" ${b === displayBiome ? 'selected' : ''}>${b.toUpperCase()}${isMissing && b === 'global' ? '*' : ''}</option>`
     ).join('');
 
     const biomeHtml = `
-         <div class="control-wrapper" title="Biome">
+         <div class="control-wrapper" title="${isMissing ? 'Biome Not Set (Defaulting to Global)' : 'Biome'}" style="width:100%;">
             <select class="badge-select" 
-                style="color:${biomeColor}; border:1px solid ${biomeColor}40; background:${biomeColor}10; min-width:80px;" 
+                style="width:100%; color:${biomeColor}; border:1px solid ${biomeColor}40; background:${biomeColor}10; padding:2px 0; text-align:center; ${isMissing ? 'font-style:italic;' : ''}" 
                 data-action="update-field" 
                 data-field="biome" 
                 data-category="${currentCategoryName}" 
@@ -373,6 +617,7 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
                 data-id="${item.id}" 
                 data-capture-value="true"
                 onclick="event.stopPropagation()">
+                ${isMissing ? `<option value="" disabled selected>SET BIOME</option>` : ''}
                 ${biomeOptions}
             </select>
         </div>
@@ -406,7 +651,7 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
     if (item.sfx && Object.keys(item.sfx).length > 0) {
         const sfxItems = Object.entries(item.sfx).map(([key, val]) => {
             const hasFile = typeof val === 'object' ? !!val.id : !!val;
-            const sfxId = typeof val === 'string' ? val : (val as any).id;
+            const sfxId = typeof val === 'string' ? val : (val as { id: string }).id;
 
             // Interactive button to play
             return `<button class="mini-sfx-btn ${hasFile ? 'has-sound' : 'missing'}" 
@@ -455,14 +700,14 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
 
         // 1. Check 'drops' array (Fishing style)
         if (item.drops && Array.isArray(item.drops)) {
-            nodeDrops = item.drops.map((d: any) => ({
+            nodeDrops = item.drops.map((d) => ({
                 id: d.item,
                 chance: d.chance
             }));
         }
         // 2. Check 'loot' array (Standard style)
         else if (item.loot && Array.isArray(item.loot)) {
-            nodeDrops = item.loot.map((d: any) => ({
+            nodeDrops = item.loot.map((d) => ({
                 id: d.item,
                 chance: d.chance
             }));
@@ -535,14 +780,28 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
         ${statusHtml}
         ${imgHtml}
         <div class="asset-header">
-            <div class="name" title="${item.name}" style="margin-bottom:8px; font-size:1rem;">${item.name || item.id}</div>
+            <input class="name-input" type="text"
+                value="${item.name || ''}" 
+                placeholder="${item.id}"
+                title="Click to edit name"
+                data-action="update-field" 
+                data-field="name"
+                data-category="${currentCategoryName}" 
+                data-file="${fileName}" 
+                data-id="${item.id}" 
+                data-capture-value="true"
+                onclick="event.stopPropagation()"
+                onfocus="this.select()"
+                style="width:100%; background:transparent; border:none; color:#ddd; font-weight:bold; font-size:1rem; margin-bottom:8px; padding:2px 4px; border-radius:4px; text-overflow:ellipsis;">
         </div>
         
-        <div class="asset-controls-row" style="flex-wrap:wrap; gap:12px; margin-bottom:12px;">
-            ${tierHtml}
-            ${biomeHtml}
-            <div class="spacer" style="flex:1"></div>
-            ${sizeHtml}
+        <div class="asset-controls-row" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px; margin-bottom:8px;">
+            ${showTier ? `<div style="text-align:center;">${tierHtml}</div>` : ''}
+            ${showTier ? `<div style="text-align:center;">${typeHtml}</div>` : `<div style="grid-column: span 2; display:grid; grid-template-columns: 1fr 1fr; gap:4px;">${typeHtml}</div>`}
+            <div style="text-align:center;">${biomeHtml}</div>
+        </div>
+        <div style="display:flex; justify-content:center; margin-bottom:12px;">
+             ${sizeHtml}
         </div>
 
         ${sfxHtml}

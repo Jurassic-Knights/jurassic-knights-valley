@@ -4,14 +4,21 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { IslandUpgrades, UpgradeLevel } from '../gameplay/IslandUpgrades';
 import { Registry } from '@core/Registry';
 import { UIPanel } from './core/UIPanel';
-import type { Merchant } from '../types/ui';
+// Merchant type from types/ui is for NPCs, this UI handles Island Upgrades
+// We define a local interface for the interaction target
+
+interface IslandInteraction {
+    islandId: string;
+    islandName: string;
+    [key: string]: unknown;
+}
 
 class MerchantPanel extends UIPanel {
     // Property declarations
-    currentMerchant: any = null;
+    currentMerchant: IslandInteraction | null = null;
 
     constructor() {
         super('modal-merchant', {
@@ -71,7 +78,7 @@ class MerchantPanel extends UIPanel {
             // Interaction Event
             EventBus.on(
                 'INTERACTION_OPPORTUNITY',
-                (data: { type: string; target?: Merchant; visible?: boolean }) => {
+                (data: { type: string; target?: IslandInteraction; visible?: boolean }) => {
                     const { type, target, visible } = data;
                     if (type === 'merchant') {
                         if (visible && target) {
@@ -102,7 +109,7 @@ class MerchantPanel extends UIPanel {
         this.render();
     }
 
-    updateButtonVisibility(merchant: any) {
+    updateButtonVisibility(merchant: IslandInteraction | null) {
         // Always track the merchant opportunity
         if (merchant) {
             this.currentMerchant = merchant;
@@ -157,7 +164,7 @@ class MerchantPanel extends UIPanel {
         );
     }
 
-    renderUpgradeRow(type: string, data: any, label: string, unit: string, customDisplay: string | null = null) {
+    renderUpgradeRow(type: string, data: UpgradeLevel, label: string, unit: string, customDisplay: string | null = null) {
         const levelEl = document.getElementById(`upgrade-${type}-level`);
         const costEl = document.getElementById(`upgrade-${type}-cost`);
         const btn = document.getElementById(`btn-upgrade-${type}`);

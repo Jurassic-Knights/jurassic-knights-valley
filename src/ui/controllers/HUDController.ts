@@ -12,10 +12,7 @@ import { Registry } from '@core/Registry';
 import { UIBinder } from '@core/UIBinder';
 import { SFX } from '@audio/ProceduralSFX';
 
-interface InventoryState {
-    resources?: Record<string, number>;
-    gold?: number;
-}
+
 
 class HUDControllerClass {
     private lastPipCount: number = -1;
@@ -39,7 +36,7 @@ class HUDControllerClass {
         );
         EventBus.on(
             GameConstants.Events.INVENTORY_UPDATED,
-            (data: InventoryState) =>
+            (data: Record<string, number>) =>
                 this.updateResources(data)
         );
         EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: { isHome: boolean }) =>
@@ -119,20 +116,21 @@ class HUDControllerClass {
         if (btn) btn.style.display = data.isHome ? 'flex' : 'none';
     }
 
-    updateResources(inventory: InventoryState) {
+    updateResources(inventory: Record<string, number>) {
         if (!inventory) return;
 
-        const map: any = {
+        const map: Record<string, string> = {
             scraps_t1_01: 'res-scrap',
             minerals_t1_01: 'res-iron',
             minerals_t2_01: 'res-fuel',
             gold: 'res-gold'
         };
 
-        for (const [key, id] of Object.entries(map)) {
-            const el = UIBinder.get(id as string);
+        for (const [key, elementId] of Object.entries(map)) {
+            const el = UIBinder.get(elementId);
             if (el) {
-                const amount = (inventory as any)[key] || 0;
+                // Gold might be separate or in items, assuming flat structure from Hero.inventory
+                const amount = inventory[key] || 0;
                 el.textContent = String(amount);
             }
         }

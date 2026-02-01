@@ -336,7 +336,7 @@ export class WeaponWheel {
     private renderRow(items: WheelItem[], depth: number) {
         if (!this.treeContainer) return;
 
-        let row = this.treeContainer.children[depth] as HTMLElement;
+        let row: HTMLElement | null = this.treeContainer.children[depth] as HTMLElement;
 
         // Verify if row matches these items
         if (row) {
@@ -345,7 +345,7 @@ export class WeaponWheel {
             // Check if lengths match
             if (children.length !== items.length) {
                 row.remove();
-                row = null as any;
+                row = null;
             } else {
                 // Check if ALL IDs match
                 const allMatch = items.every((item, index) => {
@@ -354,7 +354,7 @@ export class WeaponWheel {
 
                 if (!allMatch) {
                     row.remove();
-                    row = null as any;
+                    row = null;
                 }
             }
         }

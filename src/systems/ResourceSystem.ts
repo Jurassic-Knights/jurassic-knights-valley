@@ -10,7 +10,7 @@ import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
-import type { IGame } from '../types/core.d';
+import type { IGame, IResourceEntity } from '../types/core.d';
 
 class ResourceSystem {
     game: IGame | null = null;
@@ -33,7 +33,7 @@ class ResourceSystem {
         }
     }
 
-    updateResource(res: any, dt: number) {
+    updateResource(res: IResourceEntity, dt: number) {
         if (res.state === 'depleted') {
             res.respawnTimer -= dt / 1000;
             if (res.respawnTimer <= 0) {
@@ -42,7 +42,7 @@ class ResourceSystem {
         }
     }
 
-    respawn(res: any) {
+    respawn(res: IResourceEntity) {
         res.state = 'ready';
         res.health = res.maxHealth;
         res.respawnTimer = 0;

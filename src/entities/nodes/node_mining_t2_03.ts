@@ -2,7 +2,7 @@
  * Entity: node_mining_t2_03
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@app-types/entities';
+import type { NodeEntity } from '@types/entities';
 
 export default {
     "id": "node_mining_t2_03",
@@ -10,7 +10,7 @@ export default {
     "sourceCategory": "nodes",
     "sourceFile": "nodes",
     "sprite": "node_mining_t2_03",
-    "status": "pending",
+    "status": "declined",
     "files": {
         "original": "assets/images/nodes/node_mining_t2_03_original.png"
     },
@@ -27,7 +27,11 @@ export default {
         {
             "item": "minerals_t2_02",
             "chance": 1,
-            "amount": [1, 3]
+            "amount": [
+                1,
+                3
+            ]
         }
-    ]
+    ],
+    "declineNote": ""
 } satisfies NodeEntity;

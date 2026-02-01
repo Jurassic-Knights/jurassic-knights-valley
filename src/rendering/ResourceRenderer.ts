@@ -12,11 +12,14 @@ import { environmentRenderer } from './EnvironmentRenderer';
 import { Resource } from '../gameplay/Resource';
 import { ColorPalette } from '@config/ColorPalette';
 import { EntityRegistry } from '@entities/EntityLoader';
+import type { IGame, ISystem } from '../types/core';
 
-class ResourceRendererService {
+class ResourceRendererService implements ISystem {
     constructor() {
         Logger.info('[ResourceRenderer] Initialized');
     }
+
+    init(game: IGame): void { }
 
     render(ctx: CanvasRenderingContext2D, res: any, includeShadow = true) {
         if (!res.active) return;

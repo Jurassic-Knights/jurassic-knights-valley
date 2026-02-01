@@ -99,13 +99,26 @@ export function closeTemplatesModal(): void {
     });
 }
 
+let modalAbortController: AbortController | null = null;
+
+export function disposeModalHandlers() {
+    if (modalAbortController) {
+        modalAbortController.abort();
+        modalAbortController = null;
+    }
+}
+
 export function initModalHandlers(): void {
+    disposeModalHandlers();
+    modalAbortController = new AbortController();
+    const signal = modalAbortController.signal;
+
     // Keyboard support
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
         }
-    });
+    }, { signal });
 
     // Click outside support
     const modal = document.getElementById('imageModal');
@@ -114,6 +127,6 @@ export function initModalHandlers(): void {
             if (e.target === modal) {
                 closeModal();
             }
-        });
+        }, { signal });
     }
 }

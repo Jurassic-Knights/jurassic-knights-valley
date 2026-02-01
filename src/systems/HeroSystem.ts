@@ -9,8 +9,12 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 // import { VFXController } from '@vfx/VFXController';
 // import { VFXConfig } from '@data/VFXConfig';
+import { IslandManager } from '../world/IslandManager';
+import { GameRenderer } from '@core/GameRenderer';
+import { HomeBase } from '../world/HomeBase';
 import { BiomeManager } from '../world/BiomeManager';
 import { Registry } from '@core/Registry';
+import { CollisionSystem } from './CollisionSystem';
 import { HeroCombatService } from './HeroCombatService';
 import { MathUtils } from '@core/MathUtils';
 import type { IGame, IEntity } from '../types/core.d';
@@ -25,9 +29,9 @@ class HeroSystem {
     isAttacking: boolean = false;
     lastHomeState: boolean = false;
     _dustConfig: ParticleOptions;
-    _islandManager: any; // Uses specific methods like isBlocked, getHomeIsland
-    _homeBase: any; // Uses isBlockedByTrees
-    _gameRenderer: any; // Uses worldWidth, worldHeight
+    _islandManager: typeof IslandManager | null = null;
+    _homeBase: typeof HomeBase | null = null;
+    _gameRenderer: typeof GameRenderer | null = null;
     // _vfxController: any; // Moved to HeroVisualsSystem
     _lastStaminaEmit: number = 0;
 
@@ -45,9 +49,9 @@ class HeroSystem {
         this.hero = game.hero as Hero;
 
         // GC Optimization: Cache system references via Registry (Service Locator)
-        this._islandManager = Registry.get('IslandManager');
-        this._homeBase = Registry.get('HomeBase');
-        this._gameRenderer = Registry.get('GameRenderer');
+        this._islandManager = Registry.get<typeof IslandManager>('IslandManager');
+        this._homeBase = Registry.get<typeof HomeBase>('HomeBase');
+        this._gameRenderer = Registry.get<typeof GameRenderer>('GameRenderer');
         // this._vfxController = Registry.get('VFXController');
     }
 
@@ -210,7 +214,7 @@ class HeroSystem {
 
         if (collisionSystem) {
             // Delegate to physics engine
-            (collisionSystem as any).move(hero, dx, dy);
+            (collisionSystem as CollisionSystem).move(hero, dx, dy);
         } else {
             // Fallback
             hero.x += dx;

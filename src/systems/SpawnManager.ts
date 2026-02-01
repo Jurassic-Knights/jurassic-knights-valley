@@ -16,10 +16,12 @@ import { GameConstants, getConfig } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 import { GameState } from '@core/State';
 import { IslandManager } from '../world/IslandManager';
-import { IGame } from '../types/core';
+import { IGame, IEntity } from '../types/core';
+import { Island, IIslandManager, Bridge } from '../types/world';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { Hero } from '../gameplay/Hero';
 import { Registry } from '@core/Registry';
+import { GameRenderer } from '@core/GameRenderer';
 import { PropSpawner } from './spawners/PropSpawner';
 import { ResourceSpawner } from './spawners/ResourceSpawner';
 import { EnemySpawner } from './spawners/EnemySpawner';
@@ -31,20 +33,24 @@ import { PropConfig } from '@data/PropConfig';
 
 class SpawnManagerService {
     private game: IGame | null = null;
-    private merchants: any[] = [];
-    private propSpawner: any = null;
-    private resourceSpawner: any = null;
-    private enemySpawner: any = null;
-    private dropSpawner: any = null;
+    private merchants: Merchant[] = [];
+    private propSpawner: PropSpawner | null = null;
+    private resourceSpawner: ResourceSpawner | null = null;
+    private enemySpawner: EnemySpawner | null = null;
+    private dropSpawner: DropSpawner | null = null;
 
     constructor() {
         Logger.info('[SpawnManager] Initialized Service');
     }
 
+    public get gameInstance(): IGame | null {
+        return this.game;
+    }
+
     /**
      * Initialize with game reference
      */
-    init(game: any): void {
+    init(game: IGame): void {
         this.game = game;
 
         // Initialize sub-spawners
@@ -58,7 +64,7 @@ class SpawnManagerService {
     }
 
     private initListeners(): void {
-        EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data: any) =>
+        EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data: { gridX: number; gridY: number }) =>
             this.initializeIsland(data.gridX, data.gridY)
         );
     }
@@ -107,7 +113,7 @@ class SpawnManagerService {
 
         try {
             let spawnX: number, spawnY: number;
-            const islandManager = Registry.get('IslandManager');
+            const islandManager = Registry.get<IIslandManager>('IslandManager');
 
             if (islandManager) {
                 const spawn = islandManager.getHeroSpawnPosition();
@@ -115,7 +121,7 @@ class SpawnManagerService {
                 spawnY = spawn.y;
             } else {
                 Logger.warn('[SpawnManager] IslandManager not found, using fallback spawn');
-                const gameRenderer = Registry.get('GameRenderer');
+                const gameRenderer = Registry.get('GameRenderer') as typeof GameRenderer;
                 const w = gameRenderer ? gameRenderer.worldWidth : 2000;
                 const h = gameRenderer ? gameRenderer.worldHeight : 2000;
                 spawnX = w / 2;
@@ -131,7 +137,7 @@ class SpawnManagerService {
             const hero = new Hero({ x: spawnX, y: spawnY });
             this.game.hero = hero;
 
-            const gameRenderer = Registry.get('GameRenderer');
+            const gameRenderer = Registry.get('GameRenderer') as typeof GameRenderer;
             if (gameRenderer && typeof gameRenderer.setHero === 'function') {
                 gameRenderer.setHero(hero);
             }
@@ -157,7 +163,7 @@ class SpawnManagerService {
     private spawnMerchants(): void {
         this.merchants = [];
 
-        const islandManager = Registry.get('IslandManager');
+        const islandManager = Registry.get<IIslandManager>('IslandManager');
         if (!islandManager) return;
 
         const bridges = islandManager.getBridges();
@@ -169,29 +175,33 @@ class SpawnManagerService {
             if (!bounds) continue;
 
             const entryBridge = bridges.find(
-                (b: any) => b.to.col === island.gridX && b.to.row === island.gridY
+                (b: Bridge) => b.to.col === island.gridX && b.to.row === island.gridY
             );
 
-            const config = getConfig().Spawning as any;
-            let merchantX = bounds.x + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT_OFFSET_X);
-            let merchantY = bounds.y + (PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT_OFFSET_Y);
-            const padding = PropConfig?.MERCHANT?.PADDING || config.MERCHANT_PADDING;
+            const config = getConfig().Spawning;
+            // Config is now typed with DEFAULT_OFFSET
+            const offsetX = PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT.DEFAULT_OFFSET;
+            const offsetY = PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT.DEFAULT_OFFSET;
+
+            let finalX = bounds.x + offsetX;
+            let finalY = bounds.y + offsetY;
+            const padding = PropConfig?.MERCHANT?.PADDING || config.MERCHANT.PADDING;
 
             if (entryBridge) {
                 if (entryBridge.type === 'horizontal') {
-                    merchantX = bounds.left + padding;
+                    finalX = bounds.left + padding;
                     const bridgeCenterY = entryBridge.y + entryBridge.height / 2;
-                    merchantY = (bridgeCenterY + bounds.top) / 2;
+                    finalY = (bridgeCenterY + bounds.top) / 2;
                 } else {
                     const bridgeCenterX = entryBridge.x + entryBridge.width / 2;
-                    merchantX = (bridgeCenterX + bounds.left) / 2;
-                    merchantY = bounds.top + padding;
+                    finalX = (bridgeCenterX + bounds.left) / 2;
+                    finalY = bounds.top + padding;
                 }
             }
 
             const merchant = new Merchant({
-                x: merchantX,
-                y: merchantY,
+                x: finalX,
+                y: finalY,
                 islandId: `${island.gridX}_${island.gridY}`,
                 islandName: island.name
             });
@@ -203,13 +213,13 @@ class SpawnManagerService {
         Logger.info(`[SpawnManager] Spawned ${this.merchants.length} merchants`);
     }
 
-    getMerchantNearHero(hero: any): any {
+    getMerchantNearHero(hero: IEntity): Merchant | null {
         if (!hero) return null;
 
         for (const merchant of this.merchants) {
             if (merchant.isInRange(hero)) {
                 const [gridX, gridY] = merchant.islandId.split('_').map(Number);
-                const islandManager = Registry.get('IslandManager');
+                const islandManager = Registry.get<IIslandManager>('IslandManager');
                 const island = islandManager ? islandManager.getIslandByGrid(gridX, gridY) : null;
                 if (island && island.unlocked) {
                     return merchant;
@@ -249,10 +259,18 @@ class SpawnManagerService {
 
         const targetCount = IslandUpgrades?.getResourceSlots?.(gridX, gridY) || 1;
 
+        interface IWorldEntity extends IEntity {
+            islandGridX?: number;
+            islandGridY?: number;
+            active: boolean;
+            recalculateRespawnTimer?(): void;
+        }
+
         if (island.category === 'dinosaur') {
+            // TODO: Strictly type Dinosaur entity
             const allDinos = entityManager.getByType('Dinosaur');
             const currentCount = allDinos.filter(
-                (d: any) => d.islandGridX === gridX && d.islandGridY === gridY
+                (d: IWorldEntity) => d.islandGridX === gridX && d.islandGridY === gridY
             ).length;
             const needed = targetCount - currentCount;
 
@@ -264,7 +282,7 @@ class SpawnManagerService {
 
         const allResources = entityManager.getByType('Resource');
         const currentResources = allResources.filter(
-            (res: any) => res.islandGridX === gridX && res.islandGridY === gridY
+            (res: IWorldEntity) => res.islandGridX === gridX && res.islandGridY === gridY
         );
         const currentCount = currentResources.length;
 
@@ -314,7 +332,7 @@ class SpawnManagerService {
         }
     }
 
-    spawnCraftedItem(x: number, y: number, type: string, options: any = {}): void {
+    spawnCraftedItem(x: number, y: number, type: string, options: Record<string, unknown> = {}): void {
         if (this.dropSpawner) {
             this.dropSpawner.spawnCraftedItem(x, y, type, options);
         }
@@ -326,28 +344,29 @@ class SpawnManagerService {
         y: number,
         enemyId: string,
         count: number,
-        options: any = {}
-    ): any[] {
+        options: Record<string, unknown> = {}
+    ): IEntity[] {
         if (this.enemySpawner) {
             return this.enemySpawner.spawnEnemyGroup(biomeId, x, y, enemyId, count, options);
         }
         return [];
     }
 
-    populateBiome(biomeId: string, bounds: any, options: any = {}): void {
+    populateBiome(biomeId: string, bounds: { x: number; y: number; width: number; height: number }, options: Record<string, unknown> = {}): number {
         if (this.enemySpawner) {
             return this.enemySpawner.populateBiome(biomeId, bounds, options);
         }
+        return 0;
     }
 
-    spawnBiomeBoss(biomeId: string, x: number, y: number): any {
+    spawnBiomeBoss(biomeId: string, x: number, y: number): IEntity | null {
         if (this.enemySpawner) {
             return this.enemySpawner.spawnBiomeBoss(biomeId, x, y);
         }
         return null;
     }
 
-    getEnemiesInBiome(biomeId: string): any[] {
+    getEnemiesInBiome(biomeId: string): IEntity[] {
         if (this.enemySpawner) {
             return this.enemySpawner.getEnemiesInBiome(biomeId);
         }

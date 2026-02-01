@@ -41,6 +41,7 @@ This skill defines the complete process for generating game assets for Jurassic 
 | **Environment (walls)** | `reference/style_samples/building_forge_final_original.png` |
 | **Environment (bridges)** | `reference/style_samples/bridge.png` |
 | **Environment (furniture)** | `reference/style_samples/bench.png` |
+| **Ground Textures** | `reference/style_samples/grass.png` |
 | **Nodes (full)** | `reference/style_samples/medic_crate.png` |
 | **Nodes (consumed)** | Use the APPROVED full version of same node |
 
@@ -68,7 +69,7 @@ This skill defines the complete process for generating game assets for Jurassic 
 Always include in ALL prompts:
 - `stoneshard style`
 - `high fidelity pixel art`
-- `isolated on white background`
+- `isolated on white background` (EXCEPT for **Ground Textures** / **Backgrounds**)
 - `no particles, no VFX, no smoke, no fire`
 
 ### Forbidden Elements
@@ -179,9 +180,15 @@ sprite of [FLORA DESCRIPTION], game world vegetation, stoneshard style, high fid
 
 ### Nodes (Consumed/Depleted)
 > **PREREQUISITE**: Base node must be approved before generating consumed version
-> Use the APPROVED full version as reference image
+> > Use the APPROVED full version as reference image
 ```
 depleted [RESOURCE TYPE] with [DEPLETED STATE DESCRIPTION], top-down RPG asset, stoneshard style, high fidelity pixel art, harvested remains, isolated on white background, no text, no letters
+```
+
+### Ground Textures (Seamless)
+> **CRITICAL**: Must be TILING/SEAMLESS. No transparency. No white background.
+```
+don't make the reference image just use it as art style reference, ground texture of [DESCRIPTION], top-down game tile, stoneshard style, high fidelity pixel art
 ```
 
 ### Environment/Backgrounds
@@ -301,6 +308,11 @@ Apply these palettes when generating biome-specific assets. Each biome has **two
    ```powershell
    python scripts/generate_asset_manifest.py
    ```
+5. **Save the Prompt** (CRITICAL):
+   You MUST save the exact prompt used to generate the image.
+   *   Read the existing `tools/asset_prompts.json` file.
+   *   Add or update the key for the `asset_id` with the full prompt text.
+   *   Write the updated JSON back to `tools/asset_prompts.json`.
 
 ---
 

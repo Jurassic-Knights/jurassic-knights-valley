@@ -11,19 +11,22 @@ import { Logger } from '@core/Logger';
 import { Dinosaur } from '../../gameplay/Dinosaur';
 import { GameRenderer } from '@core/GameRenderer';
 import { GameConstants } from '@data/GameConstants';
-import { getConfig } from '@data/GameConfig';
 import { entityManager } from '@core/EntityManager';
+import type { Island } from '../../types/world';
+import { getConfig } from '@data/GameConfig';
+import { EntityTypes } from '@config/EntityTypes';
+import { SpawnManagerService } from '../SpawnManager';
 import { IslandUpgrades } from '../../gameplay/IslandUpgrades';
-import { IslandManager } from '../../world/IslandManager';
+import { IslandManagerService } from '../../world/IslandManager';
 import { Resource } from '../../gameplay/Resource';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { Registry } from '@core/Registry';
 import { MathUtils } from '@core/MathUtils';
 
 class ResourceSpawner {
-    spawnManager: any;
+    private spawnManager: SpawnManagerService;
 
-    constructor(spawnManager: any) {
+    constructor(spawnManager: SpawnManagerService) {
         this.spawnManager = spawnManager;
     }
 
@@ -31,9 +34,9 @@ class ResourceSpawner {
      * Spawn initial resources on islands (not in water)
      */
     spawnResources() {
-        if (!Resource || !GameRenderer || !this.spawnManager.game) return;
+        if (!Resource || !GameRenderer || !this.spawnManager.gameInstance) return;
 
-        const islandManager = this.spawnManager.game.getSystem('IslandManager');
+        const islandManager = this.spawnManager.gameInstance.getSystem('IslandManager') as IslandManagerService;
 
         if (islandManager) {
             const home = islandManager.getHomeIsland();
@@ -59,8 +62,8 @@ class ResourceSpawner {
         }
 
         // Get all unlocked islands (excluding home)
-        const islands = islandManager
-            ? islandManager.islands.filter((i: any) => i.type !== 'home' && i.unlocked)
+        const islands = islandManager && islandManager.islands
+            ? (islandManager.islands as Island[]).filter((i) => i.type !== 'home' && i.unlocked)
             : [];
 
         if (islands.length === 0) {
@@ -85,8 +88,8 @@ class ResourceSpawner {
     /**
      * Spawn resources in a grid pattern on a zone
      */
-    spawnResourcesGridOnIsland(island: any, count: number, startIndex: number = 0) {
-        if (!this.spawnManager.game || island.type === 'home') return;
+    spawnResourcesGridOnIsland(island: Island, count: number, startIndex: number = 0) {
+        if (!this.spawnManager.gameInstance || island.type === 'home') return;
 
         const type = island.resourceType || 'node_mining_t1_02'; // Default to Stone Pile
         const cols = GameConstants.Spawning.RESOURCE_GRID.COLS;
@@ -96,14 +99,14 @@ class ResourceSpawner {
         const maxRows = Math.ceil(15 / cols);
         const gridHeight = (maxRows - 1) * spacing;
 
-        const islandManager = this.spawnManager.game.getSystem('IslandManager');
+        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
         const bounds = islandManager ? islandManager.getPlayableBounds(island) : null;
         if (!bounds) return;
 
         let startX = bounds.x + (bounds.width - gridWidth) / 2;
         let startY = bounds.y + (bounds.height - gridHeight) / 2;
 
-        if (islandManager && islandManager.snapToGrid) {
+        if (islandManager && typeof islandManager.snapToGrid === 'function') {
             const snapped = islandManager.snapToGrid(startX, startY);
             startX = snapped.x;
             startY = snapped.y;
@@ -135,10 +138,10 @@ class ResourceSpawner {
     /**
      * Spawn dinosaurs randomly on an island
      */
-    spawnDinosaursOnIsland(island: any, count: number) {
-        if (!Dinosaur || !this.spawnManager.game) return;
+    spawnDinosaursOnIsland(island: Island, count: number) {
+        if (!Dinosaur || !this.spawnManager.gameInstance) return;
 
-        const islandManager = this.spawnManager.game.getSystem('IslandManager');
+        const islandManager = this.spawnManager.gameInstance.getSystem('IslandManager') as IslandManagerService;
         const padding = GameConstants.UI.PROP_SPAWN_PADDING || 70;
         const bounds = islandManager ? islandManager.getPlayableBounds(island) : null;
         if (!bounds) return;
@@ -183,12 +186,15 @@ class ResourceSpawner {
      * Spawn tree resources on home island in organic forest pattern
      */
     spawnHomeIslandTrees() {
-        if (!IslandManager || !Resource) return;
+        if (!Resource || !this.spawnManager.gameInstance) return;
 
-        const home = IslandManager.getHomeIsland();
+        const islandManager = this.spawnManager.gameInstance.getSystem('IslandManager') as IslandManagerService;
+        if (!islandManager) return;
+
+        const home = islandManager.getHomeIsland();
         if (!home) return;
 
-        const bounds = IslandManager.getPlayableBounds(home);
+        const bounds = islandManager.getPlayableBounds(home);
         if (!bounds) return;
 
         const treeConfig =

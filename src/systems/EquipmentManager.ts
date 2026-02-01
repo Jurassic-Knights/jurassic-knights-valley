@@ -10,6 +10,7 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { SetBonusesConfig } from '@config/SetBonusesConfig';
 import { EquipmentSlotsConfig } from '@config/EquipmentSlotsConfig';
+import type { ItemStats, EquipmentItem } from '../types/ui';
 
 class EquipmentManager {
     owner: any;
@@ -91,7 +92,7 @@ class EquipmentManager {
      * @param {Object} equipmentData - Full equipment object with id, stats, etc.
      * @returns {boolean} Success
      */
-    equip(slotId: string, equipmentData: any) {
+    equip(slotId: string, equipmentData: EquipmentItem) {
         if (!this.slots.hasOwnProperty(slotId)) {
             Logger.warn(`[EquipmentManager] Invalid slot: ${slotId}`);
             return false;
@@ -254,10 +255,10 @@ class EquipmentManager {
 
         // Build result
         for (const [setId, count] of Object.entries(setCounts) as [string, number][]) {
-            const set = (SetBonusesConfig.sets as any)[setId];
-            const activeBonuses: any = {};
+            const set = (SetBonusesConfig.sets as Record<string, { name: string; pieces: string[]; bonuses: Record<string, ItemStats> }>)[setId];
+            const activeBonuses: Partial<ItemStats> = {};
 
-            for (const [threshold, stats] of Object.entries(set.bonuses) as [string, any][]) {
+            for (const [threshold, stats] of Object.entries(set.bonuses) as [string, ItemStats][]) {
                 if (count >= parseInt(threshold)) {
                     Object.assign(activeBonuses, stats);
                 }

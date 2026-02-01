@@ -13,9 +13,51 @@ import { LightingSystem } from './LightingSystem';
 import { Registry } from '@core/Registry';
 import { MathUtils } from '@core/MathUtils';
 
+interface ProjectileConfig {
+    color: string;
+    coreColor: string;
+    size: number;
+    speed: number;
+    length: number;
+    glow?: boolean;
+    glowSize?: number;
+    trail?: boolean;
+    fade?: boolean;
+    pellets?: number;
+    spread?: number;
+}
+
+interface Projectile {
+    x: number;
+    y: number;
+    targetX: number;
+    targetY: number;
+    angle: number;
+    speed: number;
+    color: string;
+    coreColor: string;
+    size: number;
+    length: number;
+    glow: boolean;
+    glowSize: number;
+    trail: boolean;
+    fade: boolean;
+    distance: number;
+    traveled: number;
+    active: boolean;
+    alpha: number;
+}
+
+// Minimal interface for Hero entity to avoid circular dependency loop if IEntity is heavy
+interface IWeaponCarrier {
+    equipment?: {
+        getSlot?: (slot: string) => { id?: string; name?: string; weaponSubtype?: string; weaponType?: string };
+    };
+}
+
 const ProjectileVFX = {
     // Active projectiles
-    projectiles: [] as any[],
+    projectiles: [] as Projectile[],
 
     // Projectile visual configs by weapon subtype
     // Realistic tracer-style bullets with proper speed/size ratios
@@ -125,7 +167,7 @@ const ProjectileVFX = {
             glow: true,
             glowSize: 10
         }
-    },
+    } as Record<string, ProjectileConfig>,
 
     /**
      * Spawn projectile(s) from origin to target
@@ -134,13 +176,12 @@ const ProjectileVFX = {
      * @param {string} weaponType - Weapon subtype (pistol, rifle, etc)
      */
     spawn(origin: { x: number; y: number }, target: { x: number; y: number }, weaponType = 'pistol') {
-        const config = (this.configs as any)[weaponType] || this.configs.default;
+        const config = this.configs[weaponType] || this.configs.default;
 
         // Calculate trajectory
         const dx = target.x - origin.x;
         const dy = target.y - origin.y;
         const angle = Math.atan2(dy, dx);
-        const distance = MathUtils.distance(origin.x, origin.y, target.x, target.y);
 
         // Muzzle offset - distance from hero center to gun muzzle (top-right of weapon image)
         // After sprite rotation, the muzzle is aligned with the aim direction (baseAngle)
@@ -159,9 +200,7 @@ const ProjectileVFX = {
         const muzzleY = origin.y + Math.sin(angle) * muzzleOffset;
 
         // Calculate actual travel distance from muzzle to target
-        const travelDx = target.x - muzzleX;
-        const travelDy = target.y - muzzleY;
-        const travelDistance = MathUtils.distance(muzzleX, muzzleY, target.x, target.y);
+        const distance = MathUtils.distance(muzzleX, muzzleY, target.x, target.y);
 
         // Spawn muzzle flash
         this.spawnMuzzleFlash(muzzleX, muzzleY, angle, config);
@@ -170,27 +209,27 @@ const ProjectileVFX = {
         if (config.pellets) {
             // Shotgun: multiple pellets with spread
             for (let i = 0; i < config.pellets; i++) {
-                const spreadAngle = angle + (Math.random() - 0.5) * config.spread;
+                const spreadAngle = angle + (Math.random() - 0.5) * (config.spread || 0.35);
                 this.createProjectile(
                     muzzleX,
                     muzzleY,
                     spreadAngle,
-                    travelDistance,
+                    distance,
                     config,
                     target
                 );
             }
         } else {
             // Single projectile
-            this.createProjectile(muzzleX, muzzleY, angle, travelDistance, config, target);
+            this.createProjectile(muzzleX, muzzleY, angle, distance, config, target);
         }
     },
 
     /**
      * Create a single projectile
      */
-    createProjectile(x: number, y: number, angle: number, distance: number, config: any, target: { x: number; y: number }) {
-        const projectile = {
+    createProjectile(x: number, y: number, angle: number, distance: number, config: ProjectileConfig, target: { x: number; y: number }) {
+        const projectile: Projectile = {
             x: x,
             y: y,
             targetX: target.x,
@@ -218,7 +257,7 @@ const ProjectileVFX = {
      * Spawn realistic multi-layered muzzle flash VFX
      * Combines: bright core flash, directional sparks, and smoke
      */
-    spawnMuzzleFlash(x: number, y: number, angle: number, config: any) {
+    spawnMuzzleFlash(x: number, y: number, angle: number, config: ProjectileConfig) {
         if (!VFXController) return;
 
         // Layer 1: Bright white-hot core flash (instant)
@@ -427,7 +466,7 @@ const ProjectileVFX = {
      * @param {Object} hero - Hero entity
      * @returns {string} Weapon subtype (pistol, rifle, sword, etc)
      */
-    getWeaponType(hero: any) {
+    getWeaponType(hero: IWeaponCarrier) {
         if (!hero?.equipment) return 'pistol';
 
         // Check hand1 for weapon

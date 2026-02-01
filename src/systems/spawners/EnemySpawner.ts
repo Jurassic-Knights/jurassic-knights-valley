@@ -12,11 +12,24 @@ import { entityManager } from '@core/EntityManager';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EntityTypes } from '@config/EntityTypes';
 import { Enemy } from '../../gameplay/EnemyCore';
+import { IslandManagerService } from '../../world/IslandManager';
+import { SpawnManagerService } from '../SpawnManager';
+
+interface SpawnOptions {
+    groupId?: string;
+    waveId?: string;
+    level?: number;
+    forceNormal?: boolean;
+}
+
+interface BiomeOptions {
+    waveId?: string;
+}
 
 class EnemySpawner {
-    private spawnManager: any;
+    private spawnManager: SpawnManagerService;
 
-    constructor(spawnManager: any) {
+    constructor(spawnManager: SpawnManagerService) {
         this.spawnManager = spawnManager;
     }
 
@@ -29,7 +42,7 @@ class EnemySpawner {
             return;
         }
 
-        const islandManager = this.spawnManager.game?.getSystem('IslandManager');
+        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
         if (!islandManager) return;
 
         const home = islandManager.getHomeIsland();
@@ -45,14 +58,14 @@ class EnemySpawner {
     /**
      * Spawn a group of enemies at a location
      */
-    spawnEnemyGroup(biomeId: string, x: number, y: number, enemyId: string, count: number, options: any = {}) {
+    spawnEnemyGroup(biomeId: string, x: number, y: number, enemyId: string, count: number, options: SpawnOptions = {}) {
         if (!Enemy) {
             Logger.warn('[EnemySpawner] Enemy class not found');
             return [];
         }
 
         // Inline loot definitions matching entity JSON files
-        const enemyLoot: Record<string, any[]> = {
+        const enemyLoot: Record<string, { item: string; chance: number; amount: number | number[] }[]> = {
             // Dinosaurs - drop food and bone
             enemy_dinosaur_t1_01: [
                 { item: 'food_t1_02', chance: 0.6, amount: [1, 1] },
@@ -183,7 +196,7 @@ class EnemySpawner {
         const waveId = options.waveId || groupId;
         const spacing = BiomeConfig.Biome?.GROUP_SPACING || 50;
 
-        const enemies: any[] = [];
+        const enemies: Enemy[] = [];
 
         for (let i = 0; i < count; i++) {
             const offsetX = (Math.random() - 0.5) * spacing * 2;
@@ -226,7 +239,7 @@ class EnemySpawner {
     /**
      * Populate a biome area with enemy groups based on spawn table
      */
-    populateBiome(biomeId: string, bounds: any, options: any = {}) {
+    populateBiome(biomeId: string, bounds: { x: number; y: number; width: number; height: number }, options: BiomeOptions = {}) {
         if (!Enemy || !BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types]) {
             Logger.warn(`[EnemySpawner] Cannot populate biome: ${biomeId}`);
             return;

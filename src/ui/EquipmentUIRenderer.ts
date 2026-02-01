@@ -11,13 +11,17 @@ import { EntityRegistry } from '@entities/EntityLoader';
 import { Registry } from '@core/Registry';
 import { RenderConfig } from '@config/RenderConfig';
 
+import type { EquipmentItem } from '../types/ui';
+import type { EquipmentUI } from './EquipmentUI';
+import { EquipmentManager } from '../systems/EquipmentManager';
+
 class EquipmentUIRenderer {
     /**
      * Render the main equipment panel
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @returns {string} HTML string
      */
-    static renderPanel(ui: any) {
+    static renderPanel(ui: EquipmentUI) {
         const hero = GameInstance?.hero;
         const stats = hero?.components?.stats;
         const equipment = hero?.equipment;
@@ -33,12 +37,9 @@ class EquipmentUIRenderer {
         const speedBonus = equipment?.getStatBonus?.('speed') ?? 0;
 
         // Selected item stats
-        const item = ui.selectedItem;
+        const item = ui.selectedItem as EquipmentItem | null;
         const itemStats = item?.stats || {};
         const itemName = item?.name || 'Select Equipment';
-        const itemDamage = itemStats.damage || 0;
-        const itemArmor = itemStats.armor || 0;
-        const itemSpeed = itemStats.speed || 0;
 
         return `
             <div class="equip-panel">
@@ -49,14 +50,14 @@ class EquipmentUIRenderer {
                     </div>
                     <div class="equip-stats-panel">
                         <div class="equip-item-name">Knight</div>
-                        <div class="stat-row"><span class="stat-icon">??</span> HP <span class="stat-bar health"></span><span class="stat-value">${health}/${maxHealth}</span></div>
-                        <div class="stat-row"><span class="stat-icon">???</span> Armor <span class="stat-bar armor"></span><span class="stat-value">${defense}</span></div>
-                        <div class="stat-row"><span class="stat-icon">??</span> Attack <span class="stat-bar attack"></span><span class="stat-value">${attack}</span></div>
+                        <div class="stat-row"><span class="stat-icon">🛡️</span> HP <span class="stat-bar health"></span><span class="stat-value">${health}/${maxHealth}</span></div>
+                        <div class="stat-row"><span class="stat-icon">⚔️</span> Armor <span class="stat-bar armor"></span><span class="stat-value">${defense}</span></div>
+                        <div class="stat-row"><span class="stat-icon">🗡️</span> Attack <span class="stat-bar attack"></span><span class="stat-value">${attack}</span></div>
                         <div class="stat-grid">
-                            <div class="mini-stat"><span class="stat-icon">??</span> SPD <span>${speedBonus}</span></div>
-                            <div class="mini-stat"><span class="stat-icon">???</span> DEF <span>${defense}</span></div>
-                            <div class="mini-stat"><span class="stat-icon">??</span> CRIT <span>${critChance}%</span></div>
-                            <div class="mini-stat"><span class="stat-icon">??</span> RNG <span>${hand1Range}/${hand2Range}</span></div>
+                            <div class="mini-stat"><span class="stat-icon">👟</span> SPD <span>${speedBonus}</span></div>
+                            <div class="mini-stat"><span class="stat-icon">🛡️</span> DEF <span>${defense}</span></div>
+                            <div class="mini-stat"><span class="stat-icon">💥</span> CRIT <span>${critChance}%</span></div>
+                            <div class="mini-stat"><span class="stat-icon">🏹</span> RNG <span>${hand1Range}/${hand2Range}</span></div>
                         </div>
                     </div>
                 </div>
@@ -103,14 +104,14 @@ class EquipmentUIRenderer {
      * @param {EquipmentManager} equipment - Hero equipment manager
      * @returns {string} HTML string
      */
-    static renderEquippedSlots(ui: any, equipment: any) {
+    static renderEquippedSlots(ui: EquipmentUI, equipment: EquipmentManager) {
         // Tool mode: show 4 dedicated tool slots in a single row
         if (ui.selectedMode === 'tool') {
             const toolSlotLabels: Record<string, string> = {
-                tool_mining: '?? Mining',
-                tool_woodcutting: '?? Woodcut',
-                tool_harvesting: '?? Harvest',
-                tool_fishing: '?? Fishing'
+                tool_mining: '⛏️ Mining',
+                tool_woodcutting: '🪓 Woodcut',
+                tool_harvesting: '🌾 Harvest',
+                tool_fishing: '🎣 Fishing'
             };
 
             return `
@@ -178,7 +179,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentManager} equipment - Hero equipment manager
      * @returns {string} HTML string
      */
-    static renderSlot(ui: any, slotId: string, label: string, equipment: any) {
+    static renderSlot(ui: EquipmentUI, slotId: string, label: string, equipment: EquipmentManager) {
         const item = equipment?.getSlot?.(slotId);
         const imgPath = item ? EquipmentUIRenderer.getItemIcon(item.id) : '';
 
@@ -226,9 +227,9 @@ class EquipmentUIRenderer {
      * @param {EquipmentUI} ui - The EquipmentUI instance
      * @returns {string} HTML string
      */
-    static renderInventoryGrid(ui: any) {
+    static renderInventoryGrid(ui: EquipmentUI) {
         // cachedEquipment is already filtered by _loadEquipment based on mode + category + modifier
-        const filtered = ui.cachedEquipment;
+        const filtered = ui.cachedEquipment as EquipmentItem[];
 
         if (filtered.length === 0) {
             return '<div class="empty-inventory">No equipment available</div>';
@@ -238,7 +239,7 @@ class EquipmentUIRenderer {
             <div class="inventory-grid">
                 ${filtered
                 .map(
-                    (item: any) => `
+                    (item: EquipmentItem) => `
                     <div class="inventory-item ${ui.selectedItem?.id === item.id ? 'selected' : ''}" data-id="${item.id}">
                         <div class="item-icon" style="background-image: url('${EquipmentUIRenderer.getItemIcon(item.id)}')"></div>
                     </div>
@@ -287,10 +288,10 @@ class EquipmentUIRenderer {
      * @param {HTMLElement} container - Container element
      */
     static loadIcons(container: HTMLElement) {
-        const loader = AssetLoader as any;
-        if (loader?.loadIcons) {
-            loader.loadIcons(container);
-        }
+        // const loader = AssetLoader as any;
+        // if (loader?.loadIcons) {
+        //     loader.loadIcons(container);
+        // }
 
         // Also load hero skin portrait
         const skinEl = container.querySelector('.character-sprite[data-skin-id]') as HTMLElement;
@@ -298,7 +299,7 @@ class EquipmentUIRenderer {
             const skinId = skinEl.dataset.skinId;
             const path = EquipmentUIRenderer.getSkinImagePath(skinId);
             if (path) {
-                skinEl.style.backgroundImage = `url(${path})`;
+                skinEl.style.backgroundImage = `url('${path}')`;
                 skinEl.style.backgroundSize = 'cover';
                 skinEl.style.backgroundPosition = 'center';
             }
@@ -311,12 +312,12 @@ class EquipmentUIRenderer {
      * @param {EquipmentItem} item - Equipment item
      * @returns {string} HTML string
      */
-    static renderItemStats(item: any) {
+    static renderItemStats(item: EquipmentItem) {
         if (!item?.stats) {
             return '<div class="summary-stat empty">No stats</div>';
         }
 
-        const stats = item.stats;
+        const stats = item.stats as Record<string, number>;
         const type = item.type || item.sourceFile;
 
         // Define stats to show based on equipment type
@@ -389,7 +390,7 @@ class EquipmentUIRenderer {
 
 // Export
 if (typeof window !== 'undefined') {
-    (window as any).EquipmentUIRenderer = EquipmentUIRenderer;
+    (window as Window).EquipmentUIRenderer = EquipmentUIRenderer;
 }
 
 // ES6 Module Export

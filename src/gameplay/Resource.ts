@@ -11,6 +11,7 @@ import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
+import { IEntity } from '../types/core';
 import { spawnManager } from '@systems/SpawnManager';
 import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { GameConstants, getConfig } from '@data/GameConstants';
@@ -153,8 +154,8 @@ class Resource extends Entity {
      * @param {Hero} hero
      * @returns {boolean}
      */
-    isInRange(hero: { x: number; y: number }) {
-        return this.active && this.state === 'ready' && this.distanceTo(hero as any) < this.interactRadius;
+    isInRange(hero: IEntity) {
+        return this.active && this.state === 'ready' && this.distanceTo(hero) < this.interactRadius;
     }
 
     /**
@@ -209,9 +210,7 @@ class Resource extends Entity {
 
             // Look up respawn time from upgrades if possible
             if (IslandUpgrades && this.islandGridX !== undefined) {
-                const baseTime = (Resource as any).TYPES[this.resourceType]
-                    ? (Resource as any).TYPES[this.resourceType].baseRespawnTime
-                    : 30;
+                const baseTime = (Resource.TYPES[this.resourceType] as any)?.baseRespawnTime || 30;
                 this.maxRespawnTime = IslandUpgrades.getRespawnTime(
                     this.islandGridX,
                     this.islandGridY,

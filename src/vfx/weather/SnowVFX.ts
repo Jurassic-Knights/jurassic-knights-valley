@@ -3,9 +3,23 @@
  * Handles gently falling circles with sine-wave drift.
  * Simulates world-space persistence by shifting particles opposite to camera movement.
  */
+interface SnowParticle {
+    x: number;
+    y: number;
+    size: number;
+    speed: number;
+    driftOffset: number;
+    driftSpeed: number;
+}
+
+/**
+ * SnowVFX - Modular Weather Effect
+ * Handles gently falling circles with sine-wave drift.
+ * Simulates world-space persistence by shifting particles opposite to camera movement.
+ */
 class SnowVFX {
     active: boolean;
-    particles: any[];
+    particles: SnowParticle[];
     count: number;
     speedBase: number;
 

@@ -140,7 +140,7 @@ class BossSystem {
             grasslands: { x: offsetX + 5500, y: offsetY + 3000 }, // Near east edge of Ironhaven
             tundra: { x: offsetX + 3000, y: offsetY + 5500 }, // Near south edge of Ironhaven
             desert: { x: offsetX + 5500, y: offsetY + 5500 }, // Southeast of Ironhaven
-            lava_crags: { x: offsetX + 3000, y: offsetY + 3000 } // Center of Ironhaven (for testing)
+            badlands: { x: offsetX + 3000, y: offsetY + 3000 } // Center of Ironhaven (for testing)
         };
 
         return (defaults as Record<string, any>)[biomeId] || { x: offsetX + 3500, y: offsetY + 3500 };

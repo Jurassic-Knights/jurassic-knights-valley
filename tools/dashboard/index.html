@@ -33,6 +33,7 @@
                 <h3>World</h3>
                 <button class="nav-item" data-action="navigate-category" data-category="environment">🌲
                     Environment</button>
+                <button class="nav-item" data-action="navigate-category" data-category="ground">⛰️ Ground</button>
                 <button class="nav-item" data-action="navigate-category" data-category="nodes">⛏️ Nodes</button>
                 <button class="nav-item" data-action="navigate-category" data-category="buildings">🏠 Buildings</button>
             </div>
@@ -99,19 +100,65 @@
         </aside>
     </div>
 
-    <!-- Map Editor Container (Full Screen Overlay) -->
+    <!-- Map Editor Container (Full Screen Overlay, restricted to logic area) -->
+    <!-- Left 260px matches --sidebar-width in style.css -->
     <div id="map-editor-container"
-        style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#1a1a1a; z-index:200;">
+        style="display:none; position:fixed; top:0; left:260px; right:0; bottom:0; background:#1a1a1a; z-index:50;">
         <div id="map-editor-sidebar"
-            style="position:absolute; top:0; left:0; width:300px; bottom:0; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd;">
-            <h3>Asset Palette</h3>
-            <div id="palette-content"></div>
+            style="position:absolute; top:0; left:0; width:300px; bottom:0; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd; display:flex; flex-direction:column;">
+
+            <!-- Mode Toggle -->
+            <div
+                style="display:flex; gap:0; margin-bottom:10px; border:1px solid #444; border-radius:4px; overflow:hidden;">
+                <button id="mode-object" data-action="set-editor-mode" data-mode="object"
+                    style="flex:1; padding:8px; border:none; background:#444; color:white; cursor:pointer; font-weight:bold;">OBJECTS</button>
+                <button id="mode-zone" data-action="set-editor-mode" data-mode="zone"
+                    style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer;">ZONES</button>
+            </div>
+
+            <!-- Zone Category (Only visible in Zone Mode via JS) -->
+            <div id="zone-controls" style="display:none; margin-bottom:10px;">
+                <label style="font-size:10px; color:#888; display:block; margin-bottom:4px;">CATEGORY</label>
+                <select id="zone-category-select"
+                    style="width:100%; padding:6px; background:#111; color:white; border:1px solid #444; border-radius:4px;">
+                    <!-- Populated by JS -->
+                </select>
+
+                <div style="margin-top:10px; border-top:1px solid #444; padding-top:10px;">
+                    <label style="font-size:10px; color:#888; display:block; margin-bottom:4px;">VISIBILITY
+                        FILTERS</label>
+                    <div id="zone-visibility-filters" style="display:flex; flex-direction:column; gap:4px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <h3>Palette</h3>
+            <div id="palette-content" style="flex:1; overflow-y:auto;"></div>
         </div>
         <div id="map-editor-canvas" style="position:absolute; top:0; left:300px; right:0; bottom:0; overflow:hidden;">
         </div>
         <div id="map-editor-toolbar"
-            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white;">
-            <div>Coords: <span id="cursor-coords">0, 0</span></div>
+            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; display:flex; gap:10px; align-items:center;">
+
+            <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
+                <span style="font-size:12px;">Brush:</span>
+                <input type="range" id="editor-brush-size" min="1" max="64" value="1" style="width:80px;">
+                <span id="editor-brush-val" style="font-size:12px; min-width:20px;">1</span>
+            </div>
+
+            <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+
+            <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
+                <span style="font-size:12px;">Grid:</span>
+                <input type="range" id="editor-grid-opacity" min="0" max="100" value="50" style="width:60px;">
+                <span id="editor-grid-val" style="font-size:12px; min-width:25px;">50%</span>
+            </div>
+
+            <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+
+            <div style="font-family: monospace;">Coords: <span id="cursor-coords"
+                    style="display:inline-block; width:100px; text-align:right;">0, 0</span></div>
             <button data-action="save-map-data">💾 Save</button>
             <button data-action="toggle-map-editor">❌ Close</button>
         </div>

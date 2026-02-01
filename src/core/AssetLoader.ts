@@ -14,6 +14,7 @@ import { Registry } from './Registry';
 import { DOMUtils } from './DOMUtils';
 import { AssetManifest } from '@config/AssetManifest';
 import { GameConstants } from '@data/GameConstants';
+import { ParticleOptions } from '../types/vfx';
 
 // VFXController accessed lazily to avoid circular imports
 
@@ -246,13 +247,14 @@ const AssetLoader = {
             'environment'
         ];
 
-        for (const category of categories) {
+        for (const cat of categories) {
+            const category = cat as keyof typeof EntityRegistry;
             const registry = EntityRegistry[category];
             if (!registry) continue;
 
             // Direct ID match
             if (registry[id]?.files) {
-                return this._selectBestPath(registry[id].files);
+                return this._selectBestPath((registry[id]!.files as Record<string, string>));
             }
 
             // Try with category prefix (e.g., "dinosaur_t1_01" → "enemy_dinosaur_t1_01")
@@ -261,7 +263,7 @@ const AssetLoader = {
 
         // Special case: hero
         if (id === 'hero' && EntityRegistry.hero?.files) {
-            return this._selectBestPath(EntityRegistry.hero.files);
+            return this._selectBestPath((EntityRegistry.hero.files as Record<string, string>));
         }
 
         return null;
@@ -379,7 +381,12 @@ const AssetLoader = {
      * @param {string} id
      * @returns {object|null}
      */
-    getAudio(id: string): any {
+    /**
+     * Get audio config (placeholder for future BGM/ambient)
+     * @param {string} id
+     * @returns {null}
+     */
+    getAudio(_id: string): null {
         // Procedural audio handled by ProceduralSFX.js
         // This is only for pre-recorded files (BGM, ambient)
         return null;
@@ -388,10 +395,11 @@ const AssetLoader = {
     /**
      * Get VFX preset (delegates to VFXController)
      * @param {string} id
-     * @returns {object|null}
+     * @returns {ParticleOptions|null}
      */
-    getVFXPreset(id: string) {
-        return (VFXController?.presets as any)?.[id] || null;
+    getVFXPreset(id: string): ParticleOptions | null {
+        const presets = VFXController?.presets;
+        return presets?.[id] || null;
     }
 };
 

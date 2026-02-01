@@ -23,7 +23,14 @@ import { ContextActionUI } from './ContextActionUI';
 import { GameInstance } from '@core/Game';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { HeroSkinSelector } from './HeroSkinSelector';
-import type { EquipmentItem } from '../types/ui';
+import type { EquipmentItem, IFooterConfig } from '../types/ui';
+
+interface FilterCategory {
+    id: string;
+    label: string;
+    iconId?: string;
+    children?: FilterCategory[];
+}
 
 class EquipmentUI {
     // Property declarations
@@ -38,10 +45,10 @@ class EquipmentUI {
     slotSelectionMode: boolean;
     pendingEquipItem: EquipmentItem | null;
     targetEquipSet: number;
-    originalFooterConfigs: any = null;
+    originalFooterConfigs: IFooterConfig | null = null;
     slots: string[];
     toolSlots: string[];
-    modeCategories: Record<string, { id: string; label: string }[]>;
+    modeCategories: Record<string, FilterCategory[]>;
 
     constructor() {
         this.isOpen = false;
@@ -66,7 +73,12 @@ class EquipmentUI {
         this.originalFooterConfigs = null;
 
         // Use centralized slot definitions from GameConstants
-        const equipCfg = (GameConstants as any)?.Equipment || {};
+        const equipCfg = (GameConstants as unknown as {
+            Equipment: {
+                ALL_SLOTS: string[];
+                TOOL_SLOTS: string[];
+            };
+        })?.Equipment || { ALL_SLOTS: undefined, TOOL_SLOTS: undefined };
         this.slots = equipCfg.ALL_SLOTS || [
             'head',
             'body',
@@ -536,9 +548,9 @@ class EquipmentUI {
     /**
      * Get hierarchy filter data based on selected mode
      */
-    _getFilterHierarchy() {
+    _getFilterHierarchy(): FilterCategory[] {
         Logger.info(`[EquipmentUI] _getFilterHierarchy: selectedMode=${this.selectedMode}`);
-        const rootCategories: any[] = [];
+        const rootCategories: FilterCategory[] = [];
 
         if (this.selectedMode === 'weapon') {
             rootCategories.push(

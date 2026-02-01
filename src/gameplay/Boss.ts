@@ -12,6 +12,7 @@ import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
+import type { HealthComponent } from '../types/core';
 
 import { Enemy } from './EnemyCore';
 import { Registry } from '@core/Registry';
@@ -133,7 +134,7 @@ class Boss extends Enemy {
 
         // Sync HealthComponent (Fix for HP Bar)
         if (this.components.health) {
-            this.health = this.components.health.health;
+            this.health = (this.components.health as unknown as HealthComponent).health;
         }
 
         if (this.attackCooldown > 0) {

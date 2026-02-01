@@ -7,10 +7,12 @@
 import { Logger } from '@core/Logger';
 import { InventoryUI } from '../InventoryUI';
 import { Registry } from '@core/Registry';
+import type { UIManagerService } from '../UIManager';
+import type { IUIPanel } from '../../types/ui';
 
 class BaseLayout {
-    ui: any;
-    constructor(uiManager: any) {
+    ui: UIManagerService;
+    constructor(uiManager: UIManagerService) {
         this.ui = uiManager;
     }
 
@@ -23,7 +25,7 @@ class BaseLayout {
     }
 
     // Default implementation: do nothing
-    onGridUpdate() {}
+    onGridUpdate() { }
 }
 
 /**
@@ -39,7 +41,7 @@ class MobileLayout extends BaseLayout {
 
         // Apply Layout to all registered panels
         if (this.ui.panels) {
-            this.ui.panels.forEach((panel: any) => panel.applyLayout('mobile'));
+            this.ui.panels.forEach((panel: IUIPanel) => panel.applyLayout('mobile'));
         }
 
         // Update Inventory Grid (Specific Logic can remain or move to panel)
@@ -63,7 +65,7 @@ class DesktopLayout extends BaseLayout {
 
         // Apply Layout to all registered panels
         if (this.ui.panels) {
-            this.ui.panels.forEach((panel: any) => panel.applyLayout('desktop'));
+            this.ui.panels.forEach((panel: IUIPanel) => panel.applyLayout('desktop'));
         }
 
         // Update Inventory Grid

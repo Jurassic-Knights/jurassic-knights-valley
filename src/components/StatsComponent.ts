@@ -27,6 +27,12 @@ class StatsComponent extends Component {
     level: number = 1;
     xp: number = 0;
     xpToNextLevel: number = 100;
+    get nextLevelXp(): number { return this.xpToNextLevel; }
+    set nextLevelXp(val: number) { this.xpToNextLevel = val; }
+    strength: number = 10;
+    dexterity: number = 10;
+    constitution: number = 10;
+    intelligence: number = 10;
     xpScaling: number = 1.5;
 
     constructor(parent: any, config: any = {}) {
@@ -117,6 +123,10 @@ class StatsComponent extends Component {
     getXPProgress() {
         const required = this.getXPForLevel(this.level);
         return this.xp / required;
+    }
+
+    getStat(name: string): number {
+        return (this as any)[name] || 0;
     }
 }
 

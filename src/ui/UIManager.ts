@@ -26,14 +26,19 @@ import { GameInstance } from '@core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
 import { HUDController } from './controllers/HUDController';
 import type { Island } from '../types/world';
-import type { UIPanelConfig } from '../types/ui';
+import type { IUIPanel, IQuest } from '../types/ui';
+
+interface IFullscreenUI {
+    isOpen: boolean;
+    close(): void;
+}
 
 class UIManagerService {
     // Property declarations
     initialized: boolean = false;
     currentUnlockTarget: Island | null = null;
-    panels: Map<string, UIPanelConfig> = new Map();
-    fullscreenUIs: Set<UIPanelConfig> = new Set();
+    panels: Map<string, IUIPanel> = new Map();
+    fullscreenUIs: Set<IFullscreenUI> = new Set();
     currentStrategy: {
         apply?(container: HTMLElement): void;
         enter?(): void;
@@ -56,7 +61,7 @@ class UIManagerService {
             );
             this.onPlatformChange(PlatformManager.getConfig());
         } else if (ResponsiveManager) {
-            ResponsiveManager.on('change', (data: { breakpoint: string }) =>
+            ResponsiveManager.on('change', (data: { format: string; orientation?: string; breakpoint?: string }) =>
                 this.onResponsiveChange(data)
             );
         }
@@ -213,7 +218,7 @@ class UIManagerService {
     }
 
     // === Platform/Layout ===
-    onPlatformChange(config: any) {
+    onPlatformChange(_config: unknown) {
         const format = PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile';
         Logger.debug(
             '[UIManager]',
@@ -222,7 +227,7 @@ class UIManagerService {
         this.applyLayout(format);
     }
 
-    onResponsiveChange(data: any) {
+    onResponsiveChange(data: { format: string; orientation?: string; breakpoint?: string }) {
         if (PlatformManager?.isManualOverride) return;
         Logger.debug('[UIManager]', `Format changed: ${data.format} (${data.orientation})`);
         this.applyLayout(data.format);
@@ -242,7 +247,7 @@ class UIManagerService {
     }
 
     // === Quest Panel ===
-    updateQuest(quest: any, animate = false) {
+    updateQuest(quest: IQuest | null, animate = false) {
         if (!quest) {
             this.hideQuestPanel();
             return;
@@ -278,7 +283,7 @@ class UIManagerService {
     }
 
     // === Screen Fade ===
-    fadeInOut(onMidpoint: any) {
+    fadeInOut(onMidpoint: (() => void) | null) {
         const overlay = document.getElementById('fade-overlay');
         if (!overlay) {
             if (onMidpoint) onMidpoint();
@@ -295,7 +300,7 @@ class UIManagerService {
     }
 
     // === Panel Registry ===
-    registerPanel(panel: any) {
+    registerPanel(panel: IUIPanel) {
         if (!this.panels.has(panel.id)) {
             this.panels.set(panel.id, panel);
             Logger.debug('[UIManager]', `Registered panel: ${panel.id}`);
@@ -310,11 +315,11 @@ class UIManagerService {
         }
     }
 
-    getPanel(id: string) {
+    getPanel(id: string): IUIPanel | undefined {
         return this.panels.get(id);
     }
 
-    handleAccordion(openingPanel: any) {
+    handleAccordion(openingPanel: IUIPanel) {
         this.panels.forEach((panel) => {
             if (
                 panel !== openingPanel &&
@@ -332,7 +337,7 @@ class UIManagerService {
      * Register a fullscreen UI (call in the UI's constructor)
      * @param {Object} ui - UI object with isOpen and close() method
      */
-    registerFullscreenUI(ui: any) {
+    registerFullscreenUI(ui: IFullscreenUI) {
         this.fullscreenUIs.add(ui);
     }
 
@@ -340,7 +345,7 @@ class UIManagerService {
      * Close all other fullscreen UIs except the one being opened
      * @param {Object} exceptUI - The UI that should remain open
      */
-    closeOtherFullscreenUIs(exceptUI: any) {
+    closeOtherFullscreenUIs(exceptUI: IFullscreenUI) {
         this.fullscreenUIs.forEach((ui) => {
             if (ui !== exceptUI && ui.isOpen && typeof ui.close === 'function') {
                 ui.close();

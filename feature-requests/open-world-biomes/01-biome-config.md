@@ -62,11 +62,25 @@ const BiomeConfig = {
             difficulty: 3,
             levelRange: { min: 20, max: 30 },
         },
-        lava_crags: {
-            id: 'lava_crags',
-            name: 'The Burning Crags',
+        badlands: {
+            id: 'badlands',
+            name: 'The Badlands',
+            description: 'Volcanic hellscape, ash, obsidian, fire.',
             difficulty: 4,
             levelRange: { min: 30, max: 40 },
+            visualTheme: {
+                groundColor: '#2F2F2F',
+                ambientColor: '#FF4500',
+                fogDensity: 0.2
+            },
+            enemySpawnTable: [
+                // Placeholder for specific badlands enemies
+                { enemyId: 'saurian_elite', weight: 50, groupSize: { min: 1, max: 3 } },
+                { enemyId: 'lava_golem', weight: 30, groupSize: { min: 1, max: 1 } },
+                { enemyId: 'fire_drake_hatchling', weight: 20, groupSize: { min: 1, max: 2 } }
+            ],
+            bossId: 'badlands_titan',
+            bossRespawnTime: 600 // 10 minutes
         }
     },
     

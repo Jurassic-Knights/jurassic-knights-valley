@@ -17,9 +17,11 @@ import {
     buildDropsHtml,
     buildRecipeHtml,
     buildSourceHtml,
+    buildUsageHtml,
     buildResourceDropHtml,
     buildOtherFieldsHtml,
-    buildFilePathsHtml
+    buildFilePathsHtml,
+    buildPromptHtml
 } from './builders';
 
 export function renderInspector(): void {
@@ -65,6 +67,10 @@ export function renderInspector(): void {
     const imgSrc = asset.files?.clean || asset.files?.original || '/images/PH.png';
     const displaySrc = imgSrc.startsWith('assets/') ? imgSrc.replace('assets/', '/') : imgSrc;
 
+    // Upload Target: Prefer Original
+    const rawOriginal = asset.files?.original || asset.files?.clean || '/images/PH.png';
+    const uploadSrc = rawOriginal.startsWith('assets/') ? rawOriginal.replace('assets/', '/') : rawOriginal;
+
     container.innerHTML = `
         <div class="inspector-header">
             <h2 class="inspector-title">${asset.name || asset.id}</h2>
@@ -75,7 +81,7 @@ export function renderInspector(): void {
             </div>
         </div>
 
-        <div style="text-align:center; margin-bottom:20px; background:#111; padding:10px; border-radius:6px;">
+        <div style="text-align:center; margin-bottom:20px; background:#111; padding:10px; border-radius:6px;" data-action="image-drop-zone" data-path="${uploadSrc}" data-id="${asset.id}">
             <img src="${displaySrc}${asset?.id && imageParams[asset.id] ? '?t=' + imageParams[asset.id] : ''}" style="max-width:100%; max-height:200px; object-fit:contain;">
         </div>
 
@@ -97,6 +103,7 @@ export function renderInspector(): void {
 
         <div id="tab-data" class="tab-content" style="display:${currentInspectorTab === 'data' ? 'block' : 'none'};">
             ${buildStatsHtml(asset, fileName)}
+            ${buildPromptHtml(asset)}
             <div class="field-group">
                 <label class="field-label">Display Config (JSON)</label>
                 <textarea class="field-textarea" readonly style="color:#aaa; font-family:monospace;">${JSON.stringify(asset.display || {}, null, 2)}</textarea>
@@ -106,6 +113,7 @@ export function renderInspector(): void {
 
         <div id="tab-relations" class="tab-content" style="display:${currentInspectorTab === 'relations' ? 'block' : 'none'};">
             ${buildDropsHtml(asset)}
+            ${buildUsageHtml(asset)}
             ${buildRecipeHtml(asset)}
             ${buildSourceHtml(asset)}
             ${buildResourceDropHtml(asset)}

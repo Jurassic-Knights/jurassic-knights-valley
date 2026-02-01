@@ -15,11 +15,42 @@ import { RainVFX } from '@vfx/weather/RainVFX';
 import { SnowVFX } from '@vfx/weather/SnowVFX';
 import { IGame, IViewport } from '@app-types/core';
 
+interface LightningBolt {
+    points: { x: number; y: number }[];
+    life: number;
+}
+
+interface LightningState {
+    timer: number;
+    flashAlpha: number;
+    bolt: LightningBolt | null;
+    boltColor: string;
+}
+
+interface WindState {
+    currentX: number;
+    targetX: number;
+    baseX: number;
+    gusting: boolean;
+    timer: number;
+}
+
+interface LightingKeyframe {
+    time: number;
+    color: { r: number; g: number; b: number };
+    alpha: number;
+}
+
+interface VFXModules {
+    RAIN: RainVFX | null;
+    SNOW: SnowVFX | null;
+}
+
 class EnvironmentRenderer {
     // Canvas references
     canvas: HTMLCanvasElement | null = null;
     ctx: CanvasRenderingContext2D | null = null;
-    game: any = null;
+    game: IGame | null = null;
 
     // Ambient Lighting State
     ambientColor: string = 'rgba(0,0,0,0)';
@@ -38,7 +69,7 @@ class EnvironmentRenderer {
     weatherType: string = 'CLEAR';
 
     // Lightning State
-    lightning: any = {
+    lightning: LightningState = {
         timer: 0,
         flashAlpha: 0,
         bolt: null,
@@ -46,7 +77,7 @@ class EnvironmentRenderer {
     };
 
     // Wind State (Gust System)
-    wind: any = {
+    wind: WindState = {
         currentX: 0,
         targetX: 0,
         baseX: 10,
@@ -55,7 +86,7 @@ class EnvironmentRenderer {
     };
 
     // Lighting Keyframes
-    lightingSchedule: any[] = [
+    lightingSchedule: LightingKeyframe[] = [
         { time: 0.0, color: { r: 10, g: 10, b: 35 }, alpha: 0.85 },
         { time: 0.05, color: { r: 10, g: 10, b: 35 }, alpha: 0.7 },
         { time: 0.1, color: { r: 255, g: 100, b: 50 }, alpha: 0.3 },
@@ -68,7 +99,7 @@ class EnvironmentRenderer {
     ];
 
     // Weather Modules
-    vfx: any = {
+    vfx: VFXModules = {
         RAIN: null,
         SNOW: null
     };
@@ -82,8 +113,8 @@ class EnvironmentRenderer {
 
         // Listen for Time Ticks to update lighting state
         if (EventBus && GameConstants) {
-            EventBus.on(GameConstants.Events.TIME_TICK, (data: any) => this.updateLighting(data));
-            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: any) =>
+            EventBus.on(GameConstants.Events.TIME_TICK, (data: { dayTime: number }) => this.updateLighting(data));
+            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: { type: string }) =>
                 this.setWeather(data.type)
             );
         }
@@ -139,7 +170,7 @@ class EnvironmentRenderer {
         let viewport = null;
 
         if (this.game) {
-            const renderer = this.game.getSystem('GameRenderer');
+            const renderer = this.game.getSystem<typeof GameRenderer>('GameRenderer');
             if (renderer) {
                 // Force update camera to get latest world position (minimizes lag)
                 if (typeof renderer.updateCamera === 'function') {
@@ -204,7 +235,7 @@ class EnvironmentRenderer {
         // Ensure ctx is available
         if (!this.ctx) {
             if (this.game) {
-                const renderer = this.game.getSystem('GameRenderer');
+                const renderer = this.game.getSystem<typeof GameRenderer>('GameRenderer');
                 if (renderer && renderer.ctx) {
                     this.ctx = renderer.ctx;
                 }
@@ -295,7 +326,7 @@ class EnvironmentRenderer {
         // Add some noise to currentX? Maybe later for micro-turbulence.
     }
 
-    updateLighting(data: any) {
+    updateLighting(data: { dayTime: number }) {
         const t = data.dayTime;
         const schedule = this.lightingSchedule;
 

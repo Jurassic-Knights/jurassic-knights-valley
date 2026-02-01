@@ -108,7 +108,7 @@ class Merchant extends Entity {
     isInRange(hero: any) {
         if (!this.active || !hero) return false;
         // Read from config for live dashboard updates
-        const radius = (getConfig() as any).Interaction?.MERCHANT_RADIUS || this.interactRadius;
+        const radius = getConfig().Interaction?.MERCHANT_RADIUS || this.interactRadius;
         return this.distanceTo(hero) < radius;
     }
 

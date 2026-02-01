@@ -7,6 +7,7 @@
  *          triggerPackAggro, die, respawn
  */
 
+import { Entity } from '@core/Entity';
 import { Enemy } from './EnemyCore';
 import { Logger } from '@core/Logger';
 import { entityManager as EntityManager } from '@core/EntityManager';
@@ -26,7 +27,7 @@ import { MathUtils } from '@core/MathUtils';
 
 import { Registry } from '@core/Registry';
 
-Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
+Enemy.prototype.moveAlongPath = function (this: Enemy, targetX: number, targetY: number, speed: number, dt: number) {
     const distToTarget = MathUtils.distance(this.x, this.y, targetX, targetY);
 
     if (distToTarget < 20) {
@@ -94,7 +95,7 @@ Enemy.prototype.moveAlongPath = function (targetX, targetY, speed, dt) {
 /**
  * Fallback direct movement (when pathfinding unavailable)
  */
-Enemy.prototype.moveDirectly = function (targetX, targetY, speed, dt) {
+Enemy.prototype.moveDirectly = function (this: Enemy, targetX: number, targetY: number, speed: number, dt: number) {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
     const dist = MathUtils.distance(this.x, this.y, targetX, targetY);
@@ -119,13 +120,13 @@ Enemy.prototype.moveDirectly = function (targetX, targetY, speed, dt) {
 /**
  * Basic wander behavior with aggro detection
  */
-Enemy.prototype.updateWander = function (dt) {
+Enemy.prototype.updateWander = function (this: Enemy, dt: number) {
     const hero = EntityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
     if (hero && !hero.isDead) {
         const dist = MathUtils.distance(this.x, this.y, hero.x, hero.y);
 
         if (dist <= this.aggroRange) {
-            this.target = hero;
+            this.target = hero as any;
             this.state = 'chase';
 
             if (AudioManager) {
@@ -162,7 +163,7 @@ Enemy.prototype.updateWander = function (dt) {
 /**
  * Chase behavior
  */
-Enemy.prototype.updateChase = function (dt) {
+Enemy.prototype.updateChase = function (this: Enemy, dt: number) {
     if (!this.target) {
         this.state = 'returning';
         return;
@@ -188,7 +189,7 @@ Enemy.prototype.updateChase = function (dt) {
 /**
  * Attack behavior
  */
-Enemy.prototype.updateAttack = function (dt) {
+Enemy.prototype.updateAttack = function (this: Enemy, dt: number) {
     if (!this.target) {
         this.state = 'wander';
         return;
@@ -210,7 +211,7 @@ Enemy.prototype.updateAttack = function (dt) {
 /**
  * Perform attack on target
  */
-Enemy.prototype.performAttack = function () {
+Enemy.prototype.performAttack = function (this: Enemy) {
     if (!this.target) return;
 
     if (EventBus && GameConstants?.Events) {
@@ -227,15 +228,15 @@ Enemy.prototype.performAttack = function () {
         AudioManager.playSFX(attackSfx);
     }
 
-    if (this.target.takeDamage) {
-        this.target.takeDamage(this.damage, this);
+    if ((this.target as any).takeDamage) {
+        (this.target as any).takeDamage(this.damage, this);
     }
 };
 
 /**
  * Return to spawn point
  */
-Enemy.prototype.updateReturning = function (dt) {
+Enemy.prototype.updateReturning = function (this: Enemy, dt: number) {
     const dx = this.spawnX - this.x;
     const dy = this.spawnY - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
@@ -256,7 +257,7 @@ Enemy.prototype.updateReturning = function (dt) {
 /**
  * Take damage from an attack
  */
-Enemy.prototype.takeDamage = function (amount, source = null) {
+Enemy.prototype.takeDamage = function (this: Enemy, amount: number, source: Entity | null = null) {
     if (this.isDead) return false;
 
     this.health -= amount;
@@ -307,7 +308,7 @@ Enemy.prototype.takeDamage = function (amount, source = null) {
 /**
  * Trigger pack aggro for group members
  */
-Enemy.prototype.triggerPackAggro = function (target) {
+Enemy.prototype.triggerPackAggro = function (this: Enemy, target: Entity) {
     if (!EntityManager || !this.groupId) return;
 
     const packRadius =
@@ -338,7 +339,7 @@ Enemy.prototype.triggerPackAggro = function (target) {
 /**
  * Handle enemy death
  */
-Enemy.prototype.die = function (killer = null) {
+Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
     this.isDead = true;
     this.active = false;
     this.state = 'dead';
@@ -393,7 +394,7 @@ Enemy.prototype.die = function (killer = null) {
 /**
  * Respawn the enemy
  */
-Enemy.prototype.respawn = function () {
+Enemy.prototype.respawn = function (this: Enemy) {
     this.x = this.spawnX;
     this.y = this.spawnY;
     this.health = this.maxHealth;

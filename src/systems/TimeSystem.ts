@@ -13,10 +13,11 @@ import { Logger } from '@core/Logger';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { EventBus } from '@core/EventBus';
 import { Registry } from '@core/Registry';
+import { IGame } from '../types/core';
 
 class TimeSystem {
     // Property declarations
-    game: any = null;
+    game: IGame | null = null;
     totalTime: number = 0;
     dayTime: number = 0.5;
     dayCount: number = 1;
@@ -37,7 +38,7 @@ class TimeSystem {
         // Config is now a getter, no initialization needed
     }
 
-    init(game: any) {
+    init(game: IGame) {
         this.game = game;
         Logger.info('[TimeSystem] Initialized');
     }

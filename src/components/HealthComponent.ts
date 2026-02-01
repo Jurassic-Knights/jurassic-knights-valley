@@ -60,6 +60,11 @@ class HealthComponent extends Component {
             return true;
         }
         return false;
+        return false;
+    }
+
+    damage(amount: number) {
+        this.takeDamage(amount);
     }
 
     heal(amount: number) {

@@ -10,14 +10,16 @@ import { EventBus } from './EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { Registry } from './Registry';
 
+interface IGameStateData {
+    gold: number;
+    inventory: Record<string, number>;
+    unlocks: string[];
+    questId: string | null;
+    questProgress: number;
+}
+
 class GameState {
-    data: {
-        gold: number;
-        inventory: Record<string, number>;
-        unlocks: string[];
-        questId: string | null;
-        questProgress: number;
-    };
+    data: IGameStateData;
 
     constructor() {
         this.data = {
@@ -33,46 +35,45 @@ class GameState {
 
     /**
      * Initialize state with defaults
-     * @param {object} config - Configuration object OR game instance (if called by SystemLoader)
+     * @param {Partial<IGameStateData> | object} config - Configuration object
      */
-    init(config = {}) {
+    init(config: Partial<IGameStateData> | { constructor?: { name: string } } = {}) {
         // Handle SystemLoader calling init(game)
         // If config is the Game instance, treat as empty config
-        if (config && config.constructor && config.constructor.name === 'Game') {
+        if ('constructor' in config && config.constructor && config.constructor.name === 'Game') {
             config = {};
         }
+
+        const safeConfig = config as Partial<IGameStateData>;
 
         // Load defaults from GameConstants if not provided
         const defaultGold =
             GameConstants && GameConstants.Core ? GameConstants.Core.INITIAL_GOLD : 0;
 
-        const defaults = {
+        const defaults: Partial<IGameStateData> = {
             gold: defaultGold,
-            ...config
+            ...safeConfig
         };
 
         this.data = { ...this.data, ...defaults };
         Logger.info('[GameState] State initialized. Gold:', this.data.gold);
-
-        // Sync back to hero if needed? Or assume Hero is source of truth for some things?
-        // For now, simple merge.
     }
 
     /**
      * Get a value
-     * @param {string} key
+     * @param {K} key
      */
-    get(key: keyof typeof this.data) {
+    get<K extends keyof IGameStateData>(key: K): IGameStateData[K] {
         return this.data[key];
     }
 
     /**
      * Set a value and emit change
-     * @param {string} key
-     * @param {any} value
+     * @param {K} key
+     * @param {IGameStateData[K]} value
      */
-    set(key: keyof typeof this.data, value: any) {
-        (this.data as any)[key] = value;
+    set<K extends keyof IGameStateData>(key: K, value: IGameStateData[K]) {
+        this.data[key] = value;
         this.emitChange(key, value);
     }
 
@@ -86,11 +87,10 @@ class GameState {
 
         if (EventBus) {
             EventBus.emit('INVENTORY_UPDATED', this.data.inventory);
-            // Also emit generic state change if needed?
         }
     }
 
-    emitChange(key: string, value: any) {
+    emitChange<K extends keyof IGameStateData>(key: K, value: IGameStateData[K]) {
         if (EventBus) {
             EventBus.emit('STATE_CHANGED', { key, value });
             // Specific events for convenience

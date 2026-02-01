@@ -22,6 +22,7 @@ import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
 import { FloatingTextManager } from '@vfx/FloatingText';
 import type { IGame, IEntity } from '../types/core.d';
+import { isDamageable, isMortal, DamageableEntity } from '../utils/typeGuards';
 
 const Events = GameConstants.Events;
 
@@ -92,10 +93,10 @@ class DamageSystem {
                 if (healthComponent.health < 0) healthComponent.health = 0;
                 tookDamage = true;
             }
-        } else if (typeof (entity as any).takeDamage === 'function') {
+        } else if (isDamageable(entity)) {
             // Entity handles its own damage (e.g. Resource)
             Logger.info(`[DamageSystem] Delegating damage to entity ${entity.id}`);
-            (entity as any).takeDamage(finalDamage);
+            entity.takeDamage(finalDamage);
             return; // Entity handles VFX/Death/State
         } else if (typeof entity.health === 'number') {
             Logger.info(
@@ -116,9 +117,8 @@ class DamageSystem {
         const currentHealth = healthComponent ? healthComponent.health : entity.health;
         if (currentHealth <= 0) {
             // Call entity-specific death handler (sets respawn timers, cleanup, etc.)
-            const anyEntity = entity as any;
-            if (typeof anyEntity.die === 'function') {
-                anyEntity.die(source);
+            if (isMortal(entity)) {
+                entity.die(source);
             } else {
                 // Fallback
                 entity.isDead = true;

@@ -10,7 +10,10 @@
 import { GameRenderer } from '@core/GameRenderer';
 import { environmentRenderer } from './EnvironmentRenderer';
 import { EntityTypes } from '@config/EntityTypes';
-import type { IViewport } from '../types/core';
+import type { IViewport, IEntity } from '../types/core';
+import type { RendererCollection } from '../types/rendering';
+import type { RenderTiming } from './RenderProfiler';
+import { isShadowCaster } from '../utils/typeGuards';
 
 // Unmapped modules - need manual import
 
@@ -25,7 +28,7 @@ const ShadowRenderer = {
      * @param {Object} renderers - { hero, dinosaur, resource } renderer refs
      * @param {Object} timing - Optional profiling timing object
      */
-    renderShadowPass(ctx: CanvasRenderingContext2D, entities: any[], viewport: IViewport, renderers: any, timing: any = null) {
+    renderShadowPass(ctx: CanvasRenderingContext2D, entities: IEntity[], viewport: IViewport, renderers: RendererCollection, timing: RenderTiming | null = null) {
         if (!ctx || !environmentRenderer) return;
 
         // PERFORMANCE MODE: Simple ellipse shadows
@@ -62,12 +65,12 @@ const ShadowRenderer = {
                     timing.shadowRes = (timing.shadowRes || 0) + performance.now() - tSub;
                 }
             } else if (entity.entityType === EntityTypes.MERCHANT) {
-                if (typeof entity.drawShadow === 'function') entity.drawShadow(ctx, false);
+                if (isShadowCaster(entity)) entity.drawShadow(ctx, false);
                 if (timing) {
                     timing.shadowMerch = (timing.shadowMerch || 0) + performance.now() - tSub;
                 }
             } else {
-                if (typeof entity.drawShadow === 'function') entity.drawShadow(ctx, false);
+                if (isShadowCaster(entity)) entity.drawShadow(ctx, false);
                 if (timing) {
                     timing.shadowOther = (timing.shadowOther || 0) + performance.now() - tSub;
                 }
@@ -80,7 +83,7 @@ const ShadowRenderer = {
     /**
      * Fast simple ellipse shadows (performance mode)
      */
-    renderSimpleShadows(ctx: CanvasRenderingContext2D, entities: any[], viewport: IViewport) {
+    renderSimpleShadows(ctx: CanvasRenderingContext2D, entities: IEntity[], viewport: IViewport) {
         const alpha = environmentRenderer?.shadowAlpha || 0.3;
 
         ctx.save();

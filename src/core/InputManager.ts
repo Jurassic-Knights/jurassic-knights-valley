@@ -212,3 +212,4 @@ if (Registry) Registry.register('InputManager', InputManager);
 
 // ES6 Module Export
 export { InputManager };
+export type InputManagerType = typeof InputManager;

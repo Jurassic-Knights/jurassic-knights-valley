@@ -7,7 +7,7 @@ export interface ElementProps {
     className?: string;
     class?: string;
     style?: Partial<CSSStyleDeclaration> | string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export type Child = HTMLElement | string | number | null | undefined | false;
@@ -45,7 +45,7 @@ export function h(tag: string, props: ElementProps = {}, children: Child[] = [])
         } else {
             // Direct Property or Attribute
             if (key in el) {
-                (el as any)[key] = val;
+                (el as unknown as Record<string, unknown>)[key] = val;
             }
 
             // For outerHTML serialization, we MUST set attributes for certain props

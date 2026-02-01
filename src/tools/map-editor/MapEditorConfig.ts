@@ -23,7 +23,7 @@ export const MapEditorConfig = {
 
     // Viewport Settings
     VIEWPORT_PADDING: 128 * 4, // 4 tiles padding
-    MIN_ZOOM: 0.1,
+    MIN_ZOOM: 0.006,
     MAX_ZOOM: 4.0,
 
     // Colors for Debug/UI

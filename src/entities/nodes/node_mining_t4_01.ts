@@ -1,26 +1,28 @@
 /**
  * Entity: node_mining_t4_01
- * Auto-generated from JSON.
+ * Auto-generated. Edit in dashboard.
  */
+import type { NodeEntity } from '@types/entities';
 
 export default {
-    id: 'node_mining_t4_01',
-    name: 'Fossil Pile',
-    sourceCategory: 'nodes',
-    sourceFile: 'nodes',
-    sprite: 'node_mining_t4_01',
-    status: 'clean',
-    files: {
-        original: 'assets/images/nodes/node_mining_t4_01_original.png',
-        consumed_original: 'assets/images/nodes/node_mining_t4_01_consumed_original.png'
+    "id": "node_mining_t4_01",
+    "name": "Fossil Pile",
+    "sourceCategory": "nodes",
+    "sourceFile": "nodes",
+    "sprite": "node_mining_t4_01",
+    "status": "declined",
+    "files": {
+        "original": "assets/images/nodes/node_mining_t4_01_original.png",
+        "consumed_original": "assets/images/nodes/node_mining_t4_01_consumed_original.png"
     },
-    type: 'ore',
-    biome: 'tundra',
-    nodeSubtype: 'mining',
-    tier: 4,
-
-    display: {
-        sizeScale: 1,
-        width: 64,
-        height: 64
-    },};
+    "type": "ore",
+    "biome": "tundra",
+    "nodeSubtype": "mining",
+    "tier": 4,
+    "display": {
+        "sizeScale": 1,
+        "width": 64,
+        "height": 64
+    },
+    "declineNote": ""
+} satisfies NodeEntity;

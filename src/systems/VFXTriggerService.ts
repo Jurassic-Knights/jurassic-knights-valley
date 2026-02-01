@@ -10,6 +10,7 @@
 import { Logger } from '@core/Logger';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
+import { IEntity } from '../types/core';
 
 const VFXTriggerService = {
     /**
@@ -70,7 +71,7 @@ const VFXTriggerService = {
      * "Electromagnetic Field Collapse" - Realistic Sequence
      * @param {object} hero - Hero entity for position reference
      */
-    triggerMagnetCompletionVFX(hero: any) {
+    triggerMagnetCompletionVFX(hero: IEntity) {
         if (!hero || !VFXController) return;
 
         Logger.info('[VFXTriggerService] Electromagnetic Collapse Triggered');

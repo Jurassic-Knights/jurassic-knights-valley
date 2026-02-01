@@ -231,7 +231,7 @@ function buildEquipmentStatsHtml(item: AssetItem, fileName: string): string {
 }
 
 function createToggle(isActive: boolean, label: string, activeColor: string, action: string, data: Record<string, string>): HTMLElement {
-    const props: any = {
+    const props: Record<string, string> = {
         'data-action': action,
         style: `padding:6px 12px; font-size:0.8rem; background:${isActive ? activeColor : '#333'}; border:none; border-radius:4px; cursor:pointer; color:white;`
     };

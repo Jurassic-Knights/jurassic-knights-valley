@@ -20,8 +20,38 @@ export interface RenderTiming {
     fog: number;
     vfxFg: number;
     envOverlay: number;
+    roads: number;
+    lighting: number;
     entOtherTypes?: Record<string, number>;
-    [key: string]: any;
+
+    // World Sub-Phases
+    worldWater?: number;
+    worldIslands?: number;
+    worldDebug?: number;
+
+    // Shadow Sub-Phases
+    shadowClear?: number;
+    shadowComposite?: number;
+    shadowHero?: number;
+    shadowDino?: number;
+    shadowRes?: number;
+    shadowMerch?: number;
+    shadowOther?: number;
+
+    // Entity Sub-Phases
+    entCount?: number;
+    entHomeBase?: number;
+    entHeroTime?: number;
+    entDinoTime?: number;
+    entResTime?: number;
+    entDroppedTime?: number;
+    entDroppedCount?: number;
+    entMerchantTime?: number;
+    entMerchantCount?: number;
+    entOtherTime?: number;
+    entUITime?: number;
+
+    [key: string]: unknown;
 }
 
 const RenderProfiler = {
@@ -41,6 +71,8 @@ const RenderProfiler = {
             fog: 0,
             vfxFg: 0,
             envOverlay: 0,
+            roads: 0,
+            lighting: 0,
             frames: 0
         };
         Logger.info('[RenderProfiler] Profiling started...');
@@ -108,7 +140,7 @@ const RenderProfiler = {
         Logger.info(
             `  Total Entities Rendered: ${t.entCount || 0} (${((t.entCount || 0) / t.frames).toFixed(1)}/frame)`
         );
-        const entPhases = [
+        const entPhases: [string, number, number?][] = [
             ['HomeBase', t.entHomeBase || 0],
             ['Hero', t.entHeroTime || 0],
             ['Dinosaurs', t.entDinoTime || 0],

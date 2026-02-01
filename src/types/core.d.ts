@@ -19,8 +19,6 @@ export interface ISystem {
     start?(): void;
     /** Update loop - called each frame with delta time in ms */
     update?(dt: number): void;
-    /** Render hook - called each frame for rendering systems */
-    render?(ctx: CanvasRenderingContext2D): void;
     /** Cleanup resources */
     destroy?(): void;
 }
@@ -28,6 +26,52 @@ export interface ISystem {
 // ============================================
 // ENTITY INTERFACE
 // ============================================
+
+// --- Supporting Configuration Interfaces ---
+
+export interface LootTableEntry {
+    item: string;
+    chance: number;
+    min: number;
+    max: number;
+}
+
+export interface EntityDisplayConfig {
+    sizeScale?: number;
+    width?: number;
+    height?: number;
+    shadow?: {
+        offsetX: number;
+        offsetY: number;
+        radius: number;
+        color?: string;
+    };
+    [key: string]: unknown;
+}
+
+export interface IEquipmentManager {
+    getStatBonus(stat: string): number;
+    getSlot(slot: string): unknown;
+    equip(slot: string, item: unknown): boolean;
+    unequip(slot: string): boolean;
+}
+
+export interface EntitySpawnConfig {
+    biomes?: string[];
+    weight?: number;
+    groupSize?: number[];
+    respawnTime?: number;
+    variance?: number;
+    minDist?: number;
+}
+
+export interface EntitySFXConfig {
+    [key: string]: string | { id: string; volume?: number; pitch?: number; loop?: boolean };
+}
+
+export interface EntityVFXConfig {
+    [key: string]: string | { id: string; offset?: { x: number; y: number }; scale?: number };
+}
 
 export interface EntityConfig {
     id?: string;
@@ -49,9 +93,23 @@ export interface EntityConfig {
             offsetX?: number;
             offsetY?: number;
         };
-        [key: string]: any;
+        layer?: number;
+        mask?: number;
+        isTrigger?: boolean;
     };
-    [key: string]: any;
+    // Enhanced properties for loader
+    assets?: {
+        sprite?: string;
+        sfx?: EntitySFXConfig;
+        vfx?: EntityVFXConfig;
+    };
+    spawning?: EntitySpawnConfig;
+    stats?: Record<string, number>;
+    combat?: Record<string, number | string | boolean>;
+    loot?: LootTableEntry[];
+    display?: EntityDisplayConfig;
+    sourceFile?: string; // For tracing origin (e.g. tracking items vs resources)
+    [key: string]: unknown; // Changed from any to unknown for safer type narrowing
 }
 
 /**
@@ -64,6 +122,8 @@ export interface IEntity {
     type: string;
     /** Entity type (alternative property name) */
     entityType?: string;
+    /** Original Registry ID for hot-reloading */
+    registryId?: string;
     /** World X position */
     x: number;
     /** World Y position */
@@ -145,7 +205,7 @@ export interface IEntity {
     /** Maximum stamina */
     maxStamina?: number;
     /** Equipment system reference (has getStatBonus, getSlot methods) */
-    equipment?: any;
+    equipment?: IEquipmentManager;
     /** Whether entity is at home outpost */
     isAtHomeOutpost?: boolean;
     /** Whether entity is locked (cannot move) */
@@ -165,6 +225,16 @@ export interface IEntity {
     /** Component container for health, etc. */
     /** Component container for health, etc. */
     components?: IComponents;
+
+    /** Specific entity subtypes for identification */
+    enemyType?: string;
+    dinoType?: string;
+    bossType?: string;
+    itemType?: string;
+    spriteId?: string;
+
+    /** Refresh configuration from registry (optional) */
+    refreshConfig?(): void;
 }
 
 /**
@@ -174,7 +244,7 @@ export interface ICombatEntity extends IEntity {
     health: number;
     maxHealth: number;
     damage?(amount: number, source?: IEntity): void;
-    isDead?(): boolean;
+    isDead?: boolean;
 }
 
 /**
@@ -184,6 +254,7 @@ export interface IResourceEntity extends IEntity {
     islandGridX?: number;
     islandGridY?: number;
     resourceType?: string;
+    respawnTimer?: number;
     recalculateRespawnTimer?(): void;
 }
 
@@ -271,7 +342,7 @@ export interface HealthComponent extends IComponent {
     maxHealth: number;
     damage(amount: number): void;
     heal(amount: number): void;
-    isDead(): boolean;
+    isDead: boolean;
 }
 
 export interface StatsComponent extends IComponent {
@@ -291,7 +362,7 @@ export interface StatsComponent extends IComponent {
 }
 
 export interface InventoryComponent extends IComponent {
-    items: any[]; // TODO: Define IItem
+    items: Record<string, number>;
     capacity: number;
     add(itemId: string, amount?: number): boolean;
     remove(itemId: string, amount?: number): boolean;

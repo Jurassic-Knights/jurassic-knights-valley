@@ -190,3 +190,13 @@ export interface RoadDef {
     width: number;
 }
 
+
+import { ISystem } from './core';
+
+export interface IIslandManager extends ISystem {
+    islands: Island[];
+    getBridges(): Bridge[];
+    getIslandByGrid(gridX: number, gridY: number): Island | undefined;
+    getPlayableBounds(island: Island): PlayableBounds | null;
+    getHeroSpawnPosition(): { x: number; y: number };
+}

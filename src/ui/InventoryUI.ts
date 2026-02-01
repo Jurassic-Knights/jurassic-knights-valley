@@ -15,6 +15,15 @@ import { EntityRegistry } from '@entities/EntityLoader';
 import { GameInstance } from '@core/Game';
 import { WeaponWheelInstance } from './WeaponWheel';
 import { ContextActionUI } from './ContextActionUI';
+import type { Hero } from '../gameplay/Hero';
+import { IFooterConfig, EquipmentItem, ResourceItem } from '../types/ui';
+import type { EntityConfig } from '../types/core';
+
+// Define FullscreenUI interface to match UIManager expectation
+interface FullscreenUI {
+    registerFullscreenUI?: (ui: unknown) => void;
+    closeOtherFullscreenUIs?: (ui: unknown) => void;
+}
 
 class InventoryPanel {
     // Property declarations
@@ -22,7 +31,7 @@ class InventoryPanel {
     container: HTMLDivElement | null = null;
     activeCategory: string = 'all';
     activeType: string = 'all';
-    originalFooterConfigs: any = null;
+    originalFooterConfigs: IFooterConfig | null = null;
     gridSize: number = 5;
 
     constructor() {
@@ -67,7 +76,7 @@ class InventoryPanel {
         this._createContainer();
 
         // Register with UIManager for fullscreen exclusivity
-        const uiMgr = Registry?.get('UIManager');
+        const uiMgr = Registry?.get('UIManager') as FullscreenUI | undefined;
         if (uiMgr && uiMgr.registerFullscreenUI) {
             uiMgr.registerFullscreenUI(this);
         }
@@ -101,7 +110,10 @@ class InventoryPanel {
         const target = e.target;
 
         // Close or Back button
-        if ((target as HTMLElement).closest('.equip-close') || (target as HTMLElement).closest('#inv-back')) {
+        if (
+            (target as HTMLElement).closest('.equip-close') ||
+            (target as HTMLElement).closest('#inv-back')
+        ) {
             this.close();
             return;
         }
@@ -133,7 +145,7 @@ class InventoryPanel {
         WeaponWheelInstance.close();
 
         // Close other fullscreen UIs first
-        const uiMgr = Registry?.get('UIManager');
+        const uiMgr = Registry?.get('UIManager') as FullscreenUI | undefined;
         if (uiMgr && uiMgr.closeOtherFullscreenUIs) {
             uiMgr.closeOtherFullscreenUIs(this);
         }
@@ -143,13 +155,13 @@ class InventoryPanel {
 
         this.isOpen = true;
         this._render();
-        this.container.style.display = 'flex';
+        if (this.container) this.container.style.display = 'flex';
         Logger.info('[InventoryPanel] Opened');
     }
 
     close() {
         this.isOpen = false;
-        this.container.style.display = 'none';
+        if (this.container) this.container.style.display = 'none';
 
         // Restore original footer buttons
         this._restoreFooterButtons();
@@ -202,8 +214,8 @@ class InventoryPanel {
             if (label) label.textContent = 'ALL';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_inventory';
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath('ui_icon_inventory') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_inventory') || ''
+                    }')`;
             }
             btnInventory.classList.toggle('active', this.activeCategory === 'all');
             btnInventory.onclick = () => {
@@ -222,8 +234,8 @@ class InventoryPanel {
             if (label) label.textContent = 'ITEMS';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_crafting';
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath('ui_icon_crafting') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_crafting') || ''
+                    }')`;
             }
             btnEquip.classList.toggle('active', this.activeCategory === 'items');
             btnEquip.onclick = () => {
@@ -242,8 +254,8 @@ class InventoryPanel {
             if (label) label.textContent = 'RES';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_resources';
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath('ui_icon_resources') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_resources') || ''
+                    }')`;
             }
             btnMap.classList.toggle('active', this.activeCategory === 'resources');
             btnMap.onclick = () => {
@@ -262,8 +274,8 @@ class InventoryPanel {
             if (label) label.textContent = 'BACK';
             if (icon) {
                 (icon as HTMLElement).dataset.iconId = 'ui_icon_close';
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath('ui_icon_close') || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath('ui_icon_close') || ''
+                    }')`;
             }
             btnMagnet.classList.remove('active');
             btnMagnet.onclick = () => this.close();
@@ -351,11 +363,11 @@ class InventoryPanel {
             delete btnInventory.dataset.footerOverride;
             const label = btnInventory.querySelector('.btn-label');
             const icon = btnInventory.querySelector('.btn-icon');
-            if (label) label.textContent = this.originalFooterConfigs.inventory.label;
+            if (label) label.textContent = this.originalFooterConfigs.inventory.label || '';
             if (icon && this.originalFooterConfigs.inventory.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.inventory.iconId;
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.inventory.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.inventory.iconId) || ''
+                    }')`;
             }
             btnInventory.classList.remove('active');
             btnInventory.onclick = null;
@@ -365,11 +377,11 @@ class InventoryPanel {
             delete btnEquip.dataset.footerOverride;
             const label = btnEquip.querySelector('.btn-label');
             const icon = btnEquip.querySelector('.btn-icon');
-            if (label) label.textContent = this.originalFooterConfigs.equip.label;
+            if (label) label.textContent = this.originalFooterConfigs.equip.label || '';
             if (icon && this.originalFooterConfigs.equip.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.equip.iconId;
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.equip.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.equip.iconId) || ''
+                    }')`;
             }
             btnEquip.classList.remove('active');
             btnEquip.onclick = null;
@@ -379,11 +391,11 @@ class InventoryPanel {
             delete btnMap.dataset.footerOverride;
             const label = btnMap.querySelector('.btn-label');
             const icon = btnMap.querySelector('.btn-icon');
-            if (label) label.textContent = this.originalFooterConfigs.map.label;
+            if (label) label.textContent = this.originalFooterConfigs.map.label || '';
             if (icon && this.originalFooterConfigs.map.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.map.iconId;
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.map.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.map.iconId) || ''
+                    }')`;
             }
             btnMap.classList.remove('active');
             btnMap.onclick = null;
@@ -393,11 +405,11 @@ class InventoryPanel {
             delete btnMagnet.dataset.footerOverride;
             const label = btnMagnet.querySelector('.btn-label');
             const icon = btnMagnet.querySelector('.btn-icon');
-            if (label) label.textContent = this.originalFooterConfigs.magnet.label;
+            if (label) label.textContent = this.originalFooterConfigs.magnet.label || '';
             if (icon && this.originalFooterConfigs.magnet.iconId) {
                 (icon as HTMLElement).dataset.iconId = this.originalFooterConfigs.magnet.iconId;
-                (icon as HTMLElement).style.backgroundImage =
-                    `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.magnet.iconId) || ''}')`;
+                (icon as HTMLElement).style.backgroundImage = `url('${AssetLoader?.getImagePath(this.originalFooterConfigs.magnet.iconId) || ''
+                    }')`;
             }
             btnMagnet.classList.remove('active');
             btnMagnet.onclick = null;
@@ -422,14 +434,18 @@ class InventoryPanel {
     /**
      * Get unique sub-types from EntityRegistry for a category
      */
-    getSubTypes(category: string) {
-        const registry = category === 'items' ? EntityRegistry?.items : EntityRegistry?.resources;
+    getSubTypes(category: string): string[] {
+        const items = EntityRegistry?.items as Record<string, EntityConfig>;
+        const resources = EntityRegistry?.resources as Record<string, EntityConfig>;
+
+        const registry = category === 'items' ? items : resources;
         if (!registry) return [];
 
-        const types = new Set();
+        const types = new Set<string>();
         for (const id in registry) {
-            if (registry[id]?.sourceFile) {
-                types.add(registry[id].sourceFile);
+            const entry = registry[id];
+            if (entry?.sourceFile) {
+                types.add(entry.sourceFile as string);
             }
         }
         return Array.from(types).sort();
@@ -447,11 +463,14 @@ class InventoryPanel {
     /**
      * Get entity info from EntityRegistry
      */
-    getEntityInfo(key: string) {
-        if (EntityRegistry?.resources?.[key]) {
-            return { ...EntityRegistry.resources[key], category: 'resources' };
-        } else if (EntityRegistry?.items?.[key]) {
-            return { ...EntityRegistry.items[key], category: 'items' };
+    getEntityInfo(key: string): (EntityConfig & { category: string }) | null {
+        const resReg = EntityRegistry?.resources as Record<string, EntityConfig> | undefined;
+        const itemReg = EntityRegistry?.items as Record<string, EntityConfig> | undefined;
+
+        if (resReg?.[key]) {
+            return { ...resReg[key], category: 'resources' };
+        } else if (itemReg?.[key]) {
+            return { ...itemReg[key], category: 'items' };
         }
         return null;
     }
@@ -460,7 +479,10 @@ class InventoryPanel {
      * Check if item passes current filters
      */
     passesFilter(key: string) {
-        const entity = this.getEntityInfo(key);
+        const entity = this.getEntityInfo(key) as {
+            category?: string;
+            sourceFile?: string;
+        } | null;
         if (!entity) return true;
 
         if (this.activeCategory !== 'all' && entity.category !== this.activeCategory) {
@@ -479,73 +501,57 @@ class InventoryPanel {
      * Uses equipment-screen CSS classes for consistent styling
      */
     _render() {
-        const hero = GameInstance?.hero;
-        const inventory = hero?.inventory || {};
-        const items = Object.entries(inventory).filter(([k, v]) => (v as number) > 0);
-
-        // Get sub-types for current category
-        let subTypes: any[] = [];
-        if (this.activeCategory === 'all') {
-            subTypes = this.getAllSubTypes();
-        } else {
-            subTypes = this.getSubTypes(this.activeCategory);
-        }
+        const hero = GameInstance?.hero as Hero | undefined;
+        const inventory = (hero?.inventory || {}) as Record<string, number>;
+        const items = Object.entries(inventory).filter(([, v]) => (v as number) > 0);
 
         // Filter items
         const filteredItems = items.filter(([key]) => this.passesFilter(key));
 
-        // Count items per category for badges
-        const itemCount = items
-            .filter(([k]) => this.getEntityInfo(k)?.category === 'items')
-            .reduce((a, [, v]) => a + (v as number), 0);
-        const resourceCount = items
-            .filter(([k]) => this.getEntityInfo(k)?.category === 'resources')
-            .reduce((a, [, v]) => a + (v as number), 0);
-        const totalCount = items.reduce((a, [, v]) => a + (v as number), 0);
-
-        this.container.innerHTML = `
-            <div class="equip-panel">
-                <!-- Header -->
-                <div class="equip-header" style="justify-content: center; padding: 12px;">
-                    <div class="equip-item-name" style="font-size: 14px; margin: 0;">INVENTORY</div>
-                </div>
-
-                <!-- Inventory Grid (reuses equip-inventory) -->
-                <div class="equip-inventory">
-                    <div class="inventory-grid">
-                        ${filteredItems.length === 0
-                ? '<div class="empty-inventory">No items match filter</div>'
-                : filteredItems
-                    .map(([key, amount]) => {
-                        const entity = this.getEntityInfo(key);
-                        const name = entity?.name || key;
-                        return `
-                                    <div class="inventory-item" data-id="${key}" title="${name}">
-                                        <div class="item-icon" data-icon-id="${key}"></div>
-                                        <div class="item-count">${amount}</div>
-                                    </div>
-                                `;
-                    })
-                    .join('')
-            }
+        // Render Container
+        if (this.container) {
+            this.container.innerHTML = `
+                <div class="equip-panel">
+                    <!-- Header -->
+                    <div class="equip-header" style="justify-content: center; padding: 12px;">
+                        <div class="equip-item-name" style="font-size: 14px; margin: 0;">INVENTORY</div>
+                    </div>
+    
+                    <!-- Inventory Grid (reuses equip-inventory) -->
+                    <div class="equip-inventory">
+                        <div class="inventory-grid">
+                            ${filteredItems.length === 0
+                    ? '<div class="empty-inventory">No items match filter</div>'
+                    : filteredItems
+                        .map(([key, amount]) => {
+                            const entity = this.getEntityInfo(key) as {
+                                name?: string;
+                            } | null;
+                            const name = entity?.name || key;
+                            return `
+                                        <div class="inventory-item" data-id="${key}" title="${name}">
+                                            <div class="item-icon" data-icon-id="${key}"></div>
+                                            <div class="item-count">${amount}</div>
+                                        </div>
+                                    `;
+                        })
+                        .join('')
+                }
+                        </div>
                     </div>
                 </div>
+            `;
 
-                <!-- Sub-filter Tabs (at bottom) -->
-                <!-- Sub-filter Tabs REMOVED (Moved to Weapon Wheel) -->
-                <!-- <div class="equip-tabs" style="display:none;"></div> -->
-            </div>
-        `;
-
-        // Load icons
-        this._loadIcons();
+            // Load icons
+            this._loadIcons();
+        }
     }
 
     /**
      * Load icons using AssetLoader
      */
     _loadIcons() {
-        this.container.querySelectorAll('[data-icon-id]').forEach((el) => {
+        this.container?.querySelectorAll('[data-icon-id]').forEach((el) => {
             const id = (el as HTMLElement).dataset.iconId;
             const path = AssetLoader?.getImagePath(id);
             if (path) {

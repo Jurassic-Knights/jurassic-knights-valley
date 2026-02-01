@@ -13,6 +13,7 @@ import {
     markAllSfxForRegeneration,
     saveRegenerationQueueToFile,
     remakeAsset,
+    saveAssetPrompt,
 } from './api';
 import {
     navigateToAsset,
@@ -44,7 +45,7 @@ import {
     setCategorySortOrder,
     resetCategoryFilters,
 } from './filters';
-import { setSelectedAssetId, setCurrentInspectorTab, setImageParam } from './state';
+import { setSelectedAssetId, setCurrentInspectorTab, setImageParam, categoryData, assetPrompts, selectedAssetId } from './state';
 import { renderCategoryView } from './categoryRenderer';
 import { renderInspector } from './inspectorRenderer';
 
@@ -82,7 +83,25 @@ const actions: Record<string, ActionHandler> = {
     'navigate-category': (d) => showCategoryView(d.category!),
     'toggle-templates': () => showTemplatesView(),
     'toggle-config': () => showConfigView(),
-    'toggle-map-editor': () => showMapEditorView(),
+    'toggle-map-editor': () => {
+        const container = document.getElementById('map-editor-container');
+        if (container && container.style.display === 'block') {
+            // It's open, so close it (go back to manifest/dashboard)
+            // Just simulate navigating back or loading manifest
+            import('./views').then(({ loadManifest }) => {
+                loadManifest();
+            });
+            import('./mapEditorView').then(({ hideMapEditorView }) => {
+                hideMapEditorView();
+            });
+            // Update URL to remove view=map
+            // loadManifest does this? loadManifest sets view=dashboard implicitly?
+            // loadManifest currently pushes state? Let's check views.ts logic if needed. 
+            // For now, loadManifest is the safe "home" action.
+        } else {
+            showMapEditorView();
+        }
+    },
     'refresh-manifest': () => loadManifest(),
     'save-map-data': () => saveMapData(),
 
@@ -123,21 +142,11 @@ const actions: Record<string, ActionHandler> = {
         const footer = t.closest('.card-footer');
         const input = footer?.querySelector('.feedback-input') as HTMLInputElement;
 
-        let reason = input ? input.value : null;
+        const reason = input ? input.value : '';
 
-        if (!reason) {
-            // Fallback to prompt if no input or empty (optional? maybe force input use?)
-            // User requested "missing feedback text input", implying they want to use it.
-            // If empty, we can still prompt or just mark as declined with generic note.
-            // Let's prompt if empty to be safe, but pre-fill if they typed something.
-            const promptVal = prompt('Decline reason?', reason || '');
-            if (promptVal === null) return; // Cancelled
-            reason = promptVal;
-        }
-
-        if (reason !== null) {
-            await updateCategoryStatus(d.category!, d.file!, d.id!, 'declined', reason);
-        }
+        // If reason is empty, we still proceed with decline status.
+        // User explicitly requested NO POPUP.
+        await updateCategoryStatus(d.category!, d.file!, d.id!, 'declined', reason);
     },
 
     // Field Updates
@@ -146,6 +155,17 @@ const actions: Record<string, ActionHandler> = {
     'update-tier': (d) => updateItemTier(d.category!, d.file!, d.id!, parseInt(d.value!)),
     'update-weapon': (d) => updateItemWeapon(d.category!, d.file!, d.id!, d.value!),
     'update-field': (d) => updateItemField(d.category!, d.file!, d.id!, d.field!, parseValue(d.value!)),
+
+    'update-prompt': async (d) => {
+        const prompt = d.value || '';
+        const assetId = d.id!;
+
+        // Optimistic update
+        assetPrompts[assetId] = prompt;
+
+        await saveAssetPrompt(assetId, prompt);
+        console.log(`[Delegator] Asset prompt saved for ${assetId}`);
+    },
 
     'paste-image-to-path': async (d) => {
         const path = d.path;
@@ -158,37 +178,10 @@ const actions: Record<string, ActionHandler> = {
             const items = await navigator.clipboard.read();
             for (const item of items) {
                 if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
-                    const blob = await item.getType(item.types.includes('image/png') ? 'image/png' : 'image/jpeg');
-
-                    // Convert to base64
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                        const base64 = reader.result as string;
-                        // Confirm
-                        if (!confirm(`Overwrite ${path} with clipboard image?`)) return;
-
-                        // Send to server
-                        const response = await fetch('/api/upload_image', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ path: path, image: base64 })
-                        });
-
-                        const result = await response.json();
-                        if (result.success) {
-                            alert('Image updated! Refreshing...');
-                            // Force refresh image by appending timestamp to src in DOM? 
-                            // Easier to just reload the inspector
-                            const inspectorImg = document.querySelector('.inspector-placeholder img, .inspector-content img') as HTMLImageElement;
-                            if (inspectorImg) inspectorImg.src = inspectorImg.src.split('?')[0] + '?t=' + Date.now();
-
-                            // Also refresh the main grid image
-                            renderCategoryView();
-                        } else {
-                            alert('Failed: ' + result.error);
-                        }
-                    };
-                    reader.readAsDataURL(blob);
+                    // Same logic as uploadImageFile
+                    // Read content
+                    await uploadImageFile(await item.getType(item.types.includes('image/png') ? 'image/png' : 'image/jpeg'), path, d.id); // d.id might be undefined if not on a card with ID, but path is key.
+                    // If d.id is missing, we can try to infer or just pass undefined (grid won't auto-refresh specific card but full render will catch it)
                     return;
                 }
             }
@@ -206,6 +199,17 @@ const actions: Record<string, ActionHandler> = {
 
     // Modals
     'open-modal': (d) => openModal(d.path!, d.name!, d.status!),
+    'image-drop-zone': (d) => {
+        // If not selected, select it first
+        if (d.id && d.id !== selectedAssetId) {
+            setSelectedAssetId(d.id);
+            renderCategoryView();
+            renderInspector();
+        } else {
+            // If already selected (or no ID), open modal
+            openModal(d.path!, d.name!, d.status!);
+        }
+    },
     'close-modal': () => closeModal(),
     'toggle-comparison': () => toggleComparisonView(),
 
@@ -221,7 +225,7 @@ const actions: Record<string, ActionHandler> = {
     'set-category-file': (d) => setCategoryFileFilter(d.value!),
     'set-category-weapon': (d) => setCategoryWeaponTypeFilter(d.value!),
     'set-category-hands': (d) => setCategoryHandsFilter(d.value!),
-    'set-category-subtype': (d) => setCategoryNodeSubtypeFilter(d.value!),
+    'set-category-node-subtype': (d) => setCategoryNodeSubtypeFilter(d.value!),
     'set-category-size': (d) => setCategoryImageSize(parseInt(d.value!)),
     'set-category-sort': (d) => setCategorySortOrder(d.value!),
     'reset-filters': () => resetCategoryFilters(),
@@ -253,7 +257,23 @@ function parseValue(val: string): string | number | boolean {
     return val;
 }
 
+let abortController: AbortController | null = null;
+
+export function disposeDelegation() {
+    if (abortController) {
+        abortController.abort();
+        abortController = null;
+        console.log('[Delegator] Cleaned up event listeners');
+    }
+}
+
 export function initEventDelegation() {
+    // Clean up existing if any (prevents dupes)
+    disposeDelegation();
+
+    abortController = new AbortController();
+    const signal = abortController.signal;
+
     document.body.addEventListener('click', async (e) => {
         // Log all clicks for debugging
         // console.log('[Delegator] Click on:', e.target);
@@ -272,7 +292,7 @@ export function initEventDelegation() {
                 console.error(`[Delegator] Action '${actionName}' failed:`, err);
             }
         }
-    });
+    }, { signal });
 
 
 
@@ -283,18 +303,25 @@ export function initEventDelegation() {
             target.style.height = 'auto';
             target.style.height = target.scrollHeight + 'px';
         }
-    });
+    }, { signal });
 
     // Drag & Drop Delegation
     document.body.addEventListener('dragover', (e) => {
-        const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]');
+        const trg = e.target as HTMLElement;
+        const target = trg.closest('[data-action="image-drop-zone"]');
+
+        // Debug Log - throttling
+        if (Math.random() < 0.05) {
+            console.log('[DragDebug] Target:', trg.tagName, trg.className, 'Zone:', target);
+        }
+
         if (target) {
             e.preventDefault(); // Allow drop
             e.dataTransfer!.dropEffect = 'copy';
             (target as HTMLElement).style.borderColor = '#2196f3';
             (target as HTMLElement).style.background = '#2196f322';
         }
-    });
+    }, { signal });
 
     document.body.addEventListener('dragleave', (e) => {
         const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]');
@@ -302,10 +329,14 @@ export function initEventDelegation() {
             (target as HTMLElement).style.borderColor = '#444';
             (target as HTMLElement).style.background = '#1a1a1a';
         }
-    });
+    }, { signal });
 
     document.body.addEventListener('drop', async (e) => {
-        const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]') as HTMLElement;
+        const trg = e.target as HTMLElement;
+        const target = trg.closest('[data-action="image-drop-zone"]') as HTMLElement;
+
+        console.log('[Delegator] DROP Event on:', trg.tagName, trg.className, 'Zone:', target);
+
         if (target) {
             e.preventDefault();
             e.stopPropagation();
@@ -332,7 +363,7 @@ export function initEventDelegation() {
                 await uploadImageFile(file, path, id);
             }
         }
-    });
+    }, { signal });
 
     document.body.addEventListener('change', async (e) => {
         const target = (e.target as HTMLElement).closest('[data-action]') as HTMLInputElement | HTMLSelectElement;
@@ -352,63 +383,139 @@ export function initEventDelegation() {
                 console.error(`[Delegator] Change Action '${actionName}' failed:`, err);
             }
         }
-    });
+    }, { signal });
 }
 
 // Utility for Upload
 // Utility for Upload
 async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
-    // Silent upload without confirmation/alerts
     try {
         const reader = new FileReader();
         reader.onload = async () => {
             const base64 = reader.result as string;
-            const response = await fetch('/api/upload_image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ path: path, image: base64 })
-            });
 
-            const result = await response.json();
-            if (result.success) {
-                console.log('[Delegator] Image uploaded successfully.');
+            if (!path) return;
 
-                // Add a small delay to allow filesystem to settle/cache to invalidate
-                setTimeout(() => {
-                    const timestamp = Date.now();
+            // Show loading state immediately
+            if (assetId) {
+                const card = document.querySelector(`.asset-card[data-id="${assetId}"]`);
+                if (card) {
+                    const gridImg = card.querySelector('img.asset-image') as HTMLImageElement;
+                    if (gridImg) gridImg.style.opacity = '0.5';
+                }
+            }
+            const inspectorImg = document.querySelector('.inspector-placeholder img, .inspector-content img') as HTMLImageElement;
+            if (inspectorImg) inspectorImg.style.opacity = '0.5';
 
-                    // 1. Force refresh Inspector Image
-                    const inspectorImg = document.querySelector('.inspector-placeholder img, .inspector-content img') as HTMLImageElement;
-                    if (inspectorImg) {
-                        const baseSrc = inspectorImg.src.split('?')[0];
-                        inspectorImg.src = `${baseSrc}?t=${timestamp}`;
+            // Helper to refresh UI
+            const preloadAndRefresh = async (targetPath: string, targetId: string | undefined) => {
+                // Normalize path for browser request
+                let checkPath = targetPath;
+                if (!checkPath.startsWith('/')) checkPath = '/' + checkPath;
+                checkPath = '/images/' + checkPath.replace(/^(assets\/)?images\//, '').replace(/^\//, '');
+
+                const timestamp = Date.now();
+
+                // Update state
+                if (targetId) setImageParam(targetId, timestamp);
+
+                const checkUrl = `${checkPath}?t=${timestamp}`;
+                console.log('[Delegator] Preload checking URL:', checkUrl);
+
+                // Retry logic for Windows FS latency
+                const maxAttempts = 20;
+                for (let i = 0; i < maxAttempts; i++) {
+                    const success = await new Promise<boolean>((resolve) => {
+                        const img = new Image();
+                        img.onload = () => resolve(true);
+                        img.onerror = () => resolve(false);
+                        img.src = checkUrl;
+                    });
+
+                    if (success) {
+                        console.log('[Delegator] Preload success! Triggering re-render.');
+                        renderCategoryView();
+                        renderInspector();
+                        return;
                     }
+                    await new Promise(r => setTimeout(r, 250));
+                }
+                console.warn('[Delegator] Preload failed, forcing render anyway.');
+                renderCategoryView();
+                renderInspector();
+            };
 
-                    // 2. Force refresh Grid Card Image (if assetId provided)
-                    if (assetId) {
-                        // Selector logic: Find card by data-id, then find img inside
-                        const card = document.querySelector(`.asset-card[data-id="${assetId}"]`);
-                        if (card) {
-                            const gridImg = card.querySelector('img.asset-image') as HTMLImageElement;
-                            if (gridImg) {
-                                const baseGridSrc = gridImg.src.split('?')[0];
-                                gridImg.src = `${baseGridSrc}?t=${timestamp}`;
-                                console.log('[Delegator] Refreshed grid image for', assetId);
-                            } else {
-                                console.warn('[Delegator] Grid image not found inside card', assetId);
+            try {
+                // Normalize path for upload (remove leading slash)
+                const cleanPath = path.replace(/^\//, '');
+                const body = {
+                    path: cleanPath,
+                    image: base64
+                };
+
+                const response = await fetch('/api/upload_image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const result = await response.json();
+
+                if (result.success !== false) {
+                    console.log('[Delegator] Image uploaded successfully to:', cleanPath);
+
+                    // --- SYNC CHECK: If uploading Original, also update Clean (if exists) ---
+                    if (assetId && typeof categoryData !== 'undefined' && categoryData?.files) {
+                        // Find asset
+                        let asset: any = null;
+                        for (const list of Object.values(categoryData.files)) {
+                            const found = list.find((i: any) => i.id === assetId);
+                            if (found) { asset = found; break; }
+                        }
+
+                        if (asset && asset.files) {
+                            const originalFile = asset.files.original || '';
+                            const cleanFile = asset.files.clean || '';
+
+                            // Check if we just uploaded the Original
+                            // Note: cleanPath is relative (images/...), asset.files are relative usually
+                            const isOriginal = cleanPath.endsWith(originalFile) || originalFile.endsWith(cleanPath);
+
+                            if (isOriginal && cleanFile && cleanFile !== originalFile) {
+                                console.log('[Delegator] Syncing Clean image:', cleanFile);
+                                // Silent upload to clean path
+                                await fetch('/api/upload_image', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        path: cleanFile,
+                                        image: base64
+                                    })
+                                }).catch(e => console.warn('[Delegator] Clean Sync Failed', e));
                             }
-                        } else {
-                            console.warn('[Delegator] Card not found for', assetId);
                         }
                     }
-                }, 200);
+                    // -----------------------------------------------------------------------
 
-            } else {
-                console.error('[Delegator] Upload failed:', result.error);
+                    // Wait for file system to settle
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    await preloadAndRefresh(path, assetId);
+                } else {
+                    console.error('[Delegator] Upload failed:', result.message);
+                    alert('Upload failed: ' + (result.message || 'Unknown error'));
+                    renderCategoryView(); // Restore opacity
+                }
+            } catch (err) {
+                console.error('[Delegator] Upload Exception:', err);
+                alert('Upload error occurred');
+                renderCategoryView();
             }
-        };
-        reader.readAsDataURL(blob);
-    } catch (e) {
-        console.error('[Delegator] Upload error:', e);
+        }; // Closes the outer reader.onload
+        reader.readAsDataURL(blob); // Use the `blob` parameter here
+    } catch (err) {
+        console.error('[Delegator] Upload Exception:', err);
+        alert('Upload error occurred');
+        renderCategoryView();
     }
 }

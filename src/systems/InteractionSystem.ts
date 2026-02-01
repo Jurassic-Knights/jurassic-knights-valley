@@ -10,6 +10,7 @@ import { GameConstants, getConfig } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 import { spawnManager } from './SpawnManager';
 import { IslandManager } from '../world/IslandManager';
+import { DroppedItem } from '../gameplay/DroppedItem';
 import { AudioManager } from '../audio/AudioManager';
 import { QuestManager } from '../gameplay/QuestManager';
 import { VFXTriggerService } from './VFXTriggerService';
@@ -94,7 +95,7 @@ class InteractionSystem {
         // Hero logic (add to inventory)
         // Hero logic (add to inventory)
         const type = item.resourceType;
-        const amount = (item as any).amount || 1;
+        const amount = (item as DroppedItem).amount || 1;
 
         // SFX - play for EVERY item pickup (no debounce)
         if (AudioManager) {

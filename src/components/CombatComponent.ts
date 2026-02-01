@@ -4,6 +4,19 @@
 import { Component } from '@core/Component';
 import { Registry } from '@core/Registry';
 import { EventBus } from '@core/EventBus';
+import { IEntity } from '../types/core';
+
+export interface CombatConfig {
+    damage?: number;
+    rate?: number;
+    range?: number;
+    staminaCost?: number;
+}
+
+export interface ICombatant extends IEntity {
+    stamina?: number;
+    maxStamina?: number;
+}
 
 class CombatComponent extends Component {
     damage: number;
@@ -12,8 +25,9 @@ class CombatComponent extends Component {
     staminaCost: number;
     cooldownTimer: number;
     canAttack: boolean;
+    declare parent: ICombatant;
 
-    constructor(parent: any, config: any = {}) {
+    constructor(parent: ICombatant, config: CombatConfig = {}) {
         super(parent);
         this.damage = config.damage || 10;
         this.rate = config.rate || 1;

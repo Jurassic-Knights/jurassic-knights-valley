@@ -9,10 +9,10 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { ProceduralSFX } from './ProceduralSFX';
-import { WeatherSystem } from '@systems/WeatherSystem';
+import { weatherSystem } from '@systems/WeatherSystem';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
-import { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
+import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 
 const AudioManager = {
     context: null as AudioContext | null,
@@ -27,7 +27,7 @@ const AudioManager = {
 
         // Listen for Weather
         if (EventBus && GameConstants) {
-            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: any) => {
+            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: { type: string }) => {
                 if (ProceduralSFX) {
                     ProceduralSFX.setWeather(data.type);
                 }
@@ -41,7 +41,8 @@ const AudioManager = {
         if (this.initialized) return;
 
         try {
-            this.context = new (AudioContext || (window as any).webkitAudioContext)();
+            const AudioCtor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+            this.context = new AudioCtor();
 
             // Create gain nodes
             this.masterGain = this.context.createGain();
@@ -62,12 +63,10 @@ const AudioManager = {
                 ProceduralSFX.init(this.context, this.sfxGain);
 
                 // Sync weather from EnvironmentRenderer (visual source of truth)
-                const envRenderer = EnvironmentRenderer as any;
-                const weatherSys = WeatherSystem as any;
-                if (envRenderer?.weatherType) {
-                    ProceduralSFX.setWeather(envRenderer.weatherType);
-                } else if (weatherSys?.currentWeather) {
-                    ProceduralSFX.setWeather(weatherSys.currentWeather);
+                if (environmentRenderer?.weatherType) {
+                    ProceduralSFX.setWeather(environmentRenderer.weatherType);
+                } else if (weatherSystem?.currentWeather) {
+                    ProceduralSFX.setWeather(weatherSystem.currentWeather);
                 }
             }
 

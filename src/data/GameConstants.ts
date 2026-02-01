@@ -160,7 +160,8 @@ const GameConstants = {
             NIGHT: 0.9 // 9:36 PM - Night begins (15% dusk, 10% night until midnight→dawn)
         },
         SEASONS: ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'],
-        DAYS_PER_SEASON: 2 // 30 seconds per season (TESTING)
+        DAYS_PER_SEASON: 2, // 30 seconds per season (TESTING)
+        WEATHER_DECAY_RATE: 5000 // Rate at which weather check timer decrements
     },
 
     // Weather Configuration
@@ -261,6 +262,40 @@ const GameConstants = {
         ROAD_SPEED_MULTIPLIER: 1.3 // 30% speed boost on roads
     },
 
+    // Ground Texture System (01-31-2026)
+    Ground: {
+        CATEGORIES: {
+            BASE: ['grass', 'dirt', 'rock', 'gravel', 'sand'],
+            OVERGROWN: ['leaves', 'forest_floor', 'moss', 'roots', 'flowers'],
+            INTERIOR: ['planks', 'cobblestone', 'flagstone', 'concrete', 'metal_plate'],
+            VERTICAL: ['cliff_rock', 'earth_bank'],
+            DAMAGE: ['scorched', 'churned', 'cratered']
+        },
+        // Variance Counts (Max variants per material type)
+        VARIANCE: {
+            grass: 4,
+            dirt: 3,
+            rock: 3,
+            gravel: 2,
+            sand: 2,
+            leaves: 3,
+            forest_floor: 3,
+            moss: 2,
+            roots: 2,
+            flowers: 2,
+            planks: 3,
+            cobblestone: 2,
+            flagstone: 2,
+            concrete: 2,
+            metal_plate: 2,
+            cliff_rock: 3,
+            earth_bank: 3,
+            scorched: 2,
+            churned: 2,
+            cratered: 1
+        }
+    },
+
     // Spawning & Population
     Spawning: {
         HOME_GOLD_COUNT: 5,
@@ -291,7 +326,8 @@ const GameConstants = {
         },
 
         MERCHANT: {
-            PADDING: 70
+            PADDING: 70,
+            DEFAULT_OFFSET: 50
         }
     },
 
@@ -466,8 +502,12 @@ if (typeof window !== 'undefined') {
                 typeof GameConstants[typedKey] === 'object' &&
                 !Array.isArray(GameConstants[typedKey])
             ) {
-                Object.assign(persisted[typedKey], GameConstants[typedKey]);
+                // Safe to merge objects
+                const target = persisted[typedKey] as Record<string, any>;
+                const source = GameConstants[typedKey] as Record<string, any>;
+                Object.assign(target, source);
             } else {
+                // Primitives or Arrays: overwrite
                 (persisted as any)[typedKey] = GameConstants[typedKey];
             }
         }

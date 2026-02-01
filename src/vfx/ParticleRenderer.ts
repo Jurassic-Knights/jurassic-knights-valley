@@ -8,6 +8,7 @@
  */
 
 import { MathUtils } from '@core/MathUtils';
+import { Particle } from '../types/vfx';
 
 const ParticleRenderer = {
     // Sprite cache for lazy-loading
@@ -20,7 +21,7 @@ const ParticleRenderer = {
      * @param {number} pSize - Projected particle size
      * @param {number} scaleX - Scale factor for screen projection
      */
-    renderParticle(ctx: CanvasRenderingContext2D, p: any, pSize: number, scaleX: number) {
+    renderParticle(ctx: CanvasRenderingContext2D, p: Particle, pSize: number, scaleX: number) {
         switch (p.type) {
             case 'glow':
                 this.drawGlow(ctx, p, pSize);
@@ -54,7 +55,7 @@ const ParticleRenderer = {
         }
     },
 
-    drawGlow(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawGlow(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, pSize);
         gradient.addColorStop(0, p.color);
         gradient.addColorStop(1, 'rgba(0,0,0,0)');
@@ -64,7 +65,7 @@ const ParticleRenderer = {
         ctx.fill();
     },
 
-    drawStreak(ctx: CanvasRenderingContext2D, p: any, pSize: number, scaleX: number) {
+    drawStreak(ctx: CanvasRenderingContext2D, p: Particle, pSize: number, scaleX: number) {
         const speed = MathUtils.distance(0, 0, p.vx, p.vy);
         const angle = Math.atan2(p.vy, p.vx);
         ctx.rotate(angle);
@@ -78,7 +79,7 @@ const ParticleRenderer = {
         ctx.fill();
     },
 
-    drawRay(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawRay(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         ctx.rotate(p.rotation);
         const gradient = ctx.createLinearGradient(0, 0, pSize * 4, 0);
         gradient.addColorStop(0, p.color);
@@ -92,7 +93,7 @@ const ParticleRenderer = {
         ctx.fill();
     },
 
-    drawRing(ctx: CanvasRenderingContext2D, p: any, pSize: number, scaleX: number) {
+    drawRing(ctx: CanvasRenderingContext2D, p: Particle, pSize: number, scaleX: number) {
         ctx.strokeStyle = p.color;
         ctx.lineWidth = 2 * scaleX;
         ctx.beginPath();
@@ -100,7 +101,7 @@ const ParticleRenderer = {
         ctx.stroke();
     },
 
-    drawSpark(ctx: CanvasRenderingContext2D, p: any, pSize: number, scaleX: number) {
+    drawSpark(ctx: CanvasRenderingContext2D, p: Particle, pSize: number, scaleX: number) {
         ctx.strokeStyle = p.color;
         ctx.lineWidth = 2 * scaleX;
         ctx.beginPath();
@@ -112,7 +113,7 @@ const ParticleRenderer = {
         ctx.stroke();
     },
 
-    drawSprite(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawSprite(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         if (!AssetLoader) return;
 
         let img = AssetLoader.getImage(p.sprite);
@@ -141,7 +142,7 @@ const ParticleRenderer = {
         }
     },
 
-    _drawWarpedSprite(ctx: CanvasRenderingContext2D, img: HTMLImageElement | HTMLCanvasElement, p: any, pSize: number) {
+    _drawWarpedSprite(ctx: CanvasRenderingContext2D, img: HTMLImageElement | HTMLCanvasElement, p: Particle, pSize: number) {
         const time = p.age * 0.001 * p.warp.speed;
         const slices = 10;
         const sliceH = pSize / slices;
@@ -167,7 +168,7 @@ const ParticleRenderer = {
         }
     },
 
-    drawFogSoft(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawFogSoft(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, pSize / 2);
         grad.addColorStop(0, 'rgba(240, 245, 255, 0.9)');
         grad.addColorStop(0.5, 'rgba(200, 210, 230, 0.5)');
@@ -178,7 +179,7 @@ const ParticleRenderer = {
         ctx.fill();
     },
 
-    drawCloud(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawCloud(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         if (!p.blobPoints) return;
 
         ctx.fillStyle = p.color;
@@ -209,14 +210,14 @@ const ParticleRenderer = {
         ctx.fill();
     },
 
-    drawDebris(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawDebris(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         ctx.fillStyle = p.color;
         ctx.rotate(p.rotation);
         const s = pSize;
         ctx.fillRect(-s / 2, -s / 2, s, s);
     },
 
-    drawCircle(ctx: CanvasRenderingContext2D, p: any, pSize: number) {
+    drawCircle(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
         ctx.fillStyle = p.color;
         ctx.beginPath();
         ctx.arc(0, 0, pSize, 0, Math.PI * 2);

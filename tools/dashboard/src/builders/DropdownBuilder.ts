@@ -31,7 +31,8 @@ export function buildRoleDropdownHtml(item: AssetItem, fileName: string): string
 
 export function buildWeaponDropdownHtml(item: AssetItem, fileName: string): string {
     const isHumanOrSaurian = ['human', 'saurian'].includes(item.enemyType || '') || ['human', 'saurian'].includes(item.sourceFile || '');
-    const attackType = (item.combat as any)?.attackType || (item.stats as any)?.attackType;
+    const attackType = (item.combat as { attackType?: string } | undefined)?.attackType || (item.stats as { attackType?: string } | undefined)?.attackType;
+
 
     if (!isHumanOrSaurian || !attackType) return '';
 

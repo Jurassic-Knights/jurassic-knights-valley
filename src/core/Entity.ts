@@ -25,6 +25,7 @@ class Entity implements IEntity {
     active: boolean;
     islandGridX?: number;
     islandGridY?: number;
+    scale: number = 1;
 
     // Physics State for Interpolation
     prevX: number;
@@ -72,6 +73,61 @@ class Entity implements IEntity {
                     ...(config.collision.bounds || {}) // Allow override
                 }
             });
+        }
+    }
+
+    /**
+     * Refresh configuration from Registry (HMR/Live Update)
+     */
+    refreshConfig() {
+        // Resolve latest config from Registry
+        const EntityLoader = Registry.get('EntityLoader') as any; // Type as any to avoid circular dependency for now
+
+        if (EntityLoader && EntityLoader.getConfig) {
+            // use id or sprite (many props use sprite as ID)
+            const lookupId = this.id || this.sprite || '';
+            const registryConfig = EntityLoader.getConfig(lookupId) || {};
+
+            // 1. Update Dimensions (Async)
+            import('../utils/EntityScaling').then(({ EntityScaling }) => {
+                EntityScaling.applyToEntity(this, {}, registryConfig, { width: 32, height: 32 });
+            });
+
+            // 2. Update Gameplay Stats (Safe subset)
+            const SAFE_KEYS = [
+                'speed', 'damage', 'defense', 'attackRange', 'attackRate',
+                'aggroRange', 'leashDistance', 'respawnTime', 'xpReward',
+                'lootTable', 'tier', 'groupSize', 'spawnWeight'
+            ];
+
+            for (const key of SAFE_KEYS) {
+                if (key in registryConfig) {
+                    (this as any)[key] = (registryConfig as any)[key];
+                }
+            }
+
+            // 3. Update 'stats' object deeply if it exists
+            if (registryConfig.stats) {
+                if (!(this as any).stats) (this as any).stats = {};
+                Object.assign((this as any).stats, registryConfig.stats);
+            }
+
+            // 4. Handle Health/MaxHealth specially
+            // Update Max Health
+            if (registryConfig.health || registryConfig.maxHealth || (registryConfig.stats && registryConfig.stats.health)) {
+                const newMax = registryConfig.maxHealth || registryConfig.health || (registryConfig.stats ? registryConfig.stats.health : 0);
+                if (newMax) {
+                    const oldMax = (this as any).maxHealth || (this as any).health || 100;
+                    (this as any).maxHealth = newMax;
+
+                    // If health was full, keep it full. If not, maybe scale it? 
+                    // Simple rule: If current health > new max, clamp it.
+                    // If max increased, maybe heal? For now, just clamp.
+                    if ((this as any).health > newMax) {
+                        (this as any).health = newMax;
+                    }
+                }
+            }
         }
     }
 
@@ -243,7 +299,7 @@ class Entity implements IEntity {
      * @param {Entity} other
      * @returns {boolean}
      */
-    collidesWith(other: IEntity & { getBounds(): any }) {
+    collidesWith(other: IEntity & { getBounds(): { x: number; y: number; width: number; height: number } }) {
         const a = this.getBounds();
         const b = other.getBounds();
 

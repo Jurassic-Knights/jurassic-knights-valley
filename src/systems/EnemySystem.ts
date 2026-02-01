@@ -16,6 +16,11 @@ import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
 import { MathUtils } from '@core/MathUtils';
 import type { IGame, IEntity } from '@app-types/core';
+import { Enemy } from '../gameplay/EnemyCore';
+import { CollisionSystem } from './CollisionSystem';
+import { AIComponent } from '../components/AIComponent';
+import { CombatComponent } from '../components/CombatComponent';
+import { HealthComponent } from '../components/HealthComponent';
 
 // Events from GameConstants
 const Events = GameConstants.Events;
@@ -52,25 +57,25 @@ class EnemySystem {
         const hero = this.game?.hero;
 
         for (const enemy_ of enemies) {
-            const enemy = enemy_ as any;
+            const enemy = enemy_ as Enemy;
             if (enemy.active && enemy.state !== 'dead') {
                 this.updateEnemy(enemy, hero, dt);
             }
         }
     }
 
-    updateEnemy(enemy: IEntity, hero: IEntity | null, dt: number) {
+    updateEnemy(enemy: Enemy, hero: IEntity | null, dt: number) {
         // Update interpolation state (per fixed tick)
         enemy.prevX = enemy.x;
         enemy.prevY = enemy.y;
 
         // Sync HealthComponent to Entity property for Renderer/UI
-        const healthComp = enemy.components?.health;
+        const healthComp = enemy.components?.health as HealthComponent;
         if (healthComp) {
             enemy.health = healthComp.health;
         }
 
-        const ai = enemy.components?.ai;
+        const ai = enemy.components?.ai as AIComponent;
         if (!ai) return;
 
         // Debug state
@@ -93,8 +98,8 @@ class EnemySystem {
         }
     }
 
-    handleWander(enemy: IEntity, hero: IEntity | null, dt: number) {
-        const ai = enemy.components?.ai;
+    handleWander(enemy: Enemy, hero: IEntity | null, dt: number) {
+        const ai = enemy.components?.ai as AIComponent;
 
         // Check for aggro
         if (hero && ai.canAggro(hero)) {
@@ -128,7 +133,7 @@ class EnemySystem {
         const nextY = enemy.y + dy;
 
         // Clamp to patrol radius
-        const patrolRadius = (enemy as any).patrolRadius || 150;
+        const patrolRadius = enemy.patrolRadius || 150;
         const dist = MathUtils.distance(nextX, nextY, enemy.spawnX, enemy.spawnY);
 
         if (dist > patrolRadius) {
@@ -155,11 +160,7 @@ class EnemySystem {
             if (enemy === aggroEnemy) continue;
             if (enemy.groupId !== aggroEnemy.groupId) continue;
             if (!enemy.packAggro) continue; // Respect individual packAggro flag
-            const ai = enemy.components?.ai as {
-                state?: string;
-                setState?(s: string): void;
-                target?: any;
-            };
+            const ai = enemy.components?.ai as AIComponent;
             if (ai?.state !== 'WANDER') continue;
 
             // Check distance
@@ -172,8 +173,8 @@ class EnemySystem {
         }
     }
 
-    handleChase(enemy: IEntity, hero: IEntity, dt: number) {
-        const ai = enemy.components?.ai;
+    handleChase(enemy: Enemy, hero: IEntity, dt: number) {
+        const ai = enemy.components?.ai as AIComponent;
 
         // Check leash
         if (ai.shouldLeash()) {
@@ -205,18 +206,18 @@ class EnemySystem {
     }
 
     applyMovement(enemy: IEntity, dx: number, dy: number) {
-        const collisionSystem = this.game?.getSystem('CollisionSystem') as any;
+        const collisionSystem = this.game?.getSystem('CollisionSystem') as CollisionSystem;
         if (collisionSystem && typeof collisionSystem.move === 'function') {
-            collisionSystem.move(enemy, dx, dy);
+            collisionSystem.move(enemy as any, dx, dy); // Entity vs IEntity mismatch potential, cast to any or Entity if easy
         } else {
             enemy.x += dx;
             enemy.y += dy;
         }
     }
 
-    handleAttack(enemy: IEntity, hero: IEntity, dt: number) {
-        const ai = enemy.components?.ai;
-        const combat = enemy.components?.combat;
+    handleAttack(enemy: Enemy, hero: IEntity, dt: number) {
+        const ai = enemy.components?.ai as AIComponent;
+        const combat = enemy.components?.combat as CombatComponent;
 
         // Check if still in range
         if (!ai.inAttackRange(hero)) {
@@ -256,8 +257,8 @@ class EnemySystem {
         }
     }
 
-    handleLeashReturn(enemy: IEntity, dt: number) {
-        const ai = (enemy.components ? enemy.components.ai : null) as any;
+    handleLeashReturn(enemy: Enemy, dt: number) {
+        const ai = enemy.components?.ai as AIComponent;
 
         // Move back to spawn
         const dxRaw = enemy.spawnX - enemy.x;
