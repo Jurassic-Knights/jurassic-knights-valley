@@ -6,85 +6,85 @@
  */
 
 // Core Systems
-declare var Logger: typeof import('../core/Logger').Logger;
-declare var EventBus: typeof import('../core/EventBus').EventBus;
-declare var Registry: typeof import('../core/Registry').Registry;
-declare var GameInstance: import('../core/Game').Game;
-declare var Game: typeof import('../core/Game').Game;
-declare var GameState: import('../core/GameState').GameState;
-declare var GameConstants: typeof import('../data/GameConstants').GameConstants;
-declare var Events: typeof import('../data/GameConstants').GameConstants.Events;
+declare let Logger: typeof import('../core/Logger').Logger;
+declare let EventBus: typeof import('../core/EventBus').EventBus;
+declare let Registry: typeof import('../core/Registry').Registry;
+declare let GameInstance: import('../core/Game').Game;
+declare let Game: typeof import('../core/Game').Game;
+declare let GameState: import('../core/GameState').GameState;
+declare let GameConstants: typeof import('../data/GameConstants').GameConstants;
+declare let Events: typeof import('../data/GameConstants').GameConstants.Events;
 
 // Managers
-declare var AssetLoader: typeof import('../core/AssetLoader').AssetLoader;
-declare var AudioManager: typeof import('../core/AudioManager').AudioManager;
-declare var UIManager: import('../ui/UIManager').UIManagerService;
-declare var EntityManager: import('../core/EntityManager').EntityManagerService;
-declare var IslandManager: import('../world/IslandManager').IslandManager;
-declare var CraftingManager: import('../gameplay/CraftingManager').CraftingManager;
-declare var BalanceManager: import('../gameplay/BalanceManager').BalanceManager;
-declare var QuestManager: import('../gameplay/QuestManager').QuestManager;
-declare var ProgressionSystem: import('../gameplay/ProgressionSystem').ProgressionSystem;
-declare var BiomeManager: import('../world/BiomeManager').BiomeManager;
-declare var SpawnManager: import('../systems/SpawnManager').SpawnManager;
-declare var PathfindingSystem: import('../systems/PathfindingSystem').PathfindingSystem;
-declare var EconomySystem: import('../systems/EconomySystem').EconomySystem;
-declare var EquipmentSlotManager: import('../ui/EquipmentSlotManager').EquipmentSlotManager;
+declare let AssetLoader: typeof import('../core/AssetLoader').AssetLoader;
+declare let AudioManager: typeof import('../core/AudioManager').AudioManager;
+declare let UIManager: import('../ui/UIManager').UIManagerService;
+declare let EntityManager: import('../core/EntityManager').EntityManagerService;
+declare let IslandManager: import('../world/IslandManager').IslandManager;
+declare let CraftingManager: import('../gameplay/CraftingManager').CraftingManager;
+declare let BalanceManager: import('../gameplay/BalanceManager').BalanceManager;
+declare let QuestManager: import('../gameplay/QuestManager').QuestManager;
+declare let ProgressionSystem: import('../gameplay/ProgressionSystem').ProgressionSystem;
+declare let BiomeManager: import('../world/BiomeManager').BiomeManager;
+declare let SpawnManager: import('../systems/SpawnManager').SpawnManager;
+declare let PathfindingSystem: import('../systems/PathfindingSystem').PathfindingSystem;
+declare let EconomySystem: import('../systems/EconomySystem').EconomySystem;
+declare let EquipmentSlotManager: import('../ui/EquipmentSlotManager').EquipmentSlotManager;
 
 // Registries
-declare var EntityRegistry: typeof import('../entities/EntityLoader').EntityRegistry;
-declare var SoundRegistry: typeof import('../audio/SoundRegistry').SoundRegistry;
+declare let EntityRegistry: typeof import('../entities/EntityLoader').EntityRegistry;
+declare let SoundRegistry: typeof import('../audio/SoundRegistry').SoundRegistry;
 
 // Rendering
-declare var GameRenderer: typeof import('../core/GameRenderer').GameRenderer;
-declare var ShadowRenderer: typeof import('../rendering/ShadowRenderer').ShadowRenderer;
-declare var GridRenderer: typeof import('../rendering/GridRenderer').GridRenderer;
-declare var DebugOverlays: typeof import('../rendering/DebugOverlays').DebugOverlays;
-declare var EntityRenderService: typeof import('../rendering/EntityRenderService').EntityRenderService;
-declare var RenderProfiler: typeof import('../rendering/RenderProfiler').RenderProfiler;
-declare var EnvironmentRenderer: typeof import('../rendering/EnvironmentRenderer').EnvironmentRenderer;
-declare var HeroRenderer: typeof import('../rendering/HeroRenderer').HeroRenderer;
-declare var HomeOutpostRenderer: typeof import('../rendering/HomeOutpostRenderer').HomeOutpostRenderer;
-declare var EquipmentUIRenderer: typeof import('../ui/EquipmentUIRenderer').EquipmentUIRenderer;
-declare var TextureAligner: typeof import('../ui/TextureAligner').TextureAligner;
+declare let GameRenderer: typeof import('../core/GameRenderer').GameRenderer;
+declare let ShadowRenderer: typeof import('../rendering/ShadowRenderer').ShadowRenderer;
+declare let GridRenderer: typeof import('../rendering/GridRenderer').GridRenderer;
+declare let DebugOverlays: typeof import('../rendering/DebugOverlays').DebugOverlays;
+declare let EntityRenderService: typeof import('../rendering/EntityRenderService').EntityRenderService;
+declare let RenderProfiler: typeof import('../rendering/RenderProfiler').RenderProfiler;
+declare let EnvironmentRenderer: typeof import('../rendering/EnvironmentRenderer').EnvironmentRenderer;
+declare let HeroRenderer: typeof import('../rendering/HeroRenderer').HeroRenderer;
+declare let HomeOutpostRenderer: typeof import('../rendering/HomeOutpostRenderer').HomeOutpostRenderer;
+declare let EquipmentUIRenderer: typeof import('../ui/EquipmentUIRenderer').EquipmentUIRenderer;
+declare let TextureAligner: typeof import('../ui/TextureAligner').TextureAligner;
 
 // VFX
-declare var VFXController: import('../vfx/VFXController').VFXSystem;
-declare var VFXConfig: typeof import('../data/VFXConfig').VFXConfig;
-declare var VFX_Categories: typeof import('../data/VFX_Categories').VFX_Categories;
-declare var VFX_Sequences: typeof import('../data/VFX_Sequences').VFX_SEQUENCES;
-declare var VFX_Templates: typeof import('../data/VFX_Templates').VFX_TEMPLATES;
-declare var ParticleSystem: typeof import('../vfx/ParticleSystem').ParticleSystem;
-declare var LightingSystem: import('../vfx/LightingSystem').LightingSystem;
+declare let VFXController: import('../vfx/VFXController').VFXSystem;
+declare let VFXConfig: typeof import('../data/VFXConfig').VFXConfig;
+declare let VFX_Categories: typeof import('../data/VFX_Categories').VFX_Categories;
+declare let VFX_Sequences: typeof import('../data/VFX_Sequences').VFX_SEQUENCES;
+declare let VFX_Templates: typeof import('../data/VFX_Templates').VFX_TEMPLATES;
+declare let ParticleSystem: typeof import('../vfx/ParticleSystem').ParticleSystem;
+declare let LightingSystem: import('../vfx/LightingSystem').LightingSystem;
 
 // UI
-declare var InventoryUI: import('../ui/InventoryUI').InventoryPanel;
-declare var UI_MANIFEST: string[]; // UI Asset Manifest
-declare var ThemeManager: import('../ui/ThemeManager').ThemeManagerService;
-declare var ForgeController: import('../ui/controllers/ForgeController').ForgeController;
-declare var HUDController: import('../ui/controllers/HUDController').HUDController;
-declare var UIPanel: typeof import('../ui/core/UIPanel').UIPanel;
-declare var LayoutStrategies: typeof import('../ui/responsive/LayoutStrategies').LayoutStrategies;
+declare let InventoryUI: import('../ui/InventoryUI').InventoryPanel;
+declare let UI_MANIFEST: string[]; // UI Asset Manifest
+declare let ThemeManager: import('../ui/ThemeManager').ThemeManagerService;
+declare let ForgeController: import('../ui/controllers/ForgeController').ForgeController;
+declare let HUDController: import('../ui/controllers/HUDController').HUDController;
+declare let UIPanel: typeof import('../ui/core/UIPanel').UIPanel;
+declare let LayoutStrategies: typeof import('../ui/responsive/LayoutStrategies').LayoutStrategies;
 
 // Config
-declare var PropConfig: typeof import('../config/PropConfig').PropConfig;
-declare var WorldData: typeof import('../data/WorldData').WorldData;
-declare var BiomeConfig: typeof import('../config/BiomeConfig').BiomeConfig;
-declare var RoadsData: typeof import('../data/RoadsData').RoadsData;
-declare var EntityConfig: typeof import('../config/EntityConfig').EntityConfig;
-declare var ProgressionData: typeof import('../data/ProgressionData').ProgressionData;
+declare let PropConfig: typeof import('../config/PropConfig').PropConfig;
+declare let WorldData: typeof import('../data/WorldData').WorldData;
+declare let BiomeConfig: typeof import('../config/BiomeConfig').BiomeConfig;
+declare let RoadsData: typeof import('../data/RoadsData').RoadsData;
+declare let EntityConfig: typeof import('../config/EntityConfig').EntityConfig;
+declare let ProgressionData: typeof import('../data/ProgressionData').ProgressionData;
 
 // Entities
-declare var Enemy: typeof import('../gameplay/EnemyCore').Enemy;
-declare var Dinosaur: typeof import('../gameplay/Dinosaur').Dinosaur;
-declare var Hero: typeof import('../gameplay/Hero').Hero;
-declare var Component: typeof import('../core/Component').Component;
-declare var Entity: typeof import('../core/Entity').Entity;
-declare var Prop: typeof import('../world/Prop').Prop;
-declare var EntityLoader: typeof import('../entities/EntityLoader').EntityLoader;
+declare let Enemy: typeof import('../gameplay/EnemyCore').Enemy;
+declare let Dinosaur: typeof import('../gameplay/Dinosaur').Dinosaur;
+declare let Hero: typeof import('../gameplay/Hero').Hero;
+declare let Component: typeof import('../core/Component').Component;
+declare let Entity: typeof import('../core/Entity').Entity;
+declare let Prop: typeof import('../world/Prop').Prop;
+declare let EntityLoader: typeof import('../entities/EntityLoader').EntityLoader;
 
 // External Libraries
-declare var gameanalytics: {
+declare let gameanalytics: {
     GameAnalytics: {
         setEnabledInfoLog(enabled: boolean): void;
         initialize(gameKey: string, secretKey: string): void;
@@ -94,13 +94,13 @@ declare var gameanalytics: {
 } | undefined;
 
 // Input
-declare var InputSystem: import('../input/InputSystem').InputSystem;
+declare let InputSystem: import('../input/InputSystem').InputSystem;
 
 // Types
-declare var EntityTypes: typeof import('../config/EntityTypes').EntityTypes;
+declare let EntityTypes: typeof import('../config/EntityTypes').EntityTypes;
 
 // Environment
-declare var ENV: Record<string, string | undefined>;
+declare let ENV: Record<string, string | undefined>;
 
 interface Window {
     EquipmentUIRenderer: typeof import('../ui/EquipmentUIRenderer').EquipmentUIRenderer;

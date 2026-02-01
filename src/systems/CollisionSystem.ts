@@ -175,8 +175,8 @@ export class CollisionSystem implements ISystem {
             return { x: dx, y: dy };
         }
 
-        let startX = entity.x;
-        let startY = entity.y;
+        const startX = entity.x;
+        const startY = entity.y;
 
         // 1. Horizontal Movement
         if (dx !== 0) {
