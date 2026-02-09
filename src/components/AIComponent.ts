@@ -9,7 +9,9 @@
  * - Navigation: Wander direction, pathing data
  */
 import { Component } from '@core/Component';
+import type { IEntity } from '../types/core';
 import { Logger } from '@core/Logger';
+import { GameConstants, getConfig } from '@data/GameConstants';
 class AIComponent extends Component {
     type: string = 'AIComponent';
     state: string = 'WANDER';
@@ -18,7 +20,7 @@ class AIComponent extends Component {
     wanderTimer: number = 0;
     wanderIntervalMin: number = 2000;
     wanderIntervalMax: number = 5000;
-    target: any = null;
+    target: IEntity | null = null;
     combatCooldown: number = 0;
     aggroRange: number = 200;
     leashDistance: number = 500;
@@ -27,28 +29,30 @@ class AIComponent extends Component {
     attackWindup: number = 0;
     isAttacking: boolean = false;
 
-    constructor(parent: any, config: any = {}) {
+    constructor(parent: IEntity | null, config: Record<string, unknown> = {}) {
         super(parent);
         this.type = 'AIComponent';
 
+        const AI = getConfig().AI;
+        const Biome = GameConstants.Biome;
         // State Machine
-        this.state = config.state || 'WANDER';
+        this.state = (config.state as string) || 'WANDER';
         this.previousState = null;
 
         // Navigation
         this.wanderDirection = { x: 1, y: 0 };
         this.wanderTimer = 0;
-        this.wanderIntervalMin = config.wanderIntervalMin || 2000;
-        this.wanderIntervalMax = config.wanderIntervalMax || 5000;
+        this.wanderIntervalMin = (config.wanderIntervalMin as number) ?? AI.WANDER_TIMER_MIN;
+        this.wanderIntervalMax = (config.wanderIntervalMax as number) ?? AI.WANDER_TIMER_MAX;
 
         // Combat / Interaction
         this.target = null;
         this.combatCooldown = 0;
 
         // Aggro System (Enemy AI)
-        this.aggroRange = config.aggroRange || 200;
-        this.leashDistance = config.leashDistance || 500;
-        this.attackRange = config.attackRange || 100;
+        this.aggroRange = (config.aggroRange as number) ?? Biome.AGGRO_RANGE;
+        this.leashDistance = (config.leashDistance as number) ?? Biome.LEASH_DISTANCE;
+        this.attackRange = (config.attackRange as number) ?? GameConstants.Combat.DEFAULT_ATTACK_RANGE;
 
         // Combat State
         this.attackCooldown = 0;
@@ -75,7 +79,7 @@ class AIComponent extends Component {
             Math.random() * (this.wanderIntervalMax - this.wanderIntervalMin);
     }
 
-    canAggro(target: any) {
+    canAggro(target: IEntity) {
         if (!target) return false;
         const dx = target.x - this.parent.x;
         const dy = target.y - this.parent.y;
@@ -91,7 +95,7 @@ class AIComponent extends Component {
         return dist > this.leashDistance;
     }
 
-    inAttackRange(target: any) {
+    inAttackRange(target: IEntity) {
         if (!target) return false;
         const dx = target.x - this.parent.x;
         const dy = target.y - this.parent.y;

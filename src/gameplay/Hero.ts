@@ -15,20 +15,52 @@ import { InventoryComponent } from '../components/InventoryComponent';
 import { CombatComponent } from '../components/CombatComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { HeroDefaults } from '@config/HeroDefaults';
+import { EventBus } from '@core/EventBus';
 import { Registry } from '@core/Registry';
+import { EquipmentManager } from '@systems/EquipmentManager';
+import type { IComponents, IEntity } from '../types/core';
+import type { EquipmentItem } from '../types/ui';
 
 // Unmapped modules - need manual import
 
+interface HeroConfig {
+    width?: number;
+    height?: number;
+    color?: string;
+    maxHealth?: number;
+    health?: number;
+    gold?: number;
+    speed?: number;
+    maxStamina?: number;
+    stamina?: number;
+    level?: number;
+    xp?: number;
+    xpToNextLevel?: number;
+    xpScaling?: number;
+    attack?: {
+        damage?: number;
+        rate?: number;
+        range?: {
+            default?: number;
+        };
+        staminaCost?: number;
+    };
+    defense?: number;
+    critChance?: number;
+    critMultiplier?: number;
+    [key: string]: unknown;
+}
+
 class Hero extends Entity {
     // Class properties
-    components: Record<string, any>;
-    equipment: any;
+    components: IComponents;
+    equipment: EquipmentManager;
     isAtHomeOutpost: boolean = false;
     locked: boolean = false;
     isAttacking: boolean = false;
     hand1Attacking: boolean = false;
     hand2Attacking: boolean = false;
-    targetResource: any = null;
+    targetResource: IEntity | null = null;
 
     footstepTimer: number;
     footstepInterval: number;
@@ -41,7 +73,7 @@ class Hero extends Entity {
         return this.health <= 0;
     }
 
-    constructor(config: any = {}) {
+    constructor(config: HeroConfig = {}) {
         // 1. Load Config from EntityRegistry (v2 architecture) or fallback
         const baseConfig = GameInstance?.hero || {};
         // Merge: Config < Constructor Args
@@ -104,20 +136,19 @@ class Hero extends Entity {
 
         // Stats (New Phase 17, expanded 03-hero-stats)
         if (StatsComponent) {
+            const HD = GameConstants.HeroDefaults;
             this.components.stats = new StatsComponent(this, {
-                speed: finalConfig.speed || getConfig().Hero.SPEED,
-                maxStamina: finalConfig.maxStamina || 100,
-                stamina: finalConfig.stamina, // Defaults to max
-                // Combat Stats (03-hero-stats)
-                attack: finalConfig.attack?.damage || 10,
+                speed: finalConfig.speed ?? getConfig().Hero.SPEED,
+                maxStamina: finalConfig.maxStamina ?? HD.MAX_STAMINA_FALLBACK,
+                stamina: finalConfig.stamina,
+                attack: finalConfig.attack?.damage ?? HD.DEFAULT_ATTACK,
                 defense: finalConfig.defense || 0,
                 critChance: finalConfig.critChance || 0.05,
                 critMultiplier: finalConfig.critMultiplier || 1.5,
-                // Leveling (03-hero-stats)
                 level: finalConfig.level || 1,
                 xp: finalConfig.xp || 0,
-                xpToNextLevel: finalConfig.xpToNextLevel || 100,
-                xpScaling: finalConfig.xpScaling || 1.5
+                xpToNextLevel: finalConfig.xpToNextLevel ?? HD.XP_TO_NEXT_LEVEL,
+                xpScaling: finalConfig.xpScaling ?? HD.XP_SCALING
             });
         }
 
@@ -153,7 +184,7 @@ class Hero extends Entity {
         this.prevX = this.x;
         this.prevY = this.y;
         this.footstepTimer = 0;
-        this.footstepInterval = 0.15;
+        this.footstepInterval = GameConstants.HeroDefaults.FOOTSTEP_INTERVAL;
         this.attackTimer = 0;
     }
 
@@ -168,7 +199,7 @@ class Hero extends Entity {
     }
 
     get maxHealth() {
-        return this.components.health ? this.components.health.maxHealth : 100;
+        return this.components.health ? this.components.health.maxHealth : GameConstants.HeroDefaults.MAX_HEALTH_FALLBACK;
     }
     set maxHealth(val) {
         if (this.components.health) this.components.health.maxHealth = val;
@@ -186,7 +217,7 @@ class Hero extends Entity {
     // Stats - Read directly from global GameConstants for HMR reactivity
     get speed() {
         // Use getConfig() helper for HMR-safe access
-        return getConfig().Hero?.SPEED ?? 1400;
+        return getConfig().Hero.SPEED;
     }
     set speed(val) {
         // Speed is now controlled by GameConstants, this setter is for backwards compatibility
@@ -203,7 +234,7 @@ class Hero extends Entity {
     }
 
     get maxStamina() {
-        return this.components.stats ? this.components.stats.maxStamina : 100;
+        return this.components.stats ? this.components.stats.maxStamina : GameConstants.HeroDefaults.MAX_STAMINA_FALLBACK;
     }
     set maxStamina(val) {
         if (this.components.stats) this.components.stats.maxStamina = val;
@@ -226,7 +257,7 @@ class Hero extends Entity {
 
     // Combat (03-hero-stats) - getters delegate to effective stat methods
     get attack() {
-        return this.components.stats?.getAttack() || 10;
+        return this.components.stats?.getAttack() ?? GameConstants.HeroDefaults.DEFAULT_ATTACK;
     }
     get defense() {
         return this.components.stats?.getDefense() || 0;
@@ -239,22 +270,19 @@ class Hero extends Entity {
 
     // Combat ranges - read from config for HMR reactivity
     get miningRange() {
-        return getConfig().Combat?.DEFAULT_MINING_RANGE ?? 1250;
+        return getConfig().Combat.DEFAULT_MINING_RANGE;
     }
 
     get gunRange() {
-        return getConfig().Combat?.DEFAULT_GUN_RANGE ?? 800;
+        return getConfig().Combat.DEFAULT_GUN_RANGE;
     }
 
     /**
      * Helper to restore stamina (used by RestSystem legacy calls)
      */
     restStamina() {
-        if (this.components.stats && Registry) {
-            const heroSystem = Registry.get('HeroSystem');
-            if (heroSystem) {
-                heroSystem.restoreStamina(this, this.maxStamina);
-            }
+        if (this.components.stats && EventBus) {
+            EventBus.emit(GameConstants.Events.REQUEST_STAMINA_RESTORE, { hero: this, amount: this.maxStamina });
         }
     }
 }

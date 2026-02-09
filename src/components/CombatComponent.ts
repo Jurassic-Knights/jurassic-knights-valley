@@ -1,9 +1,10 @@
 /**
- * CombatComponent - Manages Attack Stats and Cooldowns
+ * CombatComponent - Data-only attack stats and cooldown state.
+ * Systems (HeroCombatService, EnemySystem) perform cooldown tick and attack logic and emit events.
  */
 import { Component } from '@core/Component';
 import { Registry } from '@core/Registry';
-import { EventBus } from '@core/EventBus';
+import { getConfig } from '@data/GameConstants';
 import { IEntity } from '../types/core';
 
 export interface CombatConfig {
@@ -29,40 +30,13 @@ class CombatComponent extends Component {
 
     constructor(parent: ICombatant, config: CombatConfig = {}) {
         super(parent);
-        this.damage = config.damage || 10;
-        this.rate = config.rate || 1;
-        this.range = config.range || 100;
-        this.staminaCost = config.staminaCost || 0;
+        const C = getConfig().Combat;
+        this.damage = config.damage ?? C.DEFAULT_DAMAGE;
+        this.rate = config.rate ?? C.DEFAULT_ATTACK_RATE;
+        this.range = config.range ?? C.DEFAULT_ATTACK_RANGE;
+        this.staminaCost = config.staminaCost ?? 0;
         this.cooldownTimer = 0;
         this.canAttack = true;
-    }
-
-    update(dt: number) {
-        if (this.cooldownTimer > 0) {
-            this.cooldownTimer -= dt / 1000;
-            if (this.cooldownTimer <= 0) {
-                this.cooldownTimer = 0;
-                this.canAttack = true;
-            }
-        }
-    }
-
-    attack() {
-        if (!this.canAttack) return false;
-
-        if (this.staminaCost > 0 && this.parent.stamina !== undefined) {
-            if (this.parent.stamina < this.staminaCost) return false;
-            this.parent.stamina -= this.staminaCost;
-            if (EventBus)
-                EventBus.emit('HERO_STAMINA_CHANGE', {
-                    current: this.parent.stamina,
-                    max: this.parent.maxStamina
-                });
-        }
-
-        this.cooldownTimer = 1 / this.rate;
-        this.canAttack = false;
-        return true;
     }
 }
 

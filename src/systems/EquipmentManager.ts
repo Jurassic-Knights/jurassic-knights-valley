@@ -11,16 +11,17 @@ import { EventBus } from '@core/EventBus';
 import { SetBonusesConfig } from '@config/SetBonusesConfig';
 import { EquipmentSlotsConfig } from '@config/EquipmentSlotsConfig';
 import type { ItemStats, EquipmentItem } from '../types/ui';
+import type { IEntity } from '../types/core';
 
 class EquipmentManager {
-    owner: any;
-    slots: Record<string, any> = {};
+    owner: IEntity;
+    slots: Record<string, EquipmentItem | null> = {};
     activeWeaponSet: number = 1;
 
     /**
-     * @param {Entity} owner - The entity that owns this equipment
+     * @param {IEntity} owner - The entity that owns this equipment
      */
-    constructor(owner: any) {
+    constructor(owner: IEntity) {
         this.owner = owner;
 
         // Initialize empty slots from config

@@ -9,7 +9,7 @@ interface ConfigSection {
 }
 
 interface GameConfig {
-    [key: string]: ConfigSection | any;
+    [key: string]: ConfigSection | unknown;
 }
 
 // Section display names and descriptions (tunable sections from GameConfig.ts)
@@ -465,7 +465,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
     }
 }
 
-function renderSectionCard(sectionKey: string, sectionData: any, container: HTMLElement) {
+function renderSectionCard(sectionKey: string, sectionData: Record<string, unknown>, container: HTMLElement) {
     const meta = SECTION_META[sectionKey] || {
         name: formatLabel(sectionKey),
         description: `Settings for ${sectionKey}`

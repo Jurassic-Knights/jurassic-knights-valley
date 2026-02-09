@@ -45,31 +45,31 @@ const Logger = {
         return Object.keys(this.LEVELS).find((key) => this.LEVELS[key as keyof typeof this.LEVELS] === level) || 'UNKNOWN';
     },
 
-    _format(level: number, tag: string, ...args: any[]) {
+    _format(level: number, tag: string, ...args: unknown[]) {
         const timestamp = new Date().toISOString().substr(11, 12);
         const color = this.colors[this._getLevelName(level) as keyof typeof this.colors];
         return [`%c[${timestamp}]${tag}`, `color: ${color}`, ...args];
     },
 
-    debug(tag: string, ...args: any[]) {
+    debug(tag: string, ...args: unknown[]) {
         if (this.currentLevel <= this.LEVELS.DEBUG) {
             console.log(...this._format(this.LEVELS.DEBUG, tag, ...args));
         }
     },
 
-    info(tag: string, ...args: any[]) {
+    info(tag: string, ...args: unknown[]) {
         if (this.currentLevel <= this.LEVELS.INFO) {
             console.log(...this._format(this.LEVELS.INFO, tag, ...args));
         }
     },
 
-    warn(tag: string, ...args: any[]) {
+    warn(tag: string, ...args: unknown[]) {
         if (this.currentLevel <= this.LEVELS.WARN) {
             console.warn(...this._format(this.LEVELS.WARN, tag, ...args));
         }
     },
 
-    error(tag: string, ...args: any[]) {
+    error(tag: string, ...args: unknown[]) {
         if (this.currentLevel <= this.LEVELS.ERROR) {
             console.error(...this._format(this.LEVELS.ERROR, tag, ...args));
         }

@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_overgrown_flowers_desert_01_original.png",
-        "clean": "assets/images/ground/ground_overgrown_flowers_desert_01_original.png"
+        "original": "assets/images/ground/desert/overgrown/ground_overgrown_flowers_desert_01_original.png",
+        "clean": "assets/images/ground/desert/overgrown/ground_overgrown_flowers_desert_01_original.png"
     },
     "type": "ground_texture",
     "biome": "desert",

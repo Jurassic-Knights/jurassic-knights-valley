@@ -6,9 +6,11 @@
  * Owner: Director (engine), Gameplay Designer (stats)
  */
 import { Entity } from '@core/Entity';
+import type { IEntity } from '../types/core';
 import { Logger } from '@core/Logger';
 import { AssetLoader } from '@core/AssetLoader';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { GameConstants } from '@data/GameConstants';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
 import { EntityTypes } from '@config/EntityTypes';
@@ -21,7 +23,7 @@ import { Registry } from '@core/Registry';
 class Dinosaur extends Entity {
     // Entity type and identity
     dinoType: string = 'enemy_herbivore_t1_01';
-    lootTable: Record<string, any>[] | null = null;
+    lootTable: Array<{ item: string; chance: number; min: number; max: number }> | null = null;
     xpReward: number = 10;
     resourceType: string = 'food_t1_01';
     amount: number = 1;
@@ -31,7 +33,7 @@ class Dinosaur extends Entity {
         health?: HealthComponent;
         stats?: StatsComponent;
         ai?: AIComponent;
-        [key: string]: any;
+        [key: string]: unknown;
     } = {};
 
     // Health and state
@@ -44,7 +46,7 @@ class Dinosaur extends Entity {
     // Island context (inherited from Entity - use declare to avoid overwrite error)
     declare islandGridX: number | undefined;
     declare islandGridY: number | undefined;
-    islandBounds: any = null;
+    islandBounds: { x: number; y: number; width: number; height: number } | null = null;
 
     // Combat flags
     isBeingAttacked: boolean = false;
@@ -59,7 +61,7 @@ class Dinosaur extends Entity {
     _spriteLoaded: boolean = false;
     _shadowImg?: HTMLImageElement | HTMLCanvasElement;
 
-    constructor(config: any = {}) {
+    constructor(config: { dinoType?: string; x?: number; y?: number; [key: string]: unknown } = {}) {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
 
         // Look up entity config from EntityRegistry using dinoType (e.g., 'enemy_herbivore_t1_01')
@@ -69,9 +71,10 @@ class Dinosaur extends Entity {
         const finalConfig = { ...entityConfig, ...config };
 
         // Get size from SpeciesScaleConfig (runtime lookup by species)
+        const defaultSize = GameConstants.Dinosaur.DEFAULT_SIZE;
         const sizeInfo = SpeciesScaleConfig.getSize(entityConfig, false) || {
-            width: 150,
-            height: 150,
+            width: defaultSize,
+            height: defaultSize,
             scale: 1.0
         };
 
@@ -98,7 +101,7 @@ class Dinosaur extends Entity {
 
         // Loot: prioritize config.lootTable (from ResourceSpawner) > entityConfig.lootTable (from EntityLoader)
         this.lootTable = config.lootTable || entityConfig.lootTable || null;
-        this.xpReward = entityConfig.xpReward || 10;
+        this.xpReward = entityConfig.xpReward ?? GameConstants.Dinosaur.DEFAULT_XP_REWARD;
 
         // Gameplay Props
         this.resourceType = config.resourceType || 'food_t1_01';
@@ -106,20 +109,20 @@ class Dinosaur extends Entity {
 
         // Components
         this.components = {};
+        const dinoMaxHp = GameConstants.Dinosaur.DEFAULT_MAX_HEALTH;
         if (HealthComponent) {
             this.components.health = new HealthComponent(this, {
-                maxHealth: finalConfig.maxHealth || 60,
-                health: finalConfig.maxHealth || 60
+                maxHealth: finalConfig.maxHealth || dinoMaxHp,
+                health: finalConfig.maxHealth || dinoMaxHp
             });
         }
 
-        // Legacy Props (Sync)
-        this.maxHealth = this.components.health ? this.components.health.maxHealth : 60;
+        this.maxHealth = this.components.health ? this.components.health.maxHealth : dinoMaxHp;
         this.health = this.maxHealth;
 
         this.state = 'alive'; // alive, dead
         this.respawnTimer = 0;
-        this.maxRespawnTime = finalConfig.respawnTime || 30;
+        this.maxRespawnTime = finalConfig.respawnTime ?? GameConstants.Dinosaur.DEFAULT_RESPAWN_TIME;
 
         // Island context for updates
         this.islandGridX = config.islandGridX;
@@ -135,20 +138,22 @@ class Dinosaur extends Entity {
             // Logic was: moveSpeed * 60 (essentially).
             // Default speed config is typically 30 (px/sec).
             // finalConfig.speed is usually 30.
-            const speed = finalConfig.speed || 30;
-
+            const speed = finalConfig.speed ?? GameConstants.Dinosaur.DEFAULT_SPEED;
+            const maxStamina = GameConstants.Dinosaur.DEFAULT_STAMINA;
             this.components.stats = new StatsComponent(this, {
                 speed: speed,
-                maxStamina: 100 // Dinos don't use stamina primarily yet, but good for future sprinting
+                maxStamina: maxStamina
             });
         }
 
         // AI (New Phase 17)
         if (AIComponent) {
+            const wMin = GameConstants.Dinosaur.WANDER_INTERVAL_MIN;
+            const wMax = GameConstants.Dinosaur.WANDER_INTERVAL_MAX;
             this.components.ai = new AIComponent(this, {
                 state: 'WANDER',
-                wanderIntervalMin: 2000,
-                wanderIntervalMax: 5000
+                wanderIntervalMin: wMin,
+                wanderIntervalMax: wMax
             });
             // Init random direction
             this.components.ai.randomizeWander();
@@ -162,7 +167,7 @@ class Dinosaur extends Entity {
         // Animation Props
         this.frameIndex = 0;
         this.frameTimer = 0;
-        this.frameInterval = finalConfig.frameInterval || 200;
+        this.frameInterval = finalConfig.frameInterval ?? GameConstants.Dinosaur.FRAME_INTERVAL;
         this.walkFrames = [];
 
         // Sprite Setup - Use dinoType directly as asset key (matches AssetLoader keys)
@@ -238,7 +243,7 @@ class Dinosaur extends Entity {
      * Check if in range for interaction (e.g. gun range checked by Hero/Game)
      * For Entity base compat
      */
-    isInRange(hero: any) {
+    isInRange(hero: IEntity) {
         if (!this.active || !hero) return false;
         if (this.state === 'dead') return false;
         // Use config value for interaction range

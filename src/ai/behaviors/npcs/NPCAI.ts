@@ -11,12 +11,13 @@
 
 import { EventBus } from '../../../core/EventBus';
 import { MathUtils } from '../../../core/MathUtils';
+import type { IEntity } from '../../../types/core';
 
 const NPCAI = {
     /**
      * Update NPC AI state
      */
-    updateState(npc: any, hero: any, dt: number) {
+    updateState(npc: IEntity, hero: IEntity | null, dt: number) {
         if (!npc.active) return;
 
         switch (npc.state) {
@@ -35,7 +36,7 @@ const NPCAI = {
     /**
      * Idle behavior - check for player proximity
      */
-    updateIdle(npc: any, hero: any, dt: number) {
+    updateIdle(npc: IEntity, hero: IEntity | null, dt: number) {
         if (!hero) return;
 
         const dist = npc.distanceTo
@@ -65,7 +66,7 @@ const NPCAI = {
     /**
      * Patrol behavior
      */
-    updatePatrol(npc: any, dt: number) {
+    updatePatrol(npc: IEntity, dt: number) {
         if (!npc.patrolPoints || npc.patrolPoints.length === 0) {
             npc.state = 'idle';
             return;
@@ -93,7 +94,7 @@ const NPCAI = {
     /**
      * Dialogue state (player is interacting)
      */
-    updateDialogue(npc: any, hero: any, dt: number) {
+    updateDialogue(npc: IEntity, hero: IEntity | null, dt: number) {
         // Face the player during dialogue
         if (hero) {
             npc.facingRight = hero.x > npc.x;
@@ -104,7 +105,7 @@ const NPCAI = {
     /**
      * Player approached NPC
      */
-    onPlayerApproach(npc: any, hero: any) {
+    onPlayerApproach(npc: IEntity, hero: IEntity) {
         if (EventBus) {
             EventBus.emit('NPC_PLAYER_NEARBY', {
                 npc,
@@ -116,7 +117,7 @@ const NPCAI = {
     /**
      * Player left NPC range
      */
-    onPlayerLeave(npc: any) {
+    onPlayerLeave(npc: IEntity) {
         if (EventBus) {
             EventBus.emit('NPC_PLAYER_LEFT', { npc });
         }
@@ -125,7 +126,7 @@ const NPCAI = {
     /**
      * Start dialogue with NPC
      */
-    startDialogue(npc: any) {
+    startDialogue(npc: IEntity) {
         npc.state = 'dialogue';
 
         if (EventBus) {
@@ -136,7 +137,7 @@ const NPCAI = {
     /**
      * End dialogue
      */
-    endDialogue(npc: any) {
+    endDialogue(npc: IEntity) {
         npc.state = 'idle';
 
         if (EventBus) {

@@ -107,10 +107,10 @@ const DEFAULTS = {
 
 // Current config values - starts as copy of defaults
 // On HMR reload, this module re-executes with new DEFAULTS, creating fresh GameConfig
-const GameConfig = JSON.parse(JSON.stringify(DEFAULTS)) as typeof DEFAULTS & { [key: string]: any };
+const GameConfig = JSON.parse(JSON.stringify(DEFAULTS)) as typeof DEFAULTS & { [key: string]: unknown };
 
 // Type for the config
-export type GameConfigType = typeof DEFAULTS & { [key: string]: any };
+export type GameConfigType = typeof DEFAULTS & { [key: string]: unknown };
 
 /**
  * getConfig() - Returns current tunable game values
@@ -169,7 +169,7 @@ export function getDefaults(): GameConfigType {
  */
 export function resetSection(section: keyof GameConfigType): void {
     const config = getConfig();
-    (config as any)[section] = JSON.parse(JSON.stringify((DEFAULTS as any)[section]));
+    (config as Record<string, unknown>)[section] = JSON.parse(JSON.stringify((DEFAULTS as Record<string, unknown>)[section]));
 }
 
 // ============================================
@@ -194,17 +194,17 @@ if (typeof window !== 'undefined') {
             if (typedKey === 'WeaponDefaults') {
                 // Deep merge WeaponDefaults (each weapon is a nested object)
                 const newWeapons = GameConfig.WeaponDefaults;
-                if (!persisted.WeaponDefaults) persisted.WeaponDefaults = {} as any;
+                if (!persisted.WeaponDefaults) persisted.WeaponDefaults = {} as Record<string, unknown>;
                 for (const weaponKey of Object.keys(newWeapons)) {
-                    (persisted.WeaponDefaults as any)[weaponKey] = {
-                        ...(persisted.WeaponDefaults as any)[weaponKey],
-                        ...(newWeapons as any)[weaponKey]
+                    (persisted.WeaponDefaults as Record<string, unknown>)[weaponKey] = {
+                        ...((persisted.WeaponDefaults as Record<string, unknown>)[weaponKey] as object),
+                        ...((newWeapons as Record<string, unknown>)[weaponKey] as object)
                     };
                 }
             } else if (typeof GameConfig[typedKey] === 'object') {
                 Object.assign(persisted[typedKey], GameConfig[typedKey]);
             } else {
-                (persisted as any)[typedKey] = GameConfig[typedKey];
+                (persisted as Record<string, unknown>)[typedKey] = GameConfig[typedKey];
             }
         }
         console.log('[HMR] GameConfig updated:', {

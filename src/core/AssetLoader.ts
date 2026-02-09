@@ -125,6 +125,27 @@ const ID_PATTERNS = [
         }
     },
 
+    // Ground
+    {
+        matches: (id: string) => id.startsWith('ground_'),
+        build: (id: string) => {
+            const parts = id.split('_');
+            // Standard: ground_[category]_[type]_[biome]_[var]
+
+            // We know biome is always one of [badlands, desert, grasslands, tundra]
+            const biomes = ['badlands', 'desert', 'grasslands', 'tundra'];
+            const biomeIndex = parts.findIndex(p => biomes.includes(p));
+
+            // Fallback for legacy/malformed IDs
+            if (biomeIndex === -1) return `images/ground/${id}_original.png`;
+
+            const biome = parts[biomeIndex];
+            const category = parts[1]; // base, damage, interior, overgrown, vertical
+
+            return `images/ground/${biome}/${category}/${id}_original.png`;
+        }
+    },
+
     // Backgrounds
     {
         matches: (id: string) => id.startsWith('bg_zone_'),
@@ -314,14 +335,20 @@ const AssetLoader = {
      * Automatically removes white backgrounds from all images
      * @param {string} src - Primary image source path
      * @param {function} onLoad - Optional callback when loaded
+     * @param {function} onError - Optional callback on failure (prevents fallback)
      * @returns {HTMLImageElement}
      */
-    createImage(src: string, onLoad?: () => void): HTMLImageElement {
+    createImage(src: string, onLoad?: () => void, onError?: () => void): HTMLImageElement {
         const img = new Image();
         const fallback = this.getOriginalPath(src);
         const self = this;
 
         img.onerror = () => {
+            if (onError) {
+                onError(); // Strict mode: propagate failure
+                return;
+            }
+
             if (fallback && img.src !== fallback) {
                 img.src = fallback;
             } else if (!img.src.includes('PH.png')) {
@@ -352,19 +379,25 @@ const AssetLoader = {
      * Preload an image and cache it
      * If image is an _original file (no _clean exists), removes white background
      * @param {string} id - Asset ID
-     * @returns {Promise<HTMLImageElement | HTMLCanvasElement>}
+     * @param {boolean} allowFallback - If true, returns PH.png on missingID. If false, returns null.
+     * @returns {Promise<HTMLImageElement | HTMLCanvasElement | null>}
      */
-    preloadImage(id: string): Promise<HTMLImageElement | HTMLCanvasElement> {
+    preloadImage(id: string, allowFallback: boolean = true): Promise<HTMLImageElement | HTMLCanvasElement | null> {
         const path = this.getImagePath(id);
+
+        if (!allowFallback && path.includes('PH.png')) {
+            return Promise.resolve(null);
+        }
 
         if (this.cache.has(path)) {
             return Promise.resolve(this.cache.get(path));
         }
 
         return new Promise((resolve) => {
-            const img = this.createImage(path, () => {
+            const onLoad = () => {
                 // If loading an _original file, remove white background
-                if (path.includes('_original')) {
+                // EXCEPTION: Ground textures are opaque tiles, do not process them
+                if (path.includes('_original') && !path.includes('/ground/')) {
                     const processed = this._removeWhiteBackground(img);
                     this.cache.set(path, processed);
                     resolve(processed);
@@ -372,7 +405,11 @@ const AssetLoader = {
                     this.cache.set(path, img);
                     resolve(img);
                 }
-            });
+            };
+
+            const onError = !allowFallback ? () => resolve(null) : undefined;
+
+            const img = this.createImage(path, onLoad, onError);
         });
     },
 
@@ -400,6 +437,55 @@ const AssetLoader = {
     getVFXPreset(id: string): ParticleOptions | null {
         const presets = VFXController?.presets;
         return presets?.[id] || null;
+    },
+
+    /**
+     * Get path for the auto-generated Height Map (for blending)
+     * @param {string} id - Asset ID
+     */
+    getHeightMapPath(id: string): string | null {
+        const primaryPath = this.getImagePath(id);
+        if (!primaryPath) return null;
+
+        // Remove extension, append _height.png
+        // Handle _original / _clean variations
+        // The script generates [basename]_height.png
+
+        // E.g. assets/images/ground/grass_01_original.png -> assets/images/ground/grass_01_original_height.png
+        // Just replace .png with _height.png? 
+        // Be careful with case sensitivity or other extensions.
+        return primaryPath.replace('.png', '_height.png');
+    },
+
+    /**
+     * Get path for a Chunk Splat Map
+     * @param {number} x - Chunk X
+     * @param {number} y - Chunk Y
+     */
+    getSplatMapPath(x: number, y: number): string {
+        return this.basePath + `chunks/chunk_${x}_${y}_splat.png`;
+    },
+
+    /**
+     * Load a Splat Map (RGBA weights)
+     * Returns generic image/canvas
+     */
+    async loadSplatMap(x: number, y: number): Promise<HTMLImageElement | null> {
+        const path = this.getSplatMapPath(x, y);
+        if (this.cache.has(path)) return this.cache.get(path) as HTMLImageElement;
+
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                this.cache.set(path, img);
+                resolve(img);
+            };
+            img.onerror = () => {
+                // Return null if no splat map exists (use default blending)
+                resolve(null);
+            };
+            img.src = path;
+        });
     }
 };
 

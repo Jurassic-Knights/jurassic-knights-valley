@@ -18,7 +18,7 @@ import { Registry } from '@core/Registry';
 import type { IGame } from '../types/core';
 
 class EconomySystem {
-    game: any = null;
+    game: IGame | null = null;
 
     constructor() {
         Logger.info('[EconomySystem] Constructed');
@@ -34,15 +34,15 @@ class EconomySystem {
         if (!EventBus) return;
 
         // Listen for transaction requests
-        EventBus.on(GameConstants.Events.REQUEST_UNLOCK, (data: any) =>
+        EventBus.on(GameConstants.Events.REQUEST_UNLOCK, (data: { id?: string; [key: string]: unknown }) =>
             this.handleUnlockRequest(data)
         );
 
         // Listen for direct gold modification requests (e.g. from debug or cheats)
-        EventBus.on(GameConstants.Events.ADD_GOLD, (amount: any) => this.addGold(amount));
+        EventBus.on(GameConstants.Events.ADD_GOLD, (amount: number) => this.addGold(amount));
 
         // Listen for upgrade requests
-        EventBus.on(GameConstants.Events.REQUEST_UPGRADE, (data: any) =>
+        EventBus.on(GameConstants.Events.REQUEST_UPGRADE, (data: { id?: string; [key: string]: unknown }) =>
             this.handleUpgradeRequest(data)
         );
     }
@@ -123,7 +123,7 @@ class EconomySystem {
      * Handle a request to unlock an island
      * @param {object} data - { gridX, gridY, cost }
      */
-    handleUnlockRequest(data: any) {
+    handleUnlockRequest(data: { id?: string; [key: string]: unknown }) {
         const { gridX, gridY, cost } = data;
 
         if (this.spendGold(cost)) {
@@ -152,7 +152,7 @@ class EconomySystem {
      * Handle upgrade purchase request
      * @param {object} data - { gridX, gridY, type, cost }
      */
-    handleUpgradeRequest(data: any) {
+    handleUpgradeRequest(data: { id?: string; [key: string]: unknown }) {
         const { gridX, gridY, type, cost } = data;
 
         if (this.spendGold(cost)) {

@@ -8,6 +8,7 @@
 import { Enemy } from './EnemyCore';
 import { Entity } from '@core/Entity';
 import { AssetLoader } from '@core/AssetLoader';
+import { GameConstants } from '@data/GameConstants';
 import { Logger } from '@core/Logger';
 
 /**
@@ -49,7 +50,7 @@ Enemy.prototype._loadSprite = function () {
         this._spriteLoaded = true;
         Logger.info(`[Enemy] Sprite loaded: ${assetKey}`);
     });
-    this._sprite.onerror = (e: any) => {
+    this._sprite.onerror = (_e: Event | string) => {
         Logger.error(`[Enemy] Failed to load sprite: ${assetKey}, path: ${path}`, e);
         this._spriteLoaded = false;
     };
@@ -63,10 +64,13 @@ Enemy.prototype.render = function (ctx: CanvasRenderingContext2D) {
 
     // Elite glow effect
     if (this.isElite) {
+        const pulseMs = GameConstants.EnemyRender.ELITE_PULSE_MS;
+        const alphaBase = GameConstants.EnemyRender.ELITE_ALPHA_BASE;
+        const alphaAmp = GameConstants.EnemyRender.ELITE_ALPHA_AMPLITUDE;
         ctx.save();
         ctx.shadowColor = '#FFD700';
         ctx.shadowBlur = 15;
-        ctx.globalAlpha = 0.3 + Math.sin(Date.now() / 200) * 0.1;
+        ctx.globalAlpha = alphaBase + Math.sin(Date.now() / pulseMs) * alphaAmp;
         ctx.fillStyle = '#FFD700';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.width / 2 + 10, 0, Math.PI * 2);
@@ -109,10 +113,11 @@ Enemy.prototype.render = function (ctx: CanvasRenderingContext2D) {
  * Render health bar above enemy
  */
 Enemy.prototype.renderHealthBar = function (ctx: CanvasRenderingContext2D) {
-    const barWidth = 50;
+    const barWidth = GameConstants.EnemyRender.HEALTH_BAR_WIDTH;
     const barHeight = 6;
     const barX = this.x - barWidth / 2;
-    const barY = this.y - this.height / 2 - 15;
+    const barYOffset = GameConstants.EnemyRender.HEALTH_BAR_Y_OFFSET;
+    const barY = this.y - this.height / 2 - barYOffset;
 
     const healthPercent = this.health / this.maxHealth;
 

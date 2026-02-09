@@ -17,7 +17,7 @@ class ServiceRegistry {
     /**
      * Register a service/manager
      */
-    register(name: string, instance: any) {
+    register(name: string, instance: unknown) {
         if (this.services.has(name)) {
             Logger.error(
                 `[Registry] CRITICAL: Service ${name} is being overwritten! Check initialization order.`
@@ -31,14 +31,14 @@ class ServiceRegistry {
     /**
      * Get a registered service (Safe, returns undefined if missing)
      */
-    get<T = any>(name: string): T | undefined {
+    get<T = unknown>(name: string): T | undefined {
         return this.services.get(name) as T | undefined;
     }
 
     /**
      * assert - Get a service or throw if missing (for critical dependencies)
      */
-    assert<T = any>(name: string): T {
+    assert<T = unknown>(name: string): T {
         const service = this.services.get(name);
         if (!service) {
             Logger.error(`[Registry] Missing critical dependency: ${name}`);

@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_overgrown_roots_grasslands_02_original.png",
-        "clean": "assets/images/ground/ground_overgrown_roots_grasslands_02_original.png"
+        "original": "assets/images/ground/grasslands/overgrown/ground_overgrown_roots_grasslands_02_original.png",
+        "clean": "assets/images/ground/grasslands/overgrown/ground_overgrown_roots_grasslands_02_original.png"
     },
     "type": "ground_texture",
     "biome": "grasslands",

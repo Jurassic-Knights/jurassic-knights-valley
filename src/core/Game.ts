@@ -93,6 +93,7 @@ class Game {
         Logger.info(`[Game] Booting ${sortedSystems.length} systems...`);
         debugStatus(`Booting ${sortedSystems.length} systems...`);
 
+        let criticalInitFailed = false;
         for (const config of sortedSystems) {
             const name = config.global;
             let sys;
@@ -142,7 +143,15 @@ class Game {
                 Logger.error(`[Game] CRITICAL: Failed to initialize ${name}:`, err);
                 debugStatus(`ERROR: ${name} - ${(err as Error).message}`);
                 console.error(`[Game] CRITICAL: ${name} init failed - Stack:`, err);
+                if (config.critical) {
+                    criticalInitFailed = true;
+                }
             }
+        }
+
+        if (criticalInitFailed) {
+            Logger.error('[Game] A critical system failed to initialize. Aborting.');
+            return false;
         }
 
         // 3. Post-Init Phase (Special Cases)

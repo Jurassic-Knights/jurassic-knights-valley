@@ -48,7 +48,7 @@ Read:
 
 ### Phase D: Assets
 Read:
-- `src/core/AssetLoader.js`
+- `src/core/AssetLoader.ts`
 
 **Detect:**
 - Large image dimensions (>2048px)

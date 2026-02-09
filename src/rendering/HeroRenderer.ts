@@ -97,9 +97,9 @@ class HeroRendererSystem implements ISystem {
         const originalY = hero.y;
 
         // Apply interpolated coordinates for rendering
-        // Use type casting to allow assignment if strict
-        (hero as any).x = renderX;
-        (hero as any).y = renderY;
+        const heroPos = hero as { x: number; y: number };
+        heroPos.x = renderX;
+        heroPos.y = renderY;
 
         try {
             // Draw Shadow
@@ -120,8 +120,9 @@ class HeroRendererSystem implements ISystem {
             this.drawStatusBars(ctx, hero);
         } finally {
             // Restore actual physics coordinates
-            (hero as any).x = originalX;
-            (hero as any).y = originalY;
+            const heroPos = hero as { x: number; y: number };
+            heroPos.x = originalX;
+            heroPos.y = originalY;
         }
     }
 
@@ -483,7 +484,7 @@ class HeroRendererSystem implements ISystem {
      * Draw equipped weapon (melee or ranged)
      * @param {boolean} isAttacking - Whether this specific weapon is attacking
      */
-    drawEquippedWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, item: any, isAttacking = true) {
+    drawEquippedWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, item: { weaponType?: string; id?: string; weaponSubtype?: string }, isAttacking = true) {
         const weaponType = item.weaponType || 'melee';
         const spriteId = item.id || 'weapon_ranged_pistol_t1_01';
 
@@ -505,7 +506,7 @@ class HeroRendererSystem implements ISystem {
     /**
      * Draw equipped tool
      */
-    drawEquippedTool(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, item: any) {
+    drawEquippedTool(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, item: { id?: string }) {
         const spriteId = item.id || 'tool_t1_01';
         this.drawShovel(ctx, hero, baseAngle, facingRight, spriteId);
     }
@@ -514,7 +515,7 @@ class HeroRendererSystem implements ISystem {
      * Draw melee weapon with swing animation (delegates to WeaponRenderer)
      * @param {string} weaponSubtype - Weapon subtype for trail VFX
      */
-    drawMeleeWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, spriteId: any, weaponSubtype = 'sword') {
+    drawMeleeWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, spriteId: string, weaponSubtype = 'sword') {
         if (WeaponRenderer) {
             WeaponRenderer.drawMeleeWeapon(
                 ctx,

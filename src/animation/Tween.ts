@@ -14,7 +14,7 @@ interface TweenOptions {
 }
 
 interface TweenTask {
-    target: any;
+    target: Record<string, number>;
     startProps: Record<string, number>;
     endProps: Record<string, number>;
     duration: number;
@@ -46,7 +46,7 @@ const Tween = {
         }
     },
 
-    to(target: any, props: Record<string, number>, duration: number, options: TweenOptions = {}) {
+    to(target: Record<string, number>, props: Record<string, number>, duration: number, options: TweenOptions = {}) {
         const tween: TweenTask = {
             target,
             startProps: {},
@@ -54,7 +54,7 @@ const Tween = {
             duration,
             elapsed: 0,
             delay: options.delay || 0,
-            easing: (this.easing as any)[options.easing || 'easeOut'] || this.easing.easeOut,
+            easing: (this.easing as Record<string, (t: number) => number>)[options.easing || 'easeOut'] || this.easing.easeOut,
             onComplete: options.onComplete,
             loop: options.loop || false,
             yoyo: options.yoyo || false,
@@ -103,11 +103,11 @@ const Tween = {
         });
     },
 
-    cancel(target: any) {
+    cancel(target: Record<string, number>) {
         this.activeTweens = this.activeTweens.filter((t) => t.target !== target);
     },
 
-    shake(target: any, intensity: number = 5, duration: number = 300) {
+    shake(target: Record<string, number>, intensity: number = 5, duration: number = 300) {
         const originalX = target.x || 0;
         const originalY = target.y || 0;
 
@@ -123,7 +123,7 @@ const Tween = {
         }, duration);
     },
 
-    pulse(target: any, scale: number = 1.2, duration: number = 200) {
+    pulse(target: Record<string, number>, scale: number = 1.2, duration: number = 200) {
         const original = target.scale || 1;
         this.to(target, { scale }, duration / 2, {
             easing: 'easeOut',

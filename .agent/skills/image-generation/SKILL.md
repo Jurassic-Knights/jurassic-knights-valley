@@ -309,7 +309,7 @@ Apply these palettes when generating biome-specific assets. Each biome has **two
    python scripts/generate_asset_manifest.py
    ```
 5. **Save the Prompt** (CRITICAL):
-   You MUST save the exact prompt used to generate the image.
+   You MUST append the exact prompt used for this asset to the log at `tools/asset_prompts.json` (this file is a log of prompts actually used; templates live in `documents/design/asset_prompts.md`).
    *   Read the existing `tools/asset_prompts.json` file.
    *   Add or update the key for the `asset_id` with the full prompt text.
    *   Write the updated JSON back to `tools/asset_prompts.json`.

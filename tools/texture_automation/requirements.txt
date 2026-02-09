@@ -1,0 +1,12 @@
+diffusers
+transformers
+accelerate
+torch
+numpy
+Pillow
+scipy
+opencv-python
+sentencepiece
+protobuf
+peft
+transformers

@@ -168,8 +168,8 @@ const EntityRenderService = {
         const tSub = timing ? performance.now() : 0;
 
         for (const entity of entities) {
-            if (typeof (entity as any).renderUI === 'function') {
-                (entity as any).renderUI(ctx);
+            if (entity.renderUI) {
+                entity.renderUI(ctx);
             }
         }
 

@@ -7,6 +7,7 @@
  */
 
 import { Logger } from '@core/Logger';
+import { GameConstants } from '@data/GameConstants';
 
 export interface UpgradeLevel {
     level: number;
@@ -20,34 +21,27 @@ export interface IslandUpgradeState {
     resourceSlots: UpgradeLevel;
     autoChance: UpgradeLevel;
     respawnTime: UpgradeLevel;
-    [key: string]: any; // Index signature for dynamic access
+    [key: string]: unknown; // Index signature for dynamic access
 }
 
 const IslandUpgrades = {
     // Upgrade data per island (keyed by island grid position)
     islands: {} as Record<string, IslandUpgradeState>,
 
-    // Base costs
-    baseCosts: {
-        resourceSlots: 100,
-        autoChance: 150,
-        respawnTime: 75
-    } as Record<string, number>,
+    get baseCosts(): Record<string, number> {
+        return GameConstants.IslandUpgrades.BASE_COSTS;
+    },
 
-    // Cost multiplier per level
     costMultiplier: 1.15,
 
-    // Caps
-    caps: {
-        resourceSlots: 15, // Max 15 resource nodes
-        autoChance: 80, // Max 80% auto-collect
-        respawnTime: 100 // Max level 100
+    get caps(): Record<string, number> {
+        return GameConstants.IslandUpgrades.CAPS;
     },
 
     /**
      * Initialize upgrade data for all islands
      */
-    init(islands: any[]) {
+    init(islands: Array<{ gridX: number; gridY: number; [key: string]: unknown }>) {
         // Defensive: ensure islands is an iterable array
         if (!islands || !Array.isArray(islands)) {
             Logger.warn('[IslandUpgrades] init called with invalid islands parameter, skipping');
@@ -86,7 +80,8 @@ const IslandUpgrades = {
      * @param {string} type - 'resourceSlots', 'autoChance', 'respawnTime'
      */
     getUpgradeCost(type: string, currentLevel: number): number {
-        const baseCost = this.baseCosts[type] || 100;
+        const defaultBase = GameConstants.IslandUpgrades.DEFAULT_BASE_COST;
+        const baseCost = this.baseCosts[type] ?? defaultBase;
         return Math.floor(baseCost * Math.pow(this.costMultiplier, currentLevel));
     },
 

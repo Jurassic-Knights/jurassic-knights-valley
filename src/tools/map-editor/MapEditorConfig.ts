@@ -33,5 +33,10 @@ export const MapEditorConfig = {
         COLLISION_FILL: 0xFF0000,
         COLLISION_ALPHA: 0.3,
         SELECTION_BORDER: 0xFFFF00
+    },
+    // Rendering Logic
+    RenderConfig: {
+        BLEND_DEPTH_FACTOR: 0.15, // Contrast of the height blend (lower = sharper)
+        NOISE_SCALE: 0.25         // Influence of noise on the transition
     }
 };

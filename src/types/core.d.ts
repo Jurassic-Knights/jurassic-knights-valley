@@ -337,6 +337,14 @@ export interface IRenderer {
 // COMPONENT TYPES
 // ============================================
 
+export interface IComponent {
+    parent: IEntity | null;
+    active: boolean;
+    init?(): void;
+    update?(dt: number): void;
+    destroy?(): void;
+}
+
 export interface HealthComponent extends IComponent {
     health: number;
     maxHealth: number;

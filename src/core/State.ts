@@ -5,8 +5,8 @@
  */
 import { Logger } from './Logger';
 
-type StateCallback = (newValue: any, oldValue?: any) => void;
-type GlobalStateCallback = (key: string, newValue: any, oldValue?: any) => void;
+type StateCallback<T = unknown> = (newValue: T, oldValue?: T) => void;
+type GlobalStateCallback<T = unknown> = (key: string, newValue: T, oldValue?: T) => void;
 
 class State {
     data: Record<string, unknown>;
@@ -22,7 +22,7 @@ class State {
     /**
      * Initialize state with default values
      */
-    init(defaults: Record<string, any> = {}) {
+    init(defaults: Record<string, unknown> = {}) {
         // Try to load from localStorage
         const saved = this.load();
         this.data = saved ? { ...defaults, ...saved } : { ...defaults };
@@ -32,14 +32,14 @@ class State {
     /**
      * Get a value from state
      */
-    get<T = any>(key: string): T {
+    get<T = unknown>(key: string): T {
         return this.data[key] as T;
     }
 
     /**
      * Set a value and notify listeners
      */
-    set(key: string, value: any) {
+    set<T = unknown>(key: string, value: T) {
         const oldValue = this.data[key];
         this.data[key] = value;
         this.emit(key, value, oldValue);
@@ -48,7 +48,7 @@ class State {
     /**
      * Update multiple values at once
      */
-    update(updates: Record<string, any>) {
+    update(updates: Record<string, unknown>) {
         Object.entries(updates).forEach(([key, value]) => {
             this.set(key, value);
         });
@@ -57,7 +57,7 @@ class State {
     /**
      * Subscribe to state changes
      */
-    on(key: string, callback: StateCallback) {
+    on<T = unknown>(key: string, callback: StateCallback<T>) {
         if (!this.listeners[key]) {
             this.listeners[key] = [];
         }
@@ -67,14 +67,14 @@ class State {
     /**
      * Emit change event
      */
-    emit(key: string, newValue: any, oldValue: any) {
+    emit<T = unknown>(key: string, newValue: T, oldValue?: T) {
         if (this.listeners[key]) {
-            this.listeners[key].forEach((cb) => (cb as StateCallback)(newValue, oldValue));
+            this.listeners[key].forEach((cb) => (cb as StateCallback<T>)(newValue, oldValue));
         }
         // Global listener for any change
         if (this.listeners['*']) {
             this.listeners['*'].forEach((cb) =>
-                (cb as GlobalStateCallback)(key, newValue, oldValue)
+                (cb as GlobalStateCallback<T>)(key, newValue, oldValue)
             );
         }
     }
@@ -93,7 +93,7 @@ class State {
     /**
      * Load state from localStorage
      */
-    load(): Record<string, any> | null {
+    load(): Record<string, unknown> | null {
         try {
             const saved = localStorage.getItem(this.saveKey);
             return saved ? JSON.parse(saved) : null;
@@ -106,7 +106,7 @@ class State {
     /**
      * Reset state to defaults
      */
-    reset(defaults: Record<string, any> = {}) {
+    reset(defaults: Record<string, unknown> = {}) {
         localStorage.removeItem(this.saveKey);
         this.data = { ...defaults };
     }

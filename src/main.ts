@@ -31,8 +31,9 @@ console.log('[Main] All modules imported successfully');
         } else {
             throw new Error('Game initialization failed');
         }
-    } catch (error: any) {
-        Logger.error('[FATAL]', error);
+    } catch (error: unknown) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        Logger.error('[FATAL]', err);
 
         // Show error screen
         const app = document.getElementById('app');
@@ -50,7 +51,7 @@ console.log('[Main] All modules imported successfully');
                     text-align: center;
                 ">
                     <h1 style="font-size: 24px; margin-bottom: 16px;">Initialization Error</h1>
-                    <p style="font-family: monospace; font-size: 14px;">${error.message}</p>
+                    <p style="font-family: monospace; font-size: 14px;">${err.message}</p>
                     <pre style="
                         margin-top: 16px;
                         padding: 16px;
@@ -59,9 +60,22 @@ console.log('[Main] All modules imported successfully');
                         max-width: 100%;
                         overflow: auto;
                         font-size: 12px;
-                    ">${error.stack || 'No stack trace'}</pre>
+                    ">${err.stack ?? 'No stack trace'}</pre>
                 </div>
             `;
         }
     }
-})();
+})().catch((error: unknown) => {
+    const err = error instanceof Error ? error : new Error(String(error));
+    Logger.error('[FATAL] Unhandled rejection:', err);
+    const app = document.getElementById('app');
+    if (app) {
+        app.innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#8B0000;color:white;padding:20px;text-align:center;">
+                <h1 style="font-size:24px;margin-bottom:16px;">Unhandled Error</h1>
+                <p style="font-family:monospace;font-size:14px;">${err.message}</p>
+                <pre style="margin-top:16px;padding:16px;background:rgba(0,0,0,0.3);border-radius:8px;max-width:100%;overflow:auto;font-size:12px;">${err.stack ?? 'No stack trace'}</pre>
+            </div>
+        `;
+    }
+});

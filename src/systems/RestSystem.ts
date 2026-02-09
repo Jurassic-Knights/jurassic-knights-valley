@@ -85,24 +85,26 @@ class RestSystem {
             if (VFXController && hero) {
                 // Use spawnFloatingText if available
                 if (typeof VFXController.spawnFloatingText === 'function') {
+                    const T = GameConstants.Timing;
                     VFXController.spawnFloatingText(
                         '+1 MAX RES',
                         hero.x,
-                        hero.y - 50,
+                        hero.y - T.FLOATING_TEXT_Y_OFFSET,
                         '#FFD700',
-                        2000
+                        T.FLOATING_TEXT_DURATION
                     );
                 }
             }
         } else {
             // Advisory Hint
             if (VFXController && typeof VFXController.spawnFloatingText === 'function') {
+                const T = GameConstants.Timing;
                 VFXController.spawnFloatingText(
                     'Hint: Rest at 0 Resolve for Bonus!',
                     hero.x,
-                    hero.y - 50,
+                    hero.y - T.FLOATING_TEXT_Y_OFFSET,
                     '#CCCCCC',
-                    2500
+                    T.FLOATING_TEXT_DURATION
                 );
             }
         }

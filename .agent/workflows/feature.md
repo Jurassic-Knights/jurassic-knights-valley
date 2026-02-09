@@ -19,11 +19,11 @@ When the user describes a new feature, follow this structured process to audit t
 
 2. **Load Reference Documents**
    // turbo
-   - Review `documents/style_guide.md` for art/tone consistency
+   - Review `documents/design/art_guide.md`, `documents/design/lore_guide.md` for art/tone consistency
    // turbo
-   - Review `documents/technical_guidelines.md` for ID naming and conventions
+   - Review `documents/design/technical_guidelines.md` for ID naming and conventions
    // turbo
-   - Review `src/core/AssetLoader.js` for existing registries and asset patterns
+   - Review `src/core/AssetLoader.ts` for existing registries and asset patterns
 
 ---
 
@@ -54,7 +54,7 @@ When the user describes a new feature, follow this structured process to audit t
 7. **Code Quality Standards**
    
    **No Hardcoded Values:**
-   - All magic numbers must go in `GameConstants.js` or relevant config files
+   - All magic numbers must go in `GameConstants.ts` or relevant config files
    - Spawn rates, timings, distances, sizes → Config variables
    - Colors, thresholds, multipliers → Named constants
    - *Bad:* `if (health < 50)` → *Good:* `if (health < CONFIG.LOW_HEALTH_THRESHOLD)`

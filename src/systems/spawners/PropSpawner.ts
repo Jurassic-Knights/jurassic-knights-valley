@@ -33,8 +33,8 @@ class PropSpawner {
      * @param {number} y
      * @param {number} padding - Extra padding around bridge bounds (default 100px for prop size)
      */
-    isOnBridgeVisual(x: number, y: number, padding: number = 100) {
-        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
+    isOnBridgeVisual(x: number, y: number, padding: number = GameConstants.UI.BRIDGE_VISUAL_PADDING) {
+        const islandManager = this.spawnManager.getIslandManager();
         if (!islandManager) return false;
 
         const bridges = islandManager.getBridges();
@@ -60,7 +60,7 @@ class PropSpawner {
             return;
         }
 
-        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
+        const islandManager = this.spawnManager.getIslandManager();
         if (!islandManager) {
             Logger.warn('[PropSpawner] IslandManager not found.');
             return;
@@ -89,19 +89,20 @@ class PropSpawner {
 
     spawnFoliage(island: Island, foliageList: string[], spawnedProps: { x: number; y: number }[]) {
         const C = getConfig().Spawning.PROPS;
-        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
-        const gap = islandManager?.waterGap || 50;
+        const islandManager = this.spawnManager.getIslandManager();
+        const gap = islandManager?.waterGap ?? GameConstants.Spawning.PROPS.WATER_GAP_FALLBACK;
 
         const clusterCount = C.CLUSTER_COUNT_MIN + Math.floor(Math.random() * C.CLUSTER_COUNT_RND);
 
         for (let c = 0; c < clusterCount; c++) {
+            const maxAttempts = GameConstants.Spawning.PROPS.FIND_POSITION_MAX_ATTEMPTS;
             const clusterPos = this.findValidPosition(
                 island,
                 gap,
                 GameConstants.UI.BRIDGE_VISUAL_PADDING,
                 spawnedProps,
                 C.MIN_DIST,
-                15
+                maxAttempts
             );
             if (!clusterPos) continue;
 
@@ -138,20 +139,22 @@ class PropSpawner {
 
     spawnScatteredItems(island: Island, itemList: string[], spawnedProps: { x: number; y: number }[]) {
         const C = getConfig().Spawning.PROPS;
-        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
-        const gap = islandManager?.waterGap || 50;
+        const islandManager = this.spawnManager.getIslandManager();
+        const gap = islandManager?.waterGap ?? GameConstants.Spawning.PROPS.WATER_GAP_FALLBACK;
 
         const itemCount = C.ITEM_COUNT_MIN + Math.floor(Math.random() * C.ITEM_COUNT_RND);
 
         for (let i = 0; i < itemCount; i++) {
             const propId = itemList[Math.floor(Math.random() * itemList.length)];
+            const itemPadding = GameConstants.Spawning.PROPS.ITEM_BRIDGE_PADDING;
+            const maxAttempts = GameConstants.Spawning.PROPS.FIND_POSITION_MAX_ATTEMPTS;
             const pos = this.findValidPosition(
                 island,
                 gap,
-                120,
+                itemPadding,
                 spawnedProps,
                 C.MIN_DIST * 1.5,
-                15
+                maxAttempts
             );
 
             if (pos) {
@@ -201,12 +204,14 @@ class PropSpawner {
     }
 
     createProp(x: number, y: number, sprite: string, island: Island) {
+        const w = GameConstants.Spawning.PROPS.DEFAULT_WIDTH;
+        const h = GameConstants.Spawning.PROPS.DEFAULT_HEIGHT;
         const prop = new Prop({
             x: x,
             y: y,
             sprite: sprite,
-            width: 160,
-            height: 160,
+            width: w,
+            height: h,
             islandGridX: island.gridX,
             islandGridY: island.gridY
         });

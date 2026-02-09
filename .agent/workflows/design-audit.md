@@ -9,9 +9,9 @@ A game designer's perspective review of the entire game, focusing on gameplay qu
 ## 1. Preparation
 
 1. **Load Design Documents**:
-   - `documents/gdd/MASTER_GDD.md` - Core game design
-   - `documents/world_lore.md` - World and narrative
-   - `documents/style_guide.md` - Visual direction
+   - `documents/design/gdd/MASTER_GDD.md` - Core game design
+   - `documents/design/world_lore.md` - World and narrative
+   - `documents/design/art_guide.md` - Visual direction (`documents/design/lore_guide.md`, `documents/design/sound_guide.md` for tone/audio)
 
 2. **Analyze Implementation**:
    - Review key gameplay systems in `src/gameplay/` and `src/systems/`

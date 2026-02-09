@@ -133,14 +133,14 @@ const EquipmentStatsConfig = {
     // Get stats by category
     getStatsByCategory(category: string) {
         return Object.entries(this.stats)
-            .filter(([_, config]: [string, any]) => config.category === category)
-            .map(([key, config]: [string, any]) => ({ key, ...config }));
+            .filter(([_, config]: [string, unknown]) => (config as { category?: string }).category === category)
+            .map(([key, config]: [string, unknown]) => ({ key, ...(config as object) }));
     },
 
     // Get full stats object with defaults for any equipment
-    getFullStats(partialStats: any = {}) {
-        const full: any = {};
-        for (const [key, config] of Object.entries(this.stats) as [string, any][]) {
+    getFullStats(partialStats: Record<string, number> = {}) {
+        const full: Record<string, number> = {};
+        for (const [key, config] of Object.entries(this.stats) as [string, { default: number }][]) {
             full[key] = partialStats[key] ?? config.default;
         }
         return full;

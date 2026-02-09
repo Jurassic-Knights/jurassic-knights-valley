@@ -14,7 +14,6 @@ import { GameRenderer } from '@core/GameRenderer';
 import { HomeBase } from '../world/HomeBase';
 import { BiomeManager } from '../world/BiomeManager';
 import { Registry } from '@core/Registry';
-import { CollisionSystem } from './CollisionSystem';
 import { HeroCombatService } from './HeroCombatService';
 import { MathUtils } from '@core/MathUtils';
 import type { IGame, IEntity } from '../types/core.d';
@@ -66,6 +65,9 @@ class HeroSystem {
             EventBus.on(GameConstants.Events.HERO_DIED, (data: { hero: IEntity }) =>
                 this.onHeroDied({ hero: data.hero as Hero })
             );
+            EventBus.on(GameConstants.Events.REQUEST_STAMINA_RESTORE, (data: { hero: Hero; amount: number }) => {
+                if (data?.hero && typeof data.amount === 'number') this.restoreStamina(data.hero, data.amount);
+            });
         }
     }
 
@@ -170,11 +172,13 @@ class HeroSystem {
             hero.x = spawnPos.x;
             hero.y = spawnPos.y;
 
-            // Restore health
             if (hero.components.health) {
                 hero.components.health.respawn();
+                if (EventBus) {
+                    const h = hero.components.health;
+                    EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: h.health, max: h.maxHealth });
+                }
             }
-
             hero.locked = false;
 
             if (EventBus && GameConstants) {
@@ -202,9 +206,6 @@ class HeroSystem {
         let dx = move.x * effectiveSpeed * dtSec;
         let dy = move.y * effectiveSpeed * dtSec;
 
-        // Collision System
-        const collisionSystem = this.game?.getSystem('CollisionSystem');
-
         // HomeBase Special Check (Legacy tree collision until fully migrated)
         const homeBase = this._homeBase;
         if (homeBase) {
@@ -212,15 +213,11 @@ class HeroSystem {
             if (dy !== 0 && homeBase.isBlockedByTrees(hero.x, hero.y + dy)) dy = 0;
         }
 
-        if (collisionSystem) {
-            // Delegate to physics engine
-            (collisionSystem as CollisionSystem).move(hero, dx, dy);
+        if (EventBus) {
+            EventBus.emit(GameConstants.Events.ENTITY_MOVE_REQUEST, { entity: hero, dx, dy });
         } else {
-            // Fallback
             hero.x += dx;
             hero.y += dy;
-
-            // Simple fallback terrain check
             if (this._islandManager?.isBlocked(hero.x, hero.y)) {
                 hero.x = hero.prevX;
                 hero.y = hero.prevY;

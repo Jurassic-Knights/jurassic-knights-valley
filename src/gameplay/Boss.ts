@@ -17,13 +17,14 @@ import type { HealthComponent } from '../types/core';
 import { Enemy } from './EnemyCore';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
+import type { IEntity } from '../types/core';
 
 class Boss extends Enemy {
     // Boss property declarations
     isBoss: boolean = true;
     bossType: string = 'unknown_boss';
     bossName: string = 'Unknown Boss';
-    abilities: any[] = [];
+    abilities: Array<{ id: string; name: string; cooldown?: number; [key: string]: unknown }> = [];
     glowColor: string = '#FF4500';
     scale: number = 1.2;
 
@@ -31,7 +32,7 @@ class Boss extends Enemy {
      * Create a boss entity
      * @param {object} config - Boss configuration
      */
-    constructor(config: any = {}) {
+    constructor(config: { bossType?: string; x?: number; y?: number; [key: string]: unknown } = {}) {
         // Get boss config hierarchy: defaults -> type config -> instance config
         // Get boss config from EntityRegistry
         const defaults = EntityRegistry.defaults?.boss || {};
@@ -95,7 +96,8 @@ class Boss extends Enemy {
         ctx.shadowColor = '#000';
         ctx.shadowBlur = 3;
 
-        const nameY = this.y - this.height / 2 - 35;
+        const offset = GameConstants.Boss.NAME_PLATE_Y_OFFSET;
+        const nameY = this.y - this.height / 2 - offset;
         ctx.fillText(this.bossName, this.x, nameY);
         ctx.restore();
     }
@@ -103,7 +105,7 @@ class Boss extends Enemy {
     /**
      * Override die to emit boss-specific death event
      */
-    die(killer: any = null) {
+    die(killer: IEntity | null = null) {
         // Call parent die
         super.die(killer);
 
@@ -124,7 +126,8 @@ class Boss extends Enemy {
     update(dt: number) {
         if (!this.active || this.isDead) {
             if (this.isDead) {
-                this.respawnTimer -= dt / 1000;
+                const ms = GameConstants.Timing.MS_PER_SECOND;
+                this.respawnTimer -= dt / ms;
                 if (this.respawnTimer <= 0) {
                     this.respawn();
                 }
@@ -138,7 +141,8 @@ class Boss extends Enemy {
         }
 
         if (this.attackCooldown > 0) {
-            this.attackCooldown -= dt / 1000;
+            const ms = GameConstants.Timing.MS_PER_SECOND;
+            this.attackCooldown -= dt / ms;
         }
 
         if (EnemyAI) {

@@ -9,6 +9,7 @@ import { BiomeConfig } from './BiomeConfig';
 
 export enum ZoneCategory {
     BIOME = 'biome',
+    TERRAIN = 'terrain', // New: Water, Coast, Cliffs
     CIVILIZATION = 'civilization', // New: Outposts, Trenches, Ruins
     ENCOUNTER = 'encounter', // Danger levels
     WEATHER = 'weather', // Atmospheric overrides
@@ -54,6 +55,9 @@ const biomeZones: Record<string, ZoneDefinition> = Object.values(BiomeConfig.typ
 
 export const ZoneConfig: Record<string, ZoneDefinition> = {
     ...biomeZones,
+    // --- TERRAIN ZONES (Overrides Biomes) ---
+    'terrain_water': { id: 'terrain_water', category: ZoneCategory.TERRAIN, name: 'Deep Water', color: 0x2980B9 }, // Blue
+    'terrain_coast': { id: 'terrain_coast', category: ZoneCategory.TERRAIN, name: 'Coastal Grass', color: 0xF39C12 }, // Sand Orange
 
     // --- CIVILIZATION ZONES (WW1 Theme) ---
     'civ_outpost': { id: 'civ_outpost', category: ZoneCategory.CIVILIZATION, name: 'Outpost (Safe-ish)', color: 0x3498DB }, // Blue
@@ -71,7 +75,7 @@ export const ZoneConfig: Record<string, ZoneDefinition> = {
     'weather_clear': { id: 'weather_clear', category: ZoneCategory.WEATHER, name: 'Forced Clear', color: 0xF1C40F }, // Sun Yellow
     'weather_fog': { id: 'weather_fog', category: ZoneCategory.WEATHER, name: 'Mustard Fog (Hazard)', color: 0xD4AC0D }, // Mustard Yellow
     'weather_smog': { id: 'weather_smog', category: ZoneCategory.WEATHER, name: 'Artillery Smog', color: 0x5D6D7E }, // Smog Grey
-    'weather_rain': { id: 'weather_rain', category: ZoneCategory.WEATHER, name: 'Acid Rain', color: 0x1ABC9C }, // Acid Green
+    'weather_ash': { id: 'weather_ash', category: ZoneCategory.WEATHER, name: 'Ash Fall', color: 0xC0392B }, // Ember Red
     'weather_storm': { id: 'weather_storm', category: ZoneCategory.WEATHER, name: 'Heavy Storm', color: 0x1F618D }, // Dark Blue
 
     // --- TACTICAL ZONES ---

@@ -11,12 +11,16 @@
 
 import { getConfig } from '@data/GameConfig';
 import { MathUtils } from '@core/MathUtils';
+import type { IEntity } from '../../types/core';
+
+/** Entity with optional AI/combat props used by BaseAI */
+type AIEntity = IEntity & { aggroRange?: number; attackRange?: number; leashDistance?: number; patrolRadius?: number; spawnX?: number; spawnY?: number; facingRight?: boolean; moveAlongPath?(tx: number, ty: number, speed: number, dt: number): boolean };
 
 const BaseAI = {
     /**
      * Check if entity can see target (within aggro range)
      */
-    canSee(entity: any, target: any) {
+    canSee(entity: AIEntity, target: IEntity | null) {
         if (!target || entity.isDead) return false;
         const range = entity.aggroRange || getConfig().AI?.AGGRO_RANGE || 500;
         return this.distanceTo(entity, target) <= range;
@@ -25,14 +29,14 @@ const BaseAI = {
     /**
      * Calculate distance between two entities
      */
-    distanceTo(entity: any, target: any) {
+    distanceTo(entity: IEntity, target: IEntity) {
         return MathUtils.distance(entity.x, entity.y, target.x, target.y);
     },
 
     /**
      * Check if entity is within leash distance of spawn
      */
-    isWithinLeash(entity: any) {
+    isWithinLeash(entity: AIEntity) {
         const dist = MathUtils.distance(entity.x, entity.y, entity.spawnX, entity.spawnY);
         const leash = entity.leashDistance || getConfig().AI?.LEASH_DISTANCE || 800;
         return dist <= leash;
@@ -41,7 +45,7 @@ const BaseAI = {
     /**
      * Check if target is within attack range
      */
-    inAttackRange(entity: any, target: any) {
+    inAttackRange(entity: AIEntity, target: IEntity | null) {
         if (!target) return false;
         return this.distanceTo(entity, target) <= (entity.attackRange || 100);
     },
@@ -49,7 +53,7 @@ const BaseAI = {
     /**
      * Move entity towards a target position
      */
-    moveTowards(entity: any, targetX: number, targetY: number, speed: number, dt: number) {
+    moveTowards(entity: AIEntity & { x: number; y: number }, targetX: number, targetY: number, speed: number, dt: number) {
         const dx = targetX - entity.x;
         const dy = targetY - entity.y;
         const dist = MathUtils.distance(entity.x, entity.y, targetX, targetY);
@@ -67,7 +71,7 @@ const BaseAI = {
     /**
      * Move using pathfinding if available, else direct movement
      */
-    moveAlongPath(entity: any, targetX: number, targetY: number, speed: number, dt: number) {
+    moveAlongPath(entity: AIEntity, targetX: number, targetY: number, speed: number, dt: number) {
         if (typeof entity.moveAlongPath === 'function') {
             return entity.moveAlongPath(targetX, targetY, speed, dt);
         }
@@ -77,7 +81,7 @@ const BaseAI = {
     /**
      * Pick a random wander target within patrol radius
      */
-    getRandomWanderTarget(entity: any) {
+    getRandomWanderTarget(entity: AIEntity) {
         const angle = Math.random() * Math.PI * 2;
         const radius = entity.patrolRadius || getConfig().AI?.PATROL_AREA_RADIUS || 400;
         const dist = Math.random() * radius * 0.5;

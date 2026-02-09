@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_base_gravel_desert_01_original.png",
-        "clean": "assets/images/ground/ground_base_gravel_desert_01_original.png"
+        "original": "assets/images/ground/desert/base/ground_base_gravel_desert_01_original.png",
+        "clean": "assets/images/ground/desert/base/ground_base_gravel_desert_01_original.png"
     },
     "type": "ground_texture",
     "biome": "desert",

@@ -15,6 +15,26 @@ import { Logger } from '@core/Logger';
 
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { getWeaponStats } from '@data/GameConfig';
+import type { IEntity, CombatComponent } from '../types/core';
+
+interface StatsComponentConfig {
+    speed?: number;
+    maxStamina?: number;
+    stamina?: number;
+    critChance?: number;
+    defense?: number;
+    attack?: number;
+    critMultiplier?: number;
+    level?: number;
+    xp?: number;
+    xpToNextLevel?: number;
+    xpScaling?: number;
+    strength?: number;
+    dexterity?: number;
+    constitution?: number;
+    intelligence?: number;
+}
+
 class StatsComponent extends Component {
     type: string = 'StatsComponent';
     speed: number = 100;
@@ -35,7 +55,7 @@ class StatsComponent extends Component {
     intelligence: number = 10;
     xpScaling: number = 1.5;
 
-    constructor(parent: any, config: any = {}) {
+    constructor(parent: IEntity | null, config: StatsComponentConfig = {}) {
         super(parent);
         this.type = 'StatsComponent';
 
@@ -94,7 +114,7 @@ class StatsComponent extends Component {
 
     getAttackRange() {
         // Base hand range + equipment bonuses
-        const baseRange = getConfig().Combat?.DEFAULT_MINING_RANGE || 80;
+        const baseRange = getConfig().Combat.DEFAULT_MINING_RANGE;
         const equipBonus = this.parent.equipment?.getStatBonus('range') || 0;
         return baseRange + equipBonus;
     }
@@ -102,15 +122,15 @@ class StatsComponent extends Component {
     getWeaponRange(slotId: string) {
         // Use additive model: base + entity bonus
         const item = this.parent.equipment?.getSlot?.(slotId);
-        if (!item) return getConfig().Combat?.DEFAULT_MINING_RANGE || 80;
+        if (!item) return getConfig().Combat.DEFAULT_MINING_RANGE;
         const stats = getWeaponStats(item);
         return stats.range;
     }
 
     getAttackRate() {
-        const combat = this.parent.components?.combat as any;
-        const base = combat?.rate || 1.0;
-        const equipBonus = this.parent.equipment?.getStatBonus('attackRate') || 0;
+        const combat = this.parent?.components?.combat as CombatComponent | undefined;
+        const base = combat?.attackSpeed || 1.0;
+        const equipBonus = this.parent?.equipment?.getStatBonus('attackRate') || 0;
         return base + equipBonus;
     }
 
@@ -126,7 +146,8 @@ class StatsComponent extends Component {
     }
 
     getStat(name: string): number {
-        return (this as any)[name] || 0;
+        const value = (this as Record<string, unknown>)[name];
+        return typeof value === 'number' ? value : 0;
     }
 }
 

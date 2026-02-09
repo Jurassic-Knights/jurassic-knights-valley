@@ -16,14 +16,13 @@ import { BaseAI } from '../BaseAI';
 import { EnemyAI } from '../enemies/EnemyAI';
 import { Registry } from '../../../core/Registry';
 import { MathUtils } from '../../../core/MathUtils';
-
-// Unmapped modules - need manual import
+import type { IEntity } from '../../../types/core';
 
 const BossAI = {
     /**
      * Update boss AI state
      */
-    updateState(boss: any, hero: any, dt: number) {
+    updateState(boss: IEntity, hero: IEntity | null, dt: number) {
         if (!boss.active || boss.isDead) return;
 
         // Update phase based on health
@@ -58,7 +57,7 @@ const BossAI = {
     /**
      * Update boss phase based on health percentage
      */
-    updatePhase(boss: any) {
+    updatePhase(boss: IEntity) {
         const healthPercent = boss.health / boss.maxHealth;
         const oldPhase = boss.phase || 1;
 
@@ -75,7 +74,7 @@ const BossAI = {
     /**
      * Handle phase transition
      */
-    onPhaseChange(boss: any, oldPhase: number, newPhase: number) {
+    onPhaseChange(boss: IEntity, oldPhase: number, newPhase: number) {
         Logger.info(`[BossAI] ${boss.enemyName} entered Phase ${newPhase}`);
 
         // Phase-specific buffs
@@ -102,7 +101,7 @@ const BossAI = {
     /**
      * Use special ability
      */
-    updateAbility(boss: any, hero: any, dt: number) {
+    updateAbility(boss: IEntity, hero: IEntity | null, dt: number) {
         // Ability execution - can be extended per boss type
         if (boss.currentAbility && boss.abilityTimer > 0) {
             boss.abilityTimer -= dt;
@@ -119,7 +118,7 @@ const BossAI = {
     /**
      * Execute specific ability
      */
-    executeAbility(boss: any, hero: any) {
+    executeAbility(boss: IEntity, hero: IEntity | null) {
         const ability = boss.currentAbility;
         Logger.info(`[BossAI] ${boss.enemyName} uses ${ability}`);
 
@@ -135,7 +134,7 @@ const BossAI = {
     /**
      * Wander (bosses rarely wander, mostly patrol)
      */
-    updateWander(boss: any, hero: any, dt: number) {
+    updateWander(boss: IEntity, hero: IEntity | null, dt: number) {
         // Bosses have large aggro range
         if (hero && !hero.isDead && BaseAI?.canSee(boss, hero)) {
             boss.target = hero;
@@ -156,7 +155,7 @@ const BossAI = {
     /**
      * Chase with ability checks
      */
-    updateChase(boss: any, hero: any, dt: number) {
+    updateChase(boss: IEntity, hero: IEntity | null, dt: number) {
         if (!boss.target) {
             boss.state = 'returning';
             return;
@@ -186,7 +185,7 @@ const BossAI = {
     /**
      * Start an ability
      */
-    startAbility(boss: any) {
+    startAbility(boss: IEntity) {
         const abilities = boss.abilities || [];
         if (abilities.length === 0) return;
 
@@ -199,7 +198,7 @@ const BossAI = {
     /**
      * Attack (delegated to EnemyAI)
      */
-    updateAttack(boss: any, hero: any, dt: number) {
+    updateAttack(boss: IEntity, hero: IEntity | null, dt: number) {
         if (EnemyAI) {
             EnemyAI.updateAttack(boss, dt);
         }
@@ -208,7 +207,7 @@ const BossAI = {
     /**
      * Return to spawn
      */
-    updateReturning(boss: any, dt: number) {
+    updateReturning(boss: IEntity, dt: number) {
         if (EnemyAI) {
             EnemyAI.updateReturning(boss, dt);
         }

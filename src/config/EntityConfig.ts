@@ -49,9 +49,9 @@ const EntityConfig = {
     // DEPRECATED STUBS (for backward compatibility)
     // Use EntityRegistry.resources, EntityLoader.getBoss() instead
     // ============================================
-    resources: {} as Record<string, any>,
-    resource: {} as Record<string, any>,
-    boss: {} as Record<string, any>,
+    resources: {} as Record<string, unknown>,
+    resource: {} as Record<string, unknown>,
+    boss: {} as Record<string, unknown>,
     enemy: {
         defaults: {
             gridSize: 1,
@@ -59,11 +59,11 @@ const EntityConfig = {
             height: 128,
             scale: 1.0
         },
-        dinosaurs: {} as Record<string, any>,
-        soldiers: {} as Record<string, any>,
+        dinosaurs: {} as Record<string, unknown>,
+        soldiers: {} as Record<string, unknown>,
         eliteSpawnChance: 0.05
-    } as Record<string, any>,
-    nodes: {} as Record<string, any>,
+    } as Record<string, unknown>,
+    nodes: {} as Record<string, unknown>,
 
     // Top-level defaults (alias for enemy.defaults)
     defaults: {
@@ -74,8 +74,8 @@ const EntityConfig = {
     },
 
     // Stub get method for legacy config access
-    get(key: string): any {
-        return (this as any)[key] || {};
+    get(key: string): Record<string, unknown> {
+        return ((this as Record<string, unknown>)[key] as Record<string, unknown>) || {};
     }
 };
 

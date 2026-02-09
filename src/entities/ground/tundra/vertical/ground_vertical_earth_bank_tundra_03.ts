@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_vertical_earth_bank_tundra_03_original.png",
-        "clean": "assets/images/ground/ground_vertical_earth_bank_tundra_03_original.png"
+        "original": "assets/images/ground/tundra/vertical/ground_vertical_earth_bank_tundra_03_original.png",
+        "clean": "assets/images/ground/tundra/vertical/ground_vertical_earth_bank_tundra_03_original.png"
     },
     "type": "ground_texture",
     "biome": "tundra",

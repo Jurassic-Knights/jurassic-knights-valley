@@ -8,7 +8,7 @@ async function loadModule(path: string) {
     try {
         await import(path);
         console.log(`✅ ${path}`);
-    } catch (e: any) {
+    } catch (e: unknown) {
         const msg = `❌ ${path}: ${e.message}`;
         console.error(msg);
         errors.push(msg);

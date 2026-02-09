@@ -9,6 +9,7 @@
 
 import { Logger } from '@core/Logger';
 import { entityManager } from '@core/EntityManager';
+import { GameConstants } from '@data/GameConstants';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EntityTypes } from '@config/EntityTypes';
 import { Enemy } from '../../gameplay/EnemyCore';
@@ -42,14 +43,15 @@ class EnemySpawner {
             return;
         }
 
-        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
+        const islandManager = this.spawnManager.getIslandManager();
         if (!islandManager) return;
 
         const home = islandManager.getHomeIsland();
         if (!home) return;
 
         const testX = home.worldX + home.width / 2;
-        const testY = home.worldY - 200;
+        const offsetNorth = GameConstants.Spawning.ENEMY_TEST_OFFSET_NORTH;
+        const testY = home.worldY - offsetNorth;
 
         this.spawnEnemyGroup('grasslands', testX, testY, 'enemy_dinosaur_t1_01', 3);
         Logger.info('[EnemySpawner] Spawned test enemies north of home island');
@@ -194,7 +196,7 @@ class EnemySpawner {
         const groupId =
             options.groupId || `group_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const waveId = options.waveId || groupId;
-        const spacing = BiomeConfig.Biome?.GROUP_SPACING || 50;
+        const spacing = BiomeConfig.Biome?.GROUP_SPACING ?? GameConstants.Biome.GROUP_SPACING;
 
         const enemies: Enemy[] = [];
 
@@ -253,11 +255,12 @@ class EnemySpawner {
             return;
         }
 
-        const padding = 100;
+        const padding = GameConstants.Spawning.BIOME_POPULATE_PADDING;
         let totalSpawned = 0;
+        const weightDivisor = GameConstants.Spawning.BIOME_GROUP_WEIGHT_DIVISOR;
 
         for (const spawn of spawnTable) {
-            const groupCount = Math.max(1, Math.floor(spawn.weight / 20));
+            const groupCount = Math.max(1, Math.floor(spawn.weight / weightDivisor));
 
             for (let g = 0; g < groupCount; g++) {
                 const x = bounds.x + padding + Math.random() * (bounds.width - padding * 2);

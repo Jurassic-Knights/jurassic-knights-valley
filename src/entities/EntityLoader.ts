@@ -11,7 +11,7 @@
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
 import manifest from './manifest';
-import { EntityConfig, IEntity } from '@app-types/core';
+import { EntityConfig, IEntity } from '../types/core';
 
 // Entity Module Interface for Vite's glob import
 interface EntityModule {
@@ -114,7 +114,7 @@ const EntityLoader = {
             respawnTime: 180,
             xpReward: 200
         }
-    } as Record<string, any>,
+    } as Record<string, unknown>,
 
     /**
      * Initialize - called by Game.js via SystemConfig
@@ -173,7 +173,7 @@ const EntityLoader = {
             Logger.info(`[EntityLoader] Loaded: ${counts.join(', ')}`);
             return true;
             return true;
-        } catch (error: any) {
+        } catch (error: unknown) {
             Logger.error(`[EntityLoader] Failed to load: ${error.message}`);
             return false;
         }
@@ -185,7 +185,7 @@ const EntityLoader = {
     /**
      * Load entities from manifest
      */
-    async loadFromManifest(manifest: any) {
+    async loadFromManifest(manifest: Record<string, unknown>) {
         const promises = [];
 
         // All entity categories
@@ -267,7 +267,7 @@ const EntityLoader = {
 
             const data = module.default;
             return this.storeEntity(category, id, data);
-        } catch (e: any) {
+        } catch (e: unknown) {
             Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
             return null;
         }
@@ -300,7 +300,7 @@ const EntityLoader = {
             // Using logic to infer it later
         };
         // Add sourceFile metadata if possible (EntityConfig allows [key: string]: any)
-        (entity as any)._sourceFile = `${id}.ts`;
+        (entity as Record<string, unknown>)._sourceFile = `${id}.ts`;
 
         // Fix: Flatten display properties to root for ALL entities
         // This ensures EntityScaling can find width/height/scale regardless of category
@@ -385,7 +385,7 @@ const EntityLoader = {
             }
 
             return entity;
-        } catch (e: any) {
+        } catch (e: unknown) {
             Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${e.message}`);
             return null;
         }
@@ -437,7 +437,7 @@ const EntityLoader = {
         // Copy direct properties override defaults
         for (const [key, value] of Object.entries(data)) {
             if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-                (entity as any)[key] = value;
+                (entity as Record<string, unknown>)[key] = value;
             }
         }
 
@@ -483,7 +483,7 @@ const EntityLoader = {
 
         // Handle loot
         if (data.loot) {
-            entity.lootTable = data.loot.map((l: any) => ({
+            entity.lootTable = data.loot.map((l: { item: string; chance: number; amount?: number | [number, number]; min?: number; max?: number }) => ({
                 item: l.item,
                 chance: l.chance,
                 amount: Array.isArray(l.amount)
@@ -567,12 +567,12 @@ const EntityLoader = {
 
     getEnemiesByTier(tier: number) {
         const enemies = EntityRegistry.enemies || {};
-        return Object.values(enemies).filter((e: any) => e.tier === tier);
+        return Object.values(enemies).filter((e: IEntity & { tier?: string }) => e.tier === tier);
     },
 
     getEnemiesByCategory(category: string) {
         const enemies = EntityRegistry.enemies || {};
-        return Object.values(enemies).filter((e: any) => e.category === category);
+        return Object.values(enemies).filter((e: IEntity & { category?: string }) => e.category === category);
     },
 
     /**
@@ -582,7 +582,7 @@ const EntityLoader = {
      */
     getAllEquipment() {
         const equipment = EntityRegistry?.equipment || {};
-        const allEquipment: any[] = [];
+        const allEquipment: Array<{ id: string; [key: string]: unknown }> = [];
 
         for (const [id, item] of Object.entries(equipment)) {
             // Derive sourceFile from ID prefix
@@ -597,7 +597,7 @@ const EntityLoader = {
             else if (id.startsWith('signature_')) sourceFile = 'signature';
             else if (id.startsWith('accessory_')) sourceFile = 'accessory';
 
-            const itemData = item as any;
+            const itemData = item as Record<string, unknown>;
             allEquipment.push({
                 ...itemData,
                 id: itemData.id || id,
@@ -784,13 +784,13 @@ function handleEntityUpdate(category: string, configId: string, updates: Record<
                 const statName = key.split('.')[1];
                 const numVal = Number(value);
                 if (!isNaN(numVal)) {
-                    (entity as any)[statName] = numVal; // Use cast for dynamic stat names not on IEntity
+                    (entity as Record<string, unknown>)[statName] = numVal;
                 }
             } else {
                 // Direct property update (speed, damage, etc.)
                 // Filter out complex objects or arrays unless specific handler
                 if (typeof value !== 'object') {
-                    (entity as any)[key] = value;
+                    (entity as Record<string, unknown>)[key] = value;
                 }
             }
         }
@@ -812,9 +812,10 @@ function handleEntityUpdate(category: string, configId: string, updates: Record<
                 if (updates.height) entity.height = Number(updates.height);
 
                 // Update Collision if present
-                if ((entity as any).collision && (entity as any).collision.bounds) {
-                    (entity as any).collision.bounds.width = entity.width;
-                    (entity as any).collision.bounds.height = entity.height;
+                const ent = entity as IEntity & { collision?: { bounds?: { width: number; height: number } } };
+                if (ent.collision?.bounds) {
+                    ent.collision.bounds.width = entity.width;
+                    ent.collision.bounds.height = entity.height;
                 }
             }
         }

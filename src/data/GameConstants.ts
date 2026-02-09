@@ -16,6 +16,9 @@ const GameConstants = {
         // Full world dimensions (30k x 30k for all biomes)
         TOTAL_WIDTH: 30000,
         TOTAL_HEIGHT: 30000,
+        /** When IslandManager/gameRenderer unavailable, spawn hero at world center. */
+        DEFAULT_SPAWN_X: 15000,
+        DEFAULT_SPAWN_Y: 15000,
 
         // Ironhaven offset (where the island grid starts in world space)
         IRONHAVEN_OFFSET_X: 10000,
@@ -67,9 +70,22 @@ const GameConstants = {
         DEFAULT_GUN_RANGE: 1000, // Was 500 in some fallbacks
         DEFAULT_MINING_RANGE: 125, // Was 75 in some fallbacks
         DEFAULT_DAMAGE: 10,
+        DEFAULT_ATTACK_RATE: 1,
+        DEFAULT_ATTACK_RANGE: 100,
         ATTACK_COOLDOWN: 0.5,
         DEFAULT_PATROL_RADIUS: 150,
-        ARMOR_FORMULA_DIVISOR: 100
+        ARMOR_FORMULA_DIVISOR: 100,
+        DEFAULT_MAX_HEALTH_NPC: 100,
+        /** Fallback XP when entity has no xpReward (e.g. enemy death). */
+        XP_REWARD_FALLBACK: 10,
+        /** Damage amount above which extra VFX (e.g. blood drops) play. */
+        DAMAGE_VFX_THRESHOLD: 10
+    },
+
+    // Damage / Hit Feedback (floating text, VFX triggers)
+    Damage: {
+        /** Y offset (pixels above hit position) for floating damage text. */
+        FLOATING_TEXT_Y_OFFSET: 20
     },
 
     // Equipment Configuration (Single Source of Truth)
@@ -159,6 +175,13 @@ const GameConstants = {
             DUSK: 0.75, // 6:00 PM - Dusk begins (60% day)
             NIGHT: 0.9 // 9:36 PM - Night begins (15% dusk, 10% night until midnight→dawn)
         },
+        /** Debug override dayTime values (e.g. setPhaseOverride). */
+        DEBUG_PHASE_OVERRIDES: {
+            dawn: 0.22,
+            day: 0.5,
+            dusk: 0.77,
+            night: 0.05
+        },
         SEASONS: ['SPRING', 'SUMMER', 'AUTUMN', 'WINTER'],
         DAYS_PER_SEASON: 2, // 30 seconds per season (TESTING)
         WEATHER_DECAY_RATE: 5000 // Rate at which weather check timer decrements
@@ -200,22 +223,44 @@ const GameConstants = {
         WHITE_BG_THRESHOLD: 250
     },
 
+    /** Collision debug overlay (renderDebug). */
+    CollisionDebug: {
+        /** Chance per frame to log (0–1) to reduce spam. */
+        LOG_SAMPLE_RATE: 0.05,
+        /** Scale for direction vector arrow (px per unit input). */
+        DIRECTION_VECTOR_SCALE: 20
+    },
+
+    /** Component defaults (single source when config omitted). No runtime fallbacks. */
+    Components: {
+        INVENTORY_CAPACITY: 20,
+        COLLISION_IS_TRIGGER: false,
+        COLLISION_ENABLED: true
+    },
+
     // AI Behavior
     AI: {
         WANDER_TIMER_MIN: 2000,
         WANDER_TIMER_MAX: 5000,
+        PATHFINDING_GRID_SIZE: 64,
         PATHFINDING_MAX_ITERATIONS: 500,
         PATHFINDING_CACHE_TIMEOUT: 2000,
         DROP_SPAWN_DISTANCE: 150,
-
         DROP_SPAWN_VARIANCE: 100,
-        PATROL_AREA_RADIUS: 400
+        PATROL_AREA_RADIUS: 400,
+        PATH_RECALC_INTERVAL_MS: 1000,
+        PATH_TARGET_THRESHOLD: 100,
+        PATH_ARRIVAL_DIST: 20,
+        PATH_WAYPOINT_DIST: 30,
+        PATH_LEAD_DIST: 50,
+        MOVE_DIRECT_ARRIVAL: 10
     },
 
     // Timing & Durations (centralized timer values)
     Timing: {
         // UI Feedback
         FLOATING_TEXT_DURATION: 2000,
+        FLOATING_TEXT_Y_OFFSET: 50,
         UI_FEEDBACK_DELAY: 1000,
         BUTTON_RESET_DELAY: 1000,
         SCREEN_FADE_DURATION: 500,
@@ -239,7 +284,14 @@ const GameConstants = {
         DEBUG_NOTIFICATION_DURATION: 5000,
 
         // Conversion Factor
-        MS_PER_SECOND: 1000
+        MS_PER_SECOND: 1000,
+
+        // Boss / Spawn delays
+        BOSS_SPAWN_DELAY_MS: 1000,
+        /** Magnet completion VFX: delay (ms) before collapse phase. */
+        MAGNET_PHASE_DELAY_MS: 150,
+        /** Zone secured floating text: Y offset above position. */
+        ZONE_SECURED_Y_OFFSET: 80
     },
 
     // Entity Sizes
@@ -247,6 +299,108 @@ const GameConstants = {
         TILE_SIZE: 128,
         MERCHANT_SIZE: 186,
         CRAFTING_FORGE_SIZE: 250
+    },
+
+    // Boss defaults (fallbacks when config missing)
+    Boss: {
+        /** Default level when biome has no levelRange. */
+        DEFAULT_LEVEL: 10,
+        /** Fallback spawn offsets from Ironhaven origin (World.IRONHAVEN_OFFSET_* + these). */
+        SPAWN_OFFSETS: {
+            grasslands: { x: 5500, y: 3000 },
+            tundra: { x: 3000, y: 5500 },
+            desert: { x: 5500, y: 5500 },
+            badlands: { x: 3000, y: 3000 },
+            default: { x: 3500, y: 3500 }
+        },
+        /** Y offset (px above entity) for boss name plate. */
+        NAME_PLATE_Y_OFFSET: 35
+    },
+
+    // Enemy entity defaults (fallbacks when entity config missing)
+    Enemy: {
+        DEFAULT_HEALTH: 30,
+        DEFAULT_DAMAGE: 5,
+        DEFAULT_ATTACK_RANGE: 100,
+        DEFAULT_SPEED: 80,
+        DEFAULT_XP_REWARD: 10,
+        DEFAULT_RESPAWN_TIME: 60,
+        FRAME_INTERVAL: 200,
+        ELITE_FALLBACK_HEALTH: 50,
+        DEFAULT_SIZE: 192,
+        WANDER_INTERVAL_MIN: 3000,
+        WANDER_INTERVAL_VARIANCE: 2000
+    },
+
+    // Dinosaur (herbivore) defaults
+    Dinosaur: {
+        DEFAULT_SIZE: 150,
+        DEFAULT_MAX_HEALTH: 60,
+        DEFAULT_RESPAWN_TIME: 30,
+        DEFAULT_STAMINA: 100,
+        DEFAULT_SPEED: 30,
+        DEFAULT_XP_REWARD: 10,
+        WANDER_INTERVAL_MIN: 2000,
+        WANDER_INTERVAL_MAX: 5000,
+        FRAME_INTERVAL: 200
+    },
+
+    // Hero defaults (supplement to Hero.*)
+    HeroDefaults: {
+        XP_TO_NEXT_LEVEL: 100,
+        XP_SCALING: 1.5,
+        FOOTSTEP_INTERVAL: 0.15,
+        DEFAULT_ATTACK: 10,
+        MAX_STAMINA_FALLBACK: 100,
+        MAX_HEALTH_FALLBACK: 100
+    },
+
+    // Resource (nodes) defaults
+    Resource: {
+        HEALTH_BAR_WIDTH: 100,
+        HEALTH_BAR_Y_OFFSET: 18,
+        VFX_SPARK_LIFETIME: 300,
+        T1_FAST_RESPAWN: 15,
+        DEFAULT_BASE_RESPAWN: 30
+    },
+
+    // Progression / leveling
+    Progression: {
+        XP_BASE: 100,
+        XP_SCALING: 1.5,
+        LEVEL_UP_FLOATING_TEXT_LIFETIME: 1000
+    },
+
+    // Crafting / Forge
+    Crafting: {
+        FORGE_SLOT_UNLOCK_COST: 1000
+    },
+
+    // Quest
+    Quest: {
+        NEXT_QUEST_DELAY_MS: 2000
+    },
+
+    // Island upgrades (base costs and caps)
+    IslandUpgrades: {
+        BASE_COSTS: { resourceSlots: 100, autoChance: 150, respawnTime: 75 },
+        CAPS: { resourceSlots: 15, autoChance: 80, respawnTime: 100 },
+        DEFAULT_BASE_COST: 100
+    },
+
+    // Dropped item magnet
+    DroppedItem: {
+        MAGNET_SPEED: 100,
+        MAGNET_ACCELERATION: 500
+    },
+
+    // Enemy render (health bar, elite pulse)
+    EnemyRender: {
+        HEALTH_BAR_WIDTH: 50,
+        HEALTH_BAR_Y_OFFSET: 15,
+        ELITE_PULSE_MS: 200,
+        ELITE_ALPHA_BASE: 0.3,
+        ELITE_ALPHA_AMPLITUDE: 0.1
     },
 
     // Biome System (Open World)
@@ -257,6 +411,10 @@ const GameConstants = {
         BOSS_RESPAWN_DEFAULT: 300, // 5 minutes
         GROUP_SPACING: 50, // Min distance between spawned group members
         PACK_AGGRO_RADIUS: 150, // Range for pack members to join aggro
+        /** Distance within spawn point to consider "arrived" (leash return). */
+        LEASH_ARRIVAL_THRESHOLD: 10,
+        /** Speed multiplier when returning to spawn (leash). */
+        LEASH_RETURN_SPEED_MULTIPLIER: 1.5,
         ELITE_SPAWN_CHANCE: 0.05, // 5% chance for elite variant
         TRANSITION_BLEND_WIDTH: 200, // Gradient border width between biomes
         ROAD_SPEED_MULTIPLIER: 1.3 // 30% speed boost on roads
@@ -306,8 +464,30 @@ const GameConstants = {
             COLS: 4,
             SPACING: 128, // Aligned to Grid.CELL_SIZE
             AMOUNT_MIN: 1,
-            AMOUNT_RND: 0
+            AMOUNT_RND: 0,
+            /** Max rows for grid layout (e.g. ceil(MAX_ROWS / COLS)). */
+            MAX_ROWS: 15
         },
+
+        /** Edge spacing for organic spawn patterns (e.g. tree rings). */
+        EDGE_SPACING: 100,
+        /** Min distance between spawn points (e.g. trees). */
+        MIN_SPAWN_DISTANCE: 50,
+        /** Max placement attempts per tree before skipping. */
+        TREE_PLACEMENT_MAX_ATTEMPTS: 300,
+        /** Force placement attempts (higher when close to target count). */
+        TREE_PLACEMENT_FORCE_ATTEMPTS: 500,
+        /** Buffer (px) beyond rest area radius to avoid spawning too close. */
+        REST_AREA_BUFFER: 50,
+
+        /** Home-island tree ring: target tree count. */
+        RESOURCE_TREE_TARGET_COUNT: 25,
+        /** Home-island tree ring: position jitter (px). */
+        RESOURCE_TREE_JITTER: 25,
+        /** Home-island tree ring: max random placement attempts. */
+        RESOURCE_TREE_MAX_ATTEMPTS: 300,
+        /** Home-island tree ring: max force-placement attempts. */
+        RESOURCE_TREE_FORCE_ATTEMPTS: 500,
 
         DINOSAUR: {
             AMOUNT_MIN: 1,
@@ -322,8 +502,31 @@ const GameConstants = {
             CLUSTER_RADIUS: 120,
             ITEM_COUNT_MIN: 2,
             ITEM_COUNT_RND: 3,
-            MIN_DIST: 80
+            MIN_DIST: 80,
+            /** Max attempts to find valid position for a prop cluster/item. */
+            FIND_POSITION_MAX_ATTEMPTS: 15,
+            /** Bridge padding for scattered items (px). */
+            ITEM_BRIDGE_PADDING: 120,
+            /** Default prop sprite size (px). */
+            DEFAULT_WIDTH: 160,
+            DEFAULT_HEIGHT: 160,
+            /** Default padding for bridge visual check (px). */
+            BRIDGE_PADDING_DEFAULT: 100,
+            /** Fallback water/spacing gap when island manager value not available. */
+            WATER_GAP_FALLBACK: 50
         },
+
+        /** Drop scatter: base distance (px) + random variance for spawnDrop. */
+        DROP_SCATTER_BASE: 40,
+        DROP_SCATTER_VARIANCE: 40,
+
+        /** Biome population: padding from bounds edge (px). */
+        BIOME_POPULATE_PADDING: 100,
+        /** Biome population: spawn weight / this = group count. */
+        BIOME_GROUP_WEIGHT_DIVISOR: 20,
+
+        /** Enemy test spawn: offset north of home (px). */
+        ENEMY_TEST_OFFSET_NORTH: 200,
 
         MERCHANT: {
             PADDING: 70,
@@ -365,6 +568,7 @@ const GameConstants = {
         // Entity Events
         ENTITY_ADDED: 'ENTITY_ADDED', // { entity }
         ENTITY_REMOVED: 'ENTITY_REMOVED', // { entity }
+        ENTITY_MOVE_REQUEST: 'ENTITY_MOVE_REQUEST', // { entity, dx, dy } — CollisionSystem applies
         ENTITY_DAMAGED: 'ENTITY_DAMAGED', // { entity, amount, source, type }
         ENTITY_DIED: 'ENTITY_DIED', // { entity, killer }
         ENTITY_HEALTH_CHANGE: 'ENTITY_HEALTH_CHANGE', // { entity, current, max }
@@ -394,6 +598,8 @@ const GameConstants = {
 
         // UI / System Requests
         REQUEST_REST: 'REQUEST_REST', // null
+        REQUEST_STAMINA_RESTORE: 'REQUEST_STAMINA_RESTORE', // { hero, amount }
+        VFX_PLAY_FOREGROUND: 'VFX_PLAY_FOREGROUND', // { x, y, options }
         HOME_BASE_ENTERED: 'HOME_BASE_ENTERED', // null
         HOME_BASE_EXITED: 'HOME_BASE_EXITED', // null
         FORGE_ENTERED: 'FORGE_ENTERED', // null
@@ -443,7 +649,7 @@ export function getConfig(): typeof GameConstants {
     // FIXED: Properly read the config object (was boolean short-circuit bug)
     const tunables =
         typeof window !== 'undefined' && window.__GAME_CONFIG__
-            ? (window as any).__GAME_CONFIG__
+            ? (window as Window & { __GAME_CONFIG__?: Record<string, unknown> }).__GAME_CONFIG__
             : {};
     const base =
         typeof window !== 'undefined' && window.__GAME_CONSTANTS__
@@ -451,7 +657,7 @@ export function getConfig(): typeof GameConstants {
             : GameConstants;
 
     // Deep merge WeaponDefaults (nested objects)
-    const mergedWeaponDefaults = { ...(base as any).WeaponDefaults };
+    const mergedWeaponDefaults = { ...(base as { WeaponDefaults?: Record<string, unknown> }).WeaponDefaults };
     if (tunables.WeaponDefaults) {
         for (const weapon of Object.keys(tunables.WeaponDefaults)) {
             mergedWeaponDefaults[weapon] = {
@@ -472,9 +678,9 @@ export function getConfig(): typeof GameConstants {
         AI: tunables.AI || base.AI,
         Spawning: tunables.Spawning || base.Spawning,
         Time: tunables.Time || base.Time,
-        BodyTypes: tunables.BodyTypes || (base as any).BodyTypes,
+        BodyTypes: tunables.BodyTypes || (base as { BodyTypes?: Record<string, unknown> }).BodyTypes,
         WeaponDefaults: mergedWeaponDefaults,
-        PlayerResources: tunables.PlayerResources || (base as any).PlayerResources
+        PlayerResources: tunables.PlayerResources || (base as { PlayerResources?: Record<string, unknown> }).PlayerResources
     } as typeof GameConstants;
 }
 
@@ -503,12 +709,12 @@ if (typeof window !== 'undefined') {
                 !Array.isArray(GameConstants[typedKey])
             ) {
                 // Safe to merge objects
-                const target = persisted[typedKey] as Record<string, any>;
-                const source = GameConstants[typedKey] as Record<string, any>;
+                const target = persisted[typedKey] as Record<string, unknown>;
+                const source = GameConstants[typedKey] as Record<string, unknown>;
                 Object.assign(target, source);
             } else {
                 // Primitives or Arrays: overwrite
-                (persisted as any)[typedKey] = GameConstants[typedKey];
+                (persisted as Record<string, unknown>)[typedKey] = GameConstants[typedKey];
             }
         }
         console.log('[HMR] GameConstants updated in-place');

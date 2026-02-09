@@ -17,7 +17,7 @@ import { EntityTypes } from '@config/EntityTypes';
 import { MathUtils } from '@core/MathUtils';
 import type { IGame, IEntity } from '@app-types/core';
 import { Enemy } from '../gameplay/EnemyCore';
-import { CollisionSystem } from './CollisionSystem';
+import { Entity } from '../core/Entity';
 import { AIComponent } from '../components/AIComponent';
 import { CombatComponent } from '../components/CombatComponent';
 import { HealthComponent } from '../components/HealthComponent';
@@ -123,8 +123,8 @@ class EnemySystem {
             ai.randomizeWander();
         }
 
-        // Move
-        const speed = enemy.speed * (dt / 1000);
+        const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
+        const speed = enemy.speed * (dt / msPerSecond);
         const dx = ai.wanderDirection.x * speed;
         const dy = ai.wanderDirection.y * speed;
 
@@ -133,7 +133,7 @@ class EnemySystem {
         const nextY = enemy.y + dy;
 
         // Clamp to patrol radius
-        const patrolRadius = enemy.patrolRadius || 150;
+        const patrolRadius = enemy.patrolRadius ?? GameConstants.Combat.DEFAULT_PATROL_RADIUS;
         const dist = MathUtils.distance(nextX, nextY, enemy.spawnX, enemy.spawnY);
 
         if (dist > patrolRadius) {
@@ -154,7 +154,7 @@ class EnemySystem {
         if (!entityManager) return;
 
         const enemies = entityManager.getByType('Enemy');
-        const alertRadius = GameConstants?.Biome?.PACK_AGGRO_RADIUS || 300;
+        const alertRadius = GameConstants.Biome.PACK_AGGRO_RADIUS;
 
         for (const enemy of enemies) {
             if (enemy === aggroEnemy) continue;
@@ -198,7 +198,8 @@ class EnemySystem {
         const dist = MathUtils.distance(enemy.x, enemy.y, hero.x, hero.y);
 
         if (dist > 0) {
-            const speed = enemy.speed * (dt / 1000);
+            const ms = GameConstants?.Timing?.MS_PER_SECOND ?? 1000;
+            const speed = enemy.speed * (dt / ms);
             const dx = (dxRaw / dist) * speed;
             const dy = (dyRaw / dist) * speed;
             this.applyMovement(enemy, dx, dy);
@@ -206,9 +207,8 @@ class EnemySystem {
     }
 
     applyMovement(enemy: IEntity, dx: number, dy: number) {
-        const collisionSystem = this.game?.getSystem('CollisionSystem') as CollisionSystem;
-        if (collisionSystem && typeof collisionSystem.move === 'function') {
-            collisionSystem.move(enemy as any, dx, dy); // Entity vs IEntity mismatch potential, cast to any or Entity if easy
+        if (enemy instanceof Entity && EventBus) {
+            EventBus.emit(GameConstants.Events.ENTITY_MOVE_REQUEST, { entity: enemy, dx, dy });
         } else {
             enemy.x += dx;
             enemy.y += dy;
@@ -231,27 +231,29 @@ class EnemySystem {
             return;
         }
 
-        // Attack cooldown
         if (combat) {
-            combat.update(dt);
+            if (combat.cooldownTimer > 0) {
+                combat.cooldownTimer -= dt / 1000;
+                if (combat.cooldownTimer <= 0) {
+                    combat.cooldownTimer = 0;
+                    combat.canAttack = true;
+                }
+            }
             if (combat.canAttack) {
-                const attacked = combat.attack();
-                if (attacked) {
-                    // Emit damage event for DamageSystem
-                    if (EventBus) {
-                        EventBus.emit(GameConstants.Events.ENTITY_DAMAGED, {
-                            entity: hero,
-                            amount: combat.damage,
-                            source: enemy,
-                            type: 'physical'
-                        });
-
-                        EventBus.emit(GameConstants.Events.ENEMY_ATTACK, {
-                            attacker: enemy,
-                            target: hero,
-                            damage: combat.damage
-                        });
-                    }
+                combat.cooldownTimer = 1 / combat.rate;
+                combat.canAttack = false;
+                if (EventBus) {
+                    EventBus.emit(GameConstants.Events.ENTITY_DAMAGED, {
+                        entity: hero,
+                        amount: combat.damage,
+                        source: enemy,
+                        type: 'physical'
+                    });
+                    EventBus.emit(GameConstants.Events.ENEMY_ATTACK, {
+                        attacker: enemy,
+                        target: hero,
+                        damage: combat.damage
+                    });
                 }
             }
         }
@@ -265,12 +267,15 @@ class EnemySystem {
         const dyRaw = enemy.spawnY - enemy.y;
         const dist = MathUtils.distance(enemy.x, enemy.y, enemy.spawnX, enemy.spawnY);
 
-        if (dist < 10) {
+        const arrivalThreshold = GameConstants.Biome.LEASH_ARRIVAL_THRESHOLD;
+        if (dist < arrivalThreshold) {
             ai.setState('WANDER');
             return;
         }
 
-        const speed = enemy.speed * 1.5 * (dt / 1000); // Faster return
+        const ms = GameConstants?.Timing?.MS_PER_SECOND ?? 1000;
+        const mult = GameConstants.Biome.LEASH_RETURN_SPEED_MULTIPLIER;
+        const speed = enemy.speed * mult * (dt / ms);
         const dx = (dxRaw / dist) * speed;
         const dy = (dyRaw / dist) * speed;
         this.applyMovement(enemy, dx, dy);
@@ -308,7 +313,8 @@ class EnemySystem {
             // Blood droplets
             VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_DROPS);
             // Meat chunks on heavy hits
-            if (amount > 10) {
+            const threshold = GameConstants.Combat.DAMAGE_VFX_THRESHOLD;
+            if (amount > threshold) {
                 VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.MEAT_CHUNKS);
             }
         }

@@ -49,7 +49,7 @@ const HeroDefaults = {
      * @returns {Object|null} Equipment entity data or null
      */
     getEquipmentForSlot(slotId: string) {
-        const entityId = (this.equipment as any)[slotId];
+        const entityId = (this.equipment as Record<string, string>)[slotId];
         if (!entityId) return null;
 
         // Try to load from EntityRegistry.equipment

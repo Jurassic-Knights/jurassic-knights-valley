@@ -32,6 +32,9 @@ const AudioManager = {
                     ProceduralSFX.setWeather(data.type);
                 }
             });
+            EventBus.on(GameConstants.Events.HERO_LEVEL_UP, () => {
+                this.playSFX('sfx_level_up');
+            });
         }
 
         Logger.info('[AudioManager] Waiting for user interaction...');

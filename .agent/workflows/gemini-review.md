@@ -23,7 +23,7 @@ Follow this strict instruction set:
     *   Hardcoded values (Magic Numbers/Strings)
     *   Error handling gaps
     *   Documentation quality
-3.  **Validate**: Verify that the implementation aligns with the project's `documents/technical_guidelines.md` (if available) and general best practices.
+3.  **Validate**: Verify that the implementation aligns with the project's `documents/design/technical_guidelines.md` (if available) and general best practices.
 4.  **Format**: Construct the final report using the **Output Format** below.
 **</instructions>**
 

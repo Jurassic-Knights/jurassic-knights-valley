@@ -4,6 +4,7 @@
  * Owner: Director (engine), Gameplay Designer (values)
  */
 import { Entity } from '@core/Entity';
+import type { IEntity } from '../types/core';
 import { Logger } from '@core/Logger';
 import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { AssetLoader } from '@core/AssetLoader';
@@ -26,13 +27,13 @@ class Merchant extends Entity {
     scale: number = 1.0;
 
     // Sprite caching
-    _img: any = null;
-    _shadowImg: any = null;
+    _img: HTMLImageElement | null = null;
+    _shadowImg: HTMLImageElement | HTMLCanvasElement | null = null;
     _imgAssetId: string | null = null;
     _cachedSpriteId: string | null = null;
-    _iconImg: any = null;
+    _iconImg: HTMLImageElement | null = null;
 
-    constructor(config: any = {}) {
+    constructor(config: { x?: number; y?: number; [key: string]: unknown } = {}) {
         // 1. Load Config
         const defaults = {
             gridSize: 1.5,
@@ -105,7 +106,7 @@ class Merchant extends Entity {
      * @param {Hero} hero
      * @returns {boolean}
      */
-    isInRange(hero: any) {
+    isInRange(hero: IEntity) {
         if (!this.active || !hero) return false;
         // Read from config for live dashboard updates
         const radius = getConfig().Interaction?.MERCHANT_RADIUS || this.interactRadius;

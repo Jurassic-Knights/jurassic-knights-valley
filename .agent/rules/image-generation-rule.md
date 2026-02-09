@@ -12,7 +12,7 @@ When the user asks you to generate an image, create an asset visual, or design a
 2.  **Follow the Protocol**:
     *   Use the **Reference Images** specified in the skill.
     *   Construct the prompt using the **Templates** in the skill.
-    *   **CRITICAL**: You **MUST** save the generation prompt to `tools/dashboard/asset_prompts.json` immediately after generating the image.
+    *   **CRITICAL**: You **MUST** append the generation prompt used for that asset to the log at `tools/asset_prompts.json` immediately after generating the image (this file is a log of prompts actually used, not the template source).
 
 3.  **Verification**:
     *   Do NOT generate an image without having the `SKILL.md` content in your context.

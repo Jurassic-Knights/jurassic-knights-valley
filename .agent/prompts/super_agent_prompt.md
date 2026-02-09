@@ -46,7 +46,7 @@
 ---
 
 ## 3. Visual & Artistic Direction
-*Adhere strictly to the aesthetic constraints. Source: `style_guide.md`*
+*Adhere strictly to the aesthetic constraints. Source: `documents/design/art_guide.md`, `documents/design/lore_guide.md`, `documents/design/sound_guide.md`*
 
 *   **Style:** High-Fidelity Pixel Art (Reference: *Stoneshard*).
 *   **UI:** Pixelated parchment, rusted iron, brass. Not modern slick UI.
@@ -55,7 +55,7 @@
 ---
 
 ## 4. Technical Guidelines & Conventions
-*Adhere strictly to naming and file structures. Source: `technical_guidelines.md`*
+*Adhere strictly to naming and file structures. Source: `documents/design/technical_guidelines.md`*
 
 *   **Asset IDs:** `ui_btn_name`, `char_dino_name`, `prop_tree_dead`.
 *   **File Names:** `snake_case` for assets (`dino_run.png`), `PascalCase` for Classes (`Hero.js`).

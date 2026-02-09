@@ -25,18 +25,16 @@ _Regions defined by human (or humanoid) modification of the terrain._
     - **Rules**: Regeneration enabled. Fast Travel point.
 
 ### ⛓️ Trench Line (`civ_trench`)
-
 **Concept**: A network of defensive earthworks carved into the land.
-
 - **Visual Identity**:
-    - **Ground**: Deep Mud (Slows movement visually), duckboards (wooden planks).
-    - **Props**: Barbed wire coils, corrugated iron walls, ammo crates, spent shell casings.
-    - **VFX**: Flies buzzing, occasional mud splashes.
+  - **Ground**: `ground_damage_churned` (Deep Mud), duckboards.
+  - **Props**: Barbed wire coils, corrugated iron walls, ammo crates.
+  - **VFX**: Flies buzzing, occasional mud splashes.
 - **Gameplay**:
-    - **Movement**: Moving _along_ the trench is normal. Moving _over_ walls is slow/vaulting.
-    - **Hazards**: Barbed Wire (DoT + Slow).
-    - **Cover**: High defense against ranged attacks.
-    - **Enemies**: Humanoid Soldiers (Riflemen), Small scavengers (Compsognathus).
+  - **Movement**: Moving *along* the trench is normal. Moving *over* walls is slow/vaulting.
+  - **Hazards**: Barbed Wire (DoT + Slow).
+  - **Cover**: High defense against ranged attacks.
+  - **Enemies**: Humanoid Soldiers (Riflemen with `ui_icon_rifle`).
 
 ### 💀 No Man's Land (`civ_noman`)
 
@@ -52,27 +50,23 @@ _Regions defined by human (or humanoid) modification of the terrain._
     - **Hazard**: "Shell Shock" (Screen shake/blur effect periodic).
 
 ### 🏛️ Ruins (`civ_ruins`)
-
-**Concept**: Ancient structures from a previous era (Knights?) now reclaimed by nature.
-
+**Concept**: Ancient structures from a previous era (The First Crusade against the Saurians).
 - **Visual Identity**:
-    - **Ground**: Cracked stone tiles, mossy cobblestone.
-    - **Props**: Broken stone pillars, statues of knights fighting dragons, overgrown vines.
+  - **Ground**: `ground_interior_cobblestone`, `ground_overgrown_moss`.
+  - **Props**: Broken stone pillars, statues of knights fighting dragons, overgrown vines.
 - **Gameplay**:
-    - **Spawning**: Ambush predators (Raptors).
-    - **Loot**: Relics, Lore items.
-    - **Verticality**: High ground advantages.
+  - **Spawning**: Ambush predators (Raptors).
+  - **Loot**: Relics, Lore items.
+  - **Verticality**: High ground advantages.
 
 ### 📦 Supply Depot (`civ_supply`)
-
-**Concept**: A logistics hub, likely abandoned or contested.
-
+**Concept**: A logistics hub, likely abandoned or contested by the Iron Legion.
 - **Visual Identity**:
-    - **Ground**: Oil-stained dirt, concrete slabs.
-    - **Props**: Stacked crates, fuel drums, crane arms, trucks.
+  - **Ground**: `ground_interior_concrete`, `ground_interior_metal_plate`.
+  - **Props**: `building_industrial_01`, fuel drums, crane arms, trucks.
 - **Gameplay**:
-    - **Loot**: High density of crafting materials (Steel, Oil, Gunpowder).
-    - **Event**: "Sabotage" - Exploding barrels can chain reaction.
+  - **Loot**: High density of crafting materials (Steel, Oil, Gunpowder).
+  - **Event**: "Sabotage" - Exploding barrels can chain reaction.
 
 ---
 
@@ -91,22 +85,18 @@ _Zones that override the global weather state to create localized drama._
     - **Enemy**: "Gas-Masked Raptors" or mutated variations.
 
 ### 🏭 Artillery Smog (`weather_smog`)
-
 **Concept**: Smoke from heavy bombardment or industrial machinery.
-
 - **Visuals**: Dark grey haze, falling ash particles (snow-like but black).
 - **Gameplay**:
-    - **Stealth**: Player visibility reduced (Harder for enemies to spot you, harder for you to aim).
-    - **Audio**: Muffled sounds, loud distant booms.
-
-### 🧪 Acid Rain (`weather_rain`)
-
-**Concept**: Polluted downpour that burns.
-
-- **Visuals**: Green-tinted rain streaks, sizzling smoke where rain hits ground.
+  - **Stealth**: Player visibility reduced (Harder for enemies to spot you, harder for you to aim).
+  - **Audio**: Muffled sounds, loud distant booms.
+  
+### 🌋 Ash Fall (`weather_ash`)
+**Concept**: Volcanic debris or fallout from the "Scorch Front".
+- **Visuals**: `ground_damage_scorched` terrain tint. Falling glowing embers.
 - **Gameplay**:
-    - **Durability Decay**: Armor takes slow ticks of damage over time.
-    - **Farming**: Alien plants grow faster here.
+  - **Heat**: Stamina drains faster while sprinting.
+  - **Farming**: Impossible. Crops wither.
 
 ### ⛈️ Heavy Storm (`weather_storm`)
 

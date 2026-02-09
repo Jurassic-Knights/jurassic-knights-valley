@@ -47,8 +47,16 @@ const HeroCombatService = {
             hero.attackTimer -= dt / 1000;
         }
 
-        // Components update
-        if (hero.components.combat) hero.components.combat.update(dt);
+        if (hero.components.combat) {
+            const c = hero.components.combat;
+            if (c.cooldownTimer > 0) {
+                c.cooldownTimer -= dt / 1000;
+                if (c.cooldownTimer <= 0) {
+                    c.cooldownTimer = 0;
+                    c.canAttack = true;
+                }
+            }
+        }
 
         // Find nearest valid target
         const target = this.findTarget(hero);
@@ -210,10 +218,21 @@ const HeroCombatService = {
         hero.hand1Attacking = hand1InRange;
         hero.hand2Attacking = hand2InRange;
 
-        // Combat Component Cooldown Check
         const combat = hero.components.combat;
         if (combat) {
-            if (!combat.attack()) return false;
+            if (!combat.canAttack) return false;
+            if (combat.staminaCost > 0 && hero.stamina !== undefined) {
+                if (hero.stamina < combat.staminaCost) return false;
+                hero.stamina -= combat.staminaCost;
+                if (EventBus) {
+                    EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
+                        current: hero.stamina,
+                        max: hero.maxStamina
+                    });
+                }
+            }
+            combat.cooldownTimer = 1 / combat.rate;
+            combat.canAttack = false;
             hero.attackTimer = 1 / combat.rate;
         } else {
             if (hero.attackTimer > 0) return false;
@@ -331,22 +350,16 @@ const HeroCombatService = {
             return;
         }
 
-        // Fallback to legacy VFX system
-        if (!VFXConfig || !this.game) return;
-
-        const vfxController = this.game.getSystem('VFXController') as typeof VFXController; // Cast until VFXController strictly typed in Game.ts
-        if (!vfxController) return;
-
+        if (!VFXConfig) return;
         const cfg = VFXConfig.HERO.MUZZLE_FLASH;
         const dx = target.x - hero.x;
         const dy = target.y - hero.y;
         const angle = Math.atan2(dy, dx);
         const tipX = hero.x + Math.cos(angle) * cfg.DISTANCE;
         const tipY = hero.y + Math.sin(angle) * cfg.DISTANCE;
-
-        if (VFXConfig.TEMPLATES.MUZZLE_FLASH_FX) {
-            const fx = { ...VFXConfig.TEMPLATES.MUZZLE_FLASH_FX, angle: angle, spread: 1.0 };
-            vfxController.playForeground(tipX, tipY, fx);
+        if (VFXConfig.TEMPLATES.MUZZLE_FLASH_FX && EventBus) {
+            const fx = { ...VFXConfig.TEMPLATES.MUZZLE_FLASH_FX, angle, spread: 1.0 };
+            EventBus.emit(GameConstants.Events.VFX_PLAY_FOREGROUND, { x: tipX, y: tipY, options: fx });
         }
     }
 };

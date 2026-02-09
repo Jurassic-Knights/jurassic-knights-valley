@@ -36,7 +36,7 @@ class ResourceSpawner {
     spawnResources() {
         if (!Resource || !GameRenderer || !this.spawnManager.gameInstance) return;
 
-        const islandManager = this.spawnManager.gameInstance.getSystem('IslandManager') as IslandManagerService;
+        const islandManager = this.spawnManager.getIslandManager();
 
         if (islandManager) {
             const home = islandManager.getHomeIsland();
@@ -95,11 +95,11 @@ class ResourceSpawner {
         const cols = GameConstants.Spawning.RESOURCE_GRID.COLS;
         const spacing = GameConstants.Grid.CELL_SIZE;
 
+        const maxRows = GameConstants.Spawning.RESOURCE_GRID.MAX_ROWS;
         const gridWidth = (cols - 1) * spacing;
-        const maxRows = Math.ceil(15 / cols);
-        const gridHeight = (maxRows - 1) * spacing;
+        const gridHeight = (Math.ceil(maxRows / cols) - 1) * spacing;
 
-        const islandManager = this.spawnManager.gameInstance?.getSystem('IslandManager') as IslandManagerService;
+        const islandManager = this.spawnManager.getIslandManager();
         const bounds = islandManager ? islandManager.getPlayableBounds(island) : null;
         if (!bounds) return;
 
@@ -141,7 +141,7 @@ class ResourceSpawner {
     spawnDinosaursOnIsland(island: Island, count: number) {
         if (!Dinosaur || !this.spawnManager.gameInstance) return;
 
-        const islandManager = this.spawnManager.gameInstance.getSystem('IslandManager') as IslandManagerService;
+        const islandManager = this.spawnManager.getIslandManager();
         const padding = GameConstants.UI.PROP_SPAWN_PADDING || 70;
         const bounds = islandManager ? islandManager.getPlayableBounds(island) : null;
         if (!bounds) return;
@@ -188,7 +188,7 @@ class ResourceSpawner {
     spawnHomeIslandTrees() {
         if (!Resource || !this.spawnManager.gameInstance) return;
 
-        const islandManager = this.spawnManager.gameInstance.getSystem('IslandManager') as IslandManagerService;
+        const islandManager = this.spawnManager.getIslandManager();
         if (!islandManager) return;
 
         const home = islandManager.getHomeIsland();
@@ -212,17 +212,17 @@ class ResourceSpawner {
         const maxY = centerY;
 
         const centerX = bounds.x + bounds.width / 2;
-        const restAreaRadius = getConfig().Interaction?.REST_AREA_RADIUS ?? 900;
+        const restAreaRadius = getConfig().Interaction.REST_AREA_RADIUS;
 
+        const restAreaBuffer = GameConstants.Spawning.REST_AREA_BUFFER;
         const isValidSpawnPoint = (x: number, y: number) => {
             const dx = x - centerX;
             const dy = y - centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-            // Add a small buffer (50px) to the exclusion zone so trees don't hug the line
-            return dist >= restAreaRadius + 50;
+            return dist >= restAreaRadius + restAreaBuffer;
         };
 
-        const minSpacing = getConfig().Spawning?.MIN_SPAWN_DISTANCE ?? 50;
+        const minSpacing = GameConstants.Spawning.MIN_SPAWN_DISTANCE;
         const placedTrees: { x: number; y: number }[] = [];
 
         const hasSpacing = (x: number, y: number) => {
@@ -245,9 +245,9 @@ class ResourceSpawner {
             placedTrees.push({ x, y });
         };
 
-        const targetTreeCount = 25;
-        const edgeSpacing = getConfig().Spawning?.EDGE_SPACING ?? 100;
-        const jitter = 25;
+        const targetTreeCount = GameConstants.Spawning.RESOURCE_TREE_TARGET_COUNT;
+        const edgeSpacing = GameConstants.Spawning.EDGE_SPACING;
+        const jitter = GameConstants.Spawning.RESOURCE_TREE_JITTER;
 
         // Phase 1: Edge trees (top)
         for (let x = minX; x <= maxX; x += edgeSpacing) {
@@ -276,9 +276,9 @@ class ResourceSpawner {
             }
         }
 
-        // Phase 2: Fill interior
+        const maxAttempts = GameConstants.Spawning.TREE_PLACEMENT_MAX_ATTEMPTS;
         let attempts = 0;
-        while (placedTrees.length < targetTreeCount && attempts < 300) {
+        while (placedTrees.length < targetTreeCount && attempts < maxAttempts) {
             attempts++;
             const x = minX + Math.random() * (maxX - minX);
             const y = minY + Math.random() * (maxY - minY);
@@ -287,9 +287,9 @@ class ResourceSpawner {
             }
         }
 
-        // Phase 3: Force remaining
+        const forceAttemptsMax = GameConstants.Spawning.TREE_PLACEMENT_FORCE_ATTEMPTS;
         let forceAttempts = 0;
-        while (placedTrees.length < targetTreeCount && forceAttempts < 500) {
+        while (placedTrees.length < targetTreeCount && forceAttempts < forceAttemptsMax) {
             forceAttempts++;
             const x = minX + Math.random() * (maxX - minX);
             const y = minY + Math.random() * (maxY - minY);

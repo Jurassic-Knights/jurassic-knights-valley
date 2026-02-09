@@ -25,7 +25,7 @@ const ProgressionSystem = {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(Events.ENEMY_DIED, (data: any) => this.onEnemyKilled(data));
+            EventBus.on(Events.ENEMY_DIED, (data: { entity?: IEntity; xpReward?: number; [key: string]: unknown }) => this.onEnemyKilled(data));
         }
     },
 
@@ -58,8 +58,11 @@ const ProgressionSystem = {
 
         // Check for level up(s) - multiple levels can be gained from one kill
         // Ensure getXPForLevel exists or use safe fallback logic
+        const prog = GameConstants?.Progression;
         const getXP = (lvl: number) => {
-            return stats.getXPForLevel ? stats.getXPForLevel(lvl) : 100 * Math.pow(1.5, lvl - 1);
+            const base = prog.XP_BASE;
+            const scaling = prog.XP_SCALING;
+            return stats.getXPForLevel ? stats.getXPForLevel(lvl) : base * Math.pow(scaling, lvl - 1);
         };
 
         let nextLevelXP = getXP(stats.level);
@@ -68,18 +71,6 @@ const ProgressionSystem = {
             stats.level++;
             this.onLevelUp(hero, stats.level);
             nextLevelXP = getXP(stats.level);
-        }
-
-        // Emit if leveled
-        if (stats.level > oldLevel) {
-            if (EventBus) {
-                EventBus.emit(Events.HERO_LEVEL_UP, {
-                    hero,
-                    oldLevel,
-                    newLevel: stats.level,
-                    levelsGained: stats.level - oldLevel
-                });
-            }
         }
     },
 
@@ -112,28 +103,9 @@ const ProgressionSystem = {
             stats.stamina = stats.maxStamina; // Full restore
         }
 
-        // VFX
-        const VFXController = Registry.get('VFXController');
-        const VFXConfig = Registry.get('VFXConfig');
-        if (VFXController && VFXConfig) {
-            VFXController.playForeground(
-                hero.x,
-                hero.y,
-                VFXConfig.TEMPLATES?.LEVEL_UP_FX || {
-                    type: 'burst',
-                    color: '#FFD700',
-                    count: 30,
-                    lifetime: 1000
-                }
-            );
+        if (EventBus) {
+            EventBus.emit(Events.HERO_LEVEL_UP, { hero, oldLevel: newLevel - 1, newLevel, levelsGained: 1 });
         }
-
-        // SFX
-        const AudioManager = Registry.get('AudioManager');
-        if (AudioManager) {
-            AudioManager.playSFX('sfx_level_up');
-        }
-
         Logger.info(`[ProgressionSystem] Hero leveled up to ${newLevel}!`);
     },
 
@@ -141,8 +113,9 @@ const ProgressionSystem = {
      * Get XP required for specific level
      */
     getXPForLevel(level: number): number {
-        const base = EntityRegistry.hero?.['hero']?.xpToNextLevel || 100;
-        const scaling = EntityRegistry.hero?.['hero']?.xpScaling || 1.5;
+        const prog = GameConstants?.Progression;
+        const base = EntityRegistry.hero?.['hero']?.xpToNextLevel ?? prog.XP_BASE;
+        const scaling = EntityRegistry.hero?.['hero']?.xpScaling ?? prog.XP_SCALING;
         return Math.floor(base * Math.pow(scaling, level - 1));
     },
 
@@ -163,7 +136,7 @@ const ProgressionSystem = {
     },
 
     // Legacy compatibility
-    meetsRequirements(requirements: any = {}): boolean {
+    meetsRequirements(requirements: Record<string, unknown> = {}): boolean {
         const hero = this.game?.hero;
         if (!hero) return true;
 
@@ -172,7 +145,7 @@ const ProgressionSystem = {
         return true;
     },
 
-    getAvailableUnlocks(): any[] {
+    getAvailableUnlocks(): Array<{ id: string; [key: string]: unknown }> {
         return [];
     }
 };

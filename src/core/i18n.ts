@@ -14,7 +14,7 @@ import { EventBus } from './EventBus';
 
 class I18n {
     private currentLocale: string = 'en';
-    private translations: Record<string, any> = {};
+    private translations: Record<string, unknown> = {};
     private fallbackLocale: string = 'en';
 
     constructor() {
@@ -60,7 +60,7 @@ class I18n {
      * @param {object} params - Interpolation params (e.g., { n: 5 })
      * @returns {string} Translated string or key if not found
      */
-    t(key: string, params: Record<string, any> = {}) {
+    t(key: string, params: Record<string, unknown> = {}) {
         const value = this._getNestedValue(key, this.currentLocale)
             || this._getNestedValue(key, this.fallbackLocale)
             || key;
@@ -77,7 +77,7 @@ class I18n {
         const trans = this.translations[locale];
         if (!trans) return null;
 
-        return key.split('.').reduce((obj: any, k) => obj?.[k], trans);
+        return key.split('.').reduce((obj: unknown, k: string) => (obj as Record<string, unknown>)?.[k], trans);
     }
 
     /**

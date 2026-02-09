@@ -6,7 +6,7 @@ description: How to conduct a full system audit of the codebase
 
 ## 1. Preparation
 1. **Identify Scope**: Determine which directories or subsystems need auditing (e.g., `src/systems`, `src/components`, or full `src/`).
-2. **Reference Standards**: Load `docs/design/master_principles.md` and `docs/design/technical_guidelines.md` into context.
+2. **Reference Standards**: Load `.cursor/skills/coding-guide/SKILL.md` (or coding-guide skill) and `documents/design/technical_guidelines.md` into context.
 3. **Load README**: Read `README.md` for current architecture and patterns.
 
 ---
@@ -21,14 +21,14 @@ grep -rn "new " src/systems/ --include="*.js" | grep -E "(update|render|draw)\s*
 **Red flags:** `new Array`, `new Object`, `new Vector`, `new Date` in hot paths.
 
 ### 2.2 Asset Validation
-1. Extract all asset IDs from `src/core/AssetLoader.js`
+1. Extract all asset IDs from `src/core/AssetLoader.ts`
 2. For each ID, verify file exists in `assets/images/`
 3. Reverse: find images in `assets/` not registered in AssetLoader
 
 ```bash
 # Find orphan images (not in AssetLoader)
 ls assets/images/**/*.png | xargs -I {} basename {} | sort > actual_assets.txt
-grep -oP '"[a-z_]+_t\d+_\d+"' src/core/AssetLoader.js | sort > registered_assets.txt
+grep -oP '"[a-z_]+_t\d+_\d+"' src/core/AssetLoader.ts | sort > registered_assets.txt
 diff actual_assets.txt registered_assets.txt
 ```
 
@@ -73,7 +73,7 @@ items: ["id", "name", "tier"]
 ### 3.1 Architecture Checks
 *   **ECS**: Are logic and data separated?
 *   **Events**: Is coupling avoided via EventBus?
-*   **Magic Numbers**: Are constants in GameConstants.js?
+*   **Magic Numbers**: Are constants in GameConstants.ts?
 *   **Performance**: Are there allocations in update loops?
 
 ### 3.2 Pattern Compliance

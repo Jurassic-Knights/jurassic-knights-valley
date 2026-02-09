@@ -12,7 +12,9 @@ export class CollisionSystem implements ISystem {
     private entities: Entity[] = [];
     private spatialHash: Map<string, Entity[]> = new Map();
     private activeCollisions: Map<string, Set<string>> = new Map(); // EntityID -> Set<OtherID>
-    private cellSize: number = 128; // Bucket size
+    /** Scratch Set reused per entity in checkTriggers to avoid allocation in hot path */
+    private _currentOverlapsScratch: Set<string> = new Set();
+    private cellSize: number;
     private debugMode: boolean = false;
 
     constructor() {
@@ -22,6 +24,7 @@ export class CollisionSystem implements ISystem {
     }
 
     init(game: IGame): void {
+        this.cellSize = GameConstants.Grid.CELL_SIZE;
         Logger.info('[CollisionSystem] Initialized');
 
         // Listen for entity registration
@@ -34,6 +37,12 @@ export class CollisionSystem implements ISystem {
 
         EventBus.on(GameConstants.Events.ENTITY_REMOVED, (data: { entity: Entity }) => {
             if (data && data.entity) this.unregister(data.entity);
+        });
+
+        EventBus.on(GameConstants.Events.ENTITY_MOVE_REQUEST, (data: { entity: Entity; dx: number; dy: number }) => {
+            if (data?.entity != null && this.entities.includes(data.entity)) {
+                this.move(data.entity, data.dx, data.dy);
+            }
         });
 
         // Initial Sync (Get existing entities from EntityManager)
@@ -77,13 +86,14 @@ export class CollisionSystem implements ISystem {
     }
 
     /**
-     * Main update loop - Rebuilds spatial hash for dynamic entities
+     * Main update loop - Rebuilds spatial hash for dynamic entities.
+     * Reuses bucket arrays to avoid per-frame allocation (object pooling).
      */
     update(dt: number): void {
-        // CLEAR spatial hash (for dynamic entities)
-        // Optimization: Only clear buckets that have dynamic entities? 
-        // For simplicity and correctness with moving entities, we clear/rebuild.
-        this.spatialHash.clear();
+        // Clear bucket contents but reuse arrays (no new allocation)
+        for (const bucket of this.spatialHash.values()) {
+            bucket.length = 0;
+        }
 
         for (const entity of this.entities) {
             if (!entity.active) continue;
@@ -126,9 +136,9 @@ export class CollisionSystem implements ISystem {
     public updateMovement(entity: Entity, direction: { x: number, y: number }, speed: number, dt: number) {
         if (!entity.active || speed <= 0) return { x: 0, y: 0, collidedX: false, collidedY: false };
 
-        // Calculate intended movement
-        const dx = direction.x * (speed * dt / 1000);
-        const dy = direction.y * (speed * dt / 1000);
+        const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
+        const dx = direction.x * (speed * dt / msPerSecond);
+        const dy = direction.y * (speed * dt / msPerSecond);
 
         // Resolve X
         const originalX = entity.x;
@@ -277,7 +287,8 @@ export class CollisionSystem implements ISystem {
     }
 
     /**
-     * Check for overlaps and manage Trigger Events (Start/End)
+     * Check for overlaps and manage Trigger Events (Start/End).
+     * Reuses _currentOverlapsScratch and per-entity Sets to avoid allocation in hot path.
      */
     private checkTriggers(entity: Entity) {
         const col = entity.collision;
@@ -289,7 +300,8 @@ export class CollisionSystem implements ISystem {
         const endX = Math.floor((bounds.x + bounds.width) / this.cellSize);
         const endY = Math.floor((bounds.y + bounds.height) / this.cellSize);
 
-        const currentOverlaps = new Set<string>();
+        const currentOverlaps = this._currentOverlapsScratch;
+        currentOverlaps.clear();
 
         // Find current overlaps
         for (let x = startX; x <= endX; x++) {
@@ -315,11 +327,11 @@ export class CollisionSystem implements ISystem {
             }
         }
 
-        // Compare with previous state
-        if (!this.activeCollisions.has(entity.id)) {
-            this.activeCollisions.set(entity.id, new Set());
+        let previousOverlaps = this.activeCollisions.get(entity.id);
+        if (!previousOverlaps) {
+            previousOverlaps = new Set();
+            this.activeCollisions.set(entity.id, previousOverlaps);
         }
-        const previousOverlaps = this.activeCollisions.get(entity.id)!;
 
         // START Events (In Current but not Previous)
         for (const otherId of currentOverlaps) {
@@ -355,8 +367,11 @@ export class CollisionSystem implements ISystem {
             }
         }
 
-        // Update state
-        this.activeCollisions.set(entity.id, currentOverlaps);
+        // Update state: reuse previousOverlaps for next frame (clear and copy current)
+        previousOverlaps.clear();
+        for (const id of currentOverlaps) {
+            previousOverlaps.add(id);
+        }
     }
 
     private isHardCollision(a: CollisionComponent, b: CollisionComponent): boolean {
@@ -407,8 +422,8 @@ export class CollisionSystem implements ISystem {
     renderDebug(ctx: CanvasRenderingContext2D) {
         if (!this.debugMode) return;
 
-        // Trace once per second to avoid spam (simple throttle)
-        if (Math.random() < 0.05) {
+        const logRate = GameConstants.CollisionDebug.LOG_SAMPLE_RATE;
+        if (Math.random() < logRate) {
             const activeWithCol = this.entities.filter(e => e.active && e.collision).length;
             Logger.info(`[CollisionSystem] Rendering... Entities: ${this.entities.length}, Drawable: ${activeWithCol}`);
             if (activeWithCol > 0) {
@@ -441,7 +456,7 @@ export class CollisionSystem implements ISystem {
             const bounds = this.getCollisionBounds(entity);
 
             // Additional logging for coordinate verification
-            if (!loggedOne && Math.random() < 0.05) {
+            if (!loggedOne && Math.random() < logRate) {
                 Logger.info(`[CollisionSystem] Drawing ${entity.id} at [${Math.floor(bounds.x)}, ${Math.floor(bounds.y)}] size [${bounds.width}x${bounds.height}] color: ${entity.id === 'hero' ? 'GREEN' : 'OTHER'}`);
                 loggedOne = true;
             }
@@ -463,11 +478,12 @@ export class CollisionSystem implements ISystem {
             // Draw Velocity/Direction (if active)
             // Use safe check for inputMove
             if ('inputMove' in entity) {
-                const move = (entity as any).inputMove;
+                const move = (entity as IEntity & { inputMove?: { x: number; y: number } }).inputMove;
                 if (move && (move.x !== 0 || move.y !== 0)) {
                     ctx.beginPath();
                     ctx.moveTo(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-                    ctx.lineTo(bounds.x + bounds.width / 2 + move.x * 20, bounds.y + bounds.height / 2 + move.y * 20);
+                    const scale = GameConstants.CollisionDebug.DIRECTION_VECTOR_SCALE;
+                    ctx.lineTo(bounds.x + bounds.width / 2 + move.x * scale, bounds.y + bounds.height / 2 + move.y * scale);
                     ctx.strokeStyle = 'cyan';
                     ctx.stroke();
                 }

@@ -19,11 +19,11 @@ import { EntityRegistry } from '@entities/EntityLoader';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EntityTypes } from '@config/EntityTypes';
 import { Boss } from '../gameplay/Boss';
-import type { IGame } from '../types/core';
+import type { IGame, IEntity } from '../types/core';
 
 class BossSystem {
-    game: any = null;
-    bosses: Map<string, any> = new Map();
+    game: IGame | null = null;
+    bosses: Map<string, Boss> = new Map();
     respawnTimers: Map<string, number> = new Map();
 
     constructor() {
@@ -34,10 +34,10 @@ class BossSystem {
         this.game = game;
         this.initListeners();
 
-        // Spawn all bosses on game start (delayed to ensure other systems ready)
+        const delay = GameConstants.Timing.BOSS_SPAWN_DELAY_MS;
         setTimeout(() => {
             this.spawnAllBosses();
-        }, 1000);
+        }, delay);
 
         Logger.info('[BossSystem] Initialized');
     }
@@ -45,10 +45,10 @@ class BossSystem {
     initListeners() {
         if (EventBus && GameConstants?.Events) {
             // Listen for enemy death to track boss deaths
-            EventBus.on('ENEMY_DIED', (data: any) => this.onEnemyDied(data));
+            EventBus.on('ENEMY_DIED', (data: { entity: IEntity }) => this.onEnemyDied(data));
 
             // Listen for biome entry to spawn bosses
-            EventBus.on(GameConstants.Events.BIOME_ENTERED, (data: any) =>
+            EventBus.on(GameConstants.Events.BIOME_ENTERED, (data: { biomeId: string }) =>
                 this.onBiomeEntered(data)
             );
         }
@@ -65,7 +65,7 @@ class BossSystem {
         }
 
         // Get biome config
-        const biome = (BiomeConfig?.types as Record<string, any>)?.[biomeId];
+        const biome = (BiomeConfig?.types as Record<string, { bossId?: string; bossSpawn?: { x: number; y: number }; bounds?: { x: number; y: number; width: number; height: number }; [key: string]: unknown }>)?.[biomeId];
         if (!biome?.bossId) {
             Logger.info(`[BossSystem] No boss configured for biome: ${biomeId}`);
             return null;
@@ -87,7 +87,7 @@ class BossSystem {
             y: spawnPos.y,
             bossType: biome.bossId,
             biomeId: biomeId,
-            level: biome.levelRange?.max || 10
+            level: biome.levelRange?.max ?? GameConstants.Boss.DEFAULT_LEVEL
         });
 
         // Register with EntityManager
@@ -118,7 +118,7 @@ class BossSystem {
      */
     getBossSpawnPosition(biomeId: string) {
         // Try to get from biome config
-        const biome = (BiomeConfig?.types as Record<string, any>)?.[biomeId];
+        const biome = (BiomeConfig?.types as Record<string, { bossSpawn?: { x: number; y: number }; bounds?: { x: number; y: number; width: number; height: number }; [key: string]: unknown }>)?.[biomeId];
         if (biome?.bossSpawn) {
             return biome.bossSpawn;
         }
@@ -131,26 +131,28 @@ class BossSystem {
             };
         }
 
-        // Fallback to positions within Ironhaven (island grid area)
-        // Ironhaven is at offset (10000, 10000), islands ~2048 to 5120 inside that
-        const offsetX = GameConstants?.World?.IRONHAVEN_OFFSET_X || 10000;
-        const offsetY = GameConstants?.World?.IRONHAVEN_OFFSET_Y || 10000;
-
-        const defaults = {
-            grasslands: { x: offsetX + 5500, y: offsetY + 3000 }, // Near east edge of Ironhaven
-            tundra: { x: offsetX + 3000, y: offsetY + 5500 }, // Near south edge of Ironhaven
-            desert: { x: offsetX + 5500, y: offsetY + 5500 }, // Southeast of Ironhaven
-            badlands: { x: offsetX + 3000, y: offsetY + 3000 } // Center of Ironhaven (for testing)
+        const offsetX = GameConstants.World.IRONHAVEN_OFFSET_X;
+        const offsetY = GameConstants.World.IRONHAVEN_OFFSET_Y;
+        const offsets = GameConstants?.Boss?.SPAWN_OFFSETS;
+        const g = offsets?.grasslands ?? { x: 5500, y: 3000 };
+        const t = offsets?.tundra ?? { x: 3000, y: 5500 };
+        const d = offsets?.desert ?? { x: 5500, y: 5500 };
+        const b = offsets?.badlands ?? { x: 3000, y: 3000 };
+        const def = offsets?.default ?? { x: 3500, y: 3500 };
+        const defaults: Record<string, { x: number; y: number }> = {
+            grasslands: { x: offsetX + g.x, y: offsetY + g.y },
+            tundra: { x: offsetX + t.x, y: offsetY + t.y },
+            desert: { x: offsetX + d.x, y: offsetY + d.y },
+            badlands: { x: offsetX + b.x, y: offsetY + b.y }
         };
-
-        return (defaults as Record<string, any>)[biomeId] || { x: offsetX + 3500, y: offsetY + 3500 };
+        return defaults[biomeId] ?? { x: offsetX + def.x, y: offsetY + def.y };
     }
 
     /**
      * Handle enemy death - track boss deaths
      */
-    onEnemyDied(data: any) {
-        const { enemy } = data;
+    onEnemyDied(data: { entity: IEntity; enemy?: IEntity & { isBoss?: boolean; biomeId?: string; respawnTime?: number; bossName?: string } }) {
+        const enemy = data.enemy || data.entity;
         if (!enemy?.isBoss) return;
 
         const biomeId = enemy.biomeId;
@@ -159,8 +161,8 @@ class BossSystem {
         // Remove from active bosses
         this.bosses.delete(biomeId);
 
-        // Start respawn timer
-        const respawnTime = enemy.respawnTime * 1000; // Convert to ms
+        const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
+        const respawnTime = enemy.respawnTime * msPerSecond;
         this.respawnTimers.set(biomeId, respawnTime);
 
         Logger.info(`[BossSystem] ${enemy.bossName} killed. Respawning in ${enemy.respawnTime}s`);
@@ -169,7 +171,7 @@ class BossSystem {
     /**
      * Handle biome entry - spawn boss if not already spawned
      */
-    onBiomeEntered(data: any) {
+    onBiomeEntered(data: { biomeId: string }) {
         const { biomeId } = data;
         if (!biomeId) return;
 
@@ -223,7 +225,8 @@ class BossSystem {
      */
     getRespawnTime(biomeId: string) {
         const timer = this.respawnTimers.get(biomeId);
-        return timer ? Math.ceil(timer / 1000) : 0;
+        const ms = GameConstants.Timing.MS_PER_SECOND;
+        return timer ? Math.ceil(timer / ms) : 0;
     }
 
     /**
@@ -234,7 +237,7 @@ class BossSystem {
         if (!biomes) return;
 
         for (const biomeId of Object.keys(biomes)) {
-            if ((biomes as Record<string, any>)[biomeId].bossId) {
+            if ((biomes as Record<string, { bossId?: string; [key: string]: unknown }>)[biomeId]?.bossId) {
                 this.spawnBoss(biomeId);
             }
         }

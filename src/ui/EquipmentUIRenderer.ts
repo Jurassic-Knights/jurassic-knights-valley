@@ -26,15 +26,16 @@ class EquipmentUIRenderer {
         const stats = hero?.components?.stats;
         const equipment = hero?.equipment;
 
-        // Hero stats
-        const health = hero?.health ?? 100;
-        const maxHealth = hero?.maxHealth ?? 100;
-        const defense = stats?.getDefense?.() ?? 0;
-        const attack = stats?.getAttack?.() ?? 10;
-        const critChance = stats?.getCritChance?.() ?? 0;
-        const hand1Range = stats?.getWeaponRange?.('hand1') ?? 80;
-        const hand2Range = stats?.getWeaponRange?.('hand2') ?? 80;
-        const speedBonus = equipment?.getStatBonus?.('speed') ?? 0;
+        // No hero = no stats. Don't fake numbers; the panel simply doesn't have data to show.
+        const hasHero = !!hero;
+        const health = hasHero ? (hero!.health ?? '') : '';
+        const maxHealth = hasHero ? (hero!.maxHealth ?? '') : '';
+        const defense = hasHero && stats ? (stats.getDefense?.() ?? '') : '';
+        const attack = hasHero && stats ? (stats.getAttack?.() ?? '') : '';
+        const critChance = hasHero && stats ? (stats.getCritChance?.() ?? '') : '';
+        const hand1Range = hasHero && stats ? (stats.getWeaponRange?.('hand1') ?? '') : '';
+        const hand2Range = hasHero && stats ? (stats.getWeaponRange?.('hand2') ?? '') : '';
+        const speedBonus = hasHero && equipment ? (equipment.getStatBonus?.('speed') ?? '') : '';
 
         // Selected item stats
         const item = ui.selectedItem as EquipmentItem | null;
@@ -50,6 +51,7 @@ class EquipmentUIRenderer {
                     </div>
                     <div class="equip-stats-panel">
                         <div class="equip-item-name">Knight</div>
+                        ${hasHero ? `
                         <div class="stat-row"><span class="stat-icon">🛡️</span> HP <span class="stat-bar health"></span><span class="stat-value">${health}/${maxHealth}</span></div>
                         <div class="stat-row"><span class="stat-icon">⚔️</span> Armor <span class="stat-bar armor"></span><span class="stat-value">${defense}</span></div>
                         <div class="stat-row"><span class="stat-icon">🗡️</span> Attack <span class="stat-bar attack"></span><span class="stat-value">${attack}</span></div>
@@ -59,6 +61,7 @@ class EquipmentUIRenderer {
                             <div class="mini-stat"><span class="stat-icon">💥</span> CRIT <span>${critChance}%</span></div>
                             <div class="mini-stat"><span class="stat-icon">🏹</span> RNG <span>${hand1Range}/${hand2Range}</span></div>
                         </div>
+                        ` : '<div class="stat-row" style="color:#666;">No knight</div>'}
                     </div>
                 </div>
 
@@ -370,11 +373,11 @@ class EquipmentUIRenderer {
         return `<div class="stats-grid" style="display:grid; grid-template-columns:${gridCols}; gap:4px; width:100%; justify-items:center;">
             ${relevantStats
                 .map((stat) => {
-                    const value = stats[stat.key] ?? 0;
+                    const value = stats[stat.key];
                     const iconPath = AssetLoader?.getImagePath?.(stat.iconId) || '';
-                    const prefix = value > 0 ? '+' : '';
-                    // Format value: show 1 decimal for decimals, integer otherwise
-                    const displayVal = Number.isInteger(value) ? value : value.toFixed(1);
+                    // No fallback: if value missing, show blank (game state is wrong)
+                    const prefix = value != null && value > 0 ? '+' : '';
+                    const displayVal = value != null ? (Number.isInteger(value) ? value : value.toFixed(1)) : '';
                     return `
                     <div class="summary-stat" title="${stat.label}" style="display:flex; flex-direction:column; align-items:center; gap:0px; min-width:0; width:100%;">
                         <img class="stat-icon-img" src="${iconPath}" alt="${stat.label}" style="width:24px;height:24px;object-fit:contain; margin-bottom:2px;">

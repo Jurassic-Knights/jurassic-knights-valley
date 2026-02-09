@@ -509,7 +509,7 @@ export async function loadGlobalAssetLookup(): Promise<void> {
             const data = await response.json();
 
             // Helper to process an item for lookup key and source map
-            const processItem = (item: any) => {
+            const processItem = (item: Record<string, unknown>) => {
                 // 1. Build Lookup
                 const imgPath = item.files?.clean || item.files?.original;
                 if (imgPath) {
@@ -553,7 +553,7 @@ export async function loadGlobalAssetLookup(): Promise<void> {
                     // Simplified: just check if we can parse it easily
                     let ingredients: string[] = [];
                     if (Array.isArray(item.recipe)) {
-                        ingredients = item.recipe.map((r: any) => r.item);
+                        ingredients = (item.recipe as Array<{ item: string }>).map((r) => r.item);
                     } else if (typeof item.recipe === 'object') {
                         ingredients = Object.keys(item.recipe);
                     }

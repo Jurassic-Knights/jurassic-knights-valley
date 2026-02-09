@@ -14,7 +14,7 @@ trigger: always_on
 
 ### Changelog
 - **v1.2 (2026-01-24)**: Added **CRITICAL** hot-reload rule - NEVER restart server to fix problems.
-- **v1.1 (2026-01-08)**: Added `EntityTypes` constants. All registries now embedded in AssetLoader.js.
+- **v1.1 (2026-01-08)**: Added `EntityTypes` constants. All registries now embedded in AssetLoader.ts.
 - **v1.0 (2026-01-04)**: Initial principles.
 
 ## 0. CRITICAL: Hot-Reload Development
@@ -77,13 +77,13 @@ Each system will be graded on:
 # Asset Creation Workflow
 
 All assets use ID-based linking for non-destructive workflows.
-All registries are **embedded** in [src/core/AssetLoader.js](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/core/AssetLoader.js:0:0-0:0).
+All registries are **embedded** in `src/core/AssetLoader.ts`.
 
 ## Before Creating an Asset
 
-1. Check [documents/style_guide.md](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/documents/style_guide.md:0:0-0:0) for art direction
-2. Check [documents/technical_guidelines.md](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/documents/technical_guidelines.md:0:0-0:0) for ID naming
-3. Check existing registry in [AssetLoader.js](cci:7://file:///c:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/core/AssetLoader.js:0:0-0:0) to avoid duplicate IDs
+1. Check `documents/design/art_guide.md` for art direction (`documents/design/lore_guide.md`, `documents/design/sound_guide.md` for copy/audio)
+2. Check `documents/design/technical_guidelines.md` for ID naming
+3. Check existing registry in `src/core/AssetLoader.ts` to avoid duplicate IDs
 
 ## Creating an Image Asset
 
@@ -92,9 +92,9 @@ All registries are **embedded** in [src/core/AssetLoader.js](cci:7://file:///c:/
 2. Save to appropriate folder in `assets/images/` with `_original` suffix
 3. Review in Asset Dashboard → Approve → becomes `_approved_original.png`
 4. Run Photoshop script → Creates `_clean.png` (transparent, 10px padding)
-5. Add entry to `src/core/AssetLoader.js` in `registries.images.assets`:
+5. Add entry to `src/core/AssetLoader.ts` in `registries.images.assets`:
 
-```javascript
+```typescript
 "asset_id_here": { "path": "images/category/filename_clean.png" }
 ```
 
@@ -103,9 +103,9 @@ All registries are **embedded** in [src/core/AssetLoader.js](cci:7://file:///c:/
 // turbo
 1. Create/acquire the audio file
 2. Save to appropriate folder in `assets/audio/`
-3. Add entry to `src/core/AssetLoader.js` in `registries.audio.assets`:
+3. Add entry to `src/core/AssetLoader.ts` in `registries.audio.assets`:
 
-```javascript
+```typescript
 "sfx_sound_id": { "path": "audio/category/filename.wav", "volume": 0.7 }
 ```
 

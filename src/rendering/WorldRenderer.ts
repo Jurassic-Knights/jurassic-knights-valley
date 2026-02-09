@@ -101,7 +101,7 @@ class WorldRenderer {
         if (!this.game) return;
 
         // Hook into GameRenderer timing if available
-        const timing = (GameRenderer as any)?._renderTiming;
+        const timing = (GameRenderer as { _renderTiming?: Record<string, number> })?._renderTiming;
         let t0;
 
         // 1. Water / Background
@@ -389,7 +389,7 @@ class WorldRenderer {
 
         const centerX = home.worldX + home.width / 2;
         const centerY = home.worldY + home.height / 2;
-        const radius = getConfig().Interaction?.REST_AREA_RADIUS ?? 900;
+        const radius = getConfig().Interaction.REST_AREA_RADIUS;
 
         // Outer glow
         ctx.beginPath();

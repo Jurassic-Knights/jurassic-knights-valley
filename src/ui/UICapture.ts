@@ -5,19 +5,9 @@
  * Only loaded in development/debug mode.
  */
 
+import html2canvas from 'html2canvas';
 import { Logger } from '@core/Logger';
 import { DOMUtils } from '@core/DOMUtils';
-
-// Unmapped modules - need manual import
-// Local type definition for html2canvas
-interface Html2CanvasOptions {
-    backgroundColor: string | null;
-    scale: number;
-    useCORS: boolean;
-    ignoreElements: (element: HTMLElement) => boolean;
-}
-
-declare function html2canvas(element: HTMLElement, options?: Partial<Html2CanvasOptions>): Promise<HTMLCanvasElement>;
 
 const UICapture = {
     /**
@@ -47,7 +37,7 @@ const UICapture = {
                 backgroundColor: null,
                 scale: 1,
                 useCORS: true,
-                ignoreElements: (element: HTMLElement) => {
+                ignoreElements: (element) => {
                     if (element.tagName === 'CANVAS') return true;
                     if (element.tagName === 'IMG' || element.tagName === 'VIDEO') return true;
                     return false;
@@ -71,8 +61,6 @@ const UICapture = {
      * Batch captures all major UI zones as separate assets.
      */
     async captureAllZones() {
-        if (typeof html2canvas === 'undefined') return alert('html2canvas missing');
-
         const wasActive = document.body.classList.contains('ui-capture-mode');
         if (!wasActive) this.toggleMode();
 

@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_base_grass_grasslands_02_original.png",
-        "clean": "assets/images/ground/ground_base_grass_grasslands_02_original.png"
+        "original": "assets/images/ground/grasslands/base/ground_base_grass_grasslands_02_original.png",
+        "clean": "assets/images/ground/grasslands/base/ground_base_grass_grasslands_02_original.png"
     },
     "type": "ground_texture",
     "biome": "grasslands",

@@ -33,6 +33,8 @@ import { PropConfig } from '@data/PropConfig';
 
 class SpawnManagerService {
     private game: IGame | null = null;
+    private _islandManager: IIslandManager | null = null;
+    private _gameRenderer: typeof GameRenderer | null = null;
     private merchants: Merchant[] = [];
     private propSpawner: PropSpawner | null = null;
     private resourceSpawner: ResourceSpawner | null = null;
@@ -47,11 +49,21 @@ class SpawnManagerService {
         return this.game;
     }
 
+    public getIslandManager(): IIslandManager | null {
+        return this._islandManager;
+    }
+
+    public getGameRenderer(): typeof GameRenderer | null {
+        return this._gameRenderer;
+    }
+
     /**
      * Initialize with game reference
      */
     init(game: IGame): void {
         this.game = game;
+        this._islandManager = game.getSystem<IIslandManager>('IslandManager') ?? Registry.get<IIslandManager>('IslandManager') ?? null;
+        this._gameRenderer = game.getSystem<typeof GameRenderer>('GameRenderer') ?? (Registry.get('GameRenderer') as typeof GameRenderer) ?? null;
 
         // Initialize sub-spawners
         this.propSpawner = new PropSpawner(this);
@@ -113,7 +125,7 @@ class SpawnManagerService {
 
         try {
             let spawnX: number, spawnY: number;
-            const islandManager = Registry.get<IIslandManager>('IslandManager');
+            const islandManager = this._islandManager;
 
             if (islandManager) {
                 const spawn = islandManager.getHeroSpawnPosition();
@@ -121,11 +133,14 @@ class SpawnManagerService {
                 spawnY = spawn.y;
             } else {
                 Logger.warn('[SpawnManager] IslandManager not found, using fallback spawn');
-                const gameRenderer = Registry.get('GameRenderer') as typeof GameRenderer;
-                const w = gameRenderer ? gameRenderer.worldWidth : 2000;
-                const h = gameRenderer ? gameRenderer.worldHeight : 2000;
-                spawnX = w / 2;
-                spawnY = h / 2;
+                const gameRenderer = this._gameRenderer;
+                if (gameRenderer) {
+                    spawnX = gameRenderer.worldWidth / 2;
+                    spawnY = gameRenderer.worldHeight / 2;
+                } else {
+                    spawnX = GameConstants.World.DEFAULT_SPAWN_X;
+                    spawnY = GameConstants.World.DEFAULT_SPAWN_Y;
+                }
             }
 
             // Check if Hero class is available
@@ -137,7 +152,7 @@ class SpawnManagerService {
             const hero = new Hero({ x: spawnX, y: spawnY });
             this.game.hero = hero;
 
-            const gameRenderer = Registry.get('GameRenderer') as typeof GameRenderer;
+            const gameRenderer = this._gameRenderer;
             if (gameRenderer && typeof gameRenderer.setHero === 'function') {
                 gameRenderer.setHero(hero);
             }
@@ -163,7 +178,7 @@ class SpawnManagerService {
     private spawnMerchants(): void {
         this.merchants = [];
 
-        const islandManager = Registry.get<IIslandManager>('IslandManager');
+        const islandManager = this._islandManager;
         if (!islandManager) return;
 
         const bridges = islandManager.getBridges();
@@ -219,7 +234,7 @@ class SpawnManagerService {
         for (const merchant of this.merchants) {
             if (merchant.isInRange(hero)) {
                 const [gridX, gridY] = merchant.islandId.split('_').map(Number);
-                const islandManager = Registry.get<IIslandManager>('IslandManager');
+                const islandManager = this._islandManager;
                 const island = islandManager ? islandManager.getIslandByGrid(gridX, gridY) : null;
                 if (island && island.unlocked) {
                     return merchant;

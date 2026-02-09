@@ -16,6 +16,7 @@ import { Entity } from '@core/Entity';
 import { Logger } from '@core/Logger';
 import { EntityConfig as EntityConfigValue } from '@config/EntityConfig';
 import { EntityRegistry } from '@entities/EntityLoader';
+import { GameConstants } from '@data/GameConstants';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EntityTypes } from '@config/EntityTypes';
 import { SpeciesScaleConfig } from '@config/SpeciesScaleConfig';
@@ -155,17 +156,18 @@ class Enemy extends Entity {
                 xpReward: 3.0,
                 lootDrops: 3.0
             };
-            finalConfig.health = (Number(finalConfig.health) || 50) * mult.health;
+            const eliteFallback = GameConstants.Enemy.ELITE_FALLBACK_HEALTH;
+            finalConfig.health = (Number(finalConfig.health) || eliteFallback) * mult.health;
             finalConfig.maxHealth =
                 (Number(finalConfig.maxHealth) || finalConfig.health) * mult.health;
-            finalConfig.damage = (Number(finalConfig.damage) || 5) * mult.damage;
-            finalConfig.xpReward = (Number(finalConfig.xpReward) || 10) * mult.xpReward;
+            finalConfig.damage = (Number(finalConfig.damage) || GameConstants.Enemy.DEFAULT_DAMAGE) * mult.damage;
+            finalConfig.xpReward = (Number(finalConfig.xpReward) || GameConstants.Enemy.DEFAULT_XP_REWARD) * mult.xpReward;
         }
 
         // Apply biome difficulty multipliers if biome specified
-        if (config.biomeId && (BiomeConfig.types as Record<string, any>)?.[config.biomeId]) {
-            const biome = (BiomeConfig.types as Record<string, any>)[config.biomeId];
-            const diffMult = (BiomeConfig.difficultyMultipliers as Record<string, any>)?.[biome.difficulty] || {
+        if (config.biomeId && (BiomeConfig.types as Record<string, { difficulty?: string; [key: string]: unknown }>)?.[config.biomeId]) {
+            const biome = (BiomeConfig.types as Record<string, { difficulty?: string; [key: string]: unknown }>)[config.biomeId];
+            const diffMult = (BiomeConfig.difficultyMultipliers as Record<string, { damage?: number; [key: string]: unknown }>)?.[biome.difficulty] || {
                 health: 1,
                 damage: 1,
                 xp: 1,
@@ -195,13 +197,14 @@ class Enemy extends Entity {
         // Call parent constructor
         // Get size from SpeciesScaleConfig (runtime lookup by species/bodyType)
         const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';
+        const defaultSize = GameConstants.Enemy.DEFAULT_SIZE;
         const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss) || {
-            width: 192,
-            height: 192
+            width: defaultSize,
+            height: defaultSize
         };
 
         // Debug
-        const scaleValue = (sizeInfo as any).scale;
+        const scaleValue = (sizeInfo as { scale?: number }).scale;
         if (scaleValue && scaleValue !== 1.0) {
             Logger.info(
                 `[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`
@@ -238,33 +241,33 @@ class Enemy extends Entity {
         // Patrol Area (spawn location + wander radius) - read from GameConfig.AI
         this.spawnX = config.x || 0;
         this.spawnY = config.y || 0;
+        const Biome = GameConstants.Biome;
         this.patrolRadius =
-            finalConfig.patrolRadius ||
-            (getConfig().AI)?.PATROL_AREA_RADIUS ||
-            BiomeConfig.patrolDefaults?.areaRadius ||
-            300;
+            finalConfig.patrolRadius ??
+            getConfig().AI?.PATROL_AREA_RADIUS ??
+            BiomeConfig.patrolDefaults?.areaRadius ??
+            Biome.PATROL_AREA_RADIUS;
         this.leashDistance =
-            finalConfig.leashDistance ||
-            (getConfig().Biome)?.LEASH_DISTANCE ||
-            BiomeConfig.patrolDefaults?.leashDistance ||
-            500;
+            finalConfig.leashDistance ??
+            getConfig().Biome?.LEASH_DISTANCE ??
+            BiomeConfig.patrolDefaults?.leashDistance ??
+            Biome.LEASH_DISTANCE;
         this.aggroRange =
-            finalConfig.aggroRange ||
-            (getConfig().Biome)?.AGGRO_RANGE ||
-            BiomeConfig.patrolDefaults?.aggroRange ||
-            200;
+            finalConfig.aggroRange ??
+            getConfig().Biome?.AGGRO_RANGE ??
+            BiomeConfig.patrolDefaults?.aggroRange ??
+            Biome.AGGRO_RANGE;
 
-        // Combat Stats
-        this.health = Number(finalConfig.health) || 30;
+        const E = GameConstants.Enemy;
+        this.health = Number(finalConfig.health) || E.DEFAULT_HEALTH;
         this.maxHealth = Number(finalConfig.maxHealth) || this.health;
-        this.damage = Number(finalConfig.damage) || 5;
+        this.damage = Number(finalConfig.damage) || E.DEFAULT_DAMAGE;
         this.attackRate = Number(finalConfig.attackRate) || 1;
-        this.attackRange = Number(finalConfig.attackRange) || 100;
+        this.attackRange = Number(finalConfig.attackRange) || E.DEFAULT_ATTACK_RANGE;
         this.attackType = finalConfig.attackType || 'melee';
-        this.speed = Number(finalConfig.speed) || 80;
+        this.speed = Number(finalConfig.speed) || E.DEFAULT_SPEED;
 
-        // Rewards
-        this.xpReward = finalConfig.xpReward || 10;
+        this.xpReward = finalConfig.xpReward ?? E.DEFAULT_XP_REWARD;
         this.lootTableId = finalConfig.lootTableId || 'common_enemy';
         this.lootTable = finalConfig.lootTable || null;
         this.lootMultiplier = isElite
@@ -282,8 +285,7 @@ class Enemy extends Entity {
         this.target = null;
         this.attackCooldown = 0;
 
-        // Respawn
-        this.respawnTime = finalConfig.respawnTime || 60;
+        this.respawnTime = finalConfig.respawnTime ?? E.DEFAULT_RESPAWN_TIME;
         this.respawnTimer = 0;
         this.isDead = false;
 
@@ -291,12 +293,13 @@ class Enemy extends Entity {
         this.facingRight = true;
         this.frameIndex = 0;
         this.frameTimer = 0;
-        this.frameInterval = finalConfig.frameInterval || 200;
+        this.frameInterval = finalConfig.frameInterval ?? E.FRAME_INTERVAL;
 
-        // Wander behavior
         this.wanderTarget = null;
         this.wanderTimer = 0;
-        this.wanderInterval = 3000 + Math.random() * 2000;
+        const wMin = GameConstants.Enemy.WANDER_INTERVAL_MIN;
+        const wVar = GameConstants.Enemy.WANDER_INTERVAL_VARIANCE;
+        this.wanderInterval = wMin + Math.random() * wVar;
 
         // Sprite Loading
         this.spriteId = finalConfig.spriteId || null;

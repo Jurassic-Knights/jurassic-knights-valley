@@ -15,7 +15,7 @@ import { DOMUtils } from '@core/DOMUtils';
 import type { IViewport, IGame } from '../types/core';
 
 class RoadRenderer {
-    game: any = null;
+    game: IGame | null = null;
     roadTile: HTMLImageElement | null = null;
     tileSize: number = 128;
     tileLoaded: boolean = false;
@@ -110,7 +110,7 @@ class RoadRenderer {
     /**
      * Render a single spline road with tiled texture
      */
-    renderSplineRoad(ctx: CanvasRenderingContext2D, road: any, viewport: IViewport) {
+    renderSplineRoad(ctx: CanvasRenderingContext2D, road: { points: Array<{ x: number; y: number }>; width?: number }, viewport: IViewport) {
         if (!road.points || road.points.length < 4) return;
 
         // Get the approximate length of the spline

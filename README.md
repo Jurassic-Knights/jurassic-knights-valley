@@ -12,6 +12,7 @@ Top-down action RPG where players explore prehistoric biomes, fight dinosaurs, a
 
 - **Build**: Vite 7, TypeScript 5.9, ESLint 9
 - **Runtime**: Browser with Canvas 2D + Web Audio API support
+- **Optional**: html2canvas (npm) for UI capture/debug; Pixi.js for map editor tool
 - **Dev Tools**: Node 20+, npm
 
 ## Local Development Setup
@@ -43,7 +44,7 @@ npm run test:coverage  # With coverage
 |----------|------------|
 | Build | Vite 7 |
 | Language | TypeScript (ES Modules) |
-| Rendering | HTML5 Canvas 2D |
+| Rendering | HTML5 Canvas 2D (main game); Pixi.js (map editor tool only) |
 | Audio | Web Audio API (Procedural) |
 | Testing | Vitest |
 | Linting | ESLint 9 + Prettier |
@@ -67,7 +68,7 @@ Registry (DI) ──► Systems (Logic) ──► EventBus (Pub/Sub)
 | `src/core/` | Engine core (Registry, EventBus, Logger, Game) |
 | `src/systems/` | Game systems (Combat, Spawning, AI, Weather) |
 | `src/audio/` | Procedural SFX (50 modules, tier-based) |
-| `src/entities/` | JSON entity definitions (~650 entities) |
+| `src/entities/` | Data-driven entity definitions (TypeScript modules, ~650 entities) |
 | `src/components/` | ECS components (Health, Stats, Combat, AI) |
 | `src/rendering/` | Canvas renderers (Hero, Dinosaur, World) |
 | `src/vfx/` | Visual effects (Particles, Lighting, Fog) |
@@ -128,7 +129,7 @@ This project uses AI-assisted development via `.agent/`:
 
 ### Adding a New Entity
 
-1. Add JSON definition to `src/entities/[category]/`
+1. Add entity definition (TypeScript module or JSON as applicable) under `src/entities/[category]/`
 2. Register in `src/entities/manifest.ts`
 3. Add asset entry to `src/core/AssetLoader.ts`
 
@@ -160,7 +161,7 @@ Use sparingly—only when ESLint is failing on TypeScript syntax during migratio
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
-Follow the Master Architecture Principles in `.agent/rules/coding-guide.md`:
+Follow the Master Architecture Principles in the **coding-guide** skill (`.cursor/skills/coding-guide/SKILL.md`):
 - Composition over Inheritance
 - Event-driven communication via EventBus
 - Data-driven design (no magic numbers)

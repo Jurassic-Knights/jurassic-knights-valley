@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_damage_scorched_badlands_02_original.png",
-        "clean": "assets/images/ground/ground_damage_scorched_badlands_02_original.png"
+        "original": "assets/images/ground/badlands/damage/ground_damage_scorched_badlands_02_original.png",
+        "clean": "assets/images/ground/badlands/damage/ground_damage_scorched_badlands_02_original.png"
     },
     "type": "ground_texture",
     "biome": "badlands",

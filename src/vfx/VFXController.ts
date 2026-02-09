@@ -6,6 +6,8 @@
  */
 
 import { Logger } from '@core/Logger';
+import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import { ParticleSystem } from './ParticleSystem';
 import { Registry } from '@core/Registry';
 import { ProjectileVFX } from './ProjectileVFX';
@@ -51,8 +53,20 @@ class VFXSystem {
             Logger.error('[VFXSystem] ParticleSystem not found! Check load order.');
         }
 
-        // Subscribe to game state for implicit event detection
-        // const gameState = this.game ? this.game.getSystem('GameState') : null;
+        if (EventBus && GameConstants) {
+            EventBus.on(GameConstants.Events.VFX_PLAY_FOREGROUND, (data: { x: number; y: number; options?: ParticleOptions }) => {
+                if (data && typeof data.x === 'number' && typeof data.y === 'number') {
+                    this.playForeground(data.x, data.y, data.options);
+                }
+            });
+            EventBus.on(GameConstants.Events.HERO_LEVEL_UP, (data: { hero?: { x: number; y: number } }) => {
+                const hero = data?.hero;
+                if (hero && typeof hero.x === 'number' && typeof hero.y === 'number') {
+                    const opts = VFXConfig.TEMPLATES?.LEVEL_UP_FX || { type: 'burst', color: '#FFD700', count: 30, lifetime: 1000 };
+                    this.playForeground(hero.x, hero.y, opts);
+                }
+            });
+        }
 
         this.initialized = true;
         Logger.info('[VFXSystem] Initialized');

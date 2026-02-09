@@ -16,18 +16,24 @@ import { EnemyAI } from './behaviors/enemies/EnemyAI';
 import { BossAI } from './behaviors/bosses/BossAI';
 import { NPCAI } from './behaviors/npcs/NPCAI';
 import { Registry } from '@core/Registry';
+import type { IGame, IEntity } from '../types/core';
 
-// Unmapped modules - need manual import
+/** Behavior module with updateState (and optionally triggerPackAggro) */
+type AIBehavior = {
+    updateState(entity: IEntity, dt: number): void;
+    updateState?(entity: IEntity, hero: IEntity | null, dt: number): void;
+    triggerPackAggro?(entity: IEntity, target: IEntity | null): void;
+};
 
 class AISystem {
-    private game: any = null;
-    private behaviors: Record<string, any> = {};
+    private game: IGame | null = null;
+    private behaviors: Record<string, AIBehavior> = {};
 
     constructor() {
         Logger.info('[AISystem] Constructed');
     }
 
-    init(game: any): void {
+    init(game: IGame): void {
         this.game = game;
         this.registerDefaultBehaviors();
         Logger.info('[AISystem] Initialized');
@@ -48,7 +54,7 @@ class AISystem {
      * @param {string} type - AI type identifier
      * @param {object} handler - Behavior module with updateState(entity, dt) method
      */
-    registerBehavior(type: string, handler: any) {
+    registerBehavior(type: string, handler: AIBehavior) {
         this.behaviors[type] = handler;
         Logger.info(`[AISystem] Registered behavior: ${type}`);
     }
@@ -83,14 +89,18 @@ class AISystem {
     /**
      * Update a single entity's AI
      */
-    updateEntity(entity: any, hero: any, dt: number, forceType: string | null = null) {
+    updateEntity(entity: IEntity, hero: IEntity | null, dt: number, forceType: string | null = null) {
         // Determine AI type: explicit > entityType-based > default
         const aiType = forceType || entity.aiType || this.getDefaultAIType(entity);
         const behavior = this.behaviors[aiType];
 
         if (behavior && typeof behavior.updateState === 'function') {
             // Some behaviors expect (entity, hero, dt), others just (entity, dt)
-            behavior.updateState(entity, dt);
+            if (behavior.updateState.length >= 3) {
+                (behavior as { updateState(e: IEntity, h: IEntity | null, d: number): void }).updateState(entity, hero, dt);
+            } else {
+                behavior.updateState(entity, dt);
+            }
         } else if (EnemyAI) {
             // Fallback to generic enemy AI (takes entity, dt)
             EnemyAI.updateState(entity, dt);
@@ -100,7 +110,7 @@ class AISystem {
     /**
      * Get default AI type based on entity properties
      */
-    getDefaultAIType(entity: any) {
+    getDefaultAIType(entity: IEntity & { isBoss?: boolean }) {
         if (entity.isBoss) return 'boss';
         if (entity.entityType?.includes('enemy')) return 'enemy';
         if (entity.entityType?.includes('npc')) return 'npc';
@@ -117,7 +127,7 @@ class AISystem {
         }
     }
 
-    onEntityDamaged(data: any) {
+    onEntityDamaged(data: { entity: IEntity & { state?: string; target?: IEntity | null; packAggro?: boolean; groupId?: string | null }; source?: IEntity }) {
         const { entity, source } = data;
         if (!entity) return;
 
@@ -133,7 +143,7 @@ class AISystem {
         }
     }
 
-    onEntityDied(data: any) {
+    onEntityDied(data: { entity: IEntity & { xpReward?: number }; [key: string]: unknown }) {
         const { entity } = data;
         if (!entity) return;
 

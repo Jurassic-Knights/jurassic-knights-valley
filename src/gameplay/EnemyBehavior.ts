@@ -22,27 +22,37 @@ import { EntityTypes } from '@config/EntityTypes';
 import { spawnManager as SpawnManager } from '@systems/SpawnManager';
 import { pathfindingSystem as PathfindingSystem } from '@systems/PathfindingSystem';
 import { GameInstance } from '@core/Game';
+import type { IEntity } from '../types/core';
 
 import { MathUtils } from '@core/MathUtils';
 
 import { Registry } from '@core/Registry';
 
+let _cachedProgressBarRenderer: { draw: (ctx: CanvasRenderingContext2D, opts: unknown) => void } | null = null;
+function getProgressBarRenderer() {
+    if (_cachedProgressBarRenderer == null) _cachedProgressBarRenderer = Registry.get('ProgressBarRenderer');
+    return _cachedProgressBarRenderer;
+}
+
 Enemy.prototype.moveAlongPath = function (this: Enemy, targetX: number, targetY: number, speed: number, dt: number) {
     const distToTarget = MathUtils.distance(this.x, this.y, targetX, targetY);
 
-    if (distToTarget < 20) {
+    const arrivalDist = GameConstants.AI.PATH_ARRIVAL_DIST;
+    if (distToTarget < arrivalDist) {
         this.currentPath = [];
         this.pathIndex = 0;
         return true;
     }
 
     this.pathRecalcTimer += dt;
+    const recalcMs = GameConstants.AI.PATH_RECALC_INTERVAL_MS;
+    const targetThresh = GameConstants.AI.PATH_TARGET_THRESHOLD;
     const needsNewPath =
         this.currentPath.length === 0 ||
         this.pathIndex >= this.currentPath.length ||
-        this.pathRecalcTimer > 1000 ||
-        (this.pathTarget && Math.abs(this.pathTarget.x - targetX) > 100) ||
-        Math.abs(this.pathTarget.y - targetY) > 100;
+        this.pathRecalcTimer > recalcMs ||
+        (this.pathTarget && Math.abs(this.pathTarget.x - targetX) > targetThresh) ||
+        Math.abs(this.pathTarget.y - targetY) > targetThresh;
 
     if (needsNewPath && PathfindingSystem) {
         this.currentPath = PathfindingSystem.findPath(this.x, this.y, targetX, targetY);
@@ -53,7 +63,8 @@ Enemy.prototype.moveAlongPath = function (this: Enemy, targetX: number, targetY:
         if (this.currentPath.length > 1) {
             const first = this.currentPath[0];
             const distToFirst = MathUtils.distance(this.x, this.y, first.x, first.y);
-            if (distToFirst < 50) {
+            const leadDist = GameConstants.AI.PATH_LEAD_DIST;
+            if (distToFirst < leadDist) {
                 this.pathIndex = 1;
             }
         }
@@ -72,7 +83,8 @@ Enemy.prototype.moveAlongPath = function (this: Enemy, targetX: number, targetY:
     const dy = waypoint.y - this.y;
     const dist = MathUtils.distance(this.x, this.y, waypoint.x, waypoint.y);
 
-    if (dist < 30) {
+    const waypointDist = GameConstants.AI.PATH_WAYPOINT_DIST;
+    if (dist < waypointDist) {
         this.pathIndex++;
         if (this.pathIndex >= this.currentPath.length) {
             this.currentPath = [];
@@ -81,7 +93,8 @@ Enemy.prototype.moveAlongPath = function (this: Enemy, targetX: number, targetY:
         return this.moveAlongPath(targetX, targetY, speed, dt);
     }
 
-    const moveSpeed = speed * (dt / 1000);
+    const msPerSec = GameConstants.Timing.MS_PER_SECOND;
+    const moveSpeed = speed * (dt / msPerSec);
     const moveX = (dx / dist) * moveSpeed;
     const moveY = (dy / dist) * moveSpeed;
 
@@ -100,9 +113,11 @@ Enemy.prototype.moveDirectly = function (this: Enemy, targetX: number, targetY: 
     const dy = targetY - this.y;
     const dist = MathUtils.distance(this.x, this.y, targetX, targetY);
 
-    if (dist < 10) return true;
+    const directArrival = GameConstants.AI.MOVE_DIRECT_ARRIVAL;
+    if (dist < directArrival) return true;
 
-    const moveSpeed = speed * (dt / 1000);
+    const msPerSec = GameConstants.Timing.MS_PER_SECOND;
+    const moveSpeed = speed * (dt / msPerSec);
     const newX = this.x + (dx / dist) * moveSpeed;
     const newY = this.y + (dy / dist) * moveSpeed;
 
@@ -126,7 +141,7 @@ Enemy.prototype.updateWander = function (this: Enemy, dt: number) {
         const dist = MathUtils.distance(this.x, this.y, hero.x, hero.y);
 
         if (dist <= this.aggroRange) {
-            this.target = hero as any;
+            this.target = hero;
             this.state = 'chase';
 
             if (AudioManager) {
@@ -143,15 +158,15 @@ Enemy.prototype.updateWander = function (this: Enemy, dt: number) {
 
     if (!this.wanderTarget || this.wanderTimer >= this.wanderInterval) {
         const angle = Math.random() * Math.PI * 2;
-        const radius = this.patrolRadius || getConfig().AI?.PATROL_AREA_RADIUS || 400;
+        const radius = this.patrolRadius ?? getConfig().AI?.PATROL_AREA_RADIUS ?? GameConstants.AI.PATROL_AREA_RADIUS;
         const dist = Math.random() * radius * 0.5;
         this.wanderTarget = {
             x: this.spawnX + Math.cos(angle) * dist,
             y: this.spawnY + Math.sin(angle) * dist
         };
         this.wanderTimer = 0;
-        const minTime = getConfig().AI?.WANDER_TIMER_MIN || 2000;
-        const maxTime = getConfig().AI?.WANDER_TIMER_MAX || 5000;
+        const minTime = getConfig().AI?.WANDER_TIMER_MIN ?? GameConstants.AI.WANDER_TIMER_MIN;
+        const maxTime = getConfig().AI?.WANDER_TIMER_MAX ?? GameConstants.AI.WANDER_TIMER_MAX;
         this.wanderInterval = minTime + Math.random() * (maxTime - minTime);
     }
 
@@ -228,8 +243,9 @@ Enemy.prototype.performAttack = function (this: Enemy) {
         AudioManager.playSFX(attackSfx);
     }
 
-    if ((this.target as any).takeDamage) {
-        (this.target as any).takeDamage(this.damage, this);
+    const target = this.target as IEntity & { takeDamage?(amount: number, source?: IEntity): void };
+    if (target?.takeDamage) {
+        target.takeDamage(this.damage, this);
     }
 };
 
@@ -241,7 +257,8 @@ Enemy.prototype.updateReturning = function (this: Enemy, dt: number) {
     const dy = this.spawnY - this.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    if (dist < 20) {
+    const returnArrival = GameConstants.AI.PATH_ARRIVAL_DIST;
+    if (dist < returnArrival) {
         this.state = 'wander';
         this.target = null;
         this.wanderTarget = null;
@@ -437,8 +454,7 @@ Enemy.prototype.renderHealthBar = function (ctx) {
     const x = this.x - width / 2;
     const y = this.y - this.height / 2 - yOffset;
 
-    // Use ProgressBarRenderer if available
-    const ProgressBarRenderer = Registry.get('ProgressBarRenderer');
+    const ProgressBarRenderer = getProgressBarRenderer();
     if (ProgressBarRenderer) {
         ProgressBarRenderer.draw(ctx, {
             x: x,

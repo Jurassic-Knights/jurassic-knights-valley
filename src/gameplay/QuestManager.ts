@@ -7,6 +7,7 @@
 // Globals: Logger, UIManager, VFXController, AudioManager, Registry are declared in global.d.ts
 
 import { Logger } from '@core/Logger';
+import { GameConstants } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 
 interface QuestConfig {
@@ -156,7 +157,7 @@ class QuestManagerService {
         setTimeout(() => {
             this.questIndex++;
             this.startQuest(this.quests[this.questIndex]);
-        }, 2000);
+        }, GameConstants.Quest.NEXT_QUEST_DELAY_MS);
     }
 
     /**

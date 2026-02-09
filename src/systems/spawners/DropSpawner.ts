@@ -9,9 +9,11 @@
 
 import { Logger } from '@core/Logger';
 import { entityManager } from '@core/EntityManager';
+import { GameConstants } from '@data/GameConstants';
 import { IslandManager } from '../../world/IslandManager';
 import { DroppedItem } from '../../gameplay/DroppedItem';
 import { Registry } from '@core/Registry';
+import { getConfig } from '@data/GameConstants';
 import type { SpawnManagerService } from '../SpawnManager';
 
 interface CraftedItemOptions {
@@ -35,7 +37,9 @@ class DropSpawner {
         if (!DroppedItem) return;
 
         const angle = Math.random() * Math.PI * 2;
-        const distance = 40 + Math.random() * 40;
+        const base = GameConstants.Spawning.DROP_SCATTER_BASE;
+        const variance = GameConstants.Spawning.DROP_SCATTER_VARIANCE;
+        const distance = base + Math.random() * variance;
         const targetX = x + Math.cos(angle) * distance;
         const targetY = y + Math.sin(angle) * distance;
 
@@ -80,7 +84,9 @@ class DropSpawner {
             ty = options.targetY;
         } else {
             const angle = Math.random() * Math.PI * 2;
-            const dist = 150 + Math.random() * 100;
+            const base = getConfig().AI.DROP_SPAWN_DISTANCE;
+            const variance = getConfig().AI.DROP_SPAWN_VARIANCE;
+            const dist = base + Math.random() * variance;
             tx = x + Math.cos(angle) * dist;
             ty = y + Math.sin(angle) * dist;
         }

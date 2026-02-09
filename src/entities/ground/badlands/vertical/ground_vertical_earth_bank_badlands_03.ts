@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_vertical_earth_bank_badlands_03_original.png",
-        "clean": "assets/images/ground/ground_vertical_earth_bank_badlands_03_original.png"
+        "original": "assets/images/ground/badlands/vertical/ground_vertical_earth_bank_badlands_03_original.png",
+        "clean": "assets/images/ground/badlands/vertical/ground_vertical_earth_bank_badlands_03_original.png"
     },
     "type": "ground_texture",
     "biome": "badlands",

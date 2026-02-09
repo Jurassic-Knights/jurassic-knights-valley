@@ -467,9 +467,9 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                     // --- SYNC CHECK: If uploading Original, also update Clean (if exists) ---
                     if (assetId && typeof categoryData !== 'undefined' && categoryData?.files) {
                         // Find asset
-                        let asset: any = null;
+                        let asset: { id: string; [key: string]: unknown } | null = null;
                         for (const list of Object.values(categoryData.files)) {
-                            const found = list.find((i: any) => i.id === assetId);
+                            const found = list.find((i: { id: string }) => i.id === assetId);
                             if (found) { asset = found; break; }
                         }
 

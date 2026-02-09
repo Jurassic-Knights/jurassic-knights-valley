@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_interior_metal_plate_desert_01_original.png",
-        "clean": "assets/images/ground/ground_interior_metal_plate_desert_01_original.png"
+        "original": "assets/images/ground/desert/interior/ground_interior_metal_plate_desert_01_original.png",
+        "clean": "assets/images/ground/desert/interior/ground_interior_metal_plate_desert_01_original.png"
     },
     "type": "ground_texture",
     "biome": "desert",

@@ -1,8 +1,10 @@
 import { MapEditorCore } from '../../../src/tools/map-editor/MapEditorCore';
 import { Logger } from '@core/Logger';
 import { ZoneConfig, ZoneCategories } from '../../../src/data/ZoneConfig';
+import { AssetPaletteView } from './AssetPaletteView';
 
 let editorInstance: MapEditorCore | null = null;
+let paletteInstance: AssetPaletteView | null = null;
 
 export async function showMapEditorView(pushState = true): Promise<void> {
     const mainContent = document.getElementById('mainContent');
@@ -40,35 +42,57 @@ export async function showMapEditorView(pushState = true): Promise<void> {
             const { fetchCategory } = await import('./api');
             return fetchCategory(cat);
         });
+
+        // Initialize Palette
+        paletteInstance = new AssetPaletteView('palette-content', (id, cat) => {
+            if (editorInstance) editorInstance.selectAsset(id, cat);
+        });
+
         // Setup Save Handler done via ActionDelegator now
 
         // --- UI BINDINGS ---
         // Mode Toggle
         const btnObj = document.getElementById('mode-object');
+        const btnGround = document.getElementById('mode-ground');
         const btnZone = document.getElementById('mode-zone');
         const zoneControls = document.getElementById('zone-controls');
 
-        const updateModeUI = (mode: 'object' | 'zone') => {
-            if (mode === 'object') {
-                btnObj?.style.setProperty('background', '#444');
-                btnObj?.style.setProperty('color', 'white');
-                btnZone?.style.setProperty('background', '#2d2d2d');
-                btnZone?.style.setProperty('color', '#888');
-                if (zoneControls) zoneControls.style.display = 'none';
-            } else {
-                btnZone?.style.setProperty('background', '#444');
-                btnZone?.style.setProperty('color', 'white');
-                btnObj?.style.setProperty('background', '#2d2d2d');
-                btnObj?.style.setProperty('color', '#888');
-                if (zoneControls) zoneControls.style.display = 'block';
+        const updateModeUI = (mode: 'object' | 'zone' | 'ground') => {
+            const resetBtn = (btn: HTMLElement | null) => {
+                if (btn) {
+                    btn.style.setProperty('background', '#2d2d2d');
+                    btn.style.setProperty('color', '#888');
+                }
+            };
+            const activeBtn = (btn: HTMLElement | null) => {
+                if (btn) {
+                    btn.style.setProperty('background', '#444');
+                    btn.style.setProperty('color', 'white');
+                }
+            };
+
+            // Reset All
+            resetBtn(btnObj);
+            resetBtn(btnGround);
+            resetBtn(btnZone);
+
+            // Activate Target
+            if (mode === 'object') activeBtn(btnObj);
+            else if (mode === 'ground') activeBtn(btnGround);
+            else if (mode === 'zone') activeBtn(btnZone);
+
+            // Toggle Panels
+            if (zoneControls) {
+                zoneControls.style.display = (mode === 'zone') ? 'block' : 'none';
             }
 
             // Call API
-            const api = (window as any).MapEditorAPI;
-            if (api) api.setMode(mode);
+            if (editorInstance) editorInstance.setMode(mode);
+            if (paletteInstance) paletteInstance.setMode(mode);
         };
 
         btnObj?.addEventListener('click', () => updateModeUI('object'));
+        btnGround?.addEventListener('click', () => updateModeUI('ground'));
         btnZone?.addEventListener('click', () => updateModeUI('zone'));
 
         // Brush Size
@@ -77,8 +101,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
         brushInput?.addEventListener('input', (e) => {
             const val = parseInt((e.target as HTMLInputElement).value);
             if (brushVal) brushVal.innerText = val.toString();
-            const api = (window as any).MapEditorAPI;
-            if (api) api.setBrushSize(val);
+            if (editorInstance) editorInstance.setBrushSize(val);
         });
 
         // Grid Opacity
@@ -87,8 +110,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
         gridInput?.addEventListener('input', (e) => {
             const val = parseInt((e.target as HTMLInputElement).value);
             if (gridVal) gridVal.innerText = `${val}%`;
-            const api = (window as any).MapEditorAPI;
-            if (api && api.setGridOpacity) api.setGridOpacity(val / 100);
+            if (editorInstance) editorInstance.setGridOpacity(val / 100);
         });
 
         // Zone Category Dropdown
@@ -104,8 +126,8 @@ export async function showMapEditorView(pushState = true): Promise<void> {
 
             catSelect.addEventListener('change', (e) => {
                 const val = (e.target as HTMLSelectElement).value;
-                const api = (window as any).MapEditorAPI;
-                if (api) api.setZoneCategory(val);
+                if (editorInstance) editorInstance.setZoneCategory(val as string);
+                if (paletteInstance) paletteInstance.setCategory(val);
             });
         }
 
@@ -115,7 +137,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
             filterContainer.innerHTML = ''; // Clear existing
 
             // 1. Group Zones by Category
-            const zonesByCategory: Record<string, any[]> = {};
+            const zonesByCategory: Record<string, unknown[]> = {};
             Object.values(ZoneConfig).forEach(z => {
                 if (!zonesByCategory[z.category]) zonesByCategory[z.category] = [];
                 zonesByCategory[z.category].push(z);
@@ -170,8 +192,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
                     });
 
                     // Call API to toggle whole category
-                    const api = (window as any).MapEditorAPI;
-                    if (api && api.toggleCategoryVisibility) api.toggleCategoryVisibility(cat, checked);
+                    if (editorInstance) editorInstance.toggleCategoryVisibility(cat as string, checked);
                 });
 
                 groupDiv.appendChild(groupRow);
@@ -179,8 +200,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
                 // Create Children (Zone IDs)
                 zones.forEach(z => {
                     const { row: childRow } = createCheckbox(`zone-${z.id}`, z.name, false, (checked) => {
-                        const api = (window as any).MapEditorAPI;
-                        if (api && api.toggleZoneVisibility) api.toggleZoneVisibility(z.id, checked);
+                        if (editorInstance) editorInstance.toggleZoneVisibility(z.id, checked);
 
                         // If unchecking child, maybe visually uncheck parent? (Optional polish)
                     });

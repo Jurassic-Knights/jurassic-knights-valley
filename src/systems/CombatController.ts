@@ -19,7 +19,7 @@ import type { IGame, IEntity } from '../types/core';
 const EntityManager = entityManager;
 
 class CombatController {
-    game: any = null;
+    game: IGame | null = null;
     _logTimer: number = 0;
 
     constructor() {

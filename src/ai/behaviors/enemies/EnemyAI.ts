@@ -18,8 +18,7 @@ import { EntityTypes } from '../../../config/EntityTypes';
 import { GameInstance } from '../../../core/Game';
 import { Registry } from '../../../core/Registry';
 import { MathUtils } from '../../../core/MathUtils';
-
-// Unmapped modules - need manual import
+import type { IEntity } from '../../../types/core';
 
 const EnemyAI = {
     /**
@@ -27,7 +26,7 @@ const EnemyAI = {
      * @param {Enemy} enemy - The enemy to update
      * @param {number} dt - Delta time in ms
      */
-    updateState(enemy: any, dt: number) {
+    updateState(enemy: IEntity, dt: number) {
         if (!enemy.active || enemy.isDead) return;
 
         switch (enemy.state) {
@@ -50,7 +49,7 @@ const EnemyAI = {
     /**
      * Wander behavior with aggro detection
      */
-    updateWander(enemy: any, dt: number) {
+    updateWander(enemy: IEntity, dt: number) {
         // Check for hero aggro
         const hero = entityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
         if (hero && !hero.isDead && this.canSee(enemy, hero)) {
@@ -74,8 +73,9 @@ const EnemyAI = {
             };
             enemy.wanderTimer = 0;
             // Read wander timers from config for live tuning
-            const wanderMin = (getConfig() as any).AI?.WANDER_TIMER_MIN || 2000;
-            const wanderMax = (getConfig() as any).AI?.WANDER_TIMER_MAX || 5000;
+            const cfg = getConfig() as { AI?: { WANDER_TIMER_MIN?: number; WANDER_TIMER_MAX?: number } };
+            const wanderMin = cfg.AI?.WANDER_TIMER_MIN || 2000;
+            const wanderMax = cfg.AI?.WANDER_TIMER_MAX || 5000;
             enemy.wanderInterval = wanderMin + Math.random() * (wanderMax - wanderMin);
         }
 
@@ -87,7 +87,7 @@ const EnemyAI = {
     /**
      * Chase behavior with leash distance check
      */
-    updateChase(enemy: any, dt: number) {
+    updateChase(enemy: IEntity, dt: number) {
         if (!enemy.target) {
             enemy.state = 'returning';
             return;
@@ -116,7 +116,7 @@ const EnemyAI = {
     /**
      * Attack behavior
      */
-    updateAttack(enemy: any, dt: number) {
+    updateAttack(enemy: IEntity, dt: number) {
         if (!enemy.target) {
             enemy.state = 'wander';
             return;
@@ -140,7 +140,7 @@ const EnemyAI = {
     /**
      * Return to spawn behavior
      */
-    updateReturning(enemy: any, dt: number) {
+    updateReturning(enemy: IEntity, dt: number) {
         const dist = MathUtils.distance(enemy.spawnX, enemy.spawnY, enemy.x, enemy.y);
 
         if (dist < 20) {
@@ -158,7 +158,7 @@ const EnemyAI = {
     /**
      * Perform attack on target
      */
-    performAttack(enemy: any) {
+    performAttack(enemy: IEntity) {
         if (!enemy.target) return;
 
         if (EventBus && GameConstants?.Events) {
@@ -182,12 +182,12 @@ const EnemyAI = {
     /**
      * Trigger pack aggro for group members
      */
-    triggerPackAggro(enemy: any, target: any) {
+    triggerPackAggro(enemy: IEntity, target: IEntity | null) {
         if (!entityManager || !enemy.groupId) return;
 
         // Read pack aggro radius from config for live tuning
         const packRadius =
-            (getConfig() as any).AI?.PACK_AGGRO_RADIUS ||
+            (getConfig() as { AI?: { PACK_AGGRO_RADIUS?: number } }).AI?.PACK_AGGRO_RADIUS ||
             BiomeConfig?.patrolDefaults?.packAggroRadius ||
             300;
 
@@ -214,7 +214,7 @@ const EnemyAI = {
     /**
      * Check if enemy can see hero (in aggro range)
      */
-    canSee(enemy: any, hero: any) {
+    canSee(enemy: IEntity, hero: IEntity | null) {
         if (!hero || enemy.isDead) return false;
         return enemy.distanceTo(hero) <= enemy.aggroRange;
     }

@@ -81,9 +81,10 @@ class Entity implements IEntity {
      */
     refreshConfig() {
         // Resolve latest config from Registry
-        const EntityLoader = Registry.get('EntityLoader') as any; // Type as any to avoid circular dependency for now
+        // Use type assertion to avoid circular dependency - EntityLoader is registered as ISystem
+        const EntityLoader = Registry.get('EntityLoader') as { getConfig?: (id: string) => Record<string, unknown> } | null;
 
-        if (EntityLoader && EntityLoader.getConfig) {
+        if (EntityLoader?.getConfig) {
             // use id or sprite (many props use sprite as ID)
             const lookupId = this.id || this.sprite || '';
             const registryConfig = EntityLoader.getConfig(lookupId) || {};
@@ -98,35 +99,42 @@ class Entity implements IEntity {
                 'speed', 'damage', 'defense', 'attackRange', 'attackRate',
                 'aggroRange', 'leashDistance', 'respawnTime', 'xpReward',
                 'lootTable', 'tier', 'groupSize', 'spawnWeight'
-            ];
+            ] as const;
 
+            const entityRecord = this as Record<string, unknown>;
             for (const key of SAFE_KEYS) {
                 if (key in registryConfig) {
-                    (this as any)[key] = (registryConfig as any)[key];
+                    const value = registryConfig[key];
+                    if (value !== undefined) {
+                        entityRecord[key] = value;
+                    }
                 }
             }
 
             // 3. Update 'stats' object deeply if it exists
-            if (registryConfig.stats) {
-                if (!(this as any).stats) (this as any).stats = {};
-                Object.assign((this as any).stats, registryConfig.stats);
+            if (registryConfig.stats && typeof registryConfig.stats === 'object' && registryConfig.stats !== null) {
+                if (!entityRecord.stats || typeof entityRecord.stats !== 'object') {
+                    entityRecord.stats = {};
+                }
+                Object.assign(entityRecord.stats as Record<string, unknown>, registryConfig.stats);
             }
 
             // 4. Handle Health/MaxHealth specially
             // Update Max Health
-            if (registryConfig.health || registryConfig.maxHealth || (registryConfig.stats && registryConfig.stats.health)) {
-                const newMax = registryConfig.maxHealth || registryConfig.health || (registryConfig.stats ? registryConfig.stats.health : 0);
-                if (newMax) {
-                    const oldMax = (this as any).maxHealth || (this as any).health || 100;
-                    (this as any).maxHealth = newMax;
+            const healthValue = registryConfig.maxHealth || registryConfig.health || 
+                (registryConfig.stats && typeof registryConfig.stats === 'object' && 'health' in registryConfig.stats 
+                    ? (registryConfig.stats as Record<string, unknown>).health : undefined);
+            if (typeof healthValue === 'number' && healthValue > 0) {
+                const oldMax = (typeof entityRecord.maxHealth === 'number' ? entityRecord.maxHealth : 
+                    (typeof entityRecord.health === 'number' ? entityRecord.health : 100));
+                entityRecord.maxHealth = healthValue;
 
                     // If health was full, keep it full. If not, maybe scale it? 
                     // Simple rule: If current health > new max, clamp it.
                     // If max increased, maybe heal? For now, just clamp.
-                    if ((this as any).health > newMax) {
-                        (this as any).health = newMax;
+                    if (typeof entityRecord.health === 'number' && entityRecord.health > healthValue) {
+                        entityRecord.health = healthValue;
                     }
-                }
             }
         }
     }

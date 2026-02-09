@@ -7,6 +7,8 @@
  * Owner: Rendering System
  */
 
+import type { IViewport, IGame } from '../types/core';
+
 const GridRenderer = {
     _zoneImages: {} as Record<string, HTMLImageElement>,
 
@@ -17,7 +19,7 @@ const GridRenderer = {
      * @param {Object} canvas - Canvas element
      * @param {Object} game - Game reference
      */
-    drawGrid(ctx: CanvasRenderingContext2D, viewport: any, canvas: HTMLCanvasElement, game: any) {
+    drawGrid(ctx: CanvasRenderingContext2D, viewport: IViewport, canvas: HTMLCanvasElement, game: IGame | null) {
         const islandManager = game ? game.getSystem('IslandManager') : null;
         const assetLoader = game ? game.getSystem('AssetLoader') : null;
 
@@ -41,7 +43,7 @@ const GridRenderer = {
     /**
      * Fallback grid when IslandManager not available
      */
-    drawFallbackGrid(ctx: CanvasRenderingContext2D, viewport: any, canvas: HTMLCanvasElement) {
+    drawFallbackGrid(ctx: CanvasRenderingContext2D, viewport: IViewport, canvas: HTMLCanvasElement) {
         const gridSize = 50;
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.lineWidth = 1;
@@ -65,7 +67,7 @@ const GridRenderer = {
     /**
      * Draw all islands
      */
-    drawIslands(ctx: CanvasRenderingContext2D, islandManager: any, assetLoader: any) {
+    drawIslands(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string; type?: string; [key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
         const islandColor = '#4A5D23';
         const islandBorder = '#3A4D13';
 
@@ -120,7 +122,7 @@ const GridRenderer = {
     /**
      * Draw lock overlay for locked islands
      */
-    drawLockOverlay(ctx: CanvasRenderingContext2D, island: any) {
+    drawLockOverlay(ctx: CanvasRenderingContext2D, island: { name: string; [key: string]: unknown }) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.font = 'bold 80px "Courier New", sans-serif';
         ctx.textAlign = 'center';
@@ -143,7 +145,7 @@ const GridRenderer = {
     /**
      * Draw all bridges
      */
-    drawBridges(ctx: CanvasRenderingContext2D, islandManager: any, assetLoader: any) {
+    drawBridges(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string; [key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
         const bridges = islandManager.getBridges();
         let planksImg = null;
 

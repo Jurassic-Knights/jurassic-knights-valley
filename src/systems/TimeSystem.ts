@@ -56,22 +56,22 @@ class TimeSystem {
         }
 
         this.overrideEnabled = true;
-        // Map phase name to a fixed dayTime
+        const overrides = GameConstants.Time.DEBUG_PHASE_OVERRIDES;
         switch (phase.toLowerCase()) {
             case 'dawn':
-                this.overrideTime = 0.22;
-                break; // Early morning
+                this.overrideTime = overrides.dawn;
+                break;
             case 'day':
-                this.overrideTime = 0.5;
-                break; // Noon
+                this.overrideTime = overrides.day;
+                break;
             case 'dusk':
-                this.overrideTime = 0.77;
-                break; // Evening
+                this.overrideTime = overrides.dusk;
+                break;
             case 'night':
-                this.overrideTime = 0.05;
-                break; // Midnight
+                this.overrideTime = overrides.night;
+                break;
             default:
-                this.overrideTime = 0.5;
+                this.overrideTime = overrides.day;
         }
         this.dayTime = this.overrideTime;
         Logger.info(`[TimeSystem] Override Enabled: ${phase} (dayTime=${this.overrideTime})`);

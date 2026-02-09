@@ -10,6 +10,7 @@
 import { Logger } from '@core/Logger';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
+import { GameConstants } from '@data/GameConstants';
 import { IEntity } from '../types/core';
 
 const VFXTriggerService = {
@@ -62,7 +63,9 @@ const VFXTriggerService = {
         }
 
         if (VFXController && typeof VFXController.spawnFloatingText === 'function') {
-            VFXController.spawnFloatingText('ZONE SECURED', x, y - 80, '#FFD700', 3000);
+            const yOffset = GameConstants.Timing.ZONE_SECURED_Y_OFFSET;
+            const duration = GameConstants.Timing.ZONE_SECURED_DISPLAY;
+            VFXController.spawnFloatingText('ZONE SECURED', x, y - yOffset, '#FFD700', duration);
         }
     },
 
@@ -86,7 +89,7 @@ const VFXTriggerService = {
             // Static flash at center
             VFXController.playForeground(x, y, VFXConfig.MAGNET.STATIC_FLASH);
 
-            // Trigger the collapse after buildup (150ms delay)
+            const delay = GameConstants.Timing.MAGNET_PHASE_DELAY_MS;
             setTimeout(() => {
                 // --- PHASE 2: FIELD COLLAPSE ---
                 // Magnetic pulse wave
@@ -99,7 +102,7 @@ const VFXTriggerService = {
                 // --- PHASE 3: SETTLING ---
                 // Dust cloud from the disturbance
                 VFXController.playBackground(x, y, VFXConfig.MAGNET.DUST_CLOUD);
-            }, 150);
+            }, delay);
         }
     }
 };

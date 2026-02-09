@@ -26,7 +26,7 @@ interface CachedPath {
 
 class PathfindingSystem implements ISystem {
     game: IGame | null = null;
-    gridSize: number = 64;
+    gridSize: number;
     pathCache: Map<string, CachedPath> = new Map();
     cacheTimeout: number;
     _openSet: PathNode[] = [];
@@ -36,12 +36,13 @@ class PathfindingSystem implements ISystem {
     _fScore: Map<string, number> = new Map();
 
     constructor() {
-        this.cacheTimeout = GameConstants?.AI?.PATHFINDING_CACHE_TIMEOUT || 2000;
+        this.cacheTimeout = GameConstants.AI.PATHFINDING_CACHE_TIMEOUT;
         Logger.info('[PathfindingSystem] Constructed');
     }
 
     init(game: IGame) {
         this.game = game;
+        this.gridSize = GameConstants.AI.PATHFINDING_GRID_SIZE;
         Logger.info('[PathfindingSystem] Initialized');
         return true;
     }
@@ -109,7 +110,7 @@ class PathfindingSystem implements ISystem {
         openSet.push({ ...startNode, key: startKey });
 
         let iterations = 0;
-        const maxIterations = GameConstants?.AI?.PATHFINDING_MAX_ITERATIONS || 500; // Prevent infinite loops
+        const maxIterations = GameConstants.AI.PATHFINDING_MAX_ITERATIONS; // Prevent infinite loops
 
         while (openSet.length > 0 && iterations < maxIterations) {
             iterations++;

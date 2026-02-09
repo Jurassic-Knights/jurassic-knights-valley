@@ -8,6 +8,7 @@
  */
 
 import { getConfig } from '@data/GameConfig';
+import type { IGame } from '../types/core';
 
 const HomeOutpostRenderer = {
     /**
@@ -17,7 +18,7 @@ const HomeOutpostRenderer = {
      * @param {number} worldHeight
      * @param {Object} game - Game reference
      */
-    draw(ctx: CanvasRenderingContext2D, worldWidth: number, worldHeight: number, game: any) {
+    draw(ctx: CanvasRenderingContext2D, worldWidth: number, worldHeight: number, game: IGame) {
         let centerX = worldWidth / 2;
         let centerY = worldHeight / 2;
 
@@ -31,7 +32,7 @@ const HomeOutpostRenderer = {
             }
         }
 
-        const radius = getConfig().Interaction?.REST_AREA_RADIUS ?? 400;
+        const radius = getConfig().Interaction.REST_AREA_RADIUS;
 
         // Outer glow
         ctx.beginPath();

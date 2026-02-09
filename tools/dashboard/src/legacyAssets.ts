@@ -231,7 +231,7 @@ function createAssetCard(asset: { path: string; name: string; status: string }):
         : null;
 
 
-    const cardChildren: any[] = [
+    const cardChildren: HTMLElement[] = [
         h('div', { className: 'asset-name' }, [asset.name]),
         h('span', { className: `asset-status status-${asset.status}` }, [asset.status]),
         promptPreview,

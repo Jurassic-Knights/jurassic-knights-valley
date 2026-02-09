@@ -93,7 +93,7 @@ const ResponsiveManager = {
     /**
      * Emit event to all listeners
      */
-    emit(event: string, data: any) {
+    emit(event: string, data: unknown) {
         this.listeners.filter((l) => l.event === event).forEach((l) => l.callback(data));
     },
 

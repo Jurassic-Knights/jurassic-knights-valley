@@ -493,7 +493,7 @@ interface ConfigSection {
 }
 
 interface GameConfig {
-    [key: string]: ConfigSection | any;
+    [key: string]: ConfigSection | unknown;
 }
 
 function extractSectionContent(content: string, section: string): string | null {

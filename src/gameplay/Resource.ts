@@ -49,7 +49,7 @@ class Resource extends Entity {
      * Create a resource
      * @param {object} config
      */
-    constructor(config: any = {}) {
+    constructor(config: { resourceType?: string; x?: number; y?: number; islandGridX?: number; islandGridY?: number; [key: string]: unknown } = {}) {
         // 1. Load Config from EntityRegistry (nodes or resources)
         const nodeConfig = EntityRegistry.nodes?.[config.resourceType];
         const resConfig = EntityRegistry.resources?.[config.resourceType];
@@ -180,7 +180,7 @@ class Resource extends Entity {
                 color: '#FFFFFF',
                 count: 12,
                 speed: 12,
-                lifetime: 300,
+                lifetime: GameConstants.Resource.VFX_SPARK_LIFETIME,
                 size: 10
             });
 
@@ -210,14 +210,15 @@ class Resource extends Entity {
 
             // Look up respawn time from upgrades if possible
             if (IslandUpgrades && this.islandGridX !== undefined) {
-                const baseTime = (Resource.TYPES[this.resourceType] as any)?.baseRespawnTime || 30;
+                const defaultBase = GameConstants.Resource.DEFAULT_BASE_RESPAWN;
+        const baseTime = (Resource.TYPES[this.resourceType] as { baseRespawnTime?: number } | undefined)?.baseRespawnTime ?? defaultBase;
                 this.maxRespawnTime = IslandUpgrades.getRespawnTime(
                     this.islandGridX,
                     this.islandGridY,
                     baseTime
                 );
             } else if (this.resourceType.includes('_t1_')) {
-                this.maxRespawnTime = 15; // Fast respawn for T1 nodes (trees)
+                this.maxRespawnTime = GameConstants.Resource.T1_FAST_RESPAWN;
             }
             this.respawnTimer = this.maxRespawnTime;
 
@@ -230,7 +231,7 @@ class Resource extends Entity {
                 if (typeConfig.drops && Array.isArray(typeConfig.drops) && typeConfig.drops.length > 0) {
                     // Simple random drop logic for now (pick first or random based on chance?)
                     // For now, iterate and spawn all qualifying drops
-                    typeConfig.drops.forEach((drop: any) => {
+                    typeConfig.drops.forEach((drop: { item: string; chance?: number; amount?: number | [number, number] }) => {
                         const roll = Math.random();
                         const chance = drop.chance !== undefined ? drop.chance : 1;
                         if (roll <= chance) {
@@ -252,7 +253,7 @@ class Resource extends Entity {
                 // 3. Fallback: Loot table (Enemies style, strictly shouldn't apply but safety net)
                 else if (typeConfig.loot && Array.isArray(typeConfig.loot)) {
                     // Logic similar to above
-                    typeConfig.loot.forEach((drop: any) => {
+                    typeConfig.loot.forEach((drop: { item: string; chance?: number; amount?: number | [number, number] }) => {
                         const roll = Math.random();
                         if (roll <= (drop.chance || 1)) {
                             spawnManager.spawnDrop(this.x, this.y, drop.item, 1);
@@ -282,7 +283,8 @@ class Resource extends Entity {
 
         // Base value lookup
         const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
-        const baseTime = typeConfig.respawnTime || 30;
+        const defaultBase = GameConstants.Resource.DEFAULT_BASE_RESPAWN;
+        const baseTime = typeConfig.respawnTime ?? defaultBase;
 
         if (this.islandGridX !== undefined) {
             newDuration = IslandUpgrades.getRespawnTime(
@@ -338,10 +340,11 @@ class Resource extends Entity {
         if (this.health >= this.maxHealth) return;
         if (this.state === 'depleted') return;
 
-        const barWidth = 100;
+        const barWidth = GameConstants.Resource.HEALTH_BAR_WIDTH;
         const barHeight = 14;
         const barX = this.x - barWidth / 2;
-        const barY = this.y - this.height / 2 - 18;
+        const barYOffset = GameConstants.Resource.HEALTH_BAR_Y_OFFSET;
+        const barY = this.y - this.height / 2 - barYOffset;
 
         if (ProgressBarRenderer) {
             ProgressBarRenderer.draw(ctx, {
@@ -404,7 +407,7 @@ class Resource extends Entity {
         legendary: '#F1C40F' // Gold
     };
 
-    static TYPES: Record<string, any> = {}; // Safety placeholder implies lookup elsewhere
+    static TYPES: Record<string, { baseRespawnTime?: number; [key: string]: unknown }> = {}; // Safety placeholder implies lookup elsewhere
 }
 
 // ES6 Module Export

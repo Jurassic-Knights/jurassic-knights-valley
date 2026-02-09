@@ -41,7 +41,7 @@ class EventBusHub {
     /**
      * Emit an event
      * @param {string} eventName
-     * @param {any} data
+     * @param {T} data
      */
     emit<T = unknown>(eventName: string, data?: T) {
         if (!this.listeners[eventName]) return;

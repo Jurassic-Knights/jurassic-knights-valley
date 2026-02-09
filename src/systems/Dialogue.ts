@@ -9,8 +9,8 @@ import { Logger } from '@core/Logger';
 import { GameState } from '@core/State';
 
 const DialogueSystem = {
-    dialogues: {} as Record<string, any>,
-    currentDialogue: null as any | null,
+    dialogues: {} as Record<string, unknown>,
+    currentDialogue: null as unknown | null,
     currentNode: null as string | null,
 
     /**

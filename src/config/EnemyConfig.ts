@@ -49,7 +49,7 @@ const EnemyConfig = {
      */
     getByCategory(category: string) {
         const enemies = EntityRegistry?.enemies || {};
-        return (Object.values(enemies) as any[]).filter((e) => e.category === category);
+        return (Object.values(enemies) as Array<{ category?: string; [key: string]: unknown }>).filter((e) => e.category === category);
     },
 
     /**
@@ -59,7 +59,7 @@ const EnemyConfig = {
      */
     getByBiome(biomeId: string) {
         const enemies = EntityRegistry?.enemies || {};
-        return (Object.values(enemies) as any[]).filter((e) => e.spawnBiomes?.includes(biomeId));
+        return (Object.values(enemies) as Array<{ spawnBiomes?: string[]; [key: string]: unknown }>).filter((e) => e.spawnBiomes?.includes(biomeId));
     },
 
     /**
@@ -69,13 +69,13 @@ const EnemyConfig = {
      */
     getByTier(tier: number) {
         const enemies = EntityRegistry?.enemies || {};
-        return (Object.values(enemies) as any[]).filter((e) => e.tier === tier);
+        return (Object.values(enemies) as Array<{ tier?: string; [key: string]: unknown }>).filter((e) => e.tier === tier);
     },
 
     attackTypes: {
         melee: { range: 100, windupTime: 200, recoveryTime: 500 },
         ranged: { range: 350, projectileSpeed: 400, windupTime: 300, recoveryTime: 800 }
     }
-} as any;
+} as Record<string, unknown>;
 
 export { EnemyConfig };

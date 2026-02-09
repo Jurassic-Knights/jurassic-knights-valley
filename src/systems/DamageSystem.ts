@@ -29,8 +29,8 @@ const Events = GameConstants.Events;
 class DamageSystem {
     game: IGame | null = null;
 
-    private _onDamageBound: any;
-    private _onDeathBound: any;
+    private _onDamageBound: (data: { entity: IEntity; amount: number; source?: IEntity; type?: string }) => void;
+    private _onDeathBound: (data: { entity: IEntity }) => void;
 
     constructor() {
         Logger.info('[DamageSystem] Initialized');
@@ -70,7 +70,7 @@ class DamageSystem {
         // 1. Apply Damage (using component if available)
         // Check for StatsComponent (Hero/Complex Entities)
         let finalDamage = amount;
-        const healthComponent = (entity.components?.health || entity.components?.stats) as any;
+        const healthComponent = entity.components?.health || entity.components?.stats;
 
         // Apply Armor reduction (simple flat reduction for now)
         if (entity.defense) {
@@ -87,11 +87,19 @@ class DamageSystem {
                 );
                 healthComponent.takeDamage(finalDamage);
                 tookDamage = true;
+                if (entity.id === 'hero') {
+                    EventBus.emit(Events.HERO_HEALTH_CHANGE, { current: healthComponent.health, max: healthComponent.maxHealth });
+                } else {
+                    EventBus.emit(Events.ENTITY_HEALTH_CHANGE, { entity, current: healthComponent.health, max: healthComponent.maxHealth });
+                }
             } else if (typeof healthComponent.health === 'number') {
-                // Direct modification
-                healthComponent.health -= finalDamage;
-                if (healthComponent.health < 0) healthComponent.health = 0;
+                healthComponent.health = Math.max(0, healthComponent.health - finalDamage);
                 tookDamage = true;
+                if (entity.id === 'hero') {
+                    EventBus.emit(Events.HERO_HEALTH_CHANGE, { current: healthComponent.health, max: healthComponent.maxHealth ?? entity.maxHealth });
+                } else {
+                    EventBus.emit(Events.ENTITY_HEALTH_CHANGE, { entity, current: healthComponent.health, max: healthComponent.maxHealth ?? entity.maxHealth });
+                }
             }
         } else if (isDamageable(entity)) {
             // Entity handles its own damage (e.g. Resource)
@@ -145,10 +153,11 @@ class DamageSystem {
             // FloatingTextManager handles scale via type configuration
             const textType = type === 'crit' ? 'critical' : 'damage';
 
+            const yOffset = GameConstants.Damage.FLOATING_TEXT_Y_OFFSET;
             if (type === 'crit') {
-                FloatingTextManager.showDamage(x, y - 20, amount, true);
+                FloatingTextManager.showDamage(x, y - yOffset, amount, true);
             } else {
-                FloatingTextManager.spawn(x, y - 20, Math.round(amount).toString(), textType);
+                FloatingTextManager.spawn(x, y - yOffset, Math.round(amount).toString(), textType);
             }
         }
 
@@ -170,7 +179,8 @@ class DamageSystem {
                 VFXController.playForeground(x, y, VFXConfig.DINO.BLOOD_SPLATTER);
                 VFXController.playForeground(x, y, VFXConfig.DINO.BLOOD_MIST);
 
-                if (amount > 10) {
+                const threshold = GameConstants.Combat.DAMAGE_VFX_THRESHOLD;
+                if (amount > threshold) {
                     VFXController.playForeground(x, y, VFXConfig.DINO.BLOOD_DROPS);
                 }
             }
@@ -199,7 +209,7 @@ class DamageSystem {
             // Emit kill event for Quests/XP
             EventBus.emit(GameConstants.Events.ENEMY_KILLED, {
                 enemy: entity,
-                xpReward: entity.xpReward || 10,
+                xpReward: entity.xpReward ?? GameConstants.Combat.XP_REWARD_FALLBACK,
                 lootTableId: entity.lootTableId
             });
         }

@@ -91,7 +91,7 @@ class DinosaurSystem {
         }
     }
 
-    updateDino(dino: any, dt: number) {
+    updateDino(dino: IEntity, dt: number) {
         // Sync with HealthComponent
         if (dino.components.health) {
             dino.health = dino.components.health.health;
@@ -192,7 +192,7 @@ class DinosaurSystem {
         }
     }
 
-    changeDirection(dino: any) {
+    changeDirection(dino: IEntity) {
         if (dino.components.ai) {
             dino.components.ai.randomizeWander();
         } else {
@@ -205,10 +205,9 @@ class DinosaurSystem {
             dino.wanderDirection.x = Math.cos(angle);
             dino.wanderDirection.y = Math.sin(angle);
             dino.wanderTimer =
-                (GameConstants?.AI?.WANDER_TIMER_MIN || 2000) +
+                GameConstants.AI.WANDER_TIMER_MIN +
                 Math.random() *
-                ((GameConstants?.AI?.WANDER_TIMER_MAX || 5000) -
-                    (GameConstants?.AI?.WANDER_TIMER_MIN || 2000));
+                (GameConstants.AI.WANDER_TIMER_MAX - GameConstants.AI.WANDER_TIMER_MIN);
         }
     }
 }

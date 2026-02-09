@@ -16,7 +16,7 @@ class Quadtree {
     maxObjects: number;
     maxLevels: number;
     level: number;
-    objects: any[];
+    objects: unknown[];
     nodes: Quadtree[];
 
     constructor(bounds: Rect, maxObjects = 10, maxLevels = 5, level = 0) {
@@ -173,7 +173,7 @@ class Quadtree {
      * @param {Object} pRect Bounds of the object
      * @return {Array} Array of objects
      */
-    retrieve(pRect: Rect): any[] {
+    retrieve(pRect: Rect): unknown[] {
         let returnObjects = this.objects;
         const index = this.getIndex(pRect);
 
@@ -196,7 +196,7 @@ class Quadtree {
     /**
      * Precise Rect Query: Returns unique objects intersecting the range
      */
-    queryRect(range: any, found: any[] = []) {
+    queryRect(range: Rect, found: unknown[] = []) {
         // Check if this Quadtree node intersects the range
         if (!this.intersects(this.bounds, range)) {
             return found;

@@ -21,8 +21,8 @@ This workflow handles TWO scenarios:
 > Files may have been edited since the last load. Never rely on cached/previous content.
 
 Before generating ANY images, read these files:
-- `docs/design/asset_prompts.md` - **Primary source** for all prompt templates, reference images, terminology rules
-- `docs/design/style_guide.md` - Art direction, tone, visual rules
+- `documents/design/asset_prompts.md` - **Primary source** for all prompt templates, reference images, terminology rules
+- `documents/design/art_guide.md` - Art direction, visual rules (`documents/design/lore_guide.md`, `documents/design/sound_guide.md` for tone/audio)
 
 **FAILURE TO LOAD THESE FILES WILL RESULT IN INCORRECT ASSETS**
 
@@ -46,7 +46,7 @@ This scans `src/entities/` and outputs:
 **Process:**
 1. Read entity JSON from `src/entities/{category}/`
 2. Get `sourceDescription` and `declineNote` (if present)
-3. Look up template in `docs/design/asset_prompts.md`
+3. Look up template in `documents/design/asset_prompts.md`
 4. Combine: `[TEMPLATE] + [sourceDescription] + [declineNote adjustments]`
 5. Select correct reference image per `asset_prompts.md`
 6. Generate all images in parallel (default behavior)
@@ -85,5 +85,5 @@ Notify user to review new pending assets in dashboard.
 | Entity JSONs (source of truth) | `src/entities/{category}/` |
 | Image output | `assets/images/{category}/{id}_original.png` |
 | Reference images | `reference/style_samples/` |
-| Prompt templates | `docs/design/asset_prompts.md` |
+| Prompt templates | `documents/design/asset_prompts.md` |
 | Scan script | `tools/scan_regenerate.py` |

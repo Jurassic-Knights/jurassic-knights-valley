@@ -10,6 +10,7 @@ import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
 import { environmentRenderer } from './EnvironmentRenderer';
 import { Resource } from '../gameplay/Resource';
+import { DroppedItem } from '../gameplay/DroppedItem';
 import { ColorPalette } from '@config/ColorPalette';
 import { EntityRegistry } from '@entities/EntityLoader';
 import type { IGame, ISystem } from '../types/core';
@@ -21,7 +22,7 @@ class ResourceRendererService implements ISystem {
 
     init(game: IGame): void { }
 
-    render(ctx: CanvasRenderingContext2D, res: any, includeShadow = true) {
+    render(ctx: CanvasRenderingContext2D, res: Resource, includeShadow = true) {
         if (!res.active) return;
 
         // Shadow
@@ -44,7 +45,7 @@ class ResourceRendererService implements ISystem {
     }
 
     // ... rest of methods ...
-    renderShadow(ctx: CanvasRenderingContext2D, res: any, forceOpaque = false) {
+    renderShadow(ctx: CanvasRenderingContext2D, res: Resource, forceOpaque = false) {
         // Check environmentRenderer singleton for dynamic shadows
         const env = environmentRenderer;
 
@@ -129,7 +130,7 @@ class ResourceRendererService implements ISystem {
         ctx.restore();
     }
 
-    renderDepleted(ctx: CanvasRenderingContext2D, res: any) {
+    renderDepleted(ctx: CanvasRenderingContext2D, res: Resource) {
         // For node_* types, use resourceType directly as base asset ID
         let baseAssetId = null;
         if (res.resourceType && res.resourceType.startsWith('node_')) {
@@ -199,7 +200,7 @@ class ResourceRendererService implements ISystem {
         }
     }
 
-    renderActive(ctx: CanvasRenderingContext2D, res: any) {
+    renderActive(ctx: CanvasRenderingContext2D, res: Resource) {
         // For node_* types, use resourceType directly as asset key (matches AssetLoader)
         let assetId = null;
         if (res.resourceType && res.resourceType.startsWith('node_')) {
@@ -294,7 +295,7 @@ class ResourceRendererService implements ISystem {
      * @param {CanvasRenderingContext2D} ctx
      * @param {DroppedItem} item
      */
-    renderDroppedItem(ctx: CanvasRenderingContext2D, item: any) {
+    renderDroppedItem(ctx: CanvasRenderingContext2D, item: DroppedItem) {
         if (!item.active) return;
 
         // Render Trail (Stream) - only when magnetized

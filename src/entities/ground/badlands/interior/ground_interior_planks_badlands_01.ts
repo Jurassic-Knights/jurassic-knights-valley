@@ -11,8 +11,8 @@ export default {
     "sourceFile": "ground",
     "status": "pending",
     "files": {
-        "original": "assets/images/ground/ground_interior_planks_badlands_01_original.png",
-        "clean": "assets/images/ground/ground_interior_planks_badlands_01_original.png"
+        "original": "assets/images/ground/badlands/interior/ground_interior_planks_badlands_01_original.png",
+        "clean": "assets/images/ground/badlands/interior/ground_interior_planks_badlands_01_original.png"
     },
     "type": "ground_texture",
     "biome": "badlands",

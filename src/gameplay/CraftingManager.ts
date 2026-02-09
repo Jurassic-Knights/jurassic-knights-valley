@@ -17,6 +17,7 @@ import { UIManager } from '@ui/UIManager';
 import { spawnManager as SpawnManager } from '@systems/SpawnManager';
 import { IslandManager } from '../world/IslandManager';
 
+import { GameConstants } from '@data/GameConstants';
 import { economySystem as EconomySystem } from '@systems/EconomySystem';
 
 export interface CraftingRecipe {
@@ -122,8 +123,7 @@ const CraftingManager = {
     unlockSlot(slotId: number): boolean {
         if (slotId < 0 || slotId >= this.maxSlots) return false;
 
-        // Cost: 1000 Gold (Fixed for now)
-        const cost = 1000;
+        const cost = GameConstants.Crafting.FORGE_SLOT_UNLOCK_COST;
 
         if (!GameState) return false;
         const gold = GameState.get('gold') || 0;
@@ -187,7 +187,8 @@ const CraftingManager = {
         slot.status = 'crafting';
         slot.recipeId = recipeId;
         slot.quantity = quantity;
-        slot.duration = recipe.duration * 1000; // Duration PER ITEM
+        const ms = GameConstants.Timing.MS_PER_SECOND;
+        slot.duration = recipe.duration * ms; // Duration PER ITEM
         slot.startTime = Date.now();
 
         Logger.info(`[Crafting] Started queue of ${quantity}x ${recipe.name} in Slot ${slotId}`);

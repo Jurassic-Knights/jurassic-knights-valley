@@ -1,4 +1,6 @@
 
+import { GameConstants } from '@data/GameConstants';
+
 export interface ICollisionComponent {
     bounds: {
         width: number;
@@ -42,7 +44,7 @@ export class CollisionComponent implements ICollisionComponent {
         };
         this.layer = config.layer ?? CollisionLayers.WORLD;
         this.mask = config.mask ?? CollisionLayers.ALL;
-        this.isTrigger = config.isTrigger ?? false;
-        this.enabled = config.enabled ?? true;
+        this.isTrigger = config.isTrigger ?? GameConstants.Components.COLLISION_IS_TRIGGER;
+        this.enabled = config.enabled ?? GameConstants.Components.COLLISION_ENABLED;
     }
 }

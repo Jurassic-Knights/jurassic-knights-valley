@@ -370,13 +370,13 @@ const VFX_Categories = {
             'sniper': { distance: 250, size: 80, spread: 0.1 },
             'machinegun': { distance: 180, size: 50, spread: 0.25 },
             'default': { distance: 150, size: 50, spread: 0.3 }
-        } as Record<string, any>, // Explicit type for index access
+        } as Record<string, unknown>, // Explicit type for index access
 
         getMuzzleFlash(weaponType: string) {
             return this.MUZZLE_FLASH[weaponType?.toLowerCase()] || this.MUZZLE_FLASH.default;
         }
     }
-} as Record<string, any>; // Main object as Record for flexible categorization
+} as Record<string, unknown>; // Main object as Record for flexible categorization
 
 
 // ES6 Module Export

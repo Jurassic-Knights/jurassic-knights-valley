@@ -16,15 +16,14 @@ import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { Logger } from '@core/Logger';
 import { EntityScaling } from '../utils/EntityScaling';
-
-// Unmapped modules - need manual import
+import type { IEntity } from '../types/core';
 
 class DroppedItem extends Entity {
     // Item identity
     resourceType: string = 'scraps_t1_01';
     amount: number = 1;
     pickupRadius: number = 140;
-    customIcon: any = null;
+    customIcon: string | null = null;
     rarity: string = 'common';
     rarityColor: string = '#BDC3C7';
     scale: number = 1.0;
@@ -40,12 +39,12 @@ class DroppedItem extends Entity {
 
     // Magnet behavior
     isMagnetized: boolean = false;
-    magnetTarget: any = null;
+    magnetTarget: IEntity | null = null;
     magnetSpeed: number = 100;
     magnetAcceleration: number = 500;
 
     // Trail effect
-    trailHistory: any[] = [];
+    trailHistory: Array<{ x: number; y: number }> = [];
     maxTrailLength: number = 15;
 
     // Pickup timing
@@ -54,7 +53,7 @@ class DroppedItem extends Entity {
     postLandDelay: number = 0.5;
     minPickupTime: number = 0.8;
 
-    constructor(config: any = {}) {
+    constructor(config: { itemId?: string; amount?: number; x?: number; y?: number; [key: string]: unknown } = {}) {
         // 1. Load Config
         const typeConfig = EntityRegistry.items?.[config.resourceType] || {};
 
@@ -106,8 +105,8 @@ class DroppedItem extends Entity {
         this.magnetTarget = null;
 
         // REWRITE: Gentle pull (visual collect)
-        this.magnetSpeed = finalConfig.magnetSpeed || 100;
-        this.magnetAcceleration = finalConfig.magnetAcceleration || 500;
+        this.magnetSpeed = finalConfig.magnetSpeed ?? GameConstants.DroppedItem.MAGNET_SPEED;
+        this.magnetAcceleration = finalConfig.magnetAcceleration ?? GameConstants.DroppedItem.MAGNET_ACCELERATION;
 
         this.trailHistory = []; // [ {x, y, z} ]
         this.maxTrailLength = 15;
@@ -124,7 +123,7 @@ class DroppedItem extends Entity {
      * Start flying towards a target (magnet effect)
      * @param {Entity} target
      */
-    magnetize(target: any) {
+    magnetize(target: IEntity) {
         if (!this.active || this.isMagnetized) return;
         this.isMagnetized = true;
         this.magnetTarget = target;
@@ -287,7 +286,7 @@ class DroppedItem extends Entity {
      * Check if item should start flying to hero (auto-pickup range)
      * @param {Hero} hero
      */
-    shouldAutoMagnetize(hero: any) {
+    shouldAutoMagnetize(hero: IEntity) {
         if (!this.active || !hero) return false;
         if (this.isMagnetized || this.isFlying) return false;
 
@@ -304,7 +303,7 @@ class DroppedItem extends Entity {
      * @param {Hero} hero
      * @returns {boolean}
      */
-    canBePickedUpBy(hero: any) {
+    canBePickedUpBy(hero: IEntity) {
         if (!this.active || !hero) return false;
 
         // 1. Check flight status

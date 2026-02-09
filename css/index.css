@@ -1,0 +1,29 @@
+/**
+ * Single entry point for all application styles.
+ * Vite/build can bundle this; one link in index.html reduces requests.
+ */
+@import 'variables.css';
+@import 'base.css';
+@import 'layout.css';
+@import 'components-buttons.css';
+@import 'components-cards.css';
+@import 'components-utilities.css';
+@import 'components-forge.css';
+@import 'vfx.css';
+@import 'ui-hud-core.css';
+@import 'ui-hud-resources.css';
+@import 'ui-hud-quest.css';
+@import 'ui-hud-resolve.css';
+@import 'ui-hud-gauges.css';
+@import 'ui-hud-actions.css';
+@import 'ui-hud-footer.css';
+@import 'ui-hud-loading.css';
+@import 'ui-hud-modals.css';
+@import 'ui-hud-inventory.css';
+@import 'ui-hud-unlock.css';
+@import 'ui-hud-merchant.css';
+@import 'ui-capture.css';
+@import 'ui-hud-equipment.css';
+@import 'ui-modal-hero.css';
+@import 'ui-hud-weaponwheel.css';
+@import 'debug.css';

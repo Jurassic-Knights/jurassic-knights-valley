@@ -1,0 +1,29 @@
+---
+description: Testing libraries, coverage requirements, and AAA structure
+alwaysApply: true
+---
+
+# Testing
+
+## Framework
+
+- Use Vitest for unit and integration tests. Align with `vitest.config.*` and package.json scripts (`npm run test`, `npm run test:coverage`).
+
+## Structure: AAA
+
+- **Arrange:** Set up data, mocks, and preconditions.
+- **Act:** Call the function or trigger the behavior under test.
+- **Assert:** Assert outcomes (return value, state, side effects, calls).
+
+Keep each test focused on one behavior. Name tests for the scenario (e.g. `it('returns 404 when entity is missing')`).
+
+## Coverage
+
+- Aim for meaningful coverage on core systems and business logic; prioritize critical paths over 100%.
+- Run `npm run test:coverage`; address regressions. Add tests for main and error paths on new features.
+
+## Practices
+
+- Mock external dependencies (EventBus, Registry, file system, network) for speed and determinism.
+- Prefer real implementations for pure functions and small modules when it keeps tests simple.
+- Assert on observable behavior and contracts; avoid testing implementation details.
