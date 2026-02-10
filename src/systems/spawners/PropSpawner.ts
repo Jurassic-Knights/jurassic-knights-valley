@@ -16,6 +16,7 @@ import { PropConfig } from '@data/PropConfig';
 import { SpawnManagerService } from '../SpawnManager';
 import { Registry } from '@core/Registry';
 import type { Island } from '../../types/world';
+import { IslandType } from '@config/WorldTypes';
 import { IslandManagerService } from '../../world/IslandManager';
 
 // Unmapped modules - need manual import
@@ -69,7 +70,7 @@ class PropSpawner {
         const spawnedProps: { x: number; y: number }[] = [];
 
         for (const island of islandManager.islands) {
-            if ((island as Island).type === 'home') continue;
+            if ((island as Island).type === IslandType.HOME) continue;
 
             const foliageMap = (PropConfig && PropConfig.FOLIAGE_MAP ? PropConfig.FOLIAGE_MAP : {}) as Record<string, string[]>;
             const itemMap = (PropConfig && PropConfig.ITEM_MAP ? PropConfig.ITEM_MAP : {}) as Record<string, string[]>;

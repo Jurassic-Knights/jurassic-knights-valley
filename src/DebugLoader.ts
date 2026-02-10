@@ -1,5 +1,6 @@
 /**
- * Debug Entry Point - Loads all modules and reports ALL errors
+ * DebugLoader – Debug entry point that loads all modules and reports errors.
+ * Use as a standalone script to verify module graph and capture load failures.
  */
 
 const errors: string[] = [];
@@ -9,7 +10,7 @@ async function loadModule(path: string) {
         await import(path);
         console.log(`✅ ${path}`);
     } catch (e: unknown) {
-        const msg = `❌ ${path}: ${e.message}`;
+        const msg = `❌ ${path}: ${(e as Error).message}`;
         console.error(msg);
         errors.push(msg);
     }

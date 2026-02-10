@@ -6,6 +6,7 @@
  *
  * All systems should read from getConfig() to get HMR-reactive values.
  */
+import { Logger } from '@core/Logger';
 
 // Original defaults - used for reset functionality
 const DEFAULTS = {
@@ -207,7 +208,7 @@ if (typeof window !== 'undefined') {
                 (persisted as Record<string, unknown>)[typedKey] = GameConfig[typedKey];
             }
         }
-        console.log('[HMR] GameConfig updated:', {
+        Logger.info('[HMR] GameConfig updated:', {
             restRadius: persisted.Interaction?.REST_AREA_RADIUS,
             merchantRadius: persisted.Interaction?.MERCHANT_RADIUS,
             pistolRange: persisted.WeaponDefaults?.pistol?.range,
@@ -229,7 +230,7 @@ if (typeof window !== 'undefined' && typeof BroadcastChannel !== 'undefined') {
             const { section, key, value } = event.data;
             if (window.__GAME_CONFIG__ && window.__GAME_CONFIG__[section]) {
                 (window.__GAME_CONFIG__[section] as Record<string, unknown>)[key] = value;
-                console.log(`[Config] Live update: ${section}.${key} = ${value}`);
+                Logger.info(`[Config] Live update: ${section}.${key} = ${value}`);
             }
         }
     };

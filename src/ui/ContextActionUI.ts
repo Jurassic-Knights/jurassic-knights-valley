@@ -10,9 +10,6 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { AssetLoader } from '@core/AssetLoader';
 import { AudioManager } from '../audio/AudioManager';
-import { MerchantUI } from './MerchantUI';
-// ForgeController accessed via Registry to avoid circular dependency
-import { Registry } from '@core/Registry';
 
 type ContextData = {
     gridX?: number;
@@ -125,16 +122,7 @@ class ContextActionService {
                 if (E && EventBus) EventBus.emit(E.REQUEST_REST);
                 break;
             case 'forge':
-                const forgeCtrl = Registry?.get('ForgeController') as
-                    | {
-                        render: (view: string) => void;
-                        open: () => void;
-                    }
-                    | undefined;
-                if (forgeCtrl) {
-                    forgeCtrl.render('dashboard');
-                    forgeCtrl.open();
-                }
+                if (E && EventBus) EventBus.emit(E.OPEN_FORGE, { view: 'dashboard' });
                 break;
             case 'unlock':
                 if (this.contextData?.gridX !== undefined && E && EventBus) {
@@ -146,7 +134,7 @@ class ContextActionService {
                 }
                 break;
             case 'merchant':
-                if (MerchantUI) MerchantUI.open();
+                if (E && EventBus) EventBus.emit(E.OPEN_MERCHANT);
                 break;
         }
     }

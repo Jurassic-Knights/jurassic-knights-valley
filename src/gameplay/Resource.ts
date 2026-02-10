@@ -16,6 +16,7 @@ import { spawnManager } from '@systems/SpawnManager';
 import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
+import { IslandType } from '@config/WorldTypes';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { EntityScaling } from '../utils/EntityScaling';
@@ -119,7 +120,7 @@ class Resource extends Entity {
             onHome = true;
         } else if (IslandManager) {
             const island = IslandManager.getIslandAt(this.x, this.y);
-            if (island && island.type === 'home') {
+            if (island && island.type === IslandType.HOME) {
                 onHome = true;
             }
         }

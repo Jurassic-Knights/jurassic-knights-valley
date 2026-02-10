@@ -49,7 +49,7 @@ class EventBusHub {
             try {
                 callback(data);
             } catch (err) {
-                console.error(`[EventBus] Error in listener for '${eventName}':`, err);
+                Logger.error(`[EventBus] Error in listener for '${eventName}':`, err);
             }
         });
     }

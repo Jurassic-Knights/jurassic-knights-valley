@@ -28,6 +28,7 @@ import { EnemySpawner } from './spawners/EnemySpawner';
 import { DropSpawner } from './spawners/DropSpawner';
 import { Merchant } from '../gameplay/Merchant';
 import { PropConfig } from '@data/PropConfig';
+import { IslandType, BridgeOrientation } from '@config/WorldTypes';
 
 // Unmapped modules - need manual import
 
@@ -78,6 +79,17 @@ class SpawnManagerService {
     private initListeners(): void {
         EventBus.on(GameConstants.Events.ISLAND_UNLOCKED, (data: { gridX: number; gridY: number }) =>
             this.initializeIsland(data.gridX, data.gridY)
+        );
+        EventBus.on(
+            GameConstants.Events.RESPAWN_REFRESH_REQUESTED,
+            (data: { gridX: number; gridY: number; type: string }) => {
+                const { gridX, gridY, type } = data;
+                if (type === 'resourceSlots') {
+                    this.refreshIslandResources(gridX, gridY);
+                } else if (type === 'respawnTime') {
+                    this.updateIslandRespawnTimers(gridX, gridY);
+                }
+            }
         );
     }
 
@@ -184,7 +196,7 @@ class SpawnManagerService {
         const bridges = islandManager.getBridges();
 
         for (const island of islandManager.islands) {
-            if (island.type === 'home') continue;
+            if (island.type === IslandType.HOME) continue;
 
             const bounds = islandManager.getPlayableBounds(island);
             if (!bounds) continue;
@@ -203,7 +215,7 @@ class SpawnManagerService {
             const padding = PropConfig?.MERCHANT?.PADDING || config.MERCHANT.PADDING;
 
             if (entryBridge) {
-                if (entryBridge.type === 'horizontal') {
+                if (entryBridge.type === BridgeOrientation.HORIZONTAL) {
                     finalX = bounds.left + padding;
                     const bridgeCenterY = entryBridge.y + entryBridge.height / 2;
                     finalY = (bridgeCenterY + bounds.top) / 2;
@@ -400,7 +412,7 @@ class SpawnManagerService {
         }
     }
 
-    isOnBridgeVisual(x: number, y: number, padding: number = 100): boolean {
+    isOnBridgeVisual(x: number, y: number, padding: number = GameConstants.World.BRIDGE_VISUAL_PADDING): boolean {
         if (this.propSpawner) {
             return this.propSpawner.isOnBridgeVisual(x, y, padding);
         }

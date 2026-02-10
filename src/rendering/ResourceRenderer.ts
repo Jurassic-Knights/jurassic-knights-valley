@@ -13,6 +13,7 @@ import { Resource } from '../gameplay/Resource';
 import { DroppedItem } from '../gameplay/DroppedItem';
 import { ColorPalette } from '@config/ColorPalette';
 import { EntityRegistry } from '@entities/EntityLoader';
+import { GameConstants } from '@data/GameConstants';
 import type { IGame, ISystem } from '../types/core';
 
 class ResourceRendererService implements ISystem {
@@ -188,11 +189,12 @@ class ResourceRendererService implements ISystem {
             const total = res.maxRespawnTime;
             const pct = 1 - remaining / total;
 
+            const R = GameConstants.Resource;
             ProgressBarRenderer.draw(ctx, {
-                x: res.x - 50, // Width 100 / 2
-                y: res.y - res.height / 2 - 18,
-                width: 100,
-                height: 14,
+                x: res.x - R.HEALTH_BAR_OFFSET_X,
+                y: res.y - res.height / 2 - R.HEALTH_BAR_Y_OFFSET,
+                width: R.HEALTH_BAR_WIDTH,
+                height: R.HEALTH_BAR_HEIGHT,
                 percent: pct,
                 mode: 'respawn',
                 animated: true
@@ -266,22 +268,23 @@ class ResourceRendererService implements ISystem {
         let maxHealth = 0;
 
         if (res.components && res.components.health) {
-            currentHealth = res.components.health.current;
-            maxHealth = res.components.health.max;
+            currentHealth = res.components.health.health;
+            maxHealth = res.components.health.maxHealth;
         } else if (res.health !== undefined) {
             currentHealth = res.health;
-            maxHealth = res.maxHealth || 100;
+            maxHealth = res.maxHealth || GameConstants.Combat.DEFAULT_MAX_HEALTH_NPC;
         }
 
         // Only draw if damaged and not dead
         if (currentHealth < maxHealth && currentHealth > 0) {
             if (ProgressBarRenderer) {
                 const pct = currentHealth / maxHealth;
+                const R = GameConstants.Resource;
                 ProgressBarRenderer.draw(ctx, {
-                    x: res.x - 50,
-                    y: res.y - res.height / 2 - 18,
-                    width: 100,
-                    height: 14,
+                    x: res.x - R.HEALTH_BAR_OFFSET_X,
+                    y: res.y - res.height / 2 - R.HEALTH_BAR_Y_OFFSET,
+                    width: R.HEALTH_BAR_WIDTH,
+                    height: R.HEALTH_BAR_HEIGHT,
                     percent: pct,
                     mode: 'health',
                     entityId: res.id // For damage trail

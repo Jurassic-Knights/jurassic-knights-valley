@@ -13,7 +13,6 @@ import { IslandManager } from '../world/IslandManager';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXTriggerService } from './VFXTriggerService';
-import { spawnManager } from './SpawnManager';
 import { Registry } from '@core/Registry';
 import type { IGame } from '../types/core';
 
@@ -170,13 +169,13 @@ class EconomySystem {
                         VFXTriggerService.triggerPurchaseVFX(hero.x, hero.y);
                     }
 
-                    // Logic
-                    if (spawnManager) {
-                        if (type === 'resourceSlots') {
-                            spawnManager.refreshIslandResources(gridX, gridY);
-                        } else if (type === 'respawnTime') {
-                            spawnManager.updateIslandRespawnTimers(gridX, gridY);
-                        }
+                    // Logic: SpawnManager subscribes to RESPAWN_REFRESH_REQUESTED and refreshes
+                    if (EventBus) {
+                        EventBus.emit(GameConstants.Events.RESPAWN_REFRESH_REQUESTED, {
+                            gridX,
+                            gridY,
+                            type
+                        });
                     }
 
                     // Emit Success for UI to re-render

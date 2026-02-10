@@ -46,21 +46,21 @@ class Enemy extends Entity {
     groupId: string | null = null;
     waveId: string | null = null;
 
-    // Patrol/Spawn
+    // Patrol/Spawn (fallbacks from GameConstants.Biome)
     spawnX: number = 0;
     spawnY: number = 0;
-    patrolRadius: number = 300;
-    leashDistance: number = 500;
-    aggroRange: number = 200;
+    patrolRadius: number = GameConstants.Biome.PATROL_AREA_RADIUS;
+    leashDistance: number = GameConstants.Biome.LEASH_DISTANCE;
+    aggroRange: number = GameConstants.Biome.AGGRO_RANGE;
 
-    // Combat stats
-    health: number = 30;
-    maxHealth: number = 30;
-    damage: number = 5;
+    // Combat stats (fallbacks from GameConstants.Enemy)
+    health: number = GameConstants.Enemy.DEFAULT_HEALTH;
+    maxHealth: number = GameConstants.Enemy.DEFAULT_HEALTH;
+    damage: number = GameConstants.Enemy.DEFAULT_DAMAGE;
     attackRate: number = 1;
-    attackRange: number = 100;
+    attackRange: number = GameConstants.Enemy.DEFAULT_ATTACK_RANGE;
     attackType: string = 'melee';
-    speed: number = 80;
+    speed: number = GameConstants.Enemy.DEFAULT_SPEED;
 
     // Boss Flag
     isBoss?: boolean = false;
@@ -74,7 +74,7 @@ class Enemy extends Entity {
     }
 
     // Rewards
-    xpReward: number = 10;
+    xpReward: number = GameConstants.Enemy.DEFAULT_XP_REWARD;
     lootTableId: string = 'common_enemy';
     lootTable: Record<string, number> | null = null;
     lootMultiplier: number = 1.0;
@@ -89,7 +89,7 @@ class Enemy extends Entity {
     attackCooldown: number = 0;
 
     // Respawn
-    respawnTime: number = 60;
+    respawnTime: number = GameConstants.Enemy.DEFAULT_RESPAWN_TIME;
     respawnTimer: number = 0;
     isDead: boolean = false;
 
@@ -97,12 +97,12 @@ class Enemy extends Entity {
     facingRight: boolean = true;
     frameIndex: number = 0;
     frameTimer: number = 0;
-    frameInterval: number = 200;
+    frameInterval: number = GameConstants.Enemy.FRAME_INTERVAL;
 
     // Wander behavior
     wanderTarget: { x: number; y: number } | null = null;
     wanderTimer: number = 0;
-    wanderInterval: number = 3000;
+    wanderInterval: number = GameConstants.Enemy.WANDER_INTERVAL_MIN;
 
     // Sprite
     spriteId: string | null = null;

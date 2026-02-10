@@ -11,12 +11,14 @@
  */
 
 import { Logger } from '@core/Logger';
-import { UIManager } from './UIManager';
+import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import { BiomeManager } from '../world/BiomeManager';
 import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
 import { IslandManager } from '../world/IslandManager';
+import { IslandType } from '@config/WorldTypes';
 import type { IGame } from '../types/core.d';
 import type { BiomeDef } from '../types/world';
 
@@ -44,7 +46,7 @@ class MinimapSystem {
         this.zoomLevel = 1;
         this.minZoom = 0.25; // Show 4x area
         this.maxZoom = 4; // Show 1/4 area
-        this.zoomStep = 0.5;
+        this.zoomStep = GameConstants.UI.MINIMAP_ZOOM_STEP;
 
         // View radius at zoom 1 (how much world to show)
         this.baseViewRadius = 3000; // pixels of world radius to show
@@ -191,9 +193,8 @@ class MinimapSystem {
     open() {
         if (!this.modal) return;
 
-        // Close other fullscreen UIs first
-        if (UIManager && UIManager.closeOtherFullscreenUIs) {
-            UIManager.closeOtherFullscreenUIs(this);
+        if (EventBus && GameConstants?.Events) {
+            EventBus.emit(GameConstants.Events.UI_FULLSCREEN_OPENED, { source: this });
         }
 
         // Hide weapon swap button
@@ -328,7 +329,7 @@ class MinimapSystem {
                     continue;
 
                 // Island color based on state
-                if (island.type === 'home') {
+                if (island.type === IslandType.HOME) {
                     ctx.fillStyle = '#4CAF50'; // Green for home
                 } else if (island.unlocked) {
                     ctx.fillStyle = '#2196F3'; // Blue for unlocked
@@ -388,7 +389,7 @@ class MinimapSystem {
         if (hero) {
             const centerX = canvasSize / 2;
             const centerY = canvasSize / 2;
-            const pulse = Math.sin(Date.now() / 200) * 0.3 + 1;
+            const pulse = Math.sin(Date.now() / GameConstants.UI.MINIMAP_PULSE_MS) * 0.3 + 1;
 
             // Glow
             ctx.fillStyle = 'rgba(255, 87, 34, 0.4)';

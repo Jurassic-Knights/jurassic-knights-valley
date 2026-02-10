@@ -20,7 +20,6 @@ import { VFXConfig } from '@data/VFXConfig';
 import { AudioManager } from '@audio/AudioManager';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
-import { FloatingTextManager } from '@vfx/FloatingText';
 import type { IGame, IEntity } from '../types/core.d';
 import { isDamageable, isMortal, DamageableEntity } from '../utils/typeGuards';
 
@@ -79,27 +78,22 @@ class DamageSystem {
 
         let tookDamage = false;
 
-        if (healthComponent) {
-            // Use component method if available
-            if (typeof healthComponent.takeDamage === 'function') {
-                Logger.info(
-                    `[DamageSystem] Applying ${finalDamage} damage to component on ${entity.id}`
-                );
-                healthComponent.takeDamage(finalDamage);
-                tookDamage = true;
-                if (entity.id === 'hero') {
-                    EventBus.emit(Events.HERO_HEALTH_CHANGE, { current: healthComponent.health, max: healthComponent.maxHealth });
-                } else {
-                    EventBus.emit(Events.ENTITY_HEALTH_CHANGE, { entity, current: healthComponent.health, max: healthComponent.maxHealth });
-                }
-            } else if (typeof healthComponent.health === 'number') {
-                healthComponent.health = Math.max(0, healthComponent.health - finalDamage);
-                tookDamage = true;
-                if (entity.id === 'hero') {
-                    EventBus.emit(Events.HERO_HEALTH_CHANGE, { current: healthComponent.health, max: healthComponent.maxHealth ?? entity.maxHealth });
-                } else {
-                    EventBus.emit(Events.ENTITY_HEALTH_CHANGE, { entity, current: healthComponent.health, max: healthComponent.maxHealth ?? entity.maxHealth });
-                }
+        if (healthComponent && typeof healthComponent.health === 'number') {
+            // Data-only: apply damage and clamp; systems emit events
+            Logger.info(
+                `[DamageSystem] Applying ${finalDamage} damage to component on ${entity.id}`
+            );
+            healthComponent.health = Math.max(0, healthComponent.health - finalDamage);
+            if (healthComponent.health <= 0) {
+                healthComponent.isDead = true;
+                healthComponent.health = 0;
+            }
+            tookDamage = true;
+            const maxH = healthComponent.maxHealth ?? entity.maxHealth;
+            if (entity.entityType === EntityTypes.HERO) {
+                EventBus.emit(Events.HERO_HEALTH_CHANGE, { current: healthComponent.health, max: maxH });
+            } else {
+                EventBus.emit(Events.ENTITY_HEALTH_CHANGE, { entity, current: healthComponent.health, max: maxH });
             }
         } else if (isDamageable(entity)) {
             // Entity handles its own damage (e.g. Resource)
@@ -147,18 +141,16 @@ class DamageSystem {
         const x = entity.x;
         const y = entity.y;
 
-        // Floating Text
-        if (FloatingTextManager) {
-            // Color based on type (Crit = yellow, Normal = white, Poison = green)
-            // FloatingTextManager handles scale via type configuration
-            const textType = type === 'crit' ? 'critical' : 'damage';
-
-            const yOffset = GameConstants.Damage.FLOATING_TEXT_Y_OFFSET;
-            if (type === 'crit') {
-                FloatingTextManager.showDamage(x, y - yOffset, amount, true);
-            } else {
-                FloatingTextManager.spawn(x, y - yOffset, Math.round(amount).toString(), textType);
-            }
+        // Floating Text: emit event; FloatingTextManager subscribes
+        const yOffset = GameConstants.Damage.FLOATING_TEXT_Y_OFFSET;
+        const isCrit = type === 'crit';
+        if (EventBus) {
+            EventBus.emit(GameConstants.Events.DAMAGE_NUMBER_REQUESTED, {
+                x,
+                y: y - yOffset,
+                amount: Math.round(amount),
+                isCrit
+            });
         }
 
         // SFX

@@ -7,6 +7,7 @@
 
 import { AssetLoader } from '@core/AssetLoader';
 import { DOMUtils } from '@core/DOMUtils';
+import { GameConstants } from '@data/GameConstants';
 
 export interface WheelItem {
     id: string;
@@ -382,7 +383,7 @@ export class WeaponWheel {
                     iconUrl = AssetLoader.getImagePath('weapon_melee_mace_t1_01') || '';
                 else if (item.id.includes('axe'))
                     iconUrl = AssetLoader.getImagePath('weapon_melee_war_axe_t1_01') || '';
-                else if (item.id === 'shield')
+                else if (item.id === GameConstants.Equipment.SHIELD_CATEGORY_ID)
                     iconUrl = AssetLoader.getImagePath('weapon_melee_shield_t1_01') || '';
 
                 if (iconUrl) {

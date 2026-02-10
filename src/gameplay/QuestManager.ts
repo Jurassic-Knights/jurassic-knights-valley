@@ -8,6 +8,7 @@
 
 import { Logger } from '@core/Logger';
 import { GameConstants } from '@data/GameConstants';
+import { EventBus } from '@core/EventBus';
 import { Registry } from '@core/Registry';
 
 interface QuestConfig {
@@ -82,8 +83,9 @@ class QuestManagerService {
         if (!questConfig) {
             Logger.info('[QuestManager] No more quests!');
             this.activeQuest = null;
-            const UIManager = Registry?.get('UIManager');
-            if (UIManager) UIManager.hideQuestPanel();
+            if (EventBus && GameConstants?.Events) {
+                EventBus.emit(GameConstants.Events.QUEST_UPDATED, { quest: null, animate: false });
+            }
             return;
         }
 
@@ -161,12 +163,15 @@ class QuestManagerService {
     }
 
     /**
-     * Update UI elements
+     * Update UI elements (emits event; UIManager subscribes and updates quest panel)
      */
     updateUI(animate: boolean = false) {
-        const UIManager = Registry?.get('UIManager');
-        if (!UIManager) return;
-        UIManager.updateQuest(this.activeQuest, animate);
+        if (EventBus && GameConstants?.Events) {
+            EventBus.emit(GameConstants.Events.QUEST_UPDATED, {
+                quest: this.activeQuest,
+                animate
+            });
+        }
     }
 }
 

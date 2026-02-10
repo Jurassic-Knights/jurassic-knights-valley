@@ -7,6 +7,8 @@ import { AudioManager } from '../../audio/AudioManager';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
+import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 
 interface ForgeContext {
     slotId?: number;
@@ -47,6 +49,15 @@ class ForgePanel extends UIPanel {
             btnCloseForge.addEventListener('click', () => {
                 this.close();
             });
+        }
+        if (EventBus && GameConstants?.Events) {
+            EventBus.on(
+                GameConstants.Events.OPEN_FORGE,
+                (data: { view?: string } | null) => {
+                    this.render((data?.view as string) || 'dashboard');
+                    this.open();
+                }
+            );
         }
     }
 
@@ -121,7 +132,7 @@ class ForgePanel extends UIPanel {
                             </div>
                             <div style="width: 100%; display: flex; flex-direction: column; gap: 2px;">
                                  <div class="slot-name" style="font-size: 9px; color: #888;">Locked</div>
-                                 <div class="locked-cost" style="width: 100%; text-align: right; color: #F39C12; font-size: 10px; font-weight: bold;">1000g</div>
+                                 <div class="locked-cost" style="width: 100%; text-align: right; color: #F39C12; font-size: 10px; font-weight: bold;">${GameConstants.Crafting.FORGE_SLOT_UNLOCK_COST}g</div>
                             </div>
                         </div>
                     `;
@@ -132,7 +143,7 @@ class ForgePanel extends UIPanel {
                         } else {
                             if (AudioManager) AudioManager.playSFX('sfx_ui_error');
                             slotEl.style.borderColor = 'red';
-                            setTimeout(() => (slotEl.style.borderColor = ''), 200);
+                            setTimeout(() => (slotEl.style.borderColor = ''), GameConstants.Timing.BORDER_FLASH_DURATION);
                         }
                     };
                 } else if (slot.status === 'crafting') {
@@ -298,7 +309,7 @@ class ForgePanel extends UIPanel {
                     (confirmBtn as HTMLElement).textContent = 'FAILED';
                     setTimeout(
                         () => ((confirmBtn as HTMLElement).textContent = 'START FORGING'),
-                        1000
+                        GameConstants.Timing.BUTTON_RESET_DELAY
                     );
                 }
             };

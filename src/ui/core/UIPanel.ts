@@ -10,6 +10,8 @@
 import { UIManager } from '../../ui/UIManager';
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
+import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import { UIPanelConfig, UIPanelOptions } from '../../types/ui';
 
 class UIPanel {
@@ -50,7 +52,7 @@ class UIPanel {
             // Fallback retry if UIManager loads later
             setTimeout(() => {
                 if (UIManager && UIManager.registerPanel) UIManager.registerPanel(this);
-            }, 100);
+            }, GameConstants.Timing.UI_PANEL_DEBOUNCE_MS);
         }
     }
 
@@ -76,9 +78,8 @@ class UIPanel {
         if (!this.el) this.el = document.getElementById(this.id);
         if (!this.el) return;
 
-        // Close other fullscreen UIs first
-        if (UIManager && UIManager.closeOtherFullscreenUIs) {
-            UIManager.closeOtherFullscreenUIs(this);
+        if (EventBus && GameConstants?.Events) {
+            EventBus.emit(GameConstants.Events.UI_FULLSCREEN_OPENED, { source: this });
         }
 
         // If docked, we might need to close other docked panels (Accordion)

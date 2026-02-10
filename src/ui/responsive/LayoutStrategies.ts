@@ -1,12 +1,12 @@
 /**
- * LayoutStrategies.js
+ * LayoutStrategies
  * Defines behavior for Mobile vs Desktop layouts
  * Handles DOM reparenting and state management
  */
 
 import { Logger } from '@core/Logger';
-import { InventoryUI } from '../InventoryUI';
-import { Registry } from '@core/Registry';
+import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import type { UIManagerService } from '../UIManager';
 import type { IUIPanel } from '../../types/ui';
 
@@ -44,10 +44,8 @@ class MobileLayout extends BaseLayout {
             this.ui.panels.forEach((panel: IUIPanel) => panel.applyLayout('mobile'));
         }
 
-        // Update Inventory Grid (Specific Logic can remain or move to panel)
-        // Ideally moved to InventoryPanel.applyLayout override
-        if (InventoryUI && typeof InventoryUI.setGridSize === 'function') {
-            InventoryUI.setGridSize(3);
+        if (EventBus && GameConstants?.Events) {
+            EventBus.emit(GameConstants.Events.UI_LAYOUT_CHANGED, { format: 'mobile' });
         }
     }
 }
@@ -68,10 +66,8 @@ class DesktopLayout extends BaseLayout {
             this.ui.panels.forEach((panel: IUIPanel) => panel.applyLayout('desktop'));
         }
 
-        // Update Inventory Grid
-        if (InventoryUI && typeof InventoryUI.setGridSize === 'function') {
-            InventoryUI.setGridSize(5);
-            InventoryUI.render();
+        if (EventBus && GameConstants?.Events) {
+            EventBus.emit(GameConstants.Events.UI_LAYOUT_CHANGED, { format: 'desktop' });
         }
     }
 }

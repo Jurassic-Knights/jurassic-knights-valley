@@ -4,6 +4,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import { IslandUpgrades, UpgradeLevel } from '../gameplay/IslandUpgrades';
 import { Registry } from '@core/Registry';
 import { UIPanel } from './core/UIPanel';
@@ -74,6 +75,9 @@ class MerchantPanel extends UIPanel {
             EventBus.on('UPGRADE_PURCHASED', () => {
                 if (this.isOpen) this.render();
             });
+            if (GameConstants?.Events) {
+                EventBus.on(GameConstants.Events.OPEN_MERCHANT, () => this.open());
+            }
 
             // Interaction Event
             EventBus.on(

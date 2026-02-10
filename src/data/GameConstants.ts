@@ -3,6 +3,8 @@
  *
  * Contains magic numbers, configuration settings, and balance values.
  */
+import { Logger } from '@core/Logger';
+
 const GameConstants = {
     // Grid System
     Grid: {
@@ -30,6 +32,8 @@ const GameConstants = {
         ISLAND_SIZE: 1024, // 8 grid cells (8 * 128)
         WATER_GAP: 256, // 2 grid cells between islands
         BRIDGE_WIDTH: 128, // 1 grid cell wide
+        /** Default padding (px) for isOnBridgeVisual checks (SpawnManager, prop placement). */
+        BRIDGE_VISUAL_PADDING: 100,
         MAP_PADDING: 2048, // 16 grid cells - expanded for open world biomes
 
         // Wall boundaries for playable area
@@ -103,7 +107,9 @@ const GameConstants = {
             armor: ['head', 'body', 'hands', 'legs', 'accessory'],
             weapon: ['hand1', 'hand2'],
             tool: ['tool_mining', 'tool_woodcutting', 'tool_harvesting', 'tool_fishing']
-        }
+        },
+        /** Weapon wheel / UI category id for shield (icon lookup). */
+        SHIELD_CATEGORY_ID: 'shield'
     },
 
     // Weapon Configuration (Single Source of Truth)
@@ -216,7 +222,11 @@ const GameConstants = {
         HEALTH_BAR_WIDTH: 120,
         PROGRESS_BAR_WIDTH: 100,
         RESOLVE_PER_PIP: 5,
-        ANIMATION_SHATTER_MS: 900
+        ANIMATION_SHATTER_MS: 900,
+        /** Minimap zoom step per click. */
+        MINIMAP_ZOOM_STEP: 0.5,
+        /** Minimap pulse animation period (ms). */
+        MINIMAP_PULSE_MS: 200
     },
 
     Rendering: {
@@ -278,6 +288,8 @@ const GameConstants = {
 
         // System Timeouts
         ELEMENT_REMOVE_DELAY: 1000,
+        /** Debounce (ms) for UI panel transitions (e.g. UIPanel). */
+        UI_PANEL_DEBOUNCE_MS: 100,
         SCROLL_ANIMATION_MS: 300,
         CACHE_CLEAR_TIMEOUT: 2000,
         ZONE_SECURED_DISPLAY: 3000,
@@ -285,6 +297,13 @@ const GameConstants = {
 
         // Conversion Factor
         MS_PER_SECOND: 1000,
+
+        /** Fallback dt (ms) when frame delta is missing/invalid (e.g. DroppedItem update). ~60fps. */
+        DT_FALLBACK_MS: 16.6,
+        /** Cap (ms) for lag spikes so one long frame does not overshoot (e.g. DroppedItem). */
+        DT_LAG_CAP_MS: 100,
+        /** Default normalized day time (0–1) for TimeSystem init and reset. */
+        DEFAULT_DAY_TIME: 0.5,
 
         // Boss / Spawn delays
         BOSS_SPAWN_DELAY_MS: 1000,
@@ -317,6 +336,26 @@ const GameConstants = {
         NAME_PLATE_Y_OFFSET: 35
     },
 
+    // EntityLoader fallbacks (when entity config is missing fields)
+    EntityLoader: {
+        DEFAULT_HEALTH: 50,
+        DEFAULT_SPEED: 80,
+        DEFAULT_DAMAGE: 10,
+        DEFAULT_ATTACK_RANGE: 80,
+        DEFAULT_AGGRO_RANGE: 200,
+        DEFAULT_LEASH_DISTANCE: 400,
+        DEFAULT_RESPAWN_TIME: 30,
+        DEFAULT_XP_REWARD: 10,
+        BOSS_HEALTH: 500,
+        BOSS_SPEED: 60,
+        BOSS_DAMAGE: 40,
+        BOSS_DEFENSE: 10,
+        BOSS_ATTACK_RANGE: 150,
+        BOSS_AGGRO_RANGE: 400,
+        BOSS_RESPAWN_TIME: 180,
+        BOSS_XP_REWARD: 200
+    },
+
     // Enemy entity defaults (fallbacks when entity config missing)
     Enemy: {
         DEFAULT_HEALTH: 30,
@@ -339,6 +378,10 @@ const GameConstants = {
         DEFAULT_RESPAWN_TIME: 30,
         DEFAULT_STAMINA: 100,
         DEFAULT_SPEED: 30,
+        /** Default move speed (normalized) when entity has no moveSpeed; * SPEED_SCALE = px/sec. */
+        DEFAULT_MOVE_SPEED: 0.5,
+        /** Converts normalized move speed to px/sec (e.g. 0.5 * 60 = 30). */
+        SPEED_SCALE: 60,
         DEFAULT_XP_REWARD: 10,
         WANDER_INTERVAL_MIN: 2000,
         WANDER_INTERVAL_MAX: 5000,
@@ -358,6 +401,9 @@ const GameConstants = {
     // Resource (nodes) defaults
     Resource: {
         HEALTH_BAR_WIDTH: 100,
+        HEALTH_BAR_HEIGHT: 14,
+        /** X offset to center bar above entity (half of HEALTH_BAR_WIDTH). */
+        HEALTH_BAR_OFFSET_X: 50,
         HEALTH_BAR_Y_OFFSET: 18,
         VFX_SPARK_LIFETIME: 300,
         T1_FAST_RESPAWN: 15,
@@ -388,10 +434,26 @@ const GameConstants = {
         DEFAULT_BASE_COST: 100
     },
 
-    // Dropped item magnet
+    // Dropped item (magnet + pickup timing)
     DroppedItem: {
         MAGNET_SPEED: 100,
-        MAGNET_ACCELERATION: 500
+        MAGNET_ACCELERATION: 500,
+        /** Minimum time (s) after land before item can be picked up (DropSpawner / DroppedItem). */
+        MIN_PICKUP_TIME: 0.8,
+        /** Shorter min pickup time (s) for crafted items flying out from Forge. */
+        MIN_PICKUP_TIME_CRAFTED: 0.5,
+        /** Delay (s) after landing before pickup eligible (visual settle). */
+        POST_LAND_DELAY: 0.5,
+        /** Tween duration (ms) for flight-from-forge animation. */
+        FLY_TWEEN_DURATION_MS: 500
+    },
+
+    // Floating text (stacking, timeouts)
+    FloatingText: {
+        /** Pixels between stacked damage numbers. */
+        STACK_SPACING: 50,
+        /** Ms before stack resets at same position. */
+        STACK_TIMEOUT_MS: 500
     },
 
     // Enemy render (health bar, elite pulse)
@@ -626,10 +688,26 @@ const GameConstants = {
 
         // Collision Events
         COLLISION_START: 'COLLISION_START', // { a, b }
-        COLLISION_END: 'COLLISION_END' // { a, b }
+        COLLISION_END: 'COLLISION_END', // { a, b }
 
-        // Generic Entity Events (used by AI system)
-        // ENTITY_DAMAGED & ENTITY_DIED defined above
+        // Quest (Agent 3: QuestManager → UIManager)
+        QUEST_UPDATED: 'QUEST_UPDATED', // { quest, animate }
+
+        // UI panels (Agent 3: ContextActionUI, UIPanel, MinimapSystem)
+        OPEN_FORGE: 'OPEN_FORGE', // { view? } optional dashboard/view
+        OPEN_MERCHANT: 'OPEN_MERCHANT', // null
+        UI_FULLSCREEN_OPENED: 'UI_FULLSCREEN_OPENED', // { source } panel/source so UIManager can close others
+        UI_LAYOUT_CHANGED: 'UI_LAYOUT_CHANGED', // null or { } — inventory/layout refresh
+
+        // Island / respawn (Agent 2: EconomySystem → SpawnManager)
+        RESPAWN_REFRESH_REQUESTED: 'RESPAWN_REFRESH_REQUESTED', // { gridX, gridY, type }
+
+        // VFX / floating text (Agent 2: DamageSystem, HeroCombatService → FloatingTextManager)
+        DAMAGE_NUMBER_REQUESTED: 'DAMAGE_NUMBER_REQUESTED', // { x, y, amount, isCrit }
+        FLOATING_TEXT_REQUESTED: 'FLOATING_TEXT_REQUESTED', // { x, y, text, options? }
+
+        // Movement result (Agent 2: DinosaurSystem uses ENTITY_MOVE_REQUEST; CollisionSystem emits result)
+        MOVEMENT_UPDATE_RESULT: 'MOVEMENT_UPDATE_RESULT', // { entity, actualDx, actualDy }
     }
 };
 
@@ -717,7 +795,7 @@ if (typeof window !== 'undefined') {
                 (persisted as Record<string, unknown>)[typedKey] = GameConstants[typedKey];
             }
         }
-        console.log('[HMR] GameConstants updated in-place');
+        Logger.info('[HMR] GameConstants updated in-place');
     }
 }
 

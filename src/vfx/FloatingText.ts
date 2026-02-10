@@ -7,6 +7,8 @@
  * Owner: VFX Specialist
  */
 import { Registry } from '@core/Registry';
+import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import { FloatingTextConfig } from '../types/vfx';
 
 class FloatingText {
@@ -121,8 +123,8 @@ const FloatingTextManager = {
 
     // Track recent spawn positions for stacking
     recentSpawns: new Map(), // key: "x,y" -> { count, lastTime }
-    stackSpacing: 50, // Pixels between stacked texts
-    stackTimeout: 500, // ms before stack resets
+    stackSpacing: GameConstants.FloatingText.STACK_SPACING,
+    stackTimeout: GameConstants.FloatingText.STACK_TIMEOUT_MS,
 
     // Type-based configurations
     configs: {
@@ -198,7 +200,8 @@ const FloatingTextManager = {
      * Get stack offset for position
      */
     getStackOffset(x: number, y: number) {
-        const key = `${Math.round(x / 50)},${Math.round(y / 50)}`; // Round to grid
+        const grid = GameConstants.FloatingText.STACK_SPACING;
+        const key = `${Math.round(x / grid)},${Math.round(y / grid)}`;
         const now = Date.now();
 
         const existing = this.recentSpawns.get(key);
@@ -269,6 +272,23 @@ const FloatingTextManager = {
 };
 
 if (Registry) Registry.register('FloatingTextManager', FloatingTextManager);
+
+// Subscribe to EventBus so systems emit events instead of calling FloatingTextManager directly
+if (typeof EventBus !== 'undefined') {
+    EventBus.on(
+        GameConstants.Events.DAMAGE_NUMBER_REQUESTED,
+        (data: { x: number; y: number; amount: number; isCrit?: boolean }) => {
+            FloatingTextManager.showDamage(data.x, data.y, data.amount, data.isCrit ?? false);
+        }
+    );
+    EventBus.on(
+        GameConstants.Events.FLOATING_TEXT_REQUESTED,
+        (data: { x: number; y: number; text: string; options?: Record<string, unknown> }) => {
+            const type = (data.options?.type as string) ?? 'damage';
+            FloatingTextManager.spawn(data.x, data.y, data.text, type);
+        }
+    );
+}
 
 // ES6 Module Export
 export { FloatingText, FloatingTextManager };

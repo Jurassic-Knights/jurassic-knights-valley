@@ -54,6 +54,11 @@
 
 ---
 
+## Config and code references
+
+- **Boss/entity config:** Use stable entity IDs in code; `species` or display keys in config are for lore/UI only.
+- **Equipment drops (e.g. boss loot):** Use stable equipment IDs (e.g. `weapon_t3_01`) in data; display names live in the `name` field.
+
 ## Adding new conventions
 
 When introducing a new category of asset or entity (e.g. new UI widget type, new creature class, new audio family):

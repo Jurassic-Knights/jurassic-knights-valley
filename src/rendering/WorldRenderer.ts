@@ -12,6 +12,7 @@ import { IGame, IViewport } from '../types/core.d';
 import { AssetLoader } from '@core/AssetLoader';
 import { IslandManagerService } from '../world/IslandManagerCore';
 import { Island } from '../types/world';
+import { IslandType, BridgeOrientation } from '@config/WorldTypes';
 
 // Extended interface for runtime caching
 interface CachedIsland extends Island {
@@ -64,7 +65,7 @@ class WorldRenderer {
             // Cache asset ID on island
             if (!island._cachedAssetId) {
                 island._cachedAssetId =
-                    island.type === 'home'
+                    island.type === IslandType.HOME
                         ? 'world_island_home'
                         : 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
 
@@ -225,7 +226,7 @@ class WorldRenderer {
                 // PERF: Cache asset ID on island to avoid string ops per frame
                 if (!island._cachedAssetId) {
                     island._cachedAssetId =
-                        island.type === 'home'
+                        island.type === IslandType.HOME
                             ? 'world_island_home'
                             : 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
                     // Pre-cache scaled dimensions
@@ -311,7 +312,7 @@ class WorldRenderer {
             if (planksImg) {
                 ctx.translate(bridge.x + bridge.width / 2, bridge.y + bridge.height / 2);
 
-                if (bridge.type === 'horizontal') {
+                if (bridge.type === BridgeOrientation.HORIZONTAL) {
                     ctx.rotate(Math.PI / 2);
                     ctx.drawImage(
                         planksImg,
@@ -337,7 +338,7 @@ class WorldRenderer {
                 // Helper lines
                 ctx.strokeStyle = '#5A4A2A';
                 ctx.lineWidth = 2;
-                if (bridge.type === 'horizontal') {
+                if (bridge.type === BridgeOrientation.HORIZONTAL) {
                     for (let x = bridge.x + 10; x < bridge.x + bridge.width; x += 15) {
                         ctx.beginPath();
                         ctx.moveTo(x, bridge.y);

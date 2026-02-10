@@ -13,7 +13,6 @@ import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { ProjectileVFX } from '@vfx/ProjectileVFX';
 import { VFXConfig } from '@data/VFXConfig';
-import { FloatingTextManager } from '@vfx/FloatingText';
 import { Registry } from '@core/Registry';
 import { inputSystem } from '../input/InputSystem';
 import { EntityTypes } from '@config/EntityTypes';
@@ -236,7 +235,7 @@ const HeroCombatService = {
             hero.attackTimer = 1 / combat.rate;
         } else {
             if (hero.attackTimer > 0) return false;
-            hero.attackTimer = 0.5;
+            hero.attackTimer = GameConstants.Combat.ATTACK_COOLDOWN;
         }
 
         // Calculate total damage from weapons in range
@@ -311,9 +310,14 @@ const HeroCombatService = {
         const justKilled = false; // DamageSystem handles death, this is just for local return if needed
         // We assume false for now as death is async event
 
-        // Spawn damage popup
-        if (FloatingTextManager && totalDmg > 0) {
-            FloatingTextManager.showDamage(target.x, target.y, totalDmg, false);
+        // Spawn damage popup via EventBus; FloatingTextManager subscribes
+        if (EventBus && totalDmg > 0) {
+            EventBus.emit(GameConstants.Events.DAMAGE_NUMBER_REQUESTED, {
+                x: target.x,
+                y: target.y,
+                amount: totalDmg,
+                isCrit: false
+            });
         }
 
         return justKilled;

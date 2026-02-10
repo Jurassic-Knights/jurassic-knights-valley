@@ -8,6 +8,7 @@
  */
 
 import type { IViewport, IGame } from '../types/core';
+import { IslandType, BridgeOrientation } from '@config/WorldTypes';
 
 const GridRenderer = {
     _zoneImages: {} as Record<string, HTMLImageElement>,
@@ -77,7 +78,7 @@ const GridRenderer = {
             // Try background image
             if (assetLoader) {
                 let assetId = 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
-                if (island.type === 'home') assetId = 'world_island_home';
+                if (island.type === IslandType.HOME) assetId = 'world_island_home';
 
                 const bgPath = assetLoader.getImagePath(assetId);
                 if (bgPath) {
@@ -162,7 +163,7 @@ const GridRenderer = {
             if (planksImg) {
                 ctx.translate(bridge.x + bridge.width / 2, bridge.y + bridge.height / 2);
 
-                if (bridge.type === 'horizontal') {
+                if (bridge.type === BridgeOrientation.HORIZONTAL) {
                     ctx.rotate(Math.PI / 2);
                     ctx.drawImage(
                         planksImg,
@@ -187,7 +188,7 @@ const GridRenderer = {
 
                 ctx.strokeStyle = '#5A4A2A';
                 ctx.lineWidth = 2;
-                if (bridge.type === 'horizontal') {
+                if (bridge.type === BridgeOrientation.HORIZONTAL) {
                     for (let x = bridge.x + 10; x < bridge.x + bridge.width; x += 15) {
                         ctx.beginPath();
                         ctx.moveTo(x, bridge.y);

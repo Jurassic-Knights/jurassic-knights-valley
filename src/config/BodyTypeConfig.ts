@@ -6,6 +6,7 @@
  */
 
 import { getConfig } from '@data/GameConstants';
+import { Logger } from '@core/Logger';
 
 export const BodyTypeConfig: Record<string, { scale: number }> = {
     muscle: { scale: 1.25 },
@@ -34,7 +35,7 @@ if (import.meta.hot) {
     import.meta.hot.accept((newModule) => {
         if (newModule) {
             Object.assign(BodyTypeConfig, newModule.BodyTypeConfig);
-            console.log('[HMR] BodyTypeConfig updated');
+            Logger.info('[HMR] BodyTypeConfig updated');
         }
     });
 }

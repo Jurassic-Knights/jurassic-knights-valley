@@ -16,6 +16,7 @@ import { CombatComponent } from '../components/CombatComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { HeroDefaults } from '@config/HeroDefaults';
 import { EventBus } from '@core/EventBus';
+import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
 import { EquipmentManager } from '@systems/EquipmentManager';
 import type { IComponents, IEntity } from '../types/core';
@@ -221,7 +222,7 @@ class Hero extends Entity {
     }
     set speed(val) {
         // Speed is now controlled by GameConstants, this setter is for backwards compatibility
-        console.warn(
+        Logger.warn(
             '[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED'
         );
     }

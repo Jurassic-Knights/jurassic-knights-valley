@@ -10,10 +10,9 @@ import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
 import { spawnManager } from './SpawnManager';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
-import { collisionSystem } from './CollisionSystem';
 import type { IGame, IEntity } from '../types/core.d';
 
 // Bounds padding constant (was from BaseCreature)
@@ -44,8 +43,15 @@ class DinosaurSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on('ENTITY_DAMAGED', (data: EntityDamageEvent) => this.onEntityDamaged(data));
-            EventBus.on('ENTITY_DIED', (data: EntityDeathEvent) => this.onEntityDied(data));
+            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data: EntityDamageEvent) => this.onEntityDamaged(data));
+            EventBus.on(GameConstants.Events.ENTITY_DIED, (data: EntityDeathEvent) => this.onEntityDied(data));
+            EventBus.on(
+                GameConstants.Events.MOVEMENT_UPDATE_RESULT,
+                (data: { entity: IEntity; actualDx: number; actualDy: number }) => {
+                    const d = data.entity as IEntity & { _moveRequested?: { dx: number; dy: number }; _moveResult?: { actualDx: number; actualDy: number } };
+                    if (d) d._moveResult = { actualDx: data.actualDx, actualDy: data.actualDy };
+                }
+            );
         }
     }
 
@@ -139,8 +145,10 @@ class DinosaurSystem {
                 // Respawn
                 dino.state = 'alive';
                 dino.health = dino.maxHealth;
-                // Sync component
-                if (dino.components.health) dino.components.health.respawn();
+                if (dino.components.health) {
+                    dino.components.health.isDead = false;
+                    dino.components.health.health = dino.components.health.maxHealth;
+                }
 
                 if (AudioManager) AudioManager.playSFX('sfx_dino_respawn');
                 if (VFXController && VFXConfig) {
@@ -161,23 +169,24 @@ class DinosaurSystem {
             this.changeDirection(dino);
         }
 
-        // Move using CollisionSystem (Physics + Terrain)
-        const speed = (dino.moveSpeed || 0.5) * 60; // Convert to px/sec
+        // Move via EventBus: emit ENTITY_MOVE_REQUEST; CollisionSystem applies and emits MOVEMENT_UPDATE_RESULT
+        const cfg = GameConstants.Dinosaur;
+        const speedPxPerSec = (dino.moveSpeed ?? cfg.DEFAULT_MOVE_SPEED) * cfg.SPEED_SCALE;
+        const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
+        const dx = dino.wanderDirection.x * (speedPxPerSec * dt / msPerSecond);
+        const dy = dino.wanderDirection.y * (speedPxPerSec * dt / msPerSecond);
 
-        // Import CollisionSystem dynamically or assume global import at top?
-        // Better to use the singleton we know exists.
-        // Assuming 'collisionSystem' is exported from '../systems/CollisionSystem'
+        const d = dino as IEntity & { _moveRequested?: { dx: number; dy: number }; _moveResult?: { actualDx: number; actualDy: number } };
+        d._moveRequested = { dx, dy };
+        d._moveResult = undefined;
+        EventBus.emit(GameConstants.Events.ENTITY_MOVE_REQUEST, { entity: dino, dx, dy });
 
-        // Use CollisionSystem for deterministic movement & resolution
-        // This handles terrain collision and entity separation
-        const moveResult = collisionSystem.updateMovement(dino, dino.wanderDirection, speed, dt);
-
-        // If we hit a wall (terrain), bounce
-        if (moveResult && moveResult.collidedX) dino.wanderDirection.x *= -1;
-        if (moveResult && moveResult.collidedY) dino.wanderDirection.y *= -1;
-
-        // If we're stuck (not moving but want to), force direction change
-        if (moveResult && moveResult.x === 0 && moveResult.y === 0 && dt > 0) {
+        const res = d._moveResult;
+        const collidedX = res && dx !== 0 && res.actualDx === 0;
+        const collidedY = res && dy !== 0 && res.actualDy === 0;
+        if (collidedX) dino.wanderDirection.x *= -1;
+        if (collidedY) dino.wanderDirection.y *= -1;
+        if (res && res.actualDx === 0 && res.actualDy === 0 && dt > 0) {
             this.changeDirection(dino);
         }
 

@@ -10,6 +10,7 @@
 
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
+import { GameConstants } from '@data/GameConstants';
 import manifest from './manifest';
 import { EntityConfig, IEntity } from '../types/core';
 
@@ -83,38 +84,41 @@ const EntityLoader = {
     loaded: false,
     basePath: 'src/entities/',
 
-    // Default stats applied when entity JSON is missing fields
-    defaults: {
-        enemy: {
-            gridSize: 1,
-            width: 128,
-            height: 128,
-            health: 50,
-            speed: 80,
-            damage: 10,
-            defense: 0,
-            attackRange: 80,
-            attackRate: 1.0,
-            aggroRange: 200,
-            leashDistance: 400,
-            respawnTime: 30,
-            xpReward: 10
-        },
-        boss: {
-            gridSize: 3,
-            width: 384,
-            height: 384,
-            health: 500,
-            speed: 60,
-            damage: 40,
-            defense: 10,
-            attackRange: 150,
-            attackRate: 0.8,
-            aggroRange: 400,
-            respawnTime: 180,
-            xpReward: 200
-        }
-    } as Record<string, unknown>,
+    // Default stats applied when entity JSON is missing fields (from GameConstants.EntityLoader)
+    get defaults() {
+        const L = GameConstants.EntityLoader;
+        return {
+            enemy: {
+                gridSize: 1,
+                width: 128,
+                height: 128,
+                health: L.DEFAULT_HEALTH,
+                speed: L.DEFAULT_SPEED,
+                damage: L.DEFAULT_DAMAGE,
+                defense: 0,
+                attackRange: L.DEFAULT_ATTACK_RANGE,
+                attackRate: 1.0,
+                aggroRange: L.DEFAULT_AGGRO_RANGE,
+                leashDistance: L.DEFAULT_LEASH_DISTANCE,
+                respawnTime: L.DEFAULT_RESPAWN_TIME,
+                xpReward: L.DEFAULT_XP_REWARD
+            },
+            boss: {
+                gridSize: 3,
+                width: 384,
+                height: 384,
+                health: L.BOSS_HEALTH,
+                speed: L.BOSS_SPEED,
+                damage: L.BOSS_DAMAGE,
+                defense: L.BOSS_DEFENSE,
+                attackRange: L.BOSS_ATTACK_RANGE,
+                attackRate: 0.8,
+                aggroRange: L.BOSS_AGGRO_RANGE,
+                respawnTime: L.BOSS_RESPAWN_TIME,
+                xpReward: L.BOSS_XP_REWARD
+            }
+        } as Record<string, unknown>;
+    },
 
     /**
      * Initialize - called by Game.js via SystemConfig

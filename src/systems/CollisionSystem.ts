@@ -1,3 +1,6 @@
+/**
+ * CollisionSystem – Resolves spatial collisions, movement, and triggers between entities using a spatial hash.
+ */
 import { ISystem, IGame, IEntity } from '../types/core';
 import { Entity } from '../core/Entity';
 import { Logger } from '../core/Logger';
@@ -7,6 +10,8 @@ import { GameConstants } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
 import { Registry } from '../core/Registry';
 import { EntityManagerService } from '../core/EntityManager';
+import { EntityTypes } from '../config/EntityTypes';
+import { ZoneType } from '../config/WorldTypes';
 
 export class CollisionSystem implements ISystem {
     private entities: Entity[] = [];
@@ -41,7 +46,12 @@ export class CollisionSystem implements ISystem {
 
         EventBus.on(GameConstants.Events.ENTITY_MOVE_REQUEST, (data: { entity: Entity; dx: number; dy: number }) => {
             if (data?.entity != null && this.entities.includes(data.entity)) {
-                this.move(data.entity, data.dx, data.dy);
+                const result = this.move(data.entity, data.dx, data.dy);
+                EventBus.emit(GameConstants.Events.MOVEMENT_UPDATE_RESULT, {
+                    entity: data.entity,
+                    actualDx: result.x,
+                    actualDy: result.y
+                });
             }
         });
 
@@ -457,12 +467,12 @@ export class CollisionSystem implements ISystem {
 
             // Additional logging for coordinate verification
             if (!loggedOne && Math.random() < logRate) {
-                Logger.info(`[CollisionSystem] Drawing ${entity.id} at [${Math.floor(bounds.x)}, ${Math.floor(bounds.y)}] size [${bounds.width}x${bounds.height}] color: ${entity.id === 'hero' ? 'GREEN' : 'OTHER'}`);
+                Logger.info(`[CollisionSystem] Drawing ${entity.id} at [${Math.floor(bounds.x)}, ${Math.floor(bounds.y)}] size [${bounds.width}x${bounds.height}] color: ${entity.entityType === EntityTypes.HERO ? 'GREEN' : 'OTHER'}`);
                 loggedOne = true;
             }
 
             // Color coding
-            if (entity.id === 'hero') {
+            if (entity.entityType === EntityTypes.HERO) {
                 ctx.strokeStyle = '#00FF00'; // Green (Hero)
             } else if (col.layer === CollisionLayers.ENEMY) {
                 ctx.strokeStyle = '#FF0000'; // Red (Enemy)
@@ -512,7 +522,7 @@ export class CollisionSystem implements ISystem {
         ctx.fillStyle = 'rgba(0, 0, 255, 0.2)'; // Blue triggers
         if (IslandManager.walkableZones) {
             for (const zone of IslandManager.walkableZones) {
-                if (zone.type === 'bridge') {
+                if (zone.type === ZoneType.BRIDGE) {
                     ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
                 }
             }

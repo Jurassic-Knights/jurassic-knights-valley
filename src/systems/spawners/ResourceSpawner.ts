@@ -15,6 +15,7 @@ import { entityManager } from '@core/EntityManager';
 import type { Island } from '../../types/world';
 import { getConfig } from '@data/GameConfig';
 import { EntityTypes } from '@config/EntityTypes';
+import { IslandType } from '@config/WorldTypes';
 import { SpawnManagerService } from '../SpawnManager';
 import { IslandUpgrades } from '../../gameplay/IslandUpgrades';
 import { IslandManagerService } from '../../world/IslandManager';
@@ -89,7 +90,7 @@ class ResourceSpawner {
      * Spawn resources in a grid pattern on a zone
      */
     spawnResourcesGridOnIsland(island: Island, count: number, startIndex: number = 0) {
-        if (!this.spawnManager.gameInstance || island.type === 'home') return;
+        if (!this.spawnManager.gameInstance || island.type === IslandType.HOME) return;
 
         const type = island.resourceType || 'node_mining_t1_02'; // Default to Stone Pile
         const cols = GameConstants.Spawning.RESOURCE_GRID.COLS;

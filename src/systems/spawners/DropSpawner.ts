@@ -48,7 +48,7 @@ class DropSpawner {
             y: y,
             resourceType: resourceType,
             amount: amount,
-            minPickupTime: 2.0
+            minPickupTime: GameConstants.DroppedItem.MIN_PICKUP_TIME
         });
 
         drop.flyTo(targetX, targetY);
@@ -72,7 +72,7 @@ class DropSpawner {
             resourceType: type,
             amount: amount,
             customIcon: icon,
-            minPickupTime: 0.5
+            minPickupTime: GameConstants.DroppedItem.MIN_PICKUP_TIME_CRAFTED
         });
 
         entityManager.add(drop);

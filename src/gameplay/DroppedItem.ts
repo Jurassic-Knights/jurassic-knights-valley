@@ -114,9 +114,9 @@ class DroppedItem extends Entity {
         // Pickup Delay
         this.age = 0;
         this.landedTime = null; // Set when flight finishes
-        this.postLandDelay = 0.5; // Wait 0.5s after landing
+        this.postLandDelay = GameConstants.DroppedItem.POST_LAND_DELAY;
         // Use config (SpawnManager) or default
-        this.minPickupTime = config.minPickupTime !== undefined ? config.minPickupTime : 0.8;
+        this.minPickupTime = config.minPickupTime !== undefined ? config.minPickupTime : GameConstants.DroppedItem.MIN_PICKUP_TIME;
     }
 
     /**
@@ -150,7 +150,7 @@ class DroppedItem extends Entity {
                     y: targetY,
                     flightProgress: 1
                 },
-                500,
+                GameConstants.DroppedItem.FLY_TWEEN_DURATION_MS,
                 {
                     easing: 'linear',
                     onComplete: () => this.onLand()
@@ -218,12 +218,12 @@ class DroppedItem extends Entity {
     update(dt: number) {
         super.update(dt); // Call parent update for active/inactive logic
 
-        // REWRITE: Robust dt handling
+        // REWRITE: Robust dt handling (data-driven from GameConstants)
         let safeDt = dt;
-        if (!safeDt || isNaN(safeDt) || safeDt <= 0) safeDt = 16.6; // Fallback to 60fps
-        if (safeDt > 100) safeDt = 100; // Cap lag spikes at 100ms
+        if (!safeDt || isNaN(safeDt) || safeDt <= 0) safeDt = GameConstants.Timing.DT_FALLBACK_MS;
+        if (safeDt > GameConstants.Timing.DT_LAG_CAP_MS) safeDt = GameConstants.Timing.DT_LAG_CAP_MS;
 
-        const dtSec = safeDt / 1000;
+        const dtSec = safeDt / GameConstants.Timing.MS_PER_SECOND;
 
         this.pulseTime += dtSec;
         this.age += dtSec;

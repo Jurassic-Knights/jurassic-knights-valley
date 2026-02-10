@@ -19,7 +19,7 @@ class TimeSystem {
     // Property declarations
     game: IGame | null = null;
     totalTime: number = 0;
-    dayTime: number = 0.5;
+    dayTime: number = GameConstants.Timing.DEFAULT_DAY_TIME;
     dayCount: number = 1;
     currentPhase: string = 'DAWN';
     currentSeasonIdx: number = 0;
@@ -146,8 +146,8 @@ class TimeSystem {
 
         // Defensive: Ensure dayTime is always valid (0.0 - 1.0)
         if (this.dayTime < 0 || this.dayTime >= 1.0 || isNaN(this.dayTime)) {
-            Logger.warn(`[TimeSystem] Invalid dayTime detected: ${this.dayTime}, resetting to 0.5`);
-            this.dayTime = 0.5;
+            Logger.warn(`[TimeSystem] Invalid dayTime detected: ${this.dayTime}, resetting to default`);
+            this.dayTime = GameConstants.Timing.DEFAULT_DAY_TIME;
         }
 
         // Check for new day (wrapped from ~1.0 to ~0.0)

@@ -173,10 +173,11 @@ class HeroSystem {
             hero.y = spawnPos.y;
 
             if (hero.components.health) {
-                hero.components.health.respawn();
+                const h = hero.components.health;
+                h.isDead = false;
+                h.health = h.getMaxHealth();
                 if (EventBus) {
-                    const h = hero.components.health;
-                    EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: h.health, max: h.maxHealth });
+                    EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: h.health, max: h.getMaxHealth() });
                 }
             }
             hero.locked = false;

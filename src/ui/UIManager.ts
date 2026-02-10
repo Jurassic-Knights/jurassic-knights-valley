@@ -130,6 +130,17 @@ class UIManagerService {
             EventBus.on(E.UI_FADE_SCREEN, (data: { onMidpoint?: () => void } | null) =>
                 this.fadeInOut(data ? data.onMidpoint : null)
             );
+            EventBus.on(
+                E.QUEST_UPDATED,
+                (data: { quest: IQuest | null; animate?: boolean }) =>
+                    this.updateQuest(data.quest ?? null, data.animate ?? false)
+            );
+            EventBus.on(
+                E.UI_FULLSCREEN_OPENED,
+                (data: { source: IFullscreenUI } | null) => {
+                    if (data?.source) this.closeOtherFullscreenUIs(data.source);
+                }
+            );
         }
 
         this.initialized = true;

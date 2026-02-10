@@ -13,6 +13,7 @@ import { WorldData } from '@data/WorldData';
 import { GameState } from '@core/State';
 import { EventBus } from '@core/EventBus';
 import { BiomeManager } from './BiomeManager';
+import { IslandType, BridgeOrientation, ZoneType } from '@config/WorldTypes';
 import type {
     Island,
     Bridge,
@@ -164,7 +165,7 @@ class IslandManagerService {
             let zoneWidth = bridge.width;
             let zoneHeight = bridge.height;
 
-            if (bridge.type === 'horizontal') {
+            if (bridge.type === BridgeOrientation.HORIZONTAL) {
                 zoneWidth = this.waterGap + overlap * 2;
             } else {
                 zoneHeight = this.waterGap + overlap * 2;
@@ -237,8 +238,8 @@ class IslandManagerService {
             const hasSouthBridge = island.gridY < this.gridRows - 1;
             const hasWestBridge = island.gridX > 0;
             const hasEastBridge = island.gridX < this.gridCols - 1;
-            const hasBiomeNorthExit = island.type === 'home';
-            const hasBiomeWestExit = island.type === 'home';
+            const hasBiomeNorthExit = island.type === IslandType.HOME;
+            const hasBiomeWestExit = island.type === IslandType.HOME;
 
             // Top edge
             for (let cell = 0; cell < zoneCells; cell++) {
@@ -326,7 +327,7 @@ class IslandManagerService {
      */
     getUnlockTrigger(x: number, y: number): Island | null {
         for (const zone of this.walkableZones) {
-            if (zone.type === 'bridge') {
+            if (zone.type === ZoneType.BRIDGE) {
                 if (
                     x >= zone.x &&
                     x <= zone.x + zone.width &&
@@ -371,7 +372,7 @@ class IslandManagerService {
             let bw = bridge.width;
             let bh = bridge.height;
 
-            if (bridge.type === 'horizontal') {
+            if (bridge.type === BridgeOrientation.HORIZONTAL) {
                 const margin = bh * marginPct;
                 by += margin;
                 bh -= margin * 2;
@@ -597,7 +598,7 @@ class IslandManagerService {
      * Get the home island
      */
     getHomeIsland(): Island | undefined {
-        return this.islands.find((i) => i.type === 'home');
+        return this.islands.find((i) => i.type === IslandType.HOME);
     }
 
     /**

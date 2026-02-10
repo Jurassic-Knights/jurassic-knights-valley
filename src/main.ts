@@ -10,7 +10,7 @@ import { Logger } from './core/Logger';
 import './SystemLoader';
 import { GameInstance } from './core/Game';
 
-console.log('[Main] All modules imported successfully');
+Logger.info('[Main] All modules imported successfully');
 
 (async function main() {
     Logger.info('=== Jurassic Knights: Valley ===');

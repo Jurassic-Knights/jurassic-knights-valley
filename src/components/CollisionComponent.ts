@@ -1,4 +1,6 @@
-
+/**
+ * CollisionComponent – Bounds, layer, mask, and trigger flag for collision detection.
+ */
 import { GameConstants } from '@data/GameConstants';
 
 export interface ICollisionComponent {

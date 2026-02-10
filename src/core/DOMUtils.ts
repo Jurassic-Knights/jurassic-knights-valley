@@ -2,6 +2,7 @@
  * DOM Utilities
  * Helper functions for creating and manipulating DOM elements.
  */
+import { Logger } from './Logger';
 
 interface CreateElementOptions {
     id?: string;
@@ -78,7 +79,7 @@ export class DOMUtils {
     static get<T extends HTMLElement>(id: string, strict: boolean = false): T | null {
         const el = document.getElementById(id);
         if (strict && !el) {
-            console.error(`[DOMUtils] Element #${id} not found`);
+            Logger.error(`[DOMUtils] Element #${id} not found`);
         }
         return el as T;
     }

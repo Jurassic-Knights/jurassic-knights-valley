@@ -8,6 +8,7 @@
 import { Logger } from '@core/Logger';
 // UIManager accessed via Registry to avoid circular dependency
 import { EventBus } from '@core/EventBus';
+import { GameConstants } from '@data/GameConstants';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
@@ -86,6 +87,16 @@ class InventoryPanel {
             EventBus.on('INVENTORY_UPDATED', () => {
                 if (this.isOpen) this._render();
             });
+            if (GameConstants?.Events) {
+                EventBus.on(
+                    GameConstants.Events.UI_LAYOUT_CHANGED,
+                    (data: { format?: string } | null) => {
+                        const format = data?.format ?? 'desktop';
+                        this.setGridSize(format === 'mobile' ? 3 : 5);
+                        this._render();
+                    }
+                );
+            }
         }
 
         Logger.info('[InventoryPanel] Initialized');

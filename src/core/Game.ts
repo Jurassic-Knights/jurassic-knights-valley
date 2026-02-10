@@ -76,7 +76,7 @@ class Game {
                 const p = loading.querySelector('p');
                 if (p) p.textContent = msg;
             }
-            console.log('[Game Debug]', msg);
+            Logger.info('[Game Debug]', msg);
         };
         debugStatus('Starting initialization...');
 
@@ -142,7 +142,7 @@ class Game {
             } catch (err) {
                 Logger.error(`[Game] CRITICAL: Failed to initialize ${name}:`, err);
                 debugStatus(`ERROR: ${name} - ${(err as Error).message}`);
-                console.error(`[Game] CRITICAL: ${name} init failed - Stack:`, err);
+                Logger.error(`[Game] CRITICAL: ${name} init failed - Stack:`, err);
                 if (config.critical) {
                     criticalInitFailed = true;
                 }

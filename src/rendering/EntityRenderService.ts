@@ -57,7 +57,7 @@ const EntityRenderService = {
         // Helper to determine render layer priority
         const getRenderLayer = (e: IEntity) => {
             if (e.entityType === EntityTypes.DROPPED_ITEM) return 2; // Top priority
-            if (e.entityType === EntityTypes.HERO || e.id === 'hero') return 1; // Middle priority (above nodes)
+            if (e.entityType === EntityTypes.HERO) return 1; // Middle priority (above nodes)
             return 0; // Standard (nodes, enemies, etc.)
         };
 
