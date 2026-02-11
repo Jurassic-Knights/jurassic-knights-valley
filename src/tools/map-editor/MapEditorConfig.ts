@@ -1,4 +1,3 @@
-
 import { GameConstants } from '@data/GameConstants';
 
 export const MapEditorConfig = {
@@ -29,14 +28,17 @@ export const MapEditorConfig = {
     // Colors for Debug/UI
     Colors: {
         GRID: 0x333333,
-        CHUNK_BORDER: 0x00FF00,
-        COLLISION_FILL: 0xFF0000,
+        CHUNK_BORDER: 0x00ff00,
+        COLLISION_FILL: 0xff0000,
         COLLISION_ALPHA: 0.3,
-        SELECTION_BORDER: 0xFFFF00
+        SELECTION_BORDER: 0xffff00
     },
     // Rendering Logic
     RenderConfig: {
         BLEND_DEPTH_FACTOR: 0.15, // Contrast of the height blend (lower = sharper)
-        NOISE_SCALE: 0.25         // Influence of noise on the transition
-    }
+        NOISE_SCALE: 0.25 // Influence of noise on the transition
+    },
+
+    /** When true, main view uses color-block placeholders instead of textures (fast). */
+    USE_PLACEHOLDER_GROUND: true
 };

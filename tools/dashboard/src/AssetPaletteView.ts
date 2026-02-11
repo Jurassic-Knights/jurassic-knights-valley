@@ -85,25 +85,36 @@ export class AssetPaletteView {
             const list: PaletteAsset[] = [];
 
             if (data.entities) {
-                data.entities.forEach((e: { id: string; [key: string]: unknown }) => {
-                    // Extract path if available in entity definition, or rely on lookup later
-                    // Entities usually don't have paths, they reference files.
-                    // But if data contains file info, use it.
-                    list.push({ id: e.id, name: e.name || e.id });
-                });
+                data.entities.forEach(
+                    (e: {
+                        id: string;
+                        name?: string;
+                        files?: { original?: string; clean?: string };
+                        [key: string]: unknown;
+                    }) => {
+                        const cleanPath = e.files?.clean || e.files?.original;
+                        const displayPath = cleanPath
+                            ? cleanPath.replace(/^(assets\/)?images\//, '')
+                            : undefined;
+                        list.push({ id: e.id, name: e.name || e.id, path: displayPath });
+                    }
+                );
             } else if (data.files) {
-                Object.values(data.files).flat().forEach((f: { path?: string; id?: string; [key: string]: unknown }) => {
-                    // Extract path from file object
-                    const cleanPath = f.files?.clean || f.files?.original;
-                    const displayPath = cleanPath ? cleanPath.replace(/^(assets\/)?images\//, '') : undefined;
-                    list.push({ id: f.id, name: f.name || f.id, path: displayPath });
-                });
+                Object.values(data.files)
+                    .flat()
+                    .forEach((f: { path?: string; id?: string; [key: string]: unknown }) => {
+                        // Extract path from file object
+                        const cleanPath = f.files?.clean || f.files?.original;
+                        const displayPath = cleanPath
+                            ? cleanPath.replace(/^(assets\/)?images\//, '')
+                            : undefined;
+                        list.push({ id: f.id, name: f.name || f.id, path: displayPath });
+                    });
             }
 
             this.categoryCache.set(category, list);
             this.assets = list;
             this.render();
-
         } catch (e) {
             this.container.innerHTML = `<div class="error">Failed to load ${category}</div>`;
             console.error(e);
@@ -113,6 +124,8 @@ export class AssetPaletteView {
     private render() {
         if (this.mode === 'zone') {
             this.renderZones();
+        } else if (this.mode === 'ground') {
+            this.renderGround();
         } else {
             this.renderObjects();
         }
@@ -121,8 +134,9 @@ export class AssetPaletteView {
     private renderObjects() {
         // Render Tabs
         const categories = ['nodes', 'enemies', 'resources', 'environment', 'items'];
-        let html = '<div class="palette-tabs" style="display:flex; gap:4px; margin-bottom:8px; overflow-x:auto; padding-bottom:4px;">';
-        categories.forEach(cat => {
+        let html =
+            '<div class="palette-tabs" style="display:flex; gap:4px; margin-bottom:8px; overflow-x:auto; padding-bottom:4px;">';
+        categories.forEach((cat) => {
             const isActive = this.currentCategory === cat;
             const bg = isActive ? '#444' : '#2d2d2d';
             const color = isActive ? '#fff' : '#888';
@@ -130,8 +144,8 @@ export class AssetPaletteView {
         });
         html += '</div>';
 
-        // Event listener for tabs? 
-        // We need to attach it in init or after render. 
+        // Event listener for tabs?
+        // We need to attach it in init or after render.
         // InnerHTML replaces elements, so listeners are lost.
         // Better: Bind click on container and delegate.
 
@@ -142,13 +156,16 @@ export class AssetPaletteView {
         }
 
         // Grid Layout matching Dashboard Cards
-        html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; padding: 10px;">';
+        html +=
+            '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; padding: 10px;">';
 
-        this.assets.forEach(asset => {
+        this.assets.forEach((asset) => {
             const imgPath = asset.path ? `/images/${asset.path}` : getAssetImage(asset.id);
             const isActive = asset.id === this.selectedAssetId;
             const activeClass = isActive ? 'active' : '';
-            const activeStyle = isActive ? 'border: 2px solid #3498db; background: rgba(52, 152, 219, 0.2);' : '';
+            const activeStyle = isActive
+                ? 'border: 2px solid #3498db; background: rgba(52, 152, 219, 0.2);'
+                : '';
 
             html += `
                 <div class="card ${activeClass}" 
@@ -167,20 +184,38 @@ export class AssetPaletteView {
         this.container.innerHTML = html;
     }
 
+    private renderGround() {
+        const html = `
+            <div style="padding:12px; color:#888; font-size:12px; line-height:1.5;">
+                <p style="margin-bottom:8px;"><strong>Ground Brush</strong></p>
+                <p style="margin-bottom:8px;">Use the brush to paint ground blend. Ground texture is determined by the Zone (biome).</p>
+                <p style="margin-bottom:8px;">• <strong>Click/drag</strong> to paint</p>
+                <p>• <strong>Shift+click</strong> to erase</p>
+            </div>
+        `;
+        this.container.innerHTML = html;
+    }
+
     private renderZones() {
-        let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 10px;">';
+        let html =
+            '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; padding: 10px;">';
 
         // Filter ZoneConfig by currentZoneCategory
-        const zones = Object.values(ZoneConfig).filter(z => z.category === this.currentZoneCategory);
+        const zones = Object.values(ZoneConfig).filter(
+            (z) => z.category === this.currentZoneCategory
+        );
 
-        zones.forEach(z => {
+        zones.forEach((z) => {
             // Hex color to rgba for style
-            // ZoneConfig colors are typically hex strings or numbers. 
+            // ZoneConfig colors are typically hex strings or numbers.
             // Assuming hex string or number.
-            const color = typeof z.color === 'number' ? '#' + z.color.toString(16).padStart(6, '0') : z.color;
+            const color =
+                typeof z.color === 'number' ? '#' + z.color.toString(16).padStart(6, '0') : z.color;
             const isActive = z.id === this.selectedAssetId;
             const activeClass = isActive ? 'active' : '';
-            const activeStyle = isActive ? 'border: 2px solid #3498db; background: rgba(52, 152, 219, 0.2);' : '';
+            const activeStyle = isActive
+                ? 'border: 2px solid #3498db; background: rgba(52, 152, 219, 0.2);'
+                : '';
 
             html += `
                 <div class="card ${activeClass}" 

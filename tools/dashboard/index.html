@@ -105,7 +105,7 @@
     <div id="map-editor-container"
         style="display:none; position:fixed; top:0; left:260px; right:0; bottom:0; background:#1a1a1a; z-index:50;">
         <div id="map-editor-sidebar"
-            style="position:absolute; top:0; left:0; width:300px; bottom:0; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd; display:flex; flex-direction:column;">
+            style="flex:0 0 300px; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd; display:flex; flex-direction:column;">
 
             <!-- Mode Toggle -->
             <div
@@ -138,31 +138,96 @@
             <h3>Palette</h3>
             <div id="palette-content" style="flex:1; overflow-y:auto;"></div>
         </div>
-        <div id="map-editor-canvas" style="position:absolute; top:0; left:300px; right:0; bottom:0; overflow:hidden;">
+        <div id="map-editor-canvas" class="map-editor-canvas" style="flex:1; min-width:0; position:relative; overflow:hidden;">
+            <div id="map-editor-toolbar"
+                style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; display:flex; gap:10px; align-items:center; z-index:10;">
+
+                <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
+                    <span style="font-size:12px;">Brush:</span>
+                    <input type="range" id="editor-brush-size" min="1" max="64" value="1" style="width:80px;">
+                    <span id="editor-brush-val" style="font-size:12px; min-width:20px;">1</span>
+                </div>
+
+                <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+
+                <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
+                    <span style="font-size:12px;">Grid:</span>
+                    <input type="range" id="editor-grid-opacity" min="0" max="100" value="50" style="width:60px;">
+                    <span id="editor-grid-val" style="font-size:12px; min-width:25px;">50%</span>
+                </div>
+
+                <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+
+                <div style="font-family: monospace;">Coords: <span id="cursor-coords"
+                        style="display:inline-block; width:100px; text-align:right;">0, 0</span></div>
+                <button data-action="toggle-map-editor">❌ Close</button>
+            </div>
         </div>
-        <div id="map-editor-toolbar"
-            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; display:flex; gap:10px; align-items:center;">
-
-            <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
-                <span style="font-size:12px;">Brush:</span>
-                <input type="range" id="editor-brush-size" min="1" max="64" value="1" style="width:80px;">
-                <span id="editor-brush-val" style="font-size:12px; min-width:20px;">1</span>
+        <!-- Maps Panel (right-side, collapsible) -->
+        <div id="maps-panel" class="map-editor-maps-panel">
+            <div class="map-editor-panel-tabs">
+                <button type="button" id="tab-maps" class="map-editor-tab active" data-tab="maps">Maps</button>
+                <button type="button" id="tab-procedural" class="map-editor-tab" data-tab="procedural">Procedural</button>
             </div>
-
-            <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
-
-            <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
-                <span style="font-size:12px;">Grid:</span>
-                <input type="range" id="editor-grid-opacity" min="0" max="100" value="50" style="width:60px;">
-                <span id="editor-grid-val" style="font-size:12px; min-width:25px;">50%</span>
+            <button type="button" id="maps-panel-toggle" class="map-editor-panel-header" aria-expanded="true">
+                <span class="map-editor-panel-icon">▼</span>
+                <span id="maps-panel-title">Maps</span>
+            </button>
+            <div id="maps-panel-body" class="map-editor-panel-body">
+                <div id="map-loaded-display" class="map-editor-loaded" style="margin-bottom:6px;font-size:11px;color:#888;"></div>
+                <div style="margin-bottom:10px;">
+                    <input type="text" id="map-save-filename" placeholder="Map name (save as new)"
+                        class="map-editor-input">
+                    <button type="button" id="map-save-btn" data-action="save-map-data"
+                        class="map-editor-save-btn">💾 Save</button>
+                </div>
+                <div id="map-status" class="map-editor-status"></div>
+                <div class="map-editor-label">Saved maps:</div>
+                <div id="map-list" class="map-editor-list"></div>
             </div>
-
-            <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
-
-            <div style="font-family: monospace;">Coords: <span id="cursor-coords"
-                    style="display:inline-block; width:100px; text-align:right;">0, 0</span></div>
-            <button data-action="save-map-data">💾 Save</button>
-            <button data-action="toggle-map-editor">❌ Close</button>
+            <div id="procedural-panel-body" class="map-editor-panel-body proc-panel-body" style="display:none;">
+                <div class="proc-section">
+                    <div class="map-editor-label">Mesh</div>
+                    <div class="proc-row"><label>Spacing</label><input type="number" id="proc-spacing" min="2" max="15" step="0.5" value="5.5"><span id="proc-spacing-val">5.5</span></div>
+                    <div class="proc-row"><label>Mountain spacing</label><input type="number" id="proc-mountain-spacing" min="10" max="80" value="35"><span id="proc-mountain-spacing-val">35</span></div>
+                    <div class="proc-row"><label>Mesh seed</label><input type="number" id="proc-mesh-seed" min="1" value="12345"></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Elevation</div>
+                    <div class="proc-row"><label>Seed</label><input type="number" id="proc-elev-seed" value="187"></div>
+                    <div class="proc-row"><label>Island</label><input type="range" id="proc-island" min="0" max="1" step="0.01" value="0.5"><span id="proc-island-val">0.5</span></div>
+                    <div class="proc-row"><label>Noisy coastlines</label><input type="range" id="proc-noisy-coastlines" min="0" max="0.1" step="0.001" value="0.01"><span id="proc-noisy-coastlines-val">0.01</span></div>
+                    <div class="proc-row"><label>Hill height</label><input type="range" id="proc-hill-height" min="0" max="0.1" step="0.001" value="0.02"><span id="proc-hill-height-val">0.02</span></div>
+                    <div class="proc-row"><label>Mountain jagged</label><input type="range" id="proc-mountain-jagged" min="0" max="1" step="0.01" value="0"><span id="proc-mountain-jagged-val">0</span></div>
+                    <div class="proc-row"><label>Mountain sharpness</label><input type="range" id="proc-mountain-sharpness" min="9.1" max="12.5" step="0.1" value="9.8"><span id="proc-mountain-sharpness-val">9.8</span></div>
+                    <div class="proc-row"><label>Mountain folds</label><input type="range" id="proc-mountain-folds" min="0" max="0.5" step="0.01" value="0.05"><span id="proc-mountain-folds-val">0.05</span></div>
+                    <div class="proc-row"><label>Ocean depth</label><input type="range" id="proc-ocean-depth" min="1" max="3" step="0.1" value="1.4"><span id="proc-ocean-depth-val">1.4</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Biomes (rainfall)</div>
+                    <div class="proc-row"><label>Wind angle °</label><input type="range" id="proc-wind-angle" min="0" max="360" value="0"><span id="proc-wind-angle-val">0</span></div>
+                    <div class="proc-row"><label>Raininess</label><input type="range" id="proc-raininess" min="0" max="2" step="0.01" value="0.9"><span id="proc-raininess-val">0.9</span></div>
+                    <div class="proc-row"><label>Rain shadow</label><input type="range" id="proc-rain-shadow" min="0.1" max="2" step="0.01" value="0.5"><span id="proc-rain-shadow-val">0.5</span></div>
+                    <div class="proc-row"><label>Evaporation</label><input type="range" id="proc-evaporation" min="0" max="1" step="0.01" value="0.5"><span id="proc-evaporation-val">0.5</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Rivers</div>
+                    <div class="proc-row"><label>lg_min_flow</label><input type="range" id="proc-lg-min-flow" min="-5" max="5" step="0.1" value="2.7"><span id="proc-lg-min-flow-val">2.7</span></div>
+                    <div class="proc-row"><label>lg_river_width</label><input type="range" id="proc-lg-river-width" min="-5" max="5" step="0.1" value="-2.4"><span id="proc-lg-river-width-val">-2.4</span></div>
+                    <div class="proc-row"><label>Flow</label><input type="range" id="proc-flow" min="0" max="1" step="0.01" value="0.2"><span id="proc-flow-val">0.2</span></div>
+                </div>
+                <div class="proc-preview-wrap" id="proc-preview-wrap" title="Click to go to location">
+                    <canvas id="proc-preview-canvas" width="380" height="380" class="proc-preview-canvas"></canvas>
+                    <canvas id="proc-preview-overlay" width="380" height="380" class="proc-preview-overlay"></canvas>
+                </div>
+                <label class="proc-live-preview-row">
+                    <input type="checkbox" id="proc-live-preview" checked>
+                    <span>Live preview</span>
+                </label>
+                <button type="button" id="proc-apply-btn" class="map-editor-save-btn" style="width:100%; margin-top:8px;">Apply to map</button>
+                <button type="button" id="proc-load-editor-btn" class="map-editor-load-preview-btn" style="width:100%; margin-top:6px;">Load into editor</button>
+                <div id="proc-status" class="map-editor-status" style="margin-top:8px;"></div>
+            </div>
         </div>
     </div>
 

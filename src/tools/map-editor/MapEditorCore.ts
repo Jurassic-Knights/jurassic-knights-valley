@@ -1,4 +1,3 @@
-
 import * as PIXI from 'pixi.js';
 import { Logger } from '@core/Logger';
 import { MapEditorConfig } from './MapEditorConfig';
@@ -16,7 +15,7 @@ import { BatchObjectCommand } from './commands/BatchObjectCommand';
 
 /**
  * MapEditorCore
- * 
+ *
  * The central controller for the Map Editor tool.
  * Manages the PixiJS Application, Input Handling, and Tool State.
  */
@@ -25,7 +24,7 @@ export class MapEditorCore {
     private container: HTMLElement | null = null;
     private worldContainer: PIXI.Container | null = null;
     private chunkManager: ChunkManager | null = null;
-    private selectedAsset: { id: string, category: string } | null = null;
+    private selectedAsset: { id: string; category: string } | null = null;
     private brushCursor: PIXI.Graphics | null = null;
 
     // State
@@ -45,9 +44,14 @@ export class MapEditorCore {
     private isDragging: boolean = false;
     private isPainting: boolean = false;
     private isSpacePressed: boolean = false;
-    private lastMousePosition: { x: number, y: number } = { x: 0, y: 0 };
+    private lastMousePosition: { x: number; y: number } = { x: 0, y: 0 };
     private currentSplatChanges: SplatChange[] = [];
-    private currentObjectActions: { type: 'add' | 'remove', x: number, y: number, assetId: string }[] = [];
+    private currentObjectActions: {
+        type: 'add' | 'remove';
+        x: number;
+        y: number;
+        assetId: string;
+    }[] = [];
 
     // Commands
     private commandManager: CommandManager;
@@ -76,7 +80,12 @@ export class MapEditorCore {
      * @param containerId The ID of the div to mount to
      * @param dataFetcher Optional function to fetch category data (Dependency Injection from Dashboard)
      */
-    public async mount(containerId: string, dataFetcher?: (category: string) => Promise<{ entities: Array<{ id: string; [key: string]: unknown }> }>): Promise<void> {
+    public async mount(
+        containerId: string,
+        dataFetcher?: (
+            category: string
+        ) => Promise<{ entities: Array<{ id: string; [key: string]: unknown }> }>
+    ): Promise<void> {
         if (this.isInitialized) return;
 
         this.container = document.getElementById(containerId);
@@ -92,20 +101,23 @@ export class MapEditorCore {
         try {
             const fetcher = dataFetcher || (async () => ({ entities: [], files: {} }));
             const categories = ['nodes', 'enemies', 'resources', 'environment', 'items'];
-            Promise.all(categories.map(cat => fetcher(cat).catch(() => ({ entities: [] }))))
-                .then(results => {
+            Promise.all(categories.map((cat) => fetcher(cat).catch(() => ({ entities: [] })))).then(
+                (results) => {
                     results.forEach((data, i) => {
                         const cat = categories[i];
                         const dict: Record<string, unknown> = {};
                         if (data.entities) {
-                            data.entities.forEach((e: { id: string; width?: number; height?: number }) => {
-                                dict[e.id] = { width: e.width, height: e.height };
-                            });
+                            data.entities.forEach(
+                                (e: { id: string; width?: number; height?: number }) => {
+                                    dict[e.id] = { width: e.width, height: e.height };
+                                }
+                            );
                         }
                         (EditorContext.registry as Record<string, unknown>)[cat] = dict;
                     });
                     Logger.info('[MapEditor] Registry Preloaded');
-                });
+                }
+            );
         } catch (e) {
             Logger.error('[MapEditor] Failed to preload registry:', e);
         }
@@ -180,7 +192,7 @@ export class MapEditorCore {
 
     public toggleCategoryVisibility(cat: ZoneCategory, visible: boolean) {
         // Toggle all IDs in this category
-        Object.values(ZoneConfig).forEach(def => {
+        Object.values(ZoneConfig).forEach((def) => {
             if (def.category === cat) {
                 if (visible) this.visibleZoneIds.add(def.id);
                 else this.visibleZoneIds.delete(def.id);
@@ -298,7 +310,9 @@ export class MapEditorCore {
                 this.commandManager.redo();
             }
         });
-        window.addEventListener('keyup', (e) => { if (e.code === 'Space') this.isSpacePressed = false; });
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'Space') this.isSpacePressed = false;
+        });
     }
 
     private handleZoom(e: WheelEvent): void {
@@ -315,10 +329,7 @@ export class MapEditorCore {
         }
 
         // Clamp
-        newZoom = Math.max(
-            MapEditorConfig.MIN_ZOOM,
-            Math.min(MapEditorConfig.MAX_ZOOM, newZoom)
-        );
+        newZoom = Math.max(MapEditorConfig.MIN_ZOOM, Math.min(MapEditorConfig.MAX_ZOOM, newZoom));
 
         // Zoom towards mouse position
         const rect = this.app!.canvas.getBoundingClientRect();
@@ -336,8 +347,8 @@ export class MapEditorCore {
             this.worldContainer.scale.set(this.zoom);
 
             // Adjust position so worldPoint is still under mouse
-            this.worldContainer.x = mouseX - (worldPos.x * this.zoom);
-            this.worldContainer.y = mouseY - (worldPos.y * this.zoom);
+            this.worldContainer.x = mouseX - worldPos.x * this.zoom;
+            this.worldContainer.y = mouseY - worldPos.y * this.zoom;
         }
 
         this.updateZoomUI();
@@ -388,7 +399,10 @@ export class MapEditorCore {
 
             // Update Brush Cursor
             if (this.brushCursor) {
-                if ((this.editingMode === 'zone' || this.editingMode === 'ground') && this.currentTool === 'brush') {
+                if (
+                    (this.editingMode === 'zone' || this.editingMode === 'ground') &&
+                    this.currentTool === 'brush'
+                ) {
                     this.brushCursor.visible = true;
                     this.brushCursor.clear();
 
@@ -409,13 +423,13 @@ export class MapEditorCore {
                         // Zone Mode (Tile Units)
                         radiusPx = (this.brushSize - 0.5) * TILE_SIZE;
                         // Snap to Tile Center
-                        snapX = Math.floor(worldX / TILE_SIZE) * TILE_SIZE + (TILE_SIZE / 2);
-                        snapY = Math.floor(worldY / TILE_SIZE) * TILE_SIZE + (TILE_SIZE / 2);
+                        snapX = Math.floor(worldX / TILE_SIZE) * TILE_SIZE + TILE_SIZE / 2;
+                        snapY = Math.floor(worldY / TILE_SIZE) * TILE_SIZE + TILE_SIZE / 2;
                     }
 
                     this.brushCursor.circle(snapX, snapY, radiusPx);
 
-                    const color = e.shiftKey ? 0xFF0000 : 0x00FF00;
+                    const color = e.shiftKey ? 0xff0000 : 0x00ff00;
                     this.brushCursor.stroke({ width: 2 / this.zoom, color: color, alpha: 0.8 });
                     this.brushCursor.fill({ color: color, alpha: 0.1 });
                 } else {
@@ -464,21 +478,27 @@ export class MapEditorCore {
             const intensity = e.shiftKey ? -50 : 50;
             const radius = (this.brushSize || 1) * 4; // Convert Tiles to Splats
 
-            this.chunkManager.paintSplat(worldX, worldY, radius, intensity)
-                .then(changes => {
-                    if (changes && changes.length > 0) {
-                        this.currentSplatChanges.push(...changes);
-                    }
-                });
+            this.chunkManager.paintSplat(worldX, worldY, radius, intensity).then((changes) => {
+                if (changes && changes.length > 0) {
+                    this.currentSplatChanges.push(...changes);
+                }
+            });
         }
         // --- OBJECT MODE ---
-        else if (this.currentTool === 'brush' && this.editingMode === 'object' && this.selectedAsset) {
+        else if (
+            this.currentTool === 'brush' &&
+            this.editingMode === 'object' &&
+            this.selectedAsset
+        ) {
             const actionType = e.shiftKey ? 'remove' : 'add';
 
             // Check if we already have an action at this location in the current batch to avoid duplicates
             // Especially important for drag
-            const existing = this.currentObjectActions.find(a =>
-                Math.abs(a.x - worldX) < 1 && Math.abs(a.y - worldY) < 1 && a.type === actionType
+            const existing = this.currentObjectActions.find(
+                (a) =>
+                    Math.abs(a.x - worldX) < 1 &&
+                    Math.abs(a.y - worldY) < 1 &&
+                    a.type === actionType
             );
 
             if (!existing) {
@@ -498,7 +518,11 @@ export class MapEditorCore {
             }
         }
         // --- ZONE MODE ---
-        else if (this.currentTool === 'brush' && this.editingMode === 'zone' && this.selectedZoneId) {
+        else if (
+            this.currentTool === 'brush' &&
+            this.editingMode === 'zone' &&
+            this.selectedZoneId
+        ) {
             const { TILE_SIZE } = MapEditorConfig;
 
             // Brush Logic
@@ -506,7 +530,12 @@ export class MapEditorCore {
             const centerTileY = Math.floor(worldY / TILE_SIZE);
 
             const radius = this.brushSize - 1;
-            const updates: Array<{ chunkKey: string; lx: number; ly: number; assetId: string | null }> = [];
+            const updates: Array<{
+                chunkKey: string;
+                lx: number;
+                ly: number;
+                assetId: string | null;
+            }> = [];
 
             for (let x = -radius; x <= radius; x++) {
                 for (let y = -radius; y <= radius; y++) {
@@ -516,8 +545,8 @@ export class MapEditorCore {
                         const ty = centerTileY + y;
 
                         // Convert back to pixels for setZone (Center aligned)
-                        const px = tx * TILE_SIZE + (TILE_SIZE / 2);
-                        const py = ty * TILE_SIZE + (TILE_SIZE / 2);
+                        const px = tx * TILE_SIZE + TILE_SIZE / 2;
+                        const py = ty * TILE_SIZE + TILE_SIZE / 2;
 
                         updates.push({
                             x: px,
@@ -546,9 +575,39 @@ export class MapEditorCore {
         return this.chunkManager;
     }
 
+    /** Current viewport in world pixels (same as used for chunk loading). */
+    public getViewportWorldRect(): { x: number; y: number; width: number; height: number } | null {
+        if (!this.app || !this.worldContainer) return null;
+        const screenWidth = this.app.canvas.width;
+        const screenHeight = this.app.canvas.height;
+        const worldX = -this.worldContainer.x / this.zoom;
+        const worldY = -this.worldContainer.y / this.zoom;
+        const worldWidth = screenWidth / this.zoom;
+        const worldHeight = screenHeight / this.zoom;
+        return { x: worldX, y: worldY, width: worldWidth, height: worldHeight };
+    }
+
+    /** Pan so that world point (worldX, worldY) is at the center of the screen. */
+    public centerViewOn(worldX: number, worldY: number): void {
+        if (!this.app || !this.worldContainer) return;
+        const cx = this.app.canvas.width / 2;
+        const cy = this.app.canvas.height / 2;
+        this.worldContainer.x = cx - worldX * this.zoom;
+        this.worldContainer.y = cy - worldY * this.zoom;
+    }
+
     public serialize(): { version: number; chunks: ChunkData[] } | null {
         if (!this.chunkManager) return null;
         return this.chunkManager.serialize();
+    }
+
+    /**
+     * Load map data from a serialized payload. Clears current map and repopulates.
+     */
+    public loadData(data: { version?: number; chunks?: ChunkData[] }): void {
+        if (!this.chunkManager) return;
+        this.chunkManager.deserialize(data);
+        this.commandManager.clear();
     }
 
     private refreshZoneRendering() {

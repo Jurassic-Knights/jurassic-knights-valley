@@ -1,7 +1,6 @@
-
 /**
  * ZonePalette
- * 
+ *
  * Defines the texture sets used for Ground Blending in different zones.
  * Each entry maps a Zone ID to a set of 3 textures:
  * - Base: The dominant ground texture (Weight = 0)
@@ -11,89 +10,131 @@
 
 export interface GroundPaletteEntry {
     baseId: string;
+    midId: string; // weight 0.5: base→mid→overlay (3-layer blend)
     overlayId: string;
     noiseId: string;
 }
 
 // --- DEFAULTS ---
 export const GroundPalette: Record<string, GroundPaletteEntry> = {
-    'default': {
+    default: {
         baseId: 'ground_base_grass_grasslands_01',
+        midId: 'ground_base_dirt_grasslands_01',
         overlayId: 'ground_base_dirt_grasslands_01',
         noiseId: 'ground_base_gravel_grasslands_01'
     },
 
     // --- BIOMES ---
-    'biome_grasslands': {
+    // 3-layer: grass (0) → sand (0.5) → mud (1) for water/coast; weight alone drives visual
+    biome_grasslands: {
         baseId: 'ground_base_grass_grasslands_01',
-        overlayId: 'ground_base_dirt_grasslands_02',
-        noiseId: 'ground_base_gravel_grasslands_01'
-    },
-    'biome_tundra': {
-        baseId: 'ground_base_snow_tundra_01',
-        overlayId: 'ground_base_rock_tundra_01',
-        noiseId: 'ground_base_gravel_tundra_01'
-    },
-    'biome_badlands': {
-        baseId: 'ground_base_cracked_earth_badlands_01',
-        overlayId: 'ground_base_rock_badlands_01',
-        noiseId: 'ground_base_gravel_badlands_01'
-    },
-    'biome_desert': {
-        baseId: 'ground_base_sand_desert_01',
-        overlayId: 'ground_base_rock_desert_01',
-        noiseId: 'ground_base_gravel_desert_01'
-    },
-    'biome_swamp': {
-        baseId: 'ground_base_mud_churned_grasslands_01', // Fallback to grasslands mud if swamp specific missing
-        overlayId: 'ground_overgrown_moss_grasslands_01',
-        noiseId: 'ground_base_dirt_grasslands_03'
-    },
-    // --- BIOME SPECIFIC OVERRIDES ---
-
-    // -- Grasslands --
-    'biome_grasslands_terrain_water': {
-        baseId: 'ground_base_sand_grasslands_01',
+        midId: 'ground_base_sand_grasslands_01',
         overlayId: 'ground_damage_churned_grasslands_01',
         noiseId: 'ground_base_gravel_grasslands_01'
     },
-    'biome_grasslands_terrain_coast': {
-        baseId: 'ground_base_grass_grasslands_01',
-        overlayId: 'ground_base_sand_grasslands_01',
-        noiseId: 'ground_base_gravel_grasslands_01'
+    biome_tundra: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
     },
-    'biome_grasslands_civ_trench': {
-        baseId: 'ground_damage_churned_grasslands_01',
-        overlayId: 'ground_interior_planks_grasslands_01',
-        noiseId: 'ground_base_gravel_grasslands_01'
+    biome_badlands: {
+        baseId: 'ground_base_cracked_earth_badlands_01',
+        midId: 'ground_base_rock_badlands_01',
+        overlayId: 'ground_base_rock_badlands_01',
+        noiseId: 'ground_base_gravel_badlands_01'
     },
-    'biome_grasslands_civ_outpost': {
-        baseId: 'ground_base_grass_grasslands_02',
-        overlayId: 'ground_base_dirt_grasslands_01',
-        noiseId: 'ground_base_gravel_grasslands_01'
-    },
-
-    // -- Default Fallbacks (For Civ only, Terrain requires Biome) --
-    'default_civ_trench': {
-        baseId: 'ground_damage_churned_grasslands_01',
-        overlayId: 'ground_interior_planks_grasslands_01',
-        noiseId: 'ground_base_gravel_grasslands_01'
-    },
-    'default_civ_outpost': {
-        baseId: 'ground_base_grass_grasslands_02',
-        overlayId: 'ground_base_dirt_grasslands_01',
-        noiseId: 'ground_base_gravel_grasslands_01'
-    },
-
-    // -- Badlands --
-    'biome_badlands_terrain_water': {
+    biome_desert: {
         baseId: 'ground_base_sand_desert_01',
-        overlayId: 'ground_base_cracked_earth_badlands_01',
-        noiseId: 'ground_base_gravel_badlands_01'
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
     },
-    'biome_badlands_terrain_coast': {
-        baseId: 'ground_base_rock_badlands_01',
-        overlayId: 'ground_base_sand_desert_01',
-        noiseId: 'ground_base_gravel_badlands_01'
+    biome_swamp: {
+        baseId: 'ground_base_mud_churned_grasslands_01',
+        midId: 'ground_overgrown_moss_grasslands_01',
+        overlayId: 'ground_overgrown_moss_grasslands_01',
+        noiseId: 'ground_base_dirt_grasslands_03'
+    },
+    // --- BIOME + CIV (terrain_coast / terrain_water no longer have overrides; weight drives 3-layer blend) ---
+
+    biome_grasslands_civ_trench: {
+        baseId: 'ground_damage_churned_grasslands_01',
+        midId: 'ground_interior_planks_grasslands_01',
+        overlayId: 'ground_interior_planks_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    biome_grasslands_civ_outpost: {
+        baseId: 'ground_base_grass_grasslands_02',
+        midId: 'ground_base_dirt_grasslands_01',
+        overlayId: 'ground_base_dirt_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+
+    default_civ_trench: {
+        baseId: 'ground_damage_churned_grasslands_01',
+        midId: 'ground_interior_planks_grasslands_01',
+        overlayId: 'ground_interior_planks_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    default_civ_outpost: {
+        baseId: 'ground_base_grass_grasslands_02',
+        midId: 'ground_base_dirt_grasslands_01',
+        overlayId: 'ground_base_dirt_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+
+    // --- TUNDRA terrain (water / coast) ---
+    biome_tundra_terrain_water: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+    biome_tundra_terrain_coast: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+
+    // --- DESERT terrain (water / coast) ---
+    biome_desert_terrain_water: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
+    biome_desert_terrain_coast: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
+
+    // --- TUNDRA / DESERT civ (fallbacks for roads and towns) ---
+    biome_tundra_civ_trench: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+    biome_tundra_civ_outpost: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+    biome_desert_civ_trench: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
+    biome_desert_civ_outpost: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
     }
 };

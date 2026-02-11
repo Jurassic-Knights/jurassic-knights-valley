@@ -1,0 +1,370 @@
+{
+    "version": 1,
+    "chunks": [
+        {
+            "id": "0,0",
+            "objects": [],
+            "zones": {
+                "3,2": {
+                    "biome": "grasslands"
+                },
+                "2,2": {
+                    "biome": "grasslands"
+                },
+                "0,5": {
+                    "biome": "grasslands"
+                },
+                "0,6": {
+                    "biome": "grasslands"
+                },
+                "2,6": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "5,4": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "6,3": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "5,3": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "3,3": {
+                    "biome": "grasslands"
+                },
+                "2,3": {
+                    "biome": "grasslands"
+                },
+                "1,4": {
+                    "biome": "grasslands"
+                },
+                "3,4": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "4,4": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "6,2": {
+                    "biome": "grasslands"
+                },
+                "5,2": {
+                    "biome": "grasslands"
+                },
+                "4,2": {
+                    "biome": "grasslands"
+                },
+                "4,3": {
+                    "biome": "grasslands"
+                },
+                "2,4": {
+                    "biome": "grasslands"
+                },
+                "1,5": {
+                    "biome": "grasslands"
+                },
+                "2,5": {
+                    "biome": "grasslands",
+                    "terrain": "terrain_water"
+                },
+                "6,9": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "4,10": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "3,10": {
+                    "biome": "tundra"
+                },
+                "10,7": {
+                    "biome": "tundra"
+                },
+                "6,8": {
+                    "biome": "tundra"
+                },
+                "5,9": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "4,9": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "3,9": {
+                    "biome": "tundra"
+                },
+                "2,9": {
+                    "biome": "tundra"
+                },
+                "5,8": {
+                    "biome": "tundra"
+                },
+                "7,8": {
+                    "biome": "tundra"
+                },
+                "8,8": {
+                    "biome": "tundra"
+                },
+                "7,9": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "13,5": {
+                    "biome": "badlands"
+                },
+                "14,6": {
+                    "biome": "badlands"
+                },
+                "13,9": {
+                    "biome": "badlands"
+                },
+                "12,10": {
+                    "biome": "badlands"
+                },
+                "11,11": {
+                    "biome": "badlands"
+                },
+                "10,11": {
+                    "biome": "badlands"
+                },
+                "11,10": {
+                    "biome": "badlands"
+                },
+                "14,9": {
+                    "biome": "badlands"
+                },
+                "10,10": {
+                    "biome": "badlands"
+                },
+                "11,9": {
+                    "biome": "badlands"
+                },
+                "12,9": {
+                    "biome": "badlands"
+                },
+                "12,8": {
+                    "biome": "badlands"
+                },
+                "13,8": {
+                    "biome": "badlands"
+                },
+                "13,7": {
+                    "biome": "badlands"
+                },
+                "9,11": {
+                    "biome": "badlands"
+                },
+                "8,11": {
+                    "biome": "badlands"
+                },
+                "9,10": {
+                    "biome": "badlands"
+                },
+                "10,9": {
+                    "biome": "badlands"
+                },
+                "8,10": {
+                    "biome": "badlands"
+                },
+                "7,10": {
+                    "biome": "badlands",
+                    "terrain": "terrain_water"
+                },
+                "7,11": {
+                    "biome": "badlands"
+                },
+                "6,11": {
+                    "biome": "badlands"
+                },
+                "5,11": {
+                    "biome": "badlands"
+                },
+                "5,10": {
+                    "biome": "badlands",
+                    "terrain": "terrain_water"
+                },
+                "6,10": {
+                    "biome": "badlands",
+                    "terrain": "terrain_water"
+                },
+                "9,9": {
+                    "biome": "badlands"
+                },
+                "8,9": {
+                    "biome": "badlands"
+                },
+                "11,8": {
+                    "biome": "badlands"
+                },
+                "10,8": {
+                    "biome": "badlands"
+                },
+                "9,8": {
+                    "biome": "badlands"
+                },
+                "11,7": {
+                    "biome": "badlands"
+                },
+                "12,7": {
+                    "biome": "badlands"
+                },
+                "3,8": {
+                    "biome": "tundra"
+                },
+                "2,8": {
+                    "biome": "tundra"
+                },
+                "1,8": {
+                    "biome": "tundra"
+                },
+                "4,8": {
+                    "biome": "tundra"
+                },
+                "4,7": {
+                    "biome": "tundra"
+                },
+                "3,7": {
+                    "biome": "tundra"
+                },
+                "2,7": {
+                    "biome": "tundra"
+                },
+                "5,7": {
+                    "biome": "tundra"
+                },
+                "6,7": {
+                    "biome": "tundra"
+                },
+                "6,6": {
+                    "biome": "tundra"
+                },
+                "5,6": {
+                    "biome": "tundra"
+                },
+                "7,7": {
+                    "biome": "tundra"
+                },
+                "7,6": {
+                    "biome": "tundra"
+                },
+                "8,6": {
+                    "biome": "tundra"
+                },
+                "8,7": {
+                    "biome": "tundra"
+                },
+                "9,6": {
+                    "biome": "tundra"
+                },
+                "10,6": {
+                    "biome": "tundra"
+                },
+                "9,7": {
+                    "biome": "tundra"
+                },
+                "9,5": {
+                    "biome": "tundra"
+                },
+                "10,5": {
+                    "biome": "tundra"
+                },
+                "10,4": {
+                    "biome": "tundra"
+                },
+                "9,4": {
+                    "biome": "tundra"
+                },
+                "8,5": {
+                    "biome": "tundra"
+                },
+                "7,5": {
+                    "biome": "tundra"
+                },
+                "6,5": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "5,5": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "4,5": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "4,6": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "3,6": {
+                    "biome": "tundra",
+                    "terrain": "terrain_water"
+                },
+                "2,10": {
+                    "biome": "tundra"
+                },
+                "2,11": {
+                    "biome": "tundra"
+                },
+                "3,11": {
+                    "biome": "tundra"
+                },
+                "3,12": {
+                    "biome": "tundra"
+                },
+                "4,11": {
+                    "biome": "tundra"
+                },
+                "4,12": {
+                    "biome": "tundra"
+                },
+                "1,10": {
+                    "biome": "tundra"
+                },
+                "1,11": {
+                    "biome": "tundra"
+                },
+                "1,12": {
+                    "biome": "tundra"
+                },
+                "2,12": {
+                    "biome": "tundra"
+                },
+                "5,12": {
+                    "biome": "tundra"
+                },
+                "6,12": {
+                    "biome": "tundra"
+                },
+                "7,12": {
+                    "biome": "tundra"
+                },
+                "8,12": {
+                    "biome": "tundra"
+                },
+                "9,12": {
+                    "biome": "tundra"
+                },
+                "3,5": {
+                    "terrain": "terrain_water"
+                },
+                "6,4": {
+                    "terrain": "terrain_water"
+                },
+                "7,4": {
+                    "terrain": "terrain_water"
+                },
+                "7,3": {
+                    "terrain": "terrain_water"
+                }
+            }
+        }
+    ]
+}

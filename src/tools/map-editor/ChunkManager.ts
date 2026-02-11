@@ -5,16 +5,18 @@ import { GroundSystem } from './GroundSystem';
 import { ObjectSystem } from './ObjectSystem';
 import { ZoneSystem } from './ZoneSystem';
 import { ChunkData } from './MapEditorTypes';
+import { getTileColorHex } from './ZoneColorHelper';
 
 /**
  * ChunkManager
- * 
+ *
  * Manages the lifecycle of Map Chunks.
  * Handles Dynamic Loading/Unloading based on Viewport visibility.
  */
 export class ChunkManager {
     private container: PIXI.Container;
     private loadedChunks: Map<string, PIXI.Container>;
+    private loadingChunks: Set<string>;
     private pool: PIXI.Container[]; // Object pool for performance
 
     // Persistent World Data
@@ -30,6 +32,7 @@ export class ChunkManager {
         parentContainer.addChild(this.container);
 
         this.loadedChunks = new Map();
+        this.loadingChunks = new Set<string>();
         this.pool = [];
         this.worldData = new Map();
 
@@ -44,7 +47,7 @@ export class ChunkManager {
     public setGridOpacity(opacity: number) {
         this.gridOpacity = opacity;
         // Apply immediately to all loaded chunks
-        this.loadedChunks.forEach(chunk => {
+        this.loadedChunks.forEach((chunk) => {
             const g = this.getDebugGraphics(chunk);
             if (g) {
                 g.alpha = opacity;
@@ -54,16 +57,62 @@ export class ChunkManager {
 
     // --- Ground System Delegation ---
 
-    public async renderProceduralGround(chunk: PIXI.Container, chunkX: number, chunkY: number) {
+    /** Render chunk as color-block placeholders (no textures). */
+    private renderPlaceholderGround(chunk: PIXI.Container, chunkX: number, chunkY: number): void {
         const chunkKey = `${chunkX},${chunkY}`;
         const data = this.worldData.get(chunkKey);
-        if (data) {
-            await this.groundSystem.renderChunk(chunk, data, chunkX, chunkY);
+        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
+        const groundLayer = new PIXI.Graphics();
+        (groundLayer as { label?: string }).label = 'ground_layer';
+        chunk.addChildAt(groundLayer, 0);
+
+        if (!data?.zones) {
+            groundLayer.rect(0, 0, CHUNK_SIZE * TILE_SIZE, CHUNK_SIZE * TILE_SIZE);
+            groundLayer.fill(0x222222);
+            return;
+        }
+
+        for (let ly = 0; ly < CHUNK_SIZE; ly++) {
+            for (let lx = 0; lx < CHUNK_SIZE; lx++) {
+                const tileKey = `${lx},${ly}`;
+                const zones = data.zones[tileKey];
+                const color = getTileColorHex(zones);
+                const x = lx * TILE_SIZE;
+                const y = ly * TILE_SIZE;
+                groundLayer.rect(x, y, TILE_SIZE, TILE_SIZE);
+                groundLayer.fill(color);
+            }
         }
     }
 
-    public async paintSplat(worldX: number, worldY: number, radius: number, intensity: number, soft: boolean = true) {
-        return await this.groundSystem.paintSplat(worldX, worldY, radius, intensity, soft, this.worldData, this.loadedChunks);
+    public async renderProceduralGround(chunk: PIXI.Container, chunkX: number, chunkY: number) {
+        if (MapEditorConfig.USE_PLACEHOLDER_GROUND) {
+            this.renderPlaceholderGround(chunk, chunkX, chunkY);
+            return;
+        }
+        const chunkKey = `${chunkX},${chunkY}`;
+        const data = this.worldData.get(chunkKey);
+        if (data) {
+            await this.groundSystem.renderChunk(chunk, data, chunkX, chunkY, this.worldData);
+        }
+    }
+
+    public async paintSplat(
+        worldX: number,
+        worldY: number,
+        radius: number,
+        intensity: number,
+        soft: boolean = true
+    ) {
+        return await this.groundSystem.paintSplat(
+            worldX,
+            worldY,
+            radius,
+            intensity,
+            soft,
+            this.worldData,
+            this.loadedChunks
+        );
     }
 
     /**
@@ -79,11 +128,24 @@ export class ChunkManager {
                 (groundLayer as { label?: string }).label = 'ground_layer';
                 chunk.addChildAt(groundLayer, 0);
             }
-            await this.groundSystem.updateTile(chunkKey, lx, ly, data, groundLayer);
+            await this.groundSystem.updateTile(
+                chunkKey,
+                lx,
+                ly,
+                data,
+                groundLayer,
+                undefined,
+                undefined,
+                undefined,
+                this.worldData
+            );
         }
     }
 
-    public async restoreSplatData(changes: Map<string, { idx: number, oldVal: number, newVal: number }[]>, undo: boolean) {
+    public async restoreSplatData(
+        changes: Map<string, { idx: number; oldVal: number; newVal: number }[]>,
+        undo: boolean
+    ) {
         await this.groundSystem.restoreSplatData(changes, undo, this.worldData, this.loadedChunks);
     }
 
@@ -144,19 +206,29 @@ export class ChunkManager {
         this.zoneSystem.setZone(x, y, category, zoneId, this.worldData, this.loadedChunks);
     }
 
-    public async setZones(updates: { x: number, y: number, category: string, zoneId: string | null }[]) {
-        await this.zoneSystem.setZones(updates, this.worldData, this.loadedChunks);
+    public async setZones(
+        updates: { x: number; y: number; category: string; zoneId: string | null }[]
+    ) {
+        return this.zoneSystem.setZones(updates, this.worldData, this.loadedChunks);
     }
 
     public getZone(x: number, y: number, category: string): string | null {
         return this.zoneSystem.getZone(x, y, category, this.worldData);
     }
 
+    /** Read-only access to world chunk data (e.g. for minimap). */
+    public getWorldData(): Map<string, ChunkData> {
+        return this.worldData;
+    }
+
     /**
      * Update observable chunks based on viewport
      * @param viewRect The visible area in WORLD coordinates
      */
-    public update(viewRect: { x: number, y: number, width: number, height: number }, zoom: number): void {
+    public update(
+        viewRect: { x: number; y: number; width: number; height: number },
+        zoom: number
+    ): void {
         const { TILE_SIZE, CHUNK_SIZE } = MapEditorConfig;
         const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
 
@@ -178,15 +250,20 @@ export class ChunkManager {
         for (let x = minX; x <= maxX; x++) {
             for (let y = minY; y <= maxY; y++) {
                 // Check bounds of the 1250x1250 world
-                if (x < 0 || y < 0 || x >= MapEditorConfig.WORLD_WIDTH_TILES / CHUNK_SIZE || y >= MapEditorConfig.WORLD_HEIGHT_TILES / CHUNK_SIZE) {
+                if (
+                    x < 0 ||
+                    y < 0 ||
+                    x >= MapEditorConfig.WORLD_WIDTH_TILES / CHUNK_SIZE ||
+                    y >= MapEditorConfig.WORLD_HEIGHT_TILES / CHUNK_SIZE
+                ) {
                     continue;
                 }
                 const key = `${x},${y}`;
                 visibleKeys.add(key);
 
-                if (!this.loadedChunks.has(key)) {
-                    // Logger.info(`[ChunkManager] ViewRect: ${viewRect.x.toFixed(0)},${viewRect.y.toFixed(0)} loading ${key}`);
-                    this.loadChunk(key, x, y);
+                if (!this.loadedChunks.has(key) && !this.loadingChunks.has(key)) {
+                    this.loadingChunks.add(key);
+                    this.loadChunk(key, x, y).finally(() => this.loadingChunks.delete(key));
                 }
             }
         }
@@ -205,7 +282,7 @@ export class ChunkManager {
 
                 if (isVisible) {
                     // Dynamic Line Width: Ensure at least 1-2 screen pixels
-                    // standard = 32 world units. 
+                    // standard = 32 world units.
                     // At 0.01 zoom -> 0.32px (invisible/glitchy)
                     // Target: 2 screen pixels -> 2 / zoom
                     const lineWidth = Math.max(32, 2 / zoom);
@@ -217,13 +294,17 @@ export class ChunkManager {
                     g.clear();
                     // Use solid color, non-scaling stroke alignment
                     g.rect(0, 0, chunkSizePx, chunkSizePx);
-                    g.stroke({ width: lineWidth, color: MapEditorConfig.Colors.CHUNK_BORDER, alpha: this.gridOpacity });
+                    g.stroke({
+                        width: lineWidth,
+                        color: MapEditorConfig.Colors.CHUNK_BORDER,
+                        alpha: this.gridOpacity
+                    });
                 }
             }
         }
     }
 
-    private loadChunk(key: string, x: number, y: number): void {
+    private async loadChunk(key: string, x: number, y: number): Promise<void> {
         const { TILE_SIZE, CHUNK_SIZE } = MapEditorConfig;
         const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
 
@@ -240,7 +321,11 @@ export class ChunkManager {
         // --- Debug Visualization ---
         const debugGraphics = this.getDebugGraphics(chunk);
         debugGraphics.clear();
-        debugGraphics.strokeStyle = { width: 32, color: MapEditorConfig.Colors.CHUNK_BORDER, alpha: 1 }; // Draw solid
+        debugGraphics.strokeStyle = {
+            width: 32,
+            color: MapEditorConfig.Colors.CHUNK_BORDER,
+            alpha: 1
+        }; // Draw solid
         debugGraphics.rect(0, 0, chunkSizePx, chunkSizePx);
         debugGraphics.stroke();
         debugGraphics.alpha = this.gridOpacity; // Apply current opacity
@@ -248,14 +333,14 @@ export class ChunkManager {
         // Add coordinates text
         const text = new PIXI.Text({
             text: key,
-            style: { fill: 0xFFFFFF, fontSize: 32 }
+            style: { fill: 0xffffff, fontSize: 32 }
         });
         text.x = 10;
         text.y = 10;
         chunk.addChild(text);
 
-        // NEW: Render Ground PRIOR to objects
-        this.renderProceduralGround(chunk, x, y);
+        // Render Ground first (await so textures load before objects/zones)
+        await this.renderProceduralGround(chunk, x, y);
 
         // --- Render Stored Objects ---
         const data = this.worldData.get(key);
@@ -284,15 +369,13 @@ export class ChunkManager {
 
     private getDebugGraphics(container: PIXI.Container): PIXI.Graphics {
         // Reuse existing graphics object if it exists
-        let g = container.children.find(c => c instanceof PIXI.Graphics) as PIXI.Graphics;
+        let g = container.children.find((c) => c instanceof PIXI.Graphics) as PIXI.Graphics;
         if (!g) {
             g = new PIXI.Graphics();
             container.addChild(g);
         }
         return g;
     }
-
-
 
     public refreshZones(): void {
         this.loadedChunks.forEach((chunk, key) => {
@@ -312,5 +395,37 @@ export class ChunkManager {
             version: 1,
             chunks: exportData
         };
+    }
+
+    /**
+     * Load map data from a serialized payload. Clears current world and repopulates.
+     * Splat data is always regenerated from zone state so saved maps use the latest blending logic.
+     */
+    public deserialize(data: { version?: number; chunks?: ChunkData[] }): void {
+        if (!data.chunks || !Array.isArray(data.chunks)) return;
+
+        // Unload all currently loaded chunks so they reload with new data
+        const keysToUnload = Array.from(this.loadedChunks.keys());
+        keysToUnload.forEach((k) => this.unloadChunk(k));
+        this.loadingChunks.clear();
+
+        // Clear ground sprite cache so reused chunk keys get fresh textures (not stale from previous map)
+        this.groundSystem.clearCache();
+
+        this.worldData.clear();
+
+        for (const raw of data.chunks) {
+            const chunk: ChunkData = {
+                id: raw.id,
+                objects: Array.isArray(raw.objects) ? raw.objects : [],
+                zones: raw.zones && typeof raw.zones === 'object' ? raw.zones : undefined,
+                // Ignore saved splatMap — regenerated below from zone data
+                splatMap: undefined
+            };
+            this.worldData.set(chunk.id, chunk);
+        }
+
+        // Regenerate splat data from zone state using current blending logic
+        this.zoneSystem.regenerateSplats(this.worldData);
     }
 }

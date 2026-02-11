@@ -6,21 +6,22 @@ import GroundWorker from '../../workers/GroundRenderWorker?worker';
 
 export interface BlendAssets {
     base: Uint8ClampedArray;
+    mid: Uint8ClampedArray;
     overlay: Uint8ClampedArray;
     heightMap: Uint8ClampedArray;
     noise: Uint8ClampedArray;
-    // Layer Dimensions (Crucial for mixed resolution assets)
     baseWidth?: number;
+    midWidth?: number;
     overlayWidth?: number;
     heightWidth?: number;
     noiseWidth?: number;
-    width: number;  // Fallback / legacy
+    width: number;
     height: number;
 }
 
 export interface BlendConfig {
     thresholdBias: number; // 0.0 - 1.0
-    noiseScale: number;    // Multiplier
+    noiseScale: number; // Multiplier
     tileX?: number; // For World Space Mapping
     tileY?: number;
 }
@@ -86,7 +87,7 @@ export class GroundBlendRenderer {
             // If we transfer, the cache in GroundSystem becomes empty!
             // WE MUST NOT TRANSFER THE ASSET BUFFERS.
             // We only copy them. Structured Clone is automatic for ArrayBuffers in postMessage (copy).
-            // This might still be heavy (4 x 4KB copies per tile). 
+            // This might still be heavy (4 x 4KB copies per tile).
             // 4KB is tiny. Copying is fine.
 
             this.worker.postMessage({
@@ -94,18 +95,16 @@ export class GroundBlendRenderer {
                 width: assets.width,
                 height: assets.height,
                 splatWeights,
-                // Explicitly slice (copy) the buffers to prevent any risk of detachment
-                // This ensures the main thread cache remains valid for other tiles.
                 baseBuffer: assets.base.buffer.slice(0),
+                midBuffer: assets.mid.buffer.slice(0),
                 overlayBuffer: assets.overlay.buffer.slice(0),
                 heightBuffer: assets.heightMap.buffer.slice(0),
                 noiseBuffer: assets.noise.buffer.slice(0),
                 config,
-                // Pass Dimensions
                 baseWidth: assets.baseWidth,
+                midWidth: assets.midWidth,
                 overlayWidth: assets.overlayWidth,
                 heightWidth: assets.heightWidth,
-                noiseWidth: assets.noiseWidth,
                 noiseWidth: assets.noiseWidth,
                 tileX: config.tileX,
                 tileY: config.tileY,
@@ -118,4 +117,3 @@ export class GroundBlendRenderer {
         this.worker.terminate();
     }
 }
-

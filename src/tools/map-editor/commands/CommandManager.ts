@@ -56,4 +56,9 @@ export class CommandManager {
             }
         }
     }
+
+    public clear(): void {
+        this.history = [];
+        this.redoStack = [];
+    }
 }
