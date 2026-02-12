@@ -74,6 +74,24 @@ export const ZoneConfig: Record<string, ZoneDefinition> = {
         name: 'River',
         color: 0x3498db
     }, // River blue (mapgen4)
+    terrain_lowland: {
+        id: 'terrain_lowland',
+        category: ZoneCategory.TERRAIN,
+        name: 'Lowland',
+        color: 0x6b8e23
+    },
+    terrain_hill: {
+        id: 'terrain_hill',
+        category: ZoneCategory.TERRAIN,
+        name: 'Hill',
+        color: 0x8b7355
+    },
+    terrain_mountain: {
+        id: 'terrain_mountain',
+        category: ZoneCategory.TERRAIN,
+        name: 'Mountain',
+        color: 0x696969
+    },
 
     // --- CIVILIZATION ZONES (WW1 Theme) ---
     civ_outpost: {

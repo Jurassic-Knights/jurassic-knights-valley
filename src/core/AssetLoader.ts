@@ -15,143 +15,7 @@ import { DOMUtils } from './DOMUtils';
 import { AssetManifest } from '@config/AssetManifest';
 import { GameConstants } from '@data/GameConstants';
 import { ParticleOptions } from '../types/vfx';
-
-// VFXController accessed lazily to avoid circular imports
-
-const ID_PATTERNS = [
-    // Enemies
-    {
-        matches: (id: string) =>
-            id.startsWith('enemy_herbivore_') ||
-            id.startsWith('enemy_dinosaur_') ||
-            id.startsWith('enemy_human_') ||
-            id.startsWith('enemy_mounted_'),
-        build: (id: string) => `images/enemies/${id.replace('enemy_', '')}_original.png`
-    },
-    // Bosses & NPCs
-    { matches: (id: string) => id.startsWith('boss_'), build: (id: string) => `images/bosses/${id}_original.png` },
-    { matches: (id: string) => id.startsWith('npc_'), build: (id: string) => `images/npcs/${id}_original.png` },
-
-    // Weapons (Complex Subtypes)
-    {
-        matches: (id: string) => id.startsWith('weapon_melee_') || id.startsWith('weapon_ranged_'),
-        build: (id: string) => {
-            const parts = id.split('_');
-            const subtype = parts.slice(2, -2).join('_');
-            const imageName = `weapon_${subtype}_${parts.slice(-2).join('_')}`;
-            return `images/equipment/weapons/${subtype}/${imageName}_original.png`;
-        }
-    },
-    {
-        matches: (id: string) => id.startsWith('weapon_shield_'),
-        build: (id: string) => `images/equipment/shield/${id}_original.png`
-    },
-
-    // Signatures
-    {
-        matches: (id: string) =>
-            id.startsWith('signature_melee_') || id.startsWith('signature_ranged_'),
-        build: (id: string) => {
-            const parts = id.split('_');
-            const subtype = parts[2];
-            return `images/equipment/signature/${parts[1]}/${subtype}/${id}_original.png`;
-        }
-    },
-    {
-        matches: (id: string) => id.startsWith('signature_shield_'),
-        build: (id: string) => `images/equipment/signature/shield/${id}_original.png`
-    },
-
-    // Armor
-    {
-        matches: (id: string) => id.startsWith('head_'),
-        build: (id: string) => `images/equipment/armor/head/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('chest_') || id.startsWith('torso_'),
-        build: (id: string) => `images/equipment/armor/chest/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('body_'),
-        build: (id: string) =>
-            `images/equipment/armor/chest/${id.replace('body_', 'chest_')}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('hands_'),
-        build: (id: string) => `images/equipment/armor/hands/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('legs_'),
-        build: (id: string) => `images/equipment/armor/legs/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('feet_'),
-        build: (id: string) => `images/equipment/armor/feet/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('accessory_'),
-        build: (id: string) => `images/equipment/${id}_original.png`
-    },
-
-    // Tools
-    {
-        matches: (id: string) => id.startsWith('tool_'),
-        build: (id: string) => {
-            const type = id.split('_')[1]; // mining, woodcutting, etc
-            return `images/equipment/tools/${type}/${id}_original.png`;
-        }
-    },
-
-    // Items (Materials)
-    {
-        matches: (id: string) =>
-            /^(food|leather|bone|wood|iron|stone|scale|feather|horn)_/.test(id),
-        build: (id: string) => `images/items/${id}_original.png`
-    },
-
-    // Nodes
-    {
-        matches: (id: string) => id.startsWith('node_'),
-        build: (id: string) => `images/nodes/${id}_original.png`
-    },
-
-    // Environment
-    {
-        matches: (id: string) =>
-            /^(arch|flora|prop|furniture|building)_/.test(id),
-        build: (id: string) => {
-            const type = id.split('_')[0];
-            return `images/environment/${type}/${id}_original.png`;
-        }
-    },
-
-    // Ground
-    {
-        matches: (id: string) => id.startsWith('ground_'),
-        build: (id: string) => {
-            const parts = id.split('_');
-            // Standard: ground_[category]_[type]_[biome]_[var]
-
-            // We know biome is always one of [badlands, desert, grasslands, tundra]
-            const biomes = ['badlands', 'desert', 'grasslands', 'tundra'];
-            const biomeIndex = parts.findIndex(p => biomes.includes(p));
-
-            // Fallback for legacy/malformed IDs
-            if (biomeIndex === -1) return `images/ground/${id}_original.png`;
-
-            const biome = parts[biomeIndex];
-            const category = parts[1]; // base, damage, interior, overgrown, vertical
-
-            return `images/ground/${biome}/${category}/${id}_original.png`;
-        }
-    },
-
-    // Backgrounds
-    {
-        matches: (id: string) => id.startsWith('bg_zone_'),
-        build: (id: string) => `images/backgrounds/${id.replace('bg_', '')}_clean.png`
-    }
-];
+import { constructPathFromId } from './AssetLoaderPathPatterns';
 
 const AssetLoader = {
     cache: new Map(),
@@ -220,7 +84,7 @@ const AssetLoader = {
         }
 
         // 3. Pattern-based fallback (construct path from ID conventions)
-        const patternPath = this._constructPathFromId(id);
+        const patternPath = constructPathFromId(id);
         if (patternPath) {
             return this.basePath + patternPath;
         }
@@ -228,23 +92,6 @@ const AssetLoader = {
         // 4. Fallback to placeholder
         Logger.warn(`[AssetLoader] Unknown asset ID: ${id}`);
         return this.basePath + 'images/PH.png';
-    },
-
-    /**
-     * Construct image path from entity ID patterns
-     * Handles: enemy_*, enemy_herbivore_*, enemy_dinosaur_*, npc_*, weapon_*, tool_*, etc.
-     * @param {string} id
-     * @returns {string|null}
-     */
-    _constructPathFromId(id: string) {
-        if (!id) return null;
-
-        for (const pattern of ID_PATTERNS) {
-            if (pattern.matches(id)) {
-                return pattern.build(id);
-            }
-        }
-        return null;
     },
 
     /**

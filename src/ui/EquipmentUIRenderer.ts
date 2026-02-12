@@ -14,6 +14,7 @@ import { RenderConfig } from '@config/RenderConfig';
 import type { EquipmentItem } from '../types/ui';
 import type { EquipmentUI } from './EquipmentUI';
 import { EquipmentManager } from '../systems/EquipmentManager';
+import { renderItemStats } from './EquipmentUIRendererStats';
 
 class EquipmentUIRenderer {
     /**
@@ -80,7 +81,7 @@ class EquipmentUIRenderer {
                         text-align: center;
                     ">${itemName}</div>
                     <div class="item-stats-row" style="flex:1; padding:4px 8px; box-sizing: border-box; display:flex; align-items:center;">
-                        ${item ? EquipmentUIRenderer.renderItemStats(item) : '<div class="summary-stat empty" style="width:100%; text-align:center; color:#666;">Double-tap to equip</div>'}
+                        ${item ? renderItemStats(item) : '<div class="summary-stat empty" style="width:100%; text-align:center; color:#666;">Double-tap to equip</div>'}
                     </div>
                 </div>
 
@@ -309,86 +310,6 @@ class EquipmentUIRenderer {
         }
     }
 
-    /**
-     * Render all stats for an equipment item with icons
-     * Shows ALL relevant stats (including 0 values) for the item type
-     * @param {EquipmentItem} item - Equipment item
-     * @returns {string} HTML string
-     */
-    static renderItemStats(item: EquipmentItem) {
-        if (!item?.stats) {
-            return '<div class="summary-stat empty">No stats</div>';
-        }
-
-        const stats = item.stats as Record<string, number>;
-        const type = item.type || item.sourceFile;
-
-        // Define stats to show based on equipment type
-        type StatDef = { key: string; label: string; iconId: string };
-        let relevantStats: StatDef[] = [];
-
-        if (type === 'weapon' || item.weaponType) {
-            // Weapon stats
-            relevantStats = [
-                { key: 'damage', label: 'DMG', iconId: 'stat_damage' },
-                { key: 'attackSpeed', label: 'SPD', iconId: 'stat_attack_speed' },
-                { key: 'range', label: 'RNG', iconId: 'stat_range' },
-                { key: 'critChance', label: 'CRT%', iconId: 'stat_crit_chance' },
-                { key: 'critDamage', label: 'CRT×', iconId: 'stat_crit_damage' }
-            ];
-        } else if (
-            type === 'armor' ||
-            ['head', 'body', 'chest', 'hands', 'legs', 'feet'].includes(item.slot)
-        ) {
-            // Armor stats
-            relevantStats = [
-                { key: 'armor', label: 'ARM', iconId: 'stat_armor' },
-                { key: 'health', label: 'HP', iconId: 'stat_health' },
-                { key: 'stamina', label: 'STA', iconId: 'stat_stamina' },
-                { key: 'speed', label: 'SPD', iconId: 'stat_speed' }
-            ];
-        } else if (type === 'tool' || item.slot === 'tool') {
-            // Tool stats
-            relevantStats = [{ key: 'efficiency', label: 'EFF', iconId: 'stat_efficiency' }];
-        } else {
-            // Generic - show any stats present
-            return Object.entries(stats)
-                .map(
-                    ([key, val]) =>
-                        `<div class="summary-stat"><span>${key}</span> <span>${val}</span></div>`
-                )
-                .join('');
-        }
-
-        // Render each stat with icon - fixed width grid, no layout shift
-        const statCount = relevantStats.length;
-        // Grid columns based on stat count: weapons=5, armor=4, tools=1
-        const gridCols =
-            statCount <= 1
-                ? '1fr'
-                : statCount <= 4
-                    ? `repeat(${statCount}, 1fr)`
-                    : 'repeat(5, 1fr)';
-
-        return `<div class="stats-grid" style="display:grid; grid-template-columns:${gridCols}; gap:4px; width:100%; justify-items:center;">
-            ${relevantStats
-                .map((stat) => {
-                    const value = stats[stat.key];
-                    const iconPath = AssetLoader?.getImagePath?.(stat.iconId) || '';
-                    // No fallback: if value missing, show blank (game state is wrong)
-                    const prefix = value != null && value > 0 ? '+' : '';
-                    const displayVal = value != null ? (Number.isInteger(value) ? value : value.toFixed(1)) : '';
-                    return `
-                    <div class="summary-stat" title="${stat.label}" style="display:flex; flex-direction:column; align-items:center; gap:0px; min-width:0; width:100%;">
-                        <img class="stat-icon-img" src="${iconPath}" alt="${stat.label}" style="width:24px;height:24px;object-fit:contain; margin-bottom:2px;">
-                        <span style="font-size:0.6rem; color:#888; text-transform:uppercase; white-space:nowrap; line-height:1;">${stat.label}</span>
-                        <span class="text-pixel-outline" style="font-size:0.9rem; width:100%; text-align:center; white-space:nowrap;">${prefix}${displayVal}</span>
-                    </div>
-                `;
-                })
-                .join('')}
-        </div>`;
-    }
 }
 
 // Export

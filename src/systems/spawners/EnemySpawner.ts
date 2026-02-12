@@ -227,9 +227,7 @@ class EnemySpawner {
         return enemies;
     }
 
-    /**
-     * Get appropriate enemy level for a biome
-     */
+    /** Get appropriate enemy level for a biome */
     getEnemyLevelForBiome(biomeId: string) {
         const biome = BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types];
         if (!biome || !biome.levelRange) return 1;
@@ -238,9 +236,7 @@ class EnemySpawner {
         return min + Math.floor(Math.random() * (max - min + 1));
     }
 
-    /**
-     * Populate a biome area with enemy groups based on spawn table
-     */
+    /** Populate a biome area with enemy groups based on spawn table */
     populateBiome(biomeId: string, bounds: { x: number; y: number; width: number; height: number }, options: BiomeOptions = {}) {
         if (!Enemy || !BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types]) {
             Logger.warn(`[EnemySpawner] Cannot populate biome: ${biomeId}`);
@@ -282,9 +278,7 @@ class EnemySpawner {
         return totalSpawned;
     }
 
-    /**
-     * Spawn boss enemy for a biome
-     */
+    /** Spawn boss enemy for a biome */
     spawnBiomeBoss(biomeId: string, x: number, y: number) {
         const biome = BiomeConfig.types?.[biomeId as keyof typeof BiomeConfig.types];
         if (!biome || !biome.bossId) {

@@ -16,7 +16,6 @@ interface ProcParam {
 let editorInstance: MapEditorCore | null = null;
 let paletteInstance: AssetPaletteView | null = null;
 let currentLoadedMap: string | null = null;
-let lastGeneratedPayload: { version: number; chunks: unknown[] } | null = null;
 
 export async function showMapEditorView(pushState = true): Promise<void> {
     const mainContent = document.getElementById('mainContent');
@@ -58,25 +57,24 @@ export async function showMapEditorView(pushState = true): Promise<void> {
         initMapPanel();
         initModeAndTools();
         initProceduralPreviewClickAndViewport();
+        runPreviewCanvas();
+
+        const canvasContainer = document.getElementById('map-editor-canvas');
+        if (canvasContainer) {
+            const ro = new ResizeObserver(() => runPreviewCanvas());
+            ro.observe(canvasContainer);
+        }
     } else {
         refreshMapList();
+        runPreviewCanvas();
     }
 }
 
 /** Procedural preview uses mapgen4 space 0..1000; editor world is 0..160000 px. */
 const PREVIEW_TO_WORLD = 160000 / 1000;
 
-function drawViewportRectOnProceduralOverlay(): void {
-    const overlay = document.getElementById('proc-preview-overlay') as HTMLCanvasElement;
-    const wrap = document.getElementById('proc-preview-wrap');
-    if (!overlay || !wrap || !editorInstance) return;
-    const container = document.getElementById('map-editor-container');
-    if (!container || container.style.display !== 'none') {
-        wrap?.classList.add('has-viewport');
-    } else {
-        wrap?.classList.remove('has-viewport');
-        return;
-    }
+function drawViewportRectOnOverlay(overlay: HTMLCanvasElement): void {
+    if (!editorInstance) return;
     const viewport = editorInstance.getViewportWorldRect();
     if (!viewport) return;
     const w = overlay.width;
@@ -94,6 +92,16 @@ function drawViewportRectOnProceduralOverlay(): void {
     ctx.strokeStyle = 'rgba(255, 255, 200, 0.9)';
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, rw, rh);
+}
+
+function drawViewportRectOnProceduralOverlay(): void {
+    const overlaySidebar = document.getElementById('proc-preview-overlay') as HTMLCanvasElement;
+    const wrapSidebar = document.getElementById('proc-preview-wrap');
+    const container = document.getElementById('map-editor-container');
+    const inMapView = container && container.style.display !== 'none';
+    if (wrapSidebar) wrapSidebar.classList.toggle('has-viewport', inMapView && (document.getElementById('procedural-panel-body')?.style.display !== 'none'));
+    if (!editorInstance || !inMapView) return;
+    if (overlaySidebar && document.getElementById('procedural-panel-body')?.style.display !== 'none') drawViewportRectOnOverlay(overlaySidebar);
 }
 
 function initProceduralPreviewClickAndViewport(): void {
@@ -178,35 +186,37 @@ function setProcStatus(message: string, isError = false): void {
     }
 }
 
-function updateLoadEditorButtonState(): void {
-    const btn = document.getElementById('proc-load-editor-btn') as HTMLButtonElement;
-    if (btn) btn.disabled = !lastGeneratedPayload;
-}
 
-const LIVE_PREVIEW_DEBOUNCE_MS = 120;
-let livePreviewTimeoutId: ReturnType<typeof setTimeout> | null = null;
+const PREVIEW_DEBOUNCE_MS = 120;
 
+let previewDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+/** Update minimap and main view. Debounced to avoid rapid rebuilds when dragging sliders. */
 function scheduleLivePreview(): void {
-    const cb = document.getElementById('proc-live-preview') as HTMLInputElement;
-    if (!cb?.checked) return;
-    if (livePreviewTimeoutId != null) clearTimeout(livePreviewTimeoutId);
-    livePreviewTimeoutId = setTimeout(() => {
-        livePreviewTimeoutId = null;
+    if (previewDebounceTimer) clearTimeout(previewDebounceTimer);
+    previewDebounceTimer = setTimeout(() => {
+        previewDebounceTimer = null;
         runPreviewCanvas();
-    }, LIVE_PREVIEW_DEBOUNCE_MS);
+    }, PREVIEW_DEBOUNCE_MS);
 }
 
 async function runPreviewCanvas(): Promise<void> {
-    const canvas = document.getElementById('proc-preview-canvas') as HTMLCanvasElement;
-    if (!canvas) return;
+    const canvasSidebar = document.getElementById('proc-preview-canvas') as HTMLCanvasElement;
     try {
         const param = getProcParam();
-        const { runAndDrawPreview } =
-            await import('../../../src/tools/map-editor/Mapgen4Generator');
-        runAndDrawPreview(
-            canvas,
-            param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param
-        );
+        const mapgenParam = param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
+        if (editorInstance) {
+            editorInstance.setProceduralPreview(mapgenParam);
+            if (canvasSidebar && !editorInstance.drawCachedToCanvas(canvasSidebar)) {
+                const { runAndDrawPreview } =
+                    await import('../../../src/tools/map-editor/Mapgen4Generator');
+                runAndDrawPreview(canvasSidebar, mapgenParam);
+            }
+        } else if (canvasSidebar) {
+            const { runAndDrawPreview } =
+                await import('../../../src/tools/map-editor/Mapgen4Generator');
+            runAndDrawPreview(canvasSidebar, mapgenParam);
+        }
     } catch (e) {
         Logger.error('Mapgen4 preview error:', e);
     }
@@ -285,46 +295,6 @@ function initProceduralPanel(): void {
     bindSlider('proc-flow', 'proc-flow-val', parseFloat);
     bindNumberInput('proc-elev-seed');
 
-    document.getElementById('proc-apply-btn')?.addEventListener('click', () => runGenerateWorld());
-    document
-        .getElementById('proc-load-editor-btn')
-        ?.addEventListener('click', () => loadProceduralIntoEditor());
-    updateLoadEditorButtonState();
-}
-
-async function runGenerateWorld(): Promise<void> {
-    setProcStatus('Generating...');
-    try {
-        const param = getProcParam();
-        const { generateMapgen4, toSerializedPayload } =
-            await import('../../../src/tools/map-editor/Mapgen4Generator');
-        const worldData = generateMapgen4(param);
-        lastGeneratedPayload = toSerializedPayload(worldData);
-        if (editorInstance) {
-            editorInstance.loadData(lastGeneratedPayload);
-            currentLoadedMap = null;
-            updateLoadedDisplay();
-        }
-        setProcStatus('World loaded in main view. Use Maps tab to save.');
-        updateLoadEditorButtonState();
-    } catch (e) {
-        Logger.error('Mapgen4 generate error:', e);
-        setProcStatus('Generation failed: ' + (e instanceof Error ? e.message : String(e)), true);
-        lastGeneratedPayload = null;
-        updateLoadEditorButtonState();
-    }
-}
-
-function loadProceduralIntoEditor(): void {
-    if (!editorInstance || !lastGeneratedPayload) {
-        setProcStatus('Nothing to load', true);
-        return;
-    }
-    editorInstance.loadData(lastGeneratedPayload);
-    currentLoadedMap = null;
-    updateLoadedDisplay();
-    setProcStatus('Loaded into editor. Use Maps tab to save.');
-    setMapStatus('');
 }
 
 function setMapStatus(message: string, isError = false): void {

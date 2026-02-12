@@ -1,31 +1,17 @@
 /**
  * ProjectileVFX - Spawns traveling projectile visual effects
  *
- * Creates actual projectiles that travel from gun tip to target.
- * Supports different weapon types with unique visuals.
- *
- * Owner: VFX Specialist
+ * Creates projectiles that travel from gun tip to target.
+ * Configs: ProjectileVFXConfig. Muzzle: ProjectileMuzzleFlash. Weapon type: ProjectileWeaponType.
  */
 
 import { RenderConfig } from '@config/RenderConfig';
-import { VFXController } from './VFXController';
 import { LightingSystem } from './LightingSystem';
 import { Registry } from '@core/Registry';
 import { MathUtils } from '@core/MathUtils';
-
-interface ProjectileConfig {
-    color: string;
-    coreColor: string;
-    size: number;
-    speed: number;
-    length: number;
-    glow?: boolean;
-    glowSize?: number;
-    trail?: boolean;
-    fade?: boolean;
-    pellets?: number;
-    spread?: number;
-}
+import { PROJECTILE_CONFIGS, type ProjectileConfig } from './ProjectileVFXConfig';
+import { spawnMuzzleFlash } from './ProjectileMuzzleFlash';
+import { getWeaponType } from './ProjectileWeaponType';
 
 interface Projectile {
     x: number;
@@ -48,126 +34,8 @@ interface Projectile {
     alpha: number;
 }
 
-// Minimal interface for Hero entity to avoid circular dependency loop if IEntity is heavy
-interface IWeaponCarrier {
-    equipment?: {
-        getSlot?: (slot: string) => { id?: string; name?: string; weaponSubtype?: string; weaponType?: string };
-    };
-}
-
 const ProjectileVFX = {
-    // Active projectiles
     projectiles: [] as Projectile[],
-
-    // Projectile visual configs by weapon subtype
-    // Realistic tracer-style bullets with proper speed/size ratios
-    configs: {
-        // Pistol: Quick, compact round
-        pistol: {
-            color: '#FFF8DC',
-            coreColor: '#FFFFFF',
-            size: 3,
-            speed: 1100,
-            length: 15,
-            glow: true,
-            glowSize: 8
-        },
-        // Rifle: Longer tracer, faster
-        rifle: {
-            color: '#FFD700',
-            coreColor: '#FFFFFF',
-            size: 4,
-            speed: 1400,
-            length: 28,
-            glow: true,
-            glowSize: 12
-        },
-        // Sniper: Long bright cyan tracer with trail
-        sniper_rifle: {
-            color: '#00FFFF',
-            coreColor: '#FFFFFF',
-            size: 5,
-            speed: 2000,
-            length: 50,
-            glow: true,
-            glowSize: 15,
-            trail: true
-        },
-        sniperrifle: {
-            color: '#00FFFF',
-            coreColor: '#FFFFFF',
-            size: 5,
-            speed: 2000,
-            length: 50,
-            glow: true,
-            glowSize: 15,
-            trail: true
-        }, // Legacy alias
-        // Shotgun: Multiple small pellets
-        shotgun: {
-            color: '#FF6600',
-            coreColor: '#FFFF00',
-            size: 2,
-            speed: 900,
-            length: 10,
-            pellets: 8,
-            spread: 0.35,
-            glow: true,
-            glowSize: 6
-        },
-        // Machine gun: Rapid small rounds
-        machine_gun: {
-            color: '#FFCC00',
-            coreColor: '#FFFFFF',
-            size: 3,
-            speed: 1300,
-            length: 18,
-            glow: true,
-            glowSize: 8
-        },
-        // SMG: Even faster, smaller
-        submachine_gun: {
-            color: '#FFE055',
-            coreColor: '#FFFFFF',
-            size: 2,
-            speed: 1200,
-            length: 12,
-            glow: true,
-            glowSize: 6
-        },
-        // Flamethrower: Slow burning projectile
-        flamethrower: {
-            color: '#FF4500',
-            coreColor: '#FFFF00',
-            size: 10,
-            speed: 500,
-            length: 20,
-            fade: true,
-            glow: true,
-            glowSize: 20
-        },
-        // Bazooka: Large explosive round with smoke trail
-        bazooka: {
-            color: '#FF3300',
-            coreColor: '#FFFF00',
-            size: 10,
-            speed: 600,
-            length: 35,
-            glow: true,
-            glowSize: 25,
-            trail: true
-        },
-        // Fallback
-        default: {
-            color: '#FFFFCC',
-            coreColor: '#FFFFFF',
-            size: 4,
-            speed: 1100,
-            length: 20,
-            glow: true,
-            glowSize: 10
-        }
-    } as Record<string, ProjectileConfig>,
 
     /**
      * Spawn projectile(s) from origin to target
@@ -176,7 +44,7 @@ const ProjectileVFX = {
      * @param {string} weaponType - Weapon subtype (pistol, rifle, etc)
      */
     spawn(origin: { x: number; y: number }, target: { x: number; y: number }, weaponType = 'pistol') {
-        const config = this.configs[weaponType] || this.configs.default;
+        const config = PROJECTILE_CONFIGS[weaponType] || PROJECTILE_CONFIGS.default;
 
         // Calculate trajectory
         const dx = target.x - origin.x;
@@ -202,8 +70,7 @@ const ProjectileVFX = {
         // Calculate actual travel distance from muzzle to target
         const distance = MathUtils.distance(muzzleX, muzzleY, target.x, target.y);
 
-        // Spawn muzzle flash
-        this.spawnMuzzleFlash(muzzleX, muzzleY, angle, config);
+        spawnMuzzleFlash(muzzleX, muzzleY, angle, config);
 
         // Spawn projectile(s)
         if (config.pellets) {
@@ -251,81 +118,6 @@ const ProjectileVFX = {
         };
 
         this.projectiles.push(projectile);
-    },
-
-    /**
-     * Spawn realistic multi-layered muzzle flash VFX
-     * Combines: bright core flash, directional sparks, and smoke
-     */
-    spawnMuzzleFlash(x: number, y: number, angle: number, config: ProjectileConfig) {
-        if (!VFXController) return;
-
-        // Layer 1: Bright white-hot core flash (instant)
-        VFXController.playForeground(x, y, {
-            type: 'glow',
-            color: '#FFFFFF',
-            count: 1,
-            speed: 0,
-            lifetime: 60,
-            size: 40,
-            blendMode: 'lighter'
-        });
-
-        // Layer 2: Orange inner glow
-        VFXController.playForeground(x, y, {
-            type: 'glow',
-            color: '#FF8800',
-            count: 1,
-            speed: 0,
-            lifetime: 100,
-            size: 25,
-            blendMode: 'lighter'
-        });
-
-        // Layer 3: Directional sparks cone (toward target)
-        VFXController.playForeground(x, y, {
-            type: 'spark',
-            color: '#FFF700',
-            count: 8,
-            speed: 18,
-            lifetime: 120,
-            size: 3,
-            angle: angle,
-            spread: 0.6,
-            drag: 0.9,
-            colorOverLifetime: ['#FFFFFF', '#FF4500'],
-            blendMode: 'lighter'
-        });
-
-        // Layer 4: Hot debris spray (wider spread)
-        VFXController.playForeground(x, y, {
-            type: 'debris',
-            color: '#FFCC00',
-            count: 6,
-            speed: 10,
-            lifetime: 200,
-            size: 4,
-            angle: angle,
-            spread: 1.2,
-            gravity: 0.3,
-            drag: 0.92,
-            blendMode: 'lighter'
-        });
-
-        // Layer 5: Subtle smoke puff
-        VFXController.playForeground(x, y, {
-            type: 'glow',
-            color: '#555555',
-            count: 3,
-            speed: 2,
-            lifetime: 400,
-            size: 15,
-            angle: angle + Math.PI, // Smoke drifts backward
-            spread: 0.8,
-            alpha: 0.3,
-            drag: 0.98,
-            blendMode: 'source-over'
-        });
     },
 
     /**
@@ -460,48 +252,7 @@ const ProjectileVFX = {
         }
     },
 
-    /**
-     * Get the weapon subtype from equipped weapon
-     * Reads weaponSubtype field from entity, falls back to name inference
-     * @param {Object} hero - Hero entity
-     * @returns {string} Weapon subtype (pistol, rifle, sword, etc)
-     */
-    getWeaponType(hero: IWeaponCarrier) {
-        if (!hero?.equipment) return 'pistol';
-
-        // Check hand1 for weapon
-        const hand1 = hero.equipment.getSlot?.('hand1');
-        if (hand1) {
-            // First check for explicit weaponSubtype field (set from dashboard)
-            if (hand1.weaponSubtype) {
-                return hand1.weaponSubtype;
-            }
-
-            // Fallback: infer from weapon name/id for ranged weapons
-            if (hand1.weaponType === 'ranged') {
-                const id = (hand1.id || '').toLowerCase();
-                const name = (hand1.name || '').toLowerCase();
-
-                if (id.includes('shotgun') || name.includes('shotgun')) return 'shotgun';
-                if (id.includes('sniper') || name.includes('sniper') || name.includes('marksman'))
-                    return 'sniperrifle';
-                if (id.includes('rifle') || name.includes('rifle')) return 'rifle';
-                if (id.includes('machine') || id.includes('smg')) return 'machine_gun';
-                if (id.includes('revolver') || name.includes('revolver')) return 'pistol';
-                if (id.includes('pistol') || name.includes('pistol')) return 'pistol';
-
-                return 'pistol';
-            }
-        }
-
-        // Fallback - check hand2
-        const hand2 = hero.equipment.getSlot?.('hand2');
-        if (hand2?.weaponSubtype) {
-            return hand2.weaponSubtype;
-        }
-
-        return 'pistol';
-    }
+    getWeaponType: getWeaponType
 };
 
 // Export

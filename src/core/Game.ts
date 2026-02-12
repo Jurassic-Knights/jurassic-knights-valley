@@ -19,19 +19,10 @@ import { EventBus } from './EventBus';
 import { SystemConfig } from '@config/SystemConfig';
 import { Tween } from '../animation/Tween';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { logProfileResults } from './GameProfile';
 import { MerchantUI } from '@ui/MerchantUI';
 import { VFXController } from '@vfx/VFXController';
 import type { ISystem, IEntity } from '../types/core';
-
-/** Profile data structure for performance monitoring */
-interface ProfileData {
-    systems: Record<string, number>;
-    entityManager: number;
-    gameRenderer: number;
-    vfxForeground: number;
-    frameCount: number;
-    startTime: number;
-}
 
 class Game {
     private isRunning: boolean = false;
@@ -41,7 +32,7 @@ class Game {
     public hero: Hero | null = null;
     private systems: ISystem[] = [];
     private _boundGameLoop: (timestamp: number) => void;
-    private _profile: ProfileData | null = null;
+    private _profile: import('./GameProfile').ProfileData | null = null;
 
     constructor() {
         this.tickRate = GameConstants.Core.TICK_RATE_MS;
@@ -60,12 +51,6 @@ class Game {
         return (window as unknown as Record<string, unknown>)[name] as T | null;
     }
 
-    /**
-     * Initialize the game
-     */
-    /**
-     * Initialize the game
-     */
     async init() {
         Logger.info('[Game] Initializing...');
 
@@ -167,10 +152,7 @@ class Game {
             Logger.info('[Game] Initialized IslandUpgrades');
         }
 
-        // Create Hero (Now handled by SpawnManager.start())
-        // this.createHero();
-
-        // 4. Start Phase (Logic that needs everything ready)
+        // 4. Start Phase
         Logger.info('[Game] Starting systems...');
         for (const config of sortedSystems) {
             if (config.start) {
@@ -184,43 +166,12 @@ class Game {
             }
         }
 
-        // Merchant UI Init (Could be moved to SystemConfig start phase or init)
         if (MerchantUI) MerchantUI.init();
-
-        // 5. Start Phase (Logic that needs everything ready)
-        // ... (Already handled above)
-
-        // Event Listeners (Could be moved to a GameEventHandler system)
-        // ISLAND_UNLOCKED now handled by SpawnManager directly
-
         Logger.info('[Game] Boot Complete.');
         return true;
     }
 
-    // Rest logic migrated to RestSystem.js
-
-    /**
-     * Create the player hero
-     */
-
-    /**
-     * Initialize a newly unlocked island
-     */
-    // initializeIsland(gridX, gridY) - Handled by SpawnManager via EventBus
-
-    /**
-     * Refresh resources on a specific island (e.g. after upgrade)
-     */
-    // refreshIslandResources(gridX, gridY) - Handled by SpawnManager via EventBus / Direct Call
-
-    /**
-     * Update respawn timers for all entities on an island
-     */
-    // updateIslandRespawnTimers(gridX, gridY) - Handled by SpawnManager via EventBus / Direct Call
-
-    /**
-     * Start the game loop
-     */
+    /** Start the game loop */
     start() {
         if (this.isRunning) return;
 
@@ -244,20 +195,6 @@ class Game {
     loop() {
         if (!this.isRunning) return;
 
-        // The original `loop` method was the main game loop.
-        // The new structure introduces `gameLoop` as the main recursive loop.
-        // This `loop` method now acts as an initializer for the game loop.
-        // The `deltaTime` and `currentTime` calculation here seems to be a remnant from the old loop structure
-        // and is not used in the new `loop`'s logic before calling `gameLoop`.
-        // It's safer to remove it if it's not used, but the instruction includes it.
-        // I will keep it as per instruction, even if it's not directly used in this specific block.
-        // (performance.now() timing handled elsewhere)
-        // Removed redundant CraftingManager.init()
-
-        // These lines (`this.lastTime = performance.now(); this.isRunning = true;`)
-        // are typically handled by the `start()` method which calls `loop()`.
-        // Including them here might reset `lastTime` unnecessarily or re-set `isRunning` which is already true.
-        // However, following the instruction faithfully.
         this.lastTime = performance.now();
         this.isRunning = true;
         this.gameLoop(this.lastTime);
@@ -379,34 +316,7 @@ class Game {
      */
     stopProfile() {
         if (!this._profile) return;
-
-        const p = this._profile;
-        const elapsed = (performance.now() - p.startTime) / 1000;
-        const avgFps = p.frameCount / elapsed;
-
-        Logger.info('=== FRAME PROFILE ===');
-        Logger.info(
-            `Frames: ${p.frameCount}, Time: ${elapsed.toFixed(1)}s, Avg FPS: ${avgFps.toFixed(1)}`
-        );
-        Logger.info('--- Systems (ms total) ---');
-        for (const [name, time] of Object.entries(p.systems).sort(
-            (a, b) => (b[1] as number) - (a[1] as number)
-        )) {
-            Logger.info(
-                `  ${name}: ${(time as number).toFixed(1)}ms (${((time as number) / p.frameCount).toFixed(2)}ms/frame)`
-            );
-        }
-        Logger.info(
-            `--- EntityManager: ${p.entityManager.toFixed(1)}ms (${(p.entityManager / p.frameCount).toFixed(2)}ms/frame)`
-        );
-        Logger.info(
-            `--- GameRenderer: ${p.gameRenderer.toFixed(1)}ms (${(p.gameRenderer / p.frameCount).toFixed(2)}ms/frame)`
-        );
-        Logger.info(
-            `--- VFX Foreground: ${p.vfxForeground.toFixed(1)}ms (${(p.vfxForeground / p.frameCount).toFixed(2)}ms/frame)`
-        );
-        Logger.info('=====================');
-
+        logProfileResults(this._profile);
         this._profile = null;
     }
 }

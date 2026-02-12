@@ -6,13 +6,46 @@
 
 ---
 
+## Refactor Progress (2026-02-11)
+
+| File | Before | After | Approach |
+|------|--------|-------|----------|
+| `src/data/GameConstants.ts` | 723 | Split into `GameConstants/` (12 files, all &lt;150 lines) | Domain split: Grid, Combat, Equipment, Events, etc. |
+| `src/entities/EntityLoader.ts` | 737 | 300 (+ EntityLoaderProcess, Broadcast, Lookup) | Extracted processEntity, handleEntityUpdate, lookup helpers |
+| `src/ui/EquipmentUI.ts` | 800 | 222 (+ FilterConfig, Footer, ClickHandler) | Extracted filter hierarchy, footer swap/restore, click delegation |
+| `src/core/AssetLoader.ts` | 432 | 296 (+ AssetLoaderPathPatterns) | Extracted ID_PATTERNS and constructPathFromId |
+| `src/tools/map-editor/GroundSystem.ts` | 620 | 300 (+ Splat, Palette, Assets, TileTexture) | Extracted splat ops, palette resolution, asset loading, tile texture |
+| `src/world/IslandManagerCore.ts` | 554 | 290 (+ Grid, Bridges, Walkable, Collision) | Extracted grid utils, bridge logic, walkable zones, collision building |
+| `src/rendering/HeroRenderer.ts` | 548 | 164 (+ StatusBars, RangeCircles, Shadow, Weapon) | Extracted status bars, range circles, shadow, weapon drawing |
+| `src/core/GameRenderer.ts` | 534 | 291 (+ WorldSize, Layers, Viewport) | Extracted world size, render layers, viewport logic |
+| `src/tools/map-editor/MapEditorCore.ts` | 498 | 298 (+ UIOverlays, BrushCursor, InputHandlers, ToolUse, Registry, Mount, Update) | Extracted zoom/cursor UI, input handlers, tool execution, mount/unmount |
+| `src/systems/CollisionSystem.ts` | 454 | 184 (+ Debug, Utils, SpatialHash, Collision) | Extracted debug rendering, getCollisionBounds, spatial hash, checkCollision/checkTriggers |
+| `src/ui/InventoryUI.ts` | 527 | 285 (+ InventoryUIFooter) | Extracted footer swap/restore, footer active states |
+| `src/vfx/MeleeTrailVFX.ts` | 483 | 94 (+ MeleeTrailConfig, MeleeTrailRenderers) | Extracted configs, style renderers |
+| `src/vfx/ProjectileVFX.ts` | 462 | 228 (+ ProjectileVFXConfig, ProjectileMuzzleFlash, ProjectileWeaponType) | Extracted configs, muzzle flash, getWeaponType |
+| `src/ui/TextureAligner.ts` | 437 | 299 (+ TextureAlignerTargets, TextureAlignerUI) | Extracted targets, UI template and bindings |
+| `src/systems/EnemySystem.ts` | 301 | 292 | Condensed JSDoc, removed verbose logging |
+| `src/systems/spawners/EnemySpawner.ts` | 303 | 297 | Condensed JSDoc |
+| `src/gameplay/DroppedItem.ts` | 306 | 294 | Condensed JSDoc |
+| `src/vfx/VFXController.ts` | 307 | 295 | Condensed JSDoc, removed comment block |
+| `src/gameplay/EnemyBehavior.ts` | 417 | 277 (+ EnemyBehaviorPath, EnemyBehaviorUI) | Extracted path/movement, UI rendering |
+| `src/entities/manifest.ts` | 535 | 13 (+ manifest_ground, _enemies, _nodes, _resources, _items, _equipment, _environment) | Split by category |
+| `src/rendering/EnvironmentRenderer.ts` | 405 | ~226 (+ EnvironmentRendererLighting, EnvironmentRendererStorm) | Extracted lighting, storm |
+| `src/rendering/ResourceRenderer.ts` | 405 | 268 (+ ResourceRendererDropped) | Extracted dropped item render |
+| `src/gameplay/EnemyCore.ts` | 405 | 314 (+ EnemyCoreConfig) | Extracted config merge |
+| `src/rendering/WorldRenderer.ts` | 385 | 140 (+ WorldRendererWater, WorldRendererIslands) | Extracted water, islands |
+| `src/ui/MinimapSystem.ts` | 381 | ~235 (+ MinimapRenderer) | Extracted render logic |
+| `src/data/VFX_Categories.ts` | 369 | Split into VFX_Categories/ (purchase, unlock, magnet, hero, dino, resource, projectiles) | Domain split |
+
+---
+
 ## Summary
 
-| Area      | Files over 300 lines | Worst offender         |
-| --------- | -------------------- | ---------------------- |
-| `src/`    | 42                   | GameConstants.ts (723) |
-| `tools/`  | 11                   | style.css (1141)       |
-| **Total** | **53**               | —                      |
+| Area      | Files over 300 lines | Worst offender          |
+| --------- | -------------------- | ----------------------- |
+| `src/`    | 40                   | EquipmentUI.ts (800)     |
+| `tools/`  | 11                   | style.css (1141)        |
+| **Total** | **51**               | — (2 resolved in src/)  |
 
 The codebase has **53 source files** that exceed the 300-line limit. Below they are grouped by directory with line counts and suggested splitting approaches aligned to the technical guidelines.
 
@@ -24,7 +57,7 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 
 | File                         | Lines   | Note                                                                                                                                                                    |
 | ---------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/data/GameConstants.ts`  | **723** | Config/constants; split by domain (Grid, Combat, Spawn, UI, etc.) into `GameConstants.Grid.ts`, `GameConstants.Combat.ts`, etc., and re-export from `GameConstants.ts`. |
+| `src/data/GameConstants.ts`  | ~~723~~ DONE | Split into `src/data/GameConstants/` (Grid, Combat, Equipment, Events, etc. + index.ts). |
 | `src/data/VFX_Categories.ts` | 369     | Data table; split by category or tier if possible, or document as data-only exemption.                                                                                  |
 
 ### 1.2 Core
@@ -33,13 +66,13 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 | -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `src/core/AssetLoader.ts`  | 432     | Already flagged in audit_report_clean_code.md (140-line `_constructPathFromId`). Split: path construction → config/map or strategy; image/audio/vfx registry loading → separate modules or data files. |
 | `src/core/Game.ts`         | 359     | Split by concern: bootstrap vs. loop vs. system wiring (e.g. `GameLoop.ts`, `GameBootstrap.ts`).                                                                                                       |
-| `src/core/GameRenderer.ts` | **534** | Split by render pass or layer: e.g. `GameRendererCore.ts` + `GameRendererLayers.ts` or by system (world, entities, UI overlay).                                                                        |
+| `src/core/GameRenderer.ts` | ~~534~~ DONE | Split into GameRendererWorldSize, GameRendererLayers, GameRendererViewport. |
 
 ### 1.3 Entities (loaders / manifest)
 
 | File                           | Lines   | Note                                                                                                                                   |
 | ------------------------------ | ------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/entities/EntityLoader.ts` | **737** | If generated, exempt; otherwise split by entity kind (hero, enemy, resource, prop, etc.) with a thin `EntityLoader.ts` that delegates. |
+| `src/entities/EntityLoader.ts` | ~~737~~ DONE | Split: EntityLoaderProcess.ts, EntityLoaderBroadcast.ts, EntityLoaderLookup.ts. Main file now 300 lines. |
 | `src/entities/manifest.ts`     | 535     | Exempt if this file is generated; otherwise split by category (e.g. manifest_equipment.ts, manifest_enemies.ts) and re-export.         |
 
 ### 1.4 Audio (registry-style)
@@ -63,7 +96,7 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 | File                                   | Lines   | Suggested split                                                                                       |
 | -------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------- |
 | `src/rendering/EnvironmentRenderer.ts` | 405     | By layer or type: terrain, props, buildings, etc.                                                     |
-| `src/rendering/HeroRenderer.ts`        | **548** | Split by concern: body, equipment, VFX, shadows (e.g. HeroRendererBody.ts, HeroRendererEquipment.ts). |
+| `src/rendering/HeroRenderer.ts`        | ~~548~~ DONE | Split into HeroRendererStatusBars, RangeCircles, Shadow, Weapon. |
 | `src/rendering/ResourceRenderer.ts`    | 405     | By resource type or draw pass.                                                                        |
 | `src/rendering/WorldRenderer.ts`       | 385     | Orchestration vs. layer renderers (delegate to smaller modules).                                      |
 
@@ -102,7 +135,7 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 
 | File                             | Lines   | Suggested split                                                 |
 | -------------------------------- | ------- | --------------------------------------------------------------- |
-| `src/world/IslandManagerCore.ts` | **554** | Island state vs. grid vs. unlock/progression vs. serialization. |
+| `src/world/IslandManagerCore.ts` | ~~554~~ DONE | Split into IslandManagerGrid, Bridges, Walkable, Collision. |
 | `src/world/BiomeManager.ts`      | 329     | Biome resolution vs. blending vs. config.                       |
 | `src/world/HomeBase.ts`          | 316     | Structure vs. upgrades vs. UI.                                  |
 
@@ -118,7 +151,7 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 
 | File                                       | Lines   | Suggested split                                                                                 |
 | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- |
-| `src/tools/map-editor/GroundSystem.ts`     | **620** | Chunk/height vs. blending vs. paint tools; align with ChunkManager/ZoneSystem.                  |
+| `src/tools/map-editor/GroundSystem.ts`     | ~~620~~ DONE | Split into GroundSystemSplat, GroundSystemPalette, GroundSystemAssets, GroundSystemTileTexture. |
 | `src/tools/map-editor/MapEditorCore.ts`    | 498     | Mode handling vs. tools vs. save/load vs. canvas.                                               |
 | `src/tools/map-editor/mapgen4/map.ts`      | 416     | Mapgen4 library code: consider splitting by algorithm step or leave as vendor if from upstream. |
 | `src/tools/map-editor/ChunkManager.ts`     | 328     | Chunk lifecycle vs. serialization vs. LOD.                                                      |
@@ -166,7 +199,20 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 
 ---
 
-## 5. Reference: technical_guidelines.md §7
+## 6. Inconsistencies & Bad Practices Found During Refactor
+
+| Item | Location | Note |
+|------|----------|------|
+| **Duplicate `return true`** | EntityLoader.ts (orig) | Dead code: two consecutive `return true` in load(). Fixed. |
+| **Duplicate `npcs` in categories** | EntityLoader.ts (orig) | `loadFromManifest` had `'npcs'` twice in categories array. Fixed. |
+| **Duplicate JSDoc blocks** | EntityLoader.ts (orig) | getWeaponSubtype, getToolType, loadCategory, processEntity had duplicate comment blocks. Removed. |
+| **getConfig() confusion** | Codebase | Two different `getConfig()` functions: `@data/GameConstants` (HMR tunables) vs `@data/GameConfig` (GameConfigType). ResourceSpawner, PropSpawner, WorldRenderer, HomeBase, BaseAI use GameConfig; others use GameConstants. Consider unifying or documenting clearly. |
+| **EntityLoader defaults** | EntityLoader.ts | `this.defaults` is a getter that rebuilds object each access. Consider caching if hot path. |
+| **Registry.services direct access** | EntityLoader.ts | HMR uses `Registry.services.set()` to bypass `register()` (which throws on overwrite). Works but couples to internal API. |
+
+---
+
+## 7. Reference: technical_guidelines.md §7
 
 - **Max 300 lines** per source file (`.ts`, `.tsx`, `.css`).
 - **Exempt:** `.json`, generated files (e.g. `asset_manifest.ts`), vendor/library.

@@ -303,18 +303,11 @@ class VFXSystem {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Utility Methods
-    // -------------------------------------------------------------------------
-
     createExplosion(x: number, y: number) {
         // Redirect to sequence system
         this.playSequence('EXPLOSION_GENERIC', x, y);
     }
 
-    /**
-     * Get active particle count (for profiler)
-     */
     getActiveCount(): number {
         let count = 0;
         if (this.fgParticles?.particles) count += this.fgParticles.particles.length;
@@ -324,9 +317,6 @@ class VFXSystem {
         return count;
     }
 
-    /**
-     * Trigger UI progress sparks effect (for upgrade/progress animations)
-     */
     triggerUIProgressSparks(x: number, y: number, _config: ParticleOptions = {}) {
         this.playForeground(x, y, {
             type: 'spark',
@@ -338,9 +328,6 @@ class VFXSystem {
         });
     }
 
-    /**
-     * Presets accessor (backward compatibility)
-     */
     get presets() {
         return VFXConfig?.TEMPLATES || {};
     }

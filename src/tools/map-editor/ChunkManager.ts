@@ -229,6 +229,17 @@ export class ChunkManager {
         viewRect: { x: number; y: number; width: number; height: number },
         zoom: number
     ): void {
+        // When no map is loaded, show nothing — main view uses procedural polygon preview only.
+        // Chunk-based tile rendering is only for loaded maps.
+        if (this.worldData.size === 0) {
+            const keysToUnload = Array.from(this.loadedChunks.keys());
+            keysToUnload.forEach((k) => this.unloadChunk(k));
+            this.loadingChunks.clear();
+            this.container.visible = false;
+            return;
+        }
+        this.container.visible = true;
+
         const { TILE_SIZE, CHUNK_SIZE } = MapEditorConfig;
         const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
 

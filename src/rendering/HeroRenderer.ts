@@ -9,18 +9,14 @@ import { Logger } from '@core/Logger';
 import { RenderConfig } from '@config/RenderConfig';
 import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { AssetLoader } from '@core/AssetLoader';
-import { entityManager } from '@core/EntityManager';
-import { WeaponRenderer } from './WeaponRenderer';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
-import { ColorPalette } from '@config/ColorPalette';
-import { environmentRenderer } from './EnvironmentRenderer';
-import { EntityTypes } from '@config/EntityTypes';
-import { getWeaponStats } from '@data/GameConfig';
-
-// Unmapped modules - need manual import
-import { MathUtils } from '@core/MathUtils';
 import { DOMUtils } from '@core/DOMUtils';
+import { environmentRenderer } from './EnvironmentRenderer';
+import { drawStatusBars } from './HeroRendererStatusBars';
+import { drawRangeCircles } from './HeroRendererRangeCircles';
+import { drawShadow } from './HeroRendererShadow';
+import { drawWeapon } from './HeroRendererWeapon';
 import { Hero } from '../gameplay/Hero';
 import type { IEntity, IGame, ISystem } from '../types/core';
 
@@ -102,22 +98,21 @@ class HeroRendererSystem implements ISystem {
         heroPos.y = renderY;
 
         try {
-            // Draw Shadow
             if (includeShadow) {
-                this.drawShadow(ctx, hero);
+                this._ensureShadowImg();
+                drawShadow(ctx, hero, {
+                    shadowImg: this._shadowImg,
+                    forceOpaque: false
+                });
             }
 
-            // Draw Range Circles (beneath hero)
-            this.drawRangeCircles(ctx, hero);
+            drawRangeCircles(ctx, hero);
 
-            // Draw Hero Body
             this.drawBody(ctx, hero);
 
-            // Draw Weapon (and Muzzle Flash)
-            this.drawWeapon(ctx, hero);
+            drawWeapon(ctx, hero);
 
-            // Draw Status Bars (Health above, Resolve below)
-            this.drawStatusBars(ctx, hero);
+            drawStatusBars(ctx, hero);
         } finally {
             // Restore actual physics coordinates
             const heroPos = hero as { x: number; y: number };
@@ -126,137 +121,16 @@ class HeroRendererSystem implements ISystem {
         }
     }
 
-    /**
-     * Draw health bar above hero
-     */
-    drawStatusBars(ctx: CanvasRenderingContext2D, hero: Hero) {
-        const barWidth = RenderConfig.UI.HEALTH_BAR_WIDTH;
-        const barHeight = RenderConfig.UI.HEALTH_BAR_HEIGHT;
-        const cornerRadius = 4;
-
-        // Health Bar (above hero) - Use ColorPalette
-        const healthY = hero.y - hero.height / 2 - 18;
-        const healthPercent = MathUtils.clamp(hero.health / hero.maxHealth, 0, 1);
-        const colors = ColorPalette;
-
-        this.drawBar(
-            ctx,
-            hero.x,
-            healthY,
-            barWidth,
-            barHeight,
-            healthPercent,
-            colors.HEALTH_GREEN,
-            colors.HEALTH_BG,
-            cornerRadius
-        );
-    }
-
-    /**
-     * Helper to draw a rounded progress bar
-     */
-    drawBar(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, percent: number, fillColor: string, bgColor: string, radius: number) {
-        const halfWidth = width / 2;
-
-        ctx.save();
-
-        // Background
-        ctx.fillStyle = bgColor;
-        ctx.beginPath();
-        ctx.roundRect(x - halfWidth, y - height / 2, width, height, radius);
-        ctx.fill();
-
-        // Fill
-        if (percent > 0) {
-            ctx.fillStyle = fillColor;
-            ctx.beginPath();
-            const fillWidth = width * percent;
-            ctx.roundRect(x - halfWidth, y - height / 2, fillWidth, height, radius);
-            ctx.fill();
+    private _ensureShadowImg(): void {
+        if (!this._shadowImg && MaterialLibrary) {
+            this._shadowImg = MaterialLibrary.get('world_hero', 'shadow', {});
         }
-
-        // Border
-        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(x - halfWidth, y - height / 2, width, height, radius);
-        ctx.stroke();
-
-        ctx.restore();
     }
 
-    /**
-     * Draw drop shadow
-     */
+    /** For ShadowRenderer compatibility */
     drawShadow(ctx: CanvasRenderingContext2D, hero: Hero, forceOpaque = false) {
-        // Safe access to RenderConfig
-        const cfg = RenderConfig ? RenderConfig.Hero : null;
-        if (!cfg) return;
-
-        // Check environmentRenderer singleton for dynamic shadows
-        const env = environmentRenderer;
-
-        // Default values if system missing
-        let scaleY = 0.3;
-        let alpha = 0.3;
-
-        if (env) {
-            scaleY = env.shadowScaleY;
-            alpha = env.shadowAlpha;
-        }
-
-        // 1. Static Contact Shadow
-        ctx.save();
-        ctx.translate(hero.x, hero.y + hero.height / 2 - 6);
-
-        if (forceOpaque) {
-            ctx.fillStyle = 'black';
-            ctx.globalAlpha = 1.0;
-        } else {
-            ctx.fillStyle = 'black';
-            ctx.globalAlpha = alpha;
-        }
-
-        const contactWidth = hero.width * 0.5;
-        const contactHeight = hero.height * 0.12;
-
-        ctx.beginPath();
-        ctx.ellipse(0, 0, contactWidth / 2, contactHeight / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-
-        // 2. Dynamic Projected Shadow
-        ctx.save();
-        ctx.translate(hero.x, hero.y + hero.height / 2 - 6);
-
-        // Skew
-        const skew = env ? env.shadowSkew || 0 : 0;
-        ctx.transform(1, 0, skew, 1, 0, 0);
-
-        // Dynamic Scale & Flip
-        ctx.scale(1, -scaleY);
-
-        if (forceOpaque) {
-            ctx.globalAlpha = 1.0;
-        } else {
-            ctx.globalAlpha = alpha;
-        }
-
-        // PERF: Cache shadow image on renderer (retry until successful)
-        if (!this._shadowImg) {
-            const heroAssetId = 'world_hero';
-            if (MaterialLibrary) {
-                this._shadowImg = MaterialLibrary.get(heroAssetId, 'shadow', {});
-            }
-        }
-
-        if (this._shadowImg) {
-            // Draw anchored at bottom (0,0) -> (-W/2, -H)
-            ctx.drawImage(this._shadowImg, -hero.width / 2, -hero.height, hero.width, hero.height);
-        }
-        // No fallback - skip rendering until shadow loads
-
-        ctx.restore();
+        this._ensureShadowImg();
+        drawShadow(ctx, hero, { shadowImg: this._shadowImg, forceOpaque });
     }
 
     /**
@@ -309,324 +183,6 @@ class HeroRendererSystem implements ISystem {
             }
         }
         // No fallback - skip rendering until sprite loads
-    }
-
-    /**
-     * Draw the equipped weapon based on target
-     * Uses equipped items from hero.equipment for sprite rendering
-     *
-     * Positioning:
-     * - Idle: Hand 1 on LEFT, Hand 2 on RIGHT, pointing diagonally upward
-     * - Active (moving/targeting): Rotate toward aim direction
-     */
-    drawWeapon(ctx: CanvasRenderingContext2D, hero: Hero) {
-        // Determine if idle or active
-        const inputMove = hero.inputMove || { x: 0, y: 0 };
-        const isMoving = inputMove.x !== 0 || inputMove.y !== 0;
-        const hasTarget = !!hero.targetResource;
-        const isIdle = !isMoving && !hasTarget;
-
-        // Calculate Aim Direction (only used when active)
-        let aimX = 0;
-        let aimY = 0;
-
-        if (hasTarget) {
-            const dist = MathUtils.distance(
-                hero.x,
-                hero.y,
-                hero.targetResource.x,
-                hero.targetResource.y
-            );
-            if (dist > 0) {
-                const dx = hero.targetResource.x - hero.x;
-                const dy = hero.targetResource.y - hero.y;
-                aimX = dx / dist;
-                aimY = dy / dist;
-            }
-        } else if (isMoving) {
-            aimX = inputMove.x;
-            aimY = inputMove.y;
-        }
-
-        ctx.save();
-        ctx.translate(hero.x, hero.y);
-
-        // Get equipped items from the active weapon set
-        const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
-        const hand1Item = activeWeapons.mainHand;
-        const hand2Item = activeWeapons.offHand;
-
-        // Determine target type
-        const target = hero.targetResource;
-        const isCombat =
-            target &&
-            (target.entityType === EntityTypes?.DINOSAUR ||
-                target.constructor?.name === 'Dinosaur' ||
-                target.constructor?.name === 'Enemy' ||
-                target.constructor?.name === 'Boss');
-
-        // Check if actively gathering at a resource node
-        const isResource =
-            target &&
-            (target.entityType === EntityTypes?.RESOURCE ||
-                target.entityType === 'resource' ||
-                target.constructor?.name === 'Resource');
-        const isGathering = isResource && hero.attackTimer > 0;
-
-        // Get the appropriate tool based on node subtype
-        let toolItem = null;
-        if (isGathering && target) {
-            const nodeSubtype = target.nodeSubtype;
-            if (nodeSubtype) {
-                const toolSlotId = `tool_${nodeSubtype}`;
-                toolItem = hero.equipment?.getSlot?.(toolSlotId);
-            }
-        }
-
-        if (isGathering && toolItem) {
-            // Actively gathering at resource: draw equipped tool
-            const baseAngle = Math.atan2(aimY, aimX);
-            const facingRight = aimX >= 0;
-            this.drawEquippedTool(ctx, hero, baseAngle, facingRight, toolItem);
-        } else if (hand1Item || hand2Item) {
-            if (isIdle) {
-                // IDLE: Weapons on left/right sides at edge of hero sprite
-                const idleOffsetX = hero.width / 2; // At edge of hero
-
-                // Draw hand1 on LEFT side, pointing up-left
-                // Use horizontal mirror + same angle as hand2 for symmetry
-                if (hand1Item) {
-                    ctx.save();
-                    ctx.translate(-idleOffsetX, 0);
-                    ctx.scale(-1, 1); // Mirror horizontally for left side
-                    this.drawEquippedWeapon(ctx, hero, -Math.PI * 0.25, true, hand1Item, false);
-                    ctx.restore();
-                }
-
-                // Draw hand2 on RIGHT side, pointing up-right
-                if (hand2Item) {
-                    ctx.save();
-                    ctx.translate(idleOffsetX, 0);
-                    this.drawEquippedWeapon(ctx, hero, -Math.PI * 0.25, true, hand2Item, false);
-                    ctx.restore();
-                }
-            } else {
-                // ACTIVE: Weapons follow aim direction
-                const baseAngle = Math.atan2(aimY, aimX);
-                const facingRight = aimX >= 0;
-
-                // Normalize aim direction for consistent perpendicular offset
-                const aimLen = Math.sqrt(aimX * aimX + aimY * aimY) || 1;
-                const normAimX = aimX / aimLen;
-                const normAimY = aimY / aimLen;
-
-                // Perpendicular direction (rotated 90 degrees)
-                const perpX = -normAimY;
-                const perpY = normAimX;
-                const offsetDistance = facingRight ? hero.width * 0.75 : hero.width * 0.35; // Different offset for left/right
-
-                // When facing left, flip the weapons to mirror right-facing behavior
-                if (!facingRight) {
-                    ctx.scale(-1, 1); // Mirror horizontally
-                }
-
-                // Use absolute angle for consistent rendering
-                const drawAngle = facingRight ? baseAngle : Math.PI - baseAngle;
-
-                // Draw hand1 (right side of aim direction)
-                if (hand1Item) {
-                    ctx.save();
-                    const ox = facingRight ? perpX * offsetDistance : -perpX * offsetDistance;
-                    const oy = perpY * offsetDistance;
-                    ctx.translate(ox, oy);
-                    this.drawEquippedWeapon(
-                        ctx,
-                        hero,
-                        drawAngle,
-                        true,
-                        hand1Item,
-                        hero.hand1Attacking
-                    );
-                    ctx.restore();
-                }
-
-                // Draw hand2 (left side of aim direction)
-                if (hand2Item) {
-                    ctx.save();
-                    const ox = facingRight ? -perpX * offsetDistance : perpX * offsetDistance;
-                    const oy = -perpY * offsetDistance;
-                    ctx.translate(ox, oy);
-                    this.drawEquippedWeapon(
-                        ctx,
-                        hero,
-                        drawAngle,
-                        true,
-                        hand2Item,
-                        hero.hand2Attacking
-                    );
-                    ctx.restore();
-                }
-            }
-        } else if (isCombat) {
-            // Fallback: rifle for combat
-            const baseAngle = Math.atan2(aimY, aimX);
-            this.drawRifle(ctx, hero, baseAngle, aimX >= 0, 'weapon_ranged_pistol_t1_01');
-        } else {
-            // Fallback: shovel for resources (no weapons equipped)
-            const baseAngle = isIdle ? -Math.PI * 0.5 : Math.atan2(aimY, aimX);
-            this.drawShovel(ctx, hero, baseAngle, true, 'tool_t1_01');
-        }
-
-        ctx.restore();
-    }
-
-    /**
-     * Draw equipped weapon (melee or ranged)
-     * @param {boolean} isAttacking - Whether this specific weapon is attacking
-     */
-    drawEquippedWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, item: { weaponType?: string; id?: string; weaponSubtype?: string }, isAttacking = true) {
-        const weaponType = item.weaponType || 'melee';
-        const spriteId = item.id || 'weapon_ranged_pistol_t1_01';
-
-        // Create a temporary hero state for this specific weapon's animation
-        // Use Partial<Hero> to avoid casting to 'unknown'
-        const heroState: Partial<Hero> & { isAttacking: boolean; attackTimer: number } = isAttacking
-            ? hero
-            : { ...hero, isAttacking: false, attackTimer: 0 };
-
-        if (weaponType === 'ranged') {
-            this.drawRifle(ctx, heroState as Hero, baseAngle, facingRight, spriteId);
-        } else {
-            // Melee weapons use swing animation - pass subtype for trail VFX
-            const weaponSubtype = item.weaponSubtype || 'sword';
-            this.drawMeleeWeapon(ctx, heroState as Hero, baseAngle, facingRight, spriteId, weaponSubtype);
-        }
-    }
-
-    /**
-     * Draw equipped tool
-     */
-    drawEquippedTool(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, item: { id?: string }) {
-        const spriteId = item.id || 'tool_t1_01';
-        this.drawShovel(ctx, hero, baseAngle, facingRight, spriteId);
-    }
-
-    /**
-     * Draw melee weapon with swing animation (delegates to WeaponRenderer)
-     * @param {string} weaponSubtype - Weapon subtype for trail VFX
-     */
-    drawMeleeWeapon(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight: boolean, spriteId: string, weaponSubtype = 'sword') {
-        if (WeaponRenderer) {
-            WeaponRenderer.drawMeleeWeapon(
-                ctx,
-                hero,
-                baseAngle,
-                facingRight,
-                spriteId,
-                weaponSubtype
-            );
-        }
-    }
-
-    /**
-     * Draw ranged weapon (delegates to WeaponRenderer)
-     */
-    drawRifle(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight = true, spriteId = 'weapon_ranged_pistol_t1_01') {
-        if (WeaponRenderer) {
-            WeaponRenderer.drawRifle(ctx, hero, baseAngle, facingRight, spriteId);
-        }
-    }
-
-    /**
-     * Draw tool (delegates to WeaponRenderer)
-     */
-    drawShovel(ctx: CanvasRenderingContext2D, hero: Hero, baseAngle: number, facingRight = true, spriteId = 'tool_t1_01') {
-        if (WeaponRenderer) {
-            WeaponRenderer.drawShovel(ctx, hero, baseAngle, facingRight, spriteId);
-        }
-    }
-
-    /**
-     * Draw attack range circles for equipped weapons
-     * Shows 1 circle for 2H weapons, 2 circles for dual-wielding
-     * Only displays when enemies are visible on screen
-     */
-    drawRangeCircles(ctx: CanvasRenderingContext2D, hero: Hero) {
-        // Only show range circles when enemies are nearby (within 1300 units)
-        const detectionRange = 1300;
-        let hasNearbyEnemy = false;
-
-        // Check all entities for hostile enemies within range
-        const allEntities = entityManager?.getAll?.() || [];
-        for (const entity of allEntities) {
-            if (!entity.active) continue;
-
-            // Check if hostile enemy type
-            const isEnemy =
-                entity.entityType === EntityTypes?.ENEMY_DINOSAUR ||
-                entity.entityType === EntityTypes?.ENEMY_SOLDIER ||
-                entity.constructor?.name === 'Enemy' ||
-                entity.constructor?.name === 'Boss';
-            if (!isEnemy) continue;
-
-            // Check distance
-            const dx = entity.x - hero.x;
-            const dy = entity.y - hero.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist <= detectionRange) {
-                hasNearbyEnemy = true;
-                break;
-            }
-        }
-        if (!hasNearbyEnemy) return;
-
-        const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
-        const hand1Item = activeWeapons.mainHand;
-        const hand2Item = activeWeapons.offHand;
-
-        // No weapons = no circles
-        if (!hand1Item && !hand2Item) return;
-
-        // Check if using 2H weapon (only show one circle)
-        const is2H = hand1Item?.gripType === '2-hand';
-
-        // Get ranges using additive model (base from config + entity bonus)
-        const hand1Range = hand1Item ? getWeaponStats(hand1Item).range : 0;
-        const hand2Range = !is2H && hand2Item ? getWeaponStats(hand2Item).range : 0;
-
-        // Determine which is inner (smaller range = thicker line)
-        if (hand1Range && hand2Range) {
-            // Dual-wielding: draw both, smaller one is "inner" (thicker)
-            const hand1IsInner = hand1Range <= hand2Range;
-            this._drawSingleRangeCircle(ctx, hero, hand1Range, hand1IsInner);
-            this._drawSingleRangeCircle(ctx, hero, hand2Range, !hand1IsInner);
-        } else if (hand1Range) {
-            // Single weapon: just draw it as inner (thicker)
-            this._drawSingleRangeCircle(ctx, hero, hand1Range, true);
-        } else if (hand2Range) {
-            this._drawSingleRangeCircle(ctx, hero, hand2Range, true);
-        }
-    }
-
-    /**
-     * Draw a single range circle
-     * @param {number} range - Circle radius in pixels
-     * @param {boolean} isInner - If true, draws thicker line for inner/smaller range
-     */
-    _drawSingleRangeCircle(ctx: CanvasRenderingContext2D, hero: Hero, range: number, isInner = false) {
-        const color = ColorPalette.GRAY_LIGHT;
-
-        ctx.save();
-        ctx.strokeStyle = color;
-        ctx.globalAlpha = 0.4;
-        ctx.lineWidth = isInner ? 2.5 : 1.5;
-        ctx.shadowColor = ColorPalette.WHITE;
-        ctx.shadowBlur = 6;
-
-        ctx.beginPath();
-        ctx.arc(hero.x, hero.y, range, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
     }
 }
 

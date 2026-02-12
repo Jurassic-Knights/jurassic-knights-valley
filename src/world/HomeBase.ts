@@ -16,6 +16,7 @@ import { AssetLoader } from '@core/AssetLoader';
 import { entityManager } from '@core/EntityManager';
 import { EventBus } from '@core/EventBus';
 import { Registry } from '@core/Registry';
+import { renderHomeBase } from './HomeBaseRenderer';
 import type { Island, Bounds } from '../types/world';
 import type { IEntity } from '../types/core';
 
@@ -182,13 +183,7 @@ const HomeBase = {
     // NOTE: Tree spawning moved to SpawnManager.spawnHomeIslandTrees()
     // Trees are now queried via the treeResources getter from EntityManager
 
-    /**
-     * Custom render for trees (override default resource rendering)
-     * Called from GameRenderer after islands are drawn
-     * @param {CanvasRenderingContext2D} ctx
-     */
     render(ctx: CanvasRenderingContext2D) {
-        // PERF: Lazy init if init() was called before IslandManager was ready
         if (!this._cachedBounds && IslandManager) {
             const home = IslandManager.getHomeIsland();
             if (home) {
@@ -198,143 +193,12 @@ const HomeBase = {
                     this._outpostPath = AssetLoader.getImagePath('building_residential_01');
                     this._forgePath = AssetLoader.getImagePath('building_industrial_01');
                     this._treePath = AssetLoader.getImagePath('node_woodcutting_t1_01');
-                    this._treeConsumedPath = AssetLoader.getImagePath(
-                        'node_woodcutting_t1_01_consumed'
-                    );
+                    this._treeConsumedPath = AssetLoader.getImagePath('node_woodcutting_t1_01_consumed');
                 }
             }
         }
-
-        const bounds = this._cachedBounds;
-
-        // === DEBUG: Draw spawn zone visualization (only when debug mode active) ===
-        if (this._debugSpawnZone && GameRenderer && GameRenderer.debugMode) {
-            const z = this._debugSpawnZone;
-            ctx.save();
-            ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-            ctx.lineWidth = 4;
-            ctx.setLineDash([10, 5]);
-            ctx.strokeRect(z.minX, z.minY, z.maxX - z.minX, z.maxY - z.minY);
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.15)';
-            ctx.fillRect(z.minX, z.minY, z.maxX - z.minX, z.maxY - z.minY);
-            ctx.beginPath();
-            ctx.arc(z.centerX, z.centerY, z.restAreaRadius, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(100, 0, 0, 0.3)';
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
-            ctx.lineWidth = 3;
-            ctx.setLineDash([]);
-            ctx.stroke();
-            ctx.fillStyle = 'red';
-            ctx.font = 'bold 24px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('TREE SPAWN ZONE', z.centerX, z.minY - 20);
-            ctx.fillText(`Trees: ${this._cachedTrees?.length || 0}`, z.centerX, z.minY - 50);
-            ctx.restore();
-        }
-
-        // Render Outpost Building (Center of Rest Area)
-        if (bounds && this._outpostPath) {
-            const centerX = bounds.x + bounds.width / 2;
-            const centerY = bounds.y + bounds.height / 2;
-
-            if (!this._outpostImg) {
-                this._outpostImg = AssetLoader.createImage(this._outpostPath);
-            }
-            if (this._outpostImg.complete && this._outpostImg.naturalWidth) {
-                const size = 300;
-                ctx.drawImage(this._outpostImg, centerX - size / 2, centerY - size / 2, size, size);
-            }
-        }
-
-        // Render Forge Building (Bottom Left of Safe Area)
-        if (bounds && this._forgePath) {
-            const forgeSize = 250;
-            const forgeX = bounds.x + forgeSize / 2 + 30;
-            const forgeY = bounds.y + bounds.height - forgeSize / 2 - 30;
-            this._forgePos = { x: forgeX, y: forgeY, size: forgeSize };
-
-            if (!this._forgeImg) {
-                this._forgeImg = AssetLoader.createImage(this._forgePath);
-            }
-            if (this._forgeImg.complete && this._forgeImg.naturalWidth) {
-                ctx.drawImage(
-                    this._forgeImg,
-                    forgeX - forgeSize / 2,
-                    forgeY - forgeSize / 2,
-                    forgeSize,
-                    forgeSize
-                );
-            }
-        }
-
-        // Load tree sprites once
-        if (!this._treeImage && this._treePath) {
-            this._treeImage = AssetLoader.createImage(this._treePath, () => {
-                this._treeLoaded = true;
-            });
-            this._treeLoaded = false;
-        }
-        if (!this._treeConsumedImage && this._treeConsumedPath) {
-            this._treeConsumedImage = AssetLoader.createImage(this._treeConsumedPath, () => {
-                this._treeConsumedLoaded = true;
-            });
-            this._treeConsumedLoaded = false;
-        }
-
-        // Trigger cache refresh (once per frame via getter)
         this.treeResources;
-
-        // Use pre-sorted trees (sorted when cache updates)
-        const sortedTrees = this._sortedTrees || [];
-
-        for (const tree of sortedTrees) {
-            if (tree.state === 'depleted') {
-                if (this._treeConsumedLoaded && this._treeConsumedImage) {
-                    const size = 160;
-                    ctx.drawImage(
-                        this._treeConsumedImage,
-                        tree.x - size / 2,
-                        tree.y - size / 2,
-                        size,
-                        size
-                    );
-                } else {
-                    ctx.save();
-                    ctx.globalAlpha = 0.5;
-                    ctx.fillStyle = '#3E2723';
-                    ctx.beginPath();
-                    ctx.arc(tree.x, tree.y + 10, 10, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-                continue;
-            }
-
-            if (!tree.active) continue;
-
-            if (this._treeLoaded && this._treeImage) {
-                const size = 160;
-                ctx.drawImage(this._treeImage, tree.x - size / 2, tree.y - size / 2, size, size);
-            } else {
-                ctx.fillStyle = '#5D4037';
-                ctx.fillRect(tree.x - 6, tree.y + 5, 12, 20);
-
-                ctx.fillStyle = '#2E7D32';
-                ctx.beginPath();
-                ctx.arc(tree.x, tree.y - 5, 22, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#1B5E20';
-                ctx.beginPath();
-                ctx.arc(tree.x, tree.y - 8, 14, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            if (tree.renderHealthBar) {
-                tree.renderHealthBar(ctx);
-            }
-        }
+        renderHomeBase(ctx, this as unknown as import('./HomeBaseRenderer').HomeBaseRenderState);
     },
 
     /**

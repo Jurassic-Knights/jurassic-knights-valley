@@ -828,6 +828,30 @@ export function dashboardApiPlugin() {
     return {
         name: 'dashboard-api',
         configureServer(server: ViteDevServer) {
+            // Redirect /tools/dashboard -> /dashboard so the browser uses /dashboard/ as base.
+            // All module requests become /dashboard/src/... and get rewritten to /tools/dashboard/src/...
+            const rewrite = (req: { url?: string }, res: ServerResponse, next: () => void) => {
+                const url = (req.url || '').split('?')[0];
+                const query = (req.url || '').includes('?') ? (req.url || '').slice((req.url || '').indexOf('?')) : '';
+                if (url === '/tools/dashboard' || url === '/tools/dashboard/' || url.startsWith('/tools/dashboard/')) {
+                    const target = '/dashboard' + url.slice('/tools/dashboard'.length) + query;
+                    res.statusCode = 302;
+                    res.setHeader('Location', target);
+                    res.end();
+                    return;
+                }
+                if (url === '/dashboard' || url === '/dashboard/' || url.startsWith('/dashboard/')) {
+                    req.url = req.url!.replace(/^\/dashboard/, '/tools/dashboard');
+                }
+                next();
+            };
+            const stack = (server.middlewares as { stack?: unknown[] }).stack;
+            if (Array.isArray(stack)) {
+                stack.unshift({ route: '', handle: rewrite });
+            } else {
+                server.middlewares.use(rewrite);
+            }
+
             // Handle API routes
             server.middlewares.use(async (req, res, next) => {
                 const url = req.url || '';

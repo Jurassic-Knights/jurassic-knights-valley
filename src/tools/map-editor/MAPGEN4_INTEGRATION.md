@@ -18,7 +18,9 @@ We **did not** import the GitHub repo as a dependency and use it unchanged. We *
 | Location                     | Role                                                                                                                                                                                                                                                      |
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`mapgen4/`** (this folder) | **Vendored** mapgen4 algorithm code. Adapted from [redblobgames/mapgen4](https://github.com/redblobgames/mapgen4) (Apache-2.0). Only **import paths and one replacement** were changed; **algorithm logic is unchanged**. See “Vendor adaptations” below. |
-| **`Mapgen4Generator.ts`**    | **Our code only.** Builds mesh (via vendored `buildMesh`), runs Map (vendored), then **rasterizes** mesh → 1250×1250 tile grid → `ChunkData` / zones. No edits to mapgen4 source.                                                                         |
+| **`Mapgen4Generator.ts`**    | **Our code only.** Builds mesh (via vendored `buildMesh`), runs Map (vendored), then **rasterizes** mesh → 1250×1250 tile grid → `ChunkData` / zones. Uses `mapgen4ToZones()` for zone mapping; preview uses `drawPreviewToGraphics()` (vector). No edits to mapgen4 source. |
+| **`Mapgen4BiomeConfig.ts`**   | **Our code only.** Rainfall and elevation thresholds for `mapgen4ToZones()`.                                                                                                                                                                               |
+| **`ZoneColorHelper.ts`**      | **Our code only.** `getTileColorHex(zones)` used by placeholder ground and procedural preview.                                                                                                                                                           |
 | **Dashboard procedural tab** | **Our code only.** UI and dynamic `import()` of `Mapgen4Generator`; no mapgen4 source.                                                                                                                                                                    |
 
 So: **we do not touch the upstream GitHub repo.** We keep a **local vendored copy** with minimal shims; all “our” logic is in `Mapgen4Generator.ts` and the dashboard.
@@ -56,3 +58,23 @@ To use upstream **exactly as published** with zero edits in our tree you would n
 3. **Keep current approach:** Vendored copy with the minimal shims above; our code stays in `Mapgen4Generator.ts` and the dashboard and does not touch the vendored source after the one-time integration.
 
 We currently use (3) so we don’t depend on their build or on maintaining a fork.
+
+---
+
+## Mapgen4 feature → zone mapping
+
+All mapgen4 outputs are mapped to editor zones via `mapgen4ToZones()` in `Mapgen4Generator.ts`. Thresholds are config-driven in `Mapgen4BiomeConfig.ts`.
+
+| Mapgen4 data        | Condition                    | Zone category | ZoneConfig ID        |
+| ------------------- | ---------------------------- | ------------- | -------------------- |
+| Deep water          | `elevation < -0.1`           | terrain       | `terrain_water`      |
+| Coast               | `-0.1 ≤ elevation < 0`      | terrain       | `terrain_coast`      |
+| River               | `isTileOnRiver(...)`         | terrain       | `terrain_river`      |
+| Lowland             | land, elevation 0..lowlandMax | terrain     | `terrain_lowland`    |
+| Hills               | land, elevation lowlandMax..hillMax | terrain | `terrain_hill`       |
+| Mountain            | land, elevation ≥ hillMax   | terrain       | `terrain_mountain`   |
+| Land biome          | land (elevation ≥ 0), not river | biome     | `rainfallToBiomeFromConfig(rainfall)` → desert, badlands, tundra, grasslands |
+
+- **Terrain + biome:** Water, coast, and river tiles get a default `biome` (e.g. `grasslands`) so palette resolution works. Land tiles get both a terrain (elevation band) and a biome (rainfall).
+- **Config:** `MAPGEN4_RAINFALL_THRESHOLDS` (desertMax, badlandsMax, tundraMax) and `MAPGEN4_ELEVATION_THRESHOLDS` (lowlandMax, hillMax) in `Mapgen4BiomeConfig.ts`.
+- **Preview:** The procedural preview in the main map view uses the same `mapgen4ToZones()` and `getTileColorHex(zones)` so preview colors match the applied map.

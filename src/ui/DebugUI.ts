@@ -17,8 +17,8 @@ import { Registry } from '@core/Registry';
 import { GameState } from '@core/State';
 import { entityManager } from '@core/EntityManager';
 import { CollisionSystem } from '@systems/CollisionSystem';
-
 import { DOMUtils } from '@core/DOMUtils';
+import { setupOverrideDropdowns } from './DebugUIOverrides';
 
 const DebugUI = {
     container: null as HTMLElement | null,
@@ -37,7 +37,7 @@ const DebugUI = {
         this.setupDebugToggle();
         this.setupMerchantDebug();
         this.setupTimeDebug();
-        this.setupOverrideDropdowns(); // New
+        setupOverrideDropdowns();
         this.updateActiveButton();
 
         Logger.info('[DebugUI] Initialized');
@@ -284,67 +284,6 @@ const DebugUI = {
         this.container.appendChild(wrapper);
     },
 
-    /**
-     * Setup override dropdowns (Time, Season, Weather)
-     */
-    setupOverrideDropdowns() {
-        // Time Override
-        const timeSelect = document.getElementById('cheat-time');
-        if (timeSelect) {
-            timeSelect.addEventListener('change', (e) => {
-                Logger.info(
-                    '[DebugUI] Time dropdown changed to:',
-                    (e.target as HTMLSelectElement).value
-                );
-                if (timeSystem) {
-                    timeSystem.setTimeOverride((e.target as HTMLSelectElement).value);
-                } else {
-                    Logger.warn('[DebugUI] timeSystem not found on window!');
-                }
-                (e.target as HTMLElement).blur(); // Remove focus so movement keys don't change selection
-            });
-        } else {
-            Logger.warn('[DebugUI] cheat-time select not found!');
-        }
-
-        // Season Override
-        const seasonSelect = document.getElementById('cheat-season');
-        if (seasonSelect) {
-            seasonSelect.addEventListener('change', (e) => {
-                Logger.info(
-                    '[DebugUI] Season dropdown changed to:',
-                    (e.target as HTMLSelectElement).value
-                );
-                if (timeSystem) {
-                    timeSystem.setSeasonOverride((e.target as HTMLSelectElement).value);
-                } else {
-                    Logger.warn('[DebugUI] timeSystem not found on window!');
-                }
-                (e.target as HTMLElement).blur();
-            });
-        } else {
-            Logger.warn('[DebugUI] cheat-season select not found!');
-        }
-
-        // Weather Override
-        const weatherSelect = document.getElementById('cheat-weather');
-        if (weatherSelect) {
-            weatherSelect.addEventListener('change', (e) => {
-                Logger.info(
-                    '[DebugUI] Weather dropdown changed to:',
-                    (e.target as HTMLSelectElement).value
-                );
-                if (weatherSystem) {
-                    weatherSystem.setWeatherOverride((e.target as HTMLSelectElement).value);
-                } else {
-                    Logger.warn('[DebugUI] weatherSystem not found on window!');
-                }
-                (e.target as HTMLElement).blur();
-            });
-        } else {
-            Logger.warn('[DebugUI] cheat-weather select not found!');
-        }
-    }
 };
 
 // Register with Registry

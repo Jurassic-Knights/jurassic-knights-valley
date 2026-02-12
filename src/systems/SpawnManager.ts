@@ -12,12 +12,12 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 import { GameState } from '@core/State';
 import { IslandManager } from '../world/IslandManager';
 import { IGame, IEntity } from '../types/core';
-import { Island, IIslandManager, Bridge } from '../types/world';
+import { IIslandManager } from '../types/world';
 import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { Hero } from '../gameplay/Hero';
 import { Registry } from '@core/Registry';
@@ -27,8 +27,8 @@ import { ResourceSpawner } from './spawners/ResourceSpawner';
 import { EnemySpawner } from './spawners/EnemySpawner';
 import { DropSpawner } from './spawners/DropSpawner';
 import { Merchant } from '../gameplay/Merchant';
-import { PropConfig } from '@data/PropConfig';
-import { IslandType, BridgeOrientation } from '@config/WorldTypes';
+import { spawnMerchants as spawnMerchantsFn, getMerchantNearHero as getMerchantNearHeroFn } from './SpawnManagerMerchants';
+import { refreshIslandResources as refreshIslandResourcesFn, updateIslandRespawnTimers as updateIslandRespawnTimersFn } from './SpawnManagerIslands';
 
 // Unmapped modules - need manual import
 
@@ -85,9 +85,9 @@ class SpawnManagerService {
             (data: { gridX: number; gridY: number; type: string }) => {
                 const { gridX, gridY, type } = data;
                 if (type === 'resourceSlots') {
-                    this.refreshIslandResources(gridX, gridY);
+                    refreshIslandResourcesFn(gridX, gridY, this.resourceSpawner);
                 } else if (type === 'respawnTime') {
-                    this.updateIslandRespawnTimers(gridX, gridY);
+                    updateIslandRespawnTimersFn(gridX, gridY);
                 }
             }
         );
@@ -183,77 +183,12 @@ class SpawnManagerService {
         }
     }
 
-    // ============================================
-    // MERCHANT SPAWNING
-    // ============================================
-
     private spawnMerchants(): void {
-        this.merchants = [];
-
-        const islandManager = this._islandManager;
-        if (!islandManager) return;
-
-        const bridges = islandManager.getBridges();
-
-        for (const island of islandManager.islands) {
-            if (island.type === IslandType.HOME) continue;
-
-            const bounds = islandManager.getPlayableBounds(island);
-            if (!bounds) continue;
-
-            const entryBridge = bridges.find(
-                (b: Bridge) => b.to.col === island.gridX && b.to.row === island.gridY
-            );
-
-            const config = getConfig().Spawning;
-            // Config is now typed with DEFAULT_OFFSET
-            const offsetX = PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT.DEFAULT_OFFSET;
-            const offsetY = PropConfig?.MERCHANT?.DEFAULT_OFFSET || config.MERCHANT.DEFAULT_OFFSET;
-
-            let finalX = bounds.x + offsetX;
-            let finalY = bounds.y + offsetY;
-            const padding = PropConfig?.MERCHANT?.PADDING || config.MERCHANT.PADDING;
-
-            if (entryBridge) {
-                if (entryBridge.type === BridgeOrientation.HORIZONTAL) {
-                    finalX = bounds.left + padding;
-                    const bridgeCenterY = entryBridge.y + entryBridge.height / 2;
-                    finalY = (bridgeCenterY + bounds.top) / 2;
-                } else {
-                    const bridgeCenterX = entryBridge.x + entryBridge.width / 2;
-                    finalX = (bridgeCenterX + bounds.left) / 2;
-                    finalY = bounds.top + padding;
-                }
-            }
-
-            const merchant = new Merchant({
-                x: finalX,
-                y: finalY,
-                islandId: `${island.gridX}_${island.gridY}`,
-                islandName: island.name
-            });
-
-            this.merchants.push(merchant);
-            entityManager.add(merchant);
-        }
-
-        Logger.info(`[SpawnManager] Spawned ${this.merchants.length} merchants`);
+        spawnMerchantsFn(this._islandManager, this.merchants);
     }
 
     getMerchantNearHero(hero: IEntity): Merchant | null {
-        if (!hero) return null;
-
-        for (const merchant of this.merchants) {
-            if (merchant.isInRange(hero)) {
-                const [gridX, gridY] = merchant.islandId.split('_').map(Number);
-                const islandManager = this._islandManager;
-                const island = islandManager ? islandManager.getIslandByGrid(gridX, gridY) : null;
-                if (island && island.unlocked) {
-                    return merchant;
-                }
-            }
-        }
-        return null;
+        return getMerchantNearHeroFn(this._islandManager, this.merchants, hero);
     }
 
     // ============================================
@@ -281,72 +216,11 @@ class SpawnManagerService {
     }
 
     refreshIslandResources(gridX: number, gridY: number): void {
-        const island = IslandManager.getIslandByGrid(gridX, gridY);
-        if (!island) return;
-
-        const targetCount = IslandUpgrades?.getResourceSlots?.(gridX, gridY) || 1;
-
-        interface IWorldEntity extends IEntity {
-            islandGridX?: number;
-            islandGridY?: number;
-            active: boolean;
-            recalculateRespawnTimer?(): void;
-        }
-
-        if (island.category === 'dinosaur') {
-            // TODO: Strictly type Dinosaur entity
-            const allDinos = entityManager.getByType('Dinosaur');
-            const currentCount = allDinos.filter(
-                (d: IWorldEntity) => d.islandGridX === gridX && d.islandGridY === gridY
-            ).length;
-            const needed = targetCount - currentCount;
-
-            if (needed > 0 && this.resourceSpawner) {
-                this.resourceSpawner.spawnDinosaursOnIsland(island, needed);
-            }
-            return;
-        }
-
-        const allResources = entityManager.getByType('Resource');
-        const currentResources = allResources.filter(
-            (res: IWorldEntity) => res.islandGridX === gridX && res.islandGridY === gridY
-        );
-        const currentCount = currentResources.length;
-
-        if (targetCount > currentCount && this.resourceSpawner) {
-            this.resourceSpawner.spawnResourcesGridOnIsland(island, targetCount, currentCount);
-        } else if (targetCount < currentCount) {
-            let toRemove = currentCount - targetCount;
-            for (let i = currentResources.length - 1; i >= 0; i--) {
-                const res = currentResources[i];
-                res.active = false;
-                entityManager.remove(res);
-                toRemove--;
-                if (toRemove <= 0) break;
-            }
-        }
+        refreshIslandResourcesFn(gridX, gridY, this.resourceSpawner);
     }
 
     updateIslandRespawnTimers(gridX: number, gridY: number): void {
-        const resources = entityManager.getByType('Resource');
-        for (const res of resources) {
-            if (res.islandGridX === gridX && res.islandGridY === gridY) {
-                if (typeof res.recalculateRespawnTimer === 'function') {
-                    res.recalculateRespawnTimer();
-                }
-            }
-        }
-
-        const dinosaurs = entityManager.getByType('Dinosaur');
-        for (const dino of dinosaurs) {
-            if (dino.islandGridX === gridX && dino.islandGridY === gridY) {
-                if (typeof dino.recalculateRespawnTimer === 'function') {
-                    dino.recalculateRespawnTimer();
-                }
-            }
-        }
-
-        Logger.info(`[SpawnManager] Updated respawn timers for island ${gridX},${gridY}`);
+        updateIslandRespawnTimersFn(gridX, gridY);
     }
 
     // ============================================

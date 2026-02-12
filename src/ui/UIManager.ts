@@ -16,12 +16,12 @@ import { AudioManager } from '../audio/AudioManager';
 import { ContextActionUI } from './ContextActionUI';
 import { GameConstants } from '@data/GameConstants';
 import { EventBus } from '@core/EventBus';
-import { GameState } from '@core/State';
 import { VFXController } from '@vfx/VFXController';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
 import { UICapture } from './UICapture';
+import * as UnlockPrompt from './UIManagerUnlockPrompt';
 import { GameInstance } from '@core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
 import { HUDController } from './controllers/HUDController';
@@ -34,9 +34,7 @@ interface IFullscreenUI {
 }
 
 class UIManagerService {
-    // Property declarations
     initialized: boolean = false;
-    currentUnlockTarget: Island | null = null;
     panels: Map<string, IUIPanel> = new Map();
     fullscreenUIs: Set<IFullscreenUI> = new Set();
     currentStrategy: {
@@ -66,7 +64,7 @@ class UIManagerService {
             );
         }
 
-        this.createUnlockPrompt();
+        UnlockPrompt.createUnlockPrompt(() => UnlockPrompt.tryUnlock());
         this.loadIcons();
 
         // Global click sound
@@ -166,81 +164,17 @@ class UIManagerService {
         });
     }
 
-    // === Unlock Prompt ===
-    createUnlockPrompt() {
-        const prompt = DOMUtils.create('div', {
-            id: 'unlock-prompt',
-            className: 'unlock-prompt hidden',
-            html: `
-                <div class="unlock-prompt-content">
-                    <div class="unlock-island-name"></div>
-                    <div class="unlock-cost"><span class="cost-amount"></span> Gold</div>
-                    <button class="unlock-btn">Unlock</button>
-                </div>
-            `
-        });
-        document.getElementById('app')?.appendChild(prompt);
-
-        prompt.querySelector('.unlock-btn')?.addEventListener('click', () => this.tryUnlock());
-    }
-
-    showUnlockPrompt(island: Island) {
-        if (this.currentUnlockTarget === island) return;
-
-        this.currentUnlockTarget = island;
-        const prompt = document.getElementById('unlock-prompt');
-        if (!prompt) return;
-
-        const nameEl = prompt.querySelector('.unlock-island-name');
-        const costEl = prompt.querySelector('.cost-amount');
-        if (nameEl) nameEl.textContent = island.name;
-        if (costEl) costEl.textContent = String(island.unlockCost);
-
-        const gold = GameState ? GameState.get('gold') || 0 : 0;
-        const btn = prompt.querySelector('.unlock-btn') as HTMLButtonElement | null;
-        if (btn) {
-            if (gold >= island.unlockCost) {
-                btn.disabled = false;
-                btn.textContent = 'Unlock';
-            } else {
-                btn.disabled = true;
-                btn.textContent = `Need ${island.unlockCost - gold} more`;
-            }
-        }
-
-        prompt.classList.remove('hidden');
-    }
-
-    hideUnlockPrompt() {
-        this.currentUnlockTarget = null;
-        document.getElementById('unlock-prompt')?.classList.add('hidden');
-    }
-
-    tryUnlock() {
-        if (!this.currentUnlockTarget) return;
-
-        if (EventBus && GameConstants) {
-            EventBus.emit(GameConstants.Events.REQUEST_UNLOCK, {
-                gridX: this.currentUnlockTarget.gridX,
-                gridY: this.currentUnlockTarget.gridY,
-                cost: this.currentUnlockTarget.unlockCost
-            });
-        }
-    }
+    showUnlockPrompt(island: Island) { UnlockPrompt.showUnlockPrompt(island); }
+    hideUnlockPrompt() { UnlockPrompt.hideUnlockPrompt(); }
+    tryUnlock() { UnlockPrompt.tryUnlock(); }
 
     // === Platform/Layout ===
     onPlatformChange(_config: unknown) {
-        const format = PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile';
-        Logger.debug(
-            '[UIManager]',
-            `Platform changed: ${PlatformManager.currentMode} -> Layout: ${format}`
-        );
-        this.applyLayout(format);
+        this.applyLayout(PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile');
     }
 
     onResponsiveChange(data: { format: string; orientation?: string; breakpoint?: string }) {
         if (PlatformManager?.isManualOverride) return;
-        Logger.debug('[UIManager]', `Format changed: ${data.format} (${data.orientation})`);
         this.applyLayout(data.format);
     }
 

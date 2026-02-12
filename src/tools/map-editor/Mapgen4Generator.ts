@@ -5,6 +5,11 @@
 
 import { MapEditorConfig } from './MapEditorConfig';
 import type { ChunkData, MapObject } from './MapEditorTypes';
+import { getTileColorHex } from './ZoneColorHelper';
+import {
+    rainfallToBiomeFromConfig,
+    elevationToTerrainFromConfig
+} from './Mapgen4BiomeConfig';
 import { buildMesh, makeDefaultConstraints } from './mapgen4/buildMesh';
 import Mapgen4Map from './mapgen4/map';
 import type { ElevationParam, BiomesParam, RiversParam, MapConstraints } from './mapgen4/map';
@@ -66,11 +71,29 @@ function buildCellRegions(mesh: Mesh): number[][] {
     return grid;
 }
 
-function rainfallToBiome(rainfall: number): string {
-    if (rainfall < 0.25) return 'desert';
-    if (rainfall < 0.5) return 'badlands';
-    if (rainfall < 0.75) return 'tundra';
-    return 'grasslands';
+const DEFAULT_BIOME_FOR_TERRAIN = 'grasslands';
+
+/** Central mapping: mapgen4 elevation/rainfall/river → editor zones. Used by rasterization and preview. */
+export function mapgen4ToZones(
+    elevation: number,
+    rainfall: number,
+    isRiver: boolean
+): Record<string, string> {
+    const zones: Record<string, string> = {};
+    if (elevation < -0.1) {
+        zones['terrain'] = 'terrain_water';
+        zones['biome'] = DEFAULT_BIOME_FOR_TERRAIN;
+    } else if (elevation < 0) {
+        zones['terrain'] = 'terrain_coast';
+        zones['biome'] = DEFAULT_BIOME_FOR_TERRAIN;
+    } else if (isRiver) {
+        zones['terrain'] = 'terrain_river';
+        zones['biome'] = DEFAULT_BIOME_FOR_TERRAIN;
+    } else {
+        zones['biome'] = rainfallToBiomeFromConfig(rainfall);
+        zones['terrain'] = elevationToTerrainFromConfig(elevation);
+    }
+    return zones;
 }
 
 /** Distance from point (px,py) to segment (ax,ay)-(bx,by). */
@@ -128,21 +151,15 @@ function isTileOnRiver(
 
 const PREVIEW_MAP_SIZE = 1000;
 
-/** Elevation/rainfall to CSS-style fill color for preview canvas. */
-function previewColor(elevation: number, rainfall: number): string {
-    if (elevation < -0.1) return '#1a4a6e';
-    if (elevation < 0) return '#b8a078';
-    if (rainfall < 0.25) return '#c9b896';
-    if (rainfall < 0.5) return '#a67c52';
-    if (rainfall < 0.75) return '#8fbc8f';
-    return '#5a8a5a';
+export interface MeshAndMap {
+    mesh: Mesh;
+    map: Mapgen4Map;
 }
 
 /**
- * Run mesh + map only (no rasterization) and draw to canvas for instant preview.
- * Call this on slider changes; use generateMapgen4 + load for "Apply to map".
+ * Build mesh + map from params (expensive). Call once when params change; reuse for drawing.
  */
-export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param): void {
+export function buildMeshAndMap(param: Mapgen4Param): MeshAndMap {
     const { mesh, t_peaks } = buildMesh(param.meshSeed, param.spacing, param.mountainSpacing);
     const constraints: MapConstraints = makeDefaultConstraints(
         param.elevation.seed,
@@ -152,18 +169,40 @@ export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param
     map.assignElevation(param.elevation, constraints);
     map.assignRainfall(param.biomes);
     map.assignRivers(param.rivers);
+    return { mesh, map };
+}
 
+/** Elevation/rainfall to CSS-style fill color for canvas preview (sidebar). */
+function previewColor(elevation: number, rainfall: number): string {
+    const zones = mapgen4ToZones(elevation, rainfall, false);
+    const hex = getTileColorHex(zones);
+    return '#' + hex.toString(16).padStart(6, '0');
+}
+
+/**
+ * Draw cached mesh + map to canvas (cheap). Viewport in mesh coords (0..1000).
+ */
+export function drawCachedMeshToCanvas(
+    canvas: HTMLCanvasElement,
+    mesh: Mesh,
+    map: Mapgen4Map,
+    param: Mapgen4Param,
+    vpX: number,
+    vpY: number,
+    vpW: number,
+    vpH: number
+): void {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const w = canvas.width;
     const h = canvas.height;
-    const scale = Math.min(w, h) / PREVIEW_MAP_SIZE;
-    const ox = (w - PREVIEW_MAP_SIZE * scale) / 2;
-    const oy = (h - PREVIEW_MAP_SIZE * scale) / 2;
+    ctx.clearRect(0, 0, w, h);
+    const scaleX = w / vpW;
+    const scaleY = h / vpH;
 
     const toCanvas = (x: number, y: number) => ({
-        x: ox + x * scale,
-        y: oy + y * scale
+        x: (x - vpX) * scaleX,
+        y: (y - vpY) * scaleY
     });
 
     const tOut: number[] = [];
@@ -187,7 +226,7 @@ export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param
 
     const MIN_FLOW = Math.exp(param.rivers.lg_min_flow);
     ctx.strokeStyle = '#2a5a8a';
-    ctx.lineWidth = Math.max(1, 2 * scale);
+    ctx.lineWidth = Math.max(1, 2 * Math.min(scaleX, scaleY));
     ctx.lineCap = 'round';
     for (let s = 0; s < mesh.numSolidSides; s++) {
         const flow = map.flow_s[s];
@@ -202,6 +241,31 @@ export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param
         ctx.lineTo(b.x, b.y);
         ctx.stroke();
     }
+}
+
+/**
+ * Run mesh + map only (no rasterization) and draw to canvas for instant preview.
+ * Call this on slider changes; use generateMapgen4 + load for "Apply to map".
+ */
+export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param): void {
+    const { mesh, map } = buildMeshAndMap(param);
+    drawCachedMeshToCanvas(canvas, mesh, map, param, 0, 0, PREVIEW_MAP_SIZE, PREVIEW_MAP_SIZE);
+}
+
+/**
+ * Draw procedural preview with a viewport in mesh coords (0..1000).
+ * Used by main view to support pan/zoom.
+ */
+export function runAndDrawPreviewWithViewport(
+    canvas: HTMLCanvasElement,
+    param: Mapgen4Param,
+    vpX: number,
+    vpY: number,
+    vpW: number,
+    vpH: number
+): void {
+    const { mesh, map } = buildMeshAndMap(param);
+    drawCachedMeshToCanvas(canvas, mesh, map, param, vpX, vpY, vpW, vpH);
 }
 
 /**
@@ -249,18 +313,8 @@ export function generateMapgen4(param: Mapgen4Param): Map<string, ChunkData> {
             const r = findRegionAt(mesh, x, y, cellRegions);
             const elevation = map.elevation_r[r];
             const rainfall = map.rainfall_r[r];
-
-            const zones: Record<string, string> = {};
-            if (elevation < -0.1) {
-                zones['terrain'] = 'terrain_water';
-            } else if (elevation < 0) {
-                zones['terrain'] = 'terrain_coast';
-            } else if (isTileOnRiver(x, y, r, mesh, map.flow_s, param.rivers, param.spacing)) {
-                zones['terrain'] = 'terrain_river';
-            } else {
-                zones['biome'] = rainfallToBiome(rainfall);
-            }
-            chunk.zones![tileKey] = zones;
+            const isRiver = isTileOnRiver(x, y, r, mesh, map.flow_s, param.rivers, param.spacing);
+            chunk.zones![tileKey] = mapgen4ToZones(elevation, rainfall, isRiver);
         }
     }
 

@@ -31,7 +31,6 @@ import {
 import { openModal, toggleComparisonView, closeModal } from './modals';
 import { playSound } from './AudioManager';
 import { showTemplatesView } from './templates';
-import { showMapEditorView, saveMapFromPanel } from './mapEditorView';
 import {
     setCategoryStatusFilter,
     setCategoryBiomeFilter,
@@ -93,25 +92,16 @@ const actions: Record<string, ActionHandler> = {
     'toggle-config': () => showConfigView(),
     'toggle-map-editor': () => {
         const container = document.getElementById('map-editor-container');
-        if (container && container.style.display === 'block') {
-            // It's open, so close it (go back to manifest/dashboard)
-            // Just simulate navigating back or loading manifest
-            import('./views').then(({ loadManifest }) => {
-                loadManifest();
-            });
-            import('./mapEditorView').then(({ hideMapEditorView }) => {
-                hideMapEditorView();
-            });
-            // Update URL to remove view=map
-            // loadManifest does this? loadManifest sets view=dashboard implicitly?
-            // loadManifest currently pushes state? Let's check views.ts logic if needed.
-            // For now, loadManifest is the safe "home" action.
+        const isOpen = container && container.style.display !== 'none';
+        if (isOpen) {
+            import('./views').then(({ loadManifest }) => loadManifest());
+            import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
         } else {
-            showMapEditorView();
+            import('@dashboard/mapEditorView').then((m) => m.showMapEditorView());
         }
     },
     'refresh-manifest': () => loadManifest(),
-    'save-map-data': () => saveMapFromPanel(),
+    'save-map-data': () => import('@dashboard/mapEditorView').then((m) => m.saveMapFromPanel()),
 
     // Selection & Inspector
     'select-asset': (d) => {

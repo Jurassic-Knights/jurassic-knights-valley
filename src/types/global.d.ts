@@ -51,7 +51,7 @@ declare let TextureAligner: typeof import('../ui/TextureAligner').TextureAligner
 // VFX
 declare let VFXController: import('../vfx/VFXController').VFXSystem;
 declare let VFXConfig: typeof import('../data/VFXConfig').VFXConfig;
-declare let VFX_Categories: typeof import('../data/VFX_Categories').VFX_Categories;
+declare let VFX_Categories: typeof import('../data/VFX_Categories/index').VFX_Categories;
 declare let VFX_Sequences: typeof import('../data/VFX_Sequences').VFX_SEQUENCES;
 declare let VFX_Templates: typeof import('../data/VFX_Templates').VFX_TEMPLATES;
 declare let ParticleSystem: typeof import('../vfx/ParticleSystem').ParticleSystem;

@@ -12,7 +12,7 @@ import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { IEntity } from '../types/core';
-import { spawnManager } from '@systems/SpawnManager';
+import { spawnResourceDrops } from './ResourceDrops';
 import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
@@ -20,6 +20,7 @@ import { IslandType } from '@config/WorldTypes';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { EntityScaling } from '../utils/EntityScaling';
+import { RESOURCE_COLORS, RESOURCE_RARITY, RESOURCE_RARITY_COLORS } from './ResourceConstants';
 
 class Resource extends Entity {
     // Resource identity
@@ -58,17 +59,10 @@ class Resource extends Entity {
         const typeConfig = nodeConfig || resConfig || {};
 
         if (!nodeConfig && !resConfig) {
-            Logger.warn(`[Resource] Registry Lookup FAILED for '${config.resourceType}'. Registry keys available: Nodes=${Object.keys(EntityRegistry.nodes || {}).length}, Resources=${Object.keys(EntityRegistry.resources || {}).length}`);
-        } else {
-            Logger.info(`[Resource] Registry Lookup SUCCESS for '${config.resourceType}'. Scale in Registry: ${typeConfig.sizeScale || typeConfig.scale}`);
+            Logger.warn(`[Resource] Registry Lookup FAILED for '${config.resourceType}'`);
         }
-
         // Calculate size using standard utility
         const size = EntityScaling.calculateSize(config, typeConfig, { width: 150, height: 150 });
-
-        Logger.info(`[Resource] Final Size for '${config.resourceType}': ${size.width}x${size.height} (Scale: ${size.scale}). Source: ${size.source || 'unknown'}`);
-
-
         // Merge
         const finalConfig = { ...typeConfig, ...config };
 
@@ -223,51 +217,8 @@ class Resource extends Entity {
             }
             this.respawnTimer = this.maxRespawnTime;
 
-            // Trigger Drop
-            if (spawnManager) {
-                // Look up drop config
-                const typeConfig = EntityRegistry.nodes?.[this.resourceType] || EntityRegistry.resources?.[this.resourceType] || {};
-
-                // 1. Check for explicit 'drops' array (New standard)
-                if (typeConfig.drops && Array.isArray(typeConfig.drops) && typeConfig.drops.length > 0) {
-                    // Simple random drop logic for now (pick first or random based on chance?)
-                    // For now, iterate and spawn all qualifying drops
-                    typeConfig.drops.forEach((drop: { item: string; chance?: number; amount?: number | [number, number] }) => {
-                        const roll = Math.random();
-                        const chance = drop.chance !== undefined ? drop.chance : 1;
-                        if (roll <= chance) {
-                            // Calculate amount
-                            let count = 1;
-                            if (Array.isArray(drop.amount)) {
-                                count = Math.floor(Math.random() * (drop.amount[1] - drop.amount[0] + 1)) + drop.amount[0];
-                            } else if (typeof drop.amount === 'number') {
-                                count = drop.amount;
-                            }
-                            spawnManager.spawnDrop(this.x, this.y, drop.item, count);
-                        }
-                    });
-                }
-                // 2. Fallback: resourceDrop string (Legacy)
-                else if (typeConfig.resourceDrop) {
-                    spawnManager.spawnDrop(this.x, this.y, typeConfig.resourceDrop, this.amount);
-                }
-                // 3. Fallback: Loot table (Enemies style, strictly shouldn't apply but safety net)
-                else if (typeConfig.loot && Array.isArray(typeConfig.loot)) {
-                    // Logic similar to above
-                    typeConfig.loot.forEach((drop: { item: string; chance?: number; amount?: number | [number, number] }) => {
-                        const roll = Math.random();
-                        if (roll <= (drop.chance || 1)) {
-                            spawnManager.spawnDrop(this.x, this.y, drop.item, 1);
-                        }
-                    });
-                }
-                // 4. Fallback: No drop configured
-                else {
-                    Logger.warn(`[Resource] No drop configured for ${this.resourceType}. Dropping nothing.`);
-                }
-            }
-
-            return true; // Yield loot
+            spawnResourceDrops(this.x, this.y, this.amount, this.resourceType);
+            return true;
         }
         return false;
     }
@@ -384,31 +335,10 @@ class Resource extends Entity {
         EntityScaling.applyToEntity(this, {}, typeConfig, { width: 120, height: 120 });
     }
 
-    // Static properties
-    static COLORS: Record<string, string> = {
-        scraps: '#7A7A7A', // Grey steel
-        minerals: '#8B4513', // Rusty brown
-        food: '#8B0000', // Dark red meat
-        wood: '#5D4037', // Wood brown
-        gold: '#FFD700', // Gold coin
-        salvage: '#2F2F2F' // Coal black
-    };
-
-    static RARITY: Record<string, string> = {
-        COMMON: 'common',
-        UNCOMMON: 'uncommon',
-        RARE: 'rare',
-        LEGENDARY: 'legendary'
-    };
-
-    static RARITY_COLORS: Record<string, string> = {
-        common: '#BDC3C7', // Silver/Grey
-        uncommon: '#2ECC71', // Emerald Green
-        rare: '#3498DB', // Bright Blue
-        legendary: '#F1C40F' // Gold
-    };
-
-    static TYPES: Record<string, { baseRespawnTime?: number; [key: string]: unknown }> = {}; // Safety placeholder implies lookup elsewhere
+    static COLORS = RESOURCE_COLORS;
+    static RARITY = RESOURCE_RARITY;
+    static RARITY_COLORS = RESOURCE_RARITY_COLORS;
+    static TYPES: Record<string, { baseRespawnTime?: number; [key: string]: unknown }> = {};
 }
 
 // ES6 Module Export

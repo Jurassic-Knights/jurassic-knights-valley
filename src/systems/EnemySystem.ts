@@ -285,12 +285,7 @@ class EnemySystem {
         const { entity, amount } = data;
         if (!entity) return;
 
-        // Check if entity is an enemy type
         const entityType = entity.entityType;
-        Logger.info(
-            `[EnemySystem] Damage event: entityType="${entityType}", expected=[${EntityTypes?.ENEMY_DINOSAUR}, ${EntityTypes?.ENEMY_SOLDIER}, ${EntityTypes?.ENEMY_SAURIAN}]`
-        );
-
         if (
             entityType !== EntityTypes?.ENEMY_DINOSAUR &&
             entityType !== EntityTypes?.ENEMY_SOLDIER &&
@@ -301,12 +296,7 @@ class EnemySystem {
         // SFX
         if (AudioManager) AudioManager.playSFX('sfx_enemy_hurt');
 
-        // Blood VFX - Multi-layered realistic gore (uses DINO config for all creatures)
         if (VFXController && VFXConfig) {
-            Logger.info(
-                `[EnemySystem] Blood VFX for ${entity.entityType} at (${Math.round(entity.x)}, ${Math.round(entity.y)})`
-            );
-            // Primary blood spray
             VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
             // Blood mist
             VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_MIST);
