@@ -108,22 +108,24 @@ class Resource extends Entity {
         this.maxRespawnTime = finalConfig.respawnTime || 30;
 
         // Domain Rule: Home Island (Starter Zone) strictly allows only Wood
-        // Robust check: Use spatial lookup if grid coords are missing (legacy save support)
-        let onHome = false;
-        if (this.islandGridX === 0 && this.islandGridY === 0) {
-            onHome = true;
-        } else if (IslandManager) {
-            const island = IslandManager.getIslandAt(this.x, this.y);
-            if (island && island.type === IslandType.HOME) {
+        // Map-placed entities (from map editor) bypass this rule - user explicitly placed them
+        const isMapPlaced = !!config.isMapPlaced;
+        if (!isMapPlaced) {
+            let onHome = false;
+            if (this.islandGridX === 0 && this.islandGridY === 0) {
                 onHome = true;
+            } else if (IslandManager) {
+                const island = IslandManager.getIslandAt(this.x, this.y);
+                if (island && island.type === IslandType.HOME) {
+                    onHome = true;
+                }
             }
-        }
 
-        // Home island allows T1 nodes (trees in starter area)
-        // Check for _t1_ pattern in ID (works with both old node_t1_xx and new node_subtype_t1_xx naming)
-        const isT1Node = this.resourceType.includes('_t1_');
-        if (onHome && !isT1Node) {
-            this.active = false;
+            // Home island allows T1 nodes (trees in starter area)
+            const isT1Node = this.resourceType.includes('_t1_');
+            if (onHome && !isT1Node) {
+                this.active = false;
+            }
         }
     }
 

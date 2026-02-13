@@ -133,31 +133,44 @@ const HomeBase = {
         const bounds = this._cachedBounds;
 
         // === Home Base / Rest Area Detection ===
+        // Rest zones: (1) home island center (legacy), (2) placed outpost props from map editor
+        const restRadius = getConfig().Interaction.REST_AREA_RADIUS;
+        const REST_ZONE_IDS = new Set(['building_t1_02', 'building_residential_01']);
+
+        let isAtHome = false;
         if (bounds) {
             const centerX = bounds.x + bounds.width / 2;
             const centerY = bounds.y + bounds.height / 2;
-            const restRadius = getConfig().Interaction.REST_AREA_RADIUS;
-
             const dx = hero.x - centerX;
             const dy = hero.y - centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
-
-            const wasAtHome = this._heroAtHome || false;
-            const isAtHome = dist < restRadius;
-
-            // ALWAYS sync the hero state with current radius check
-            hero.isAtHomeOutpost = isAtHome;
-
-            if (isAtHome && !wasAtHome) {
-                if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
-                Logger.debug('[HomeBase]', 'Hero entered rest area');
-            } else if (!isAtHome && wasAtHome) {
-                if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
-                Logger.debug('[HomeBase]', 'Hero exited rest area');
-            }
-
-            this._heroAtHome = isAtHome;
+            isAtHome = dist < restRadius;
         }
+        if (!isAtHome && EntityManager) {
+            const props = EntityManager.getByType('Prop') as Array<{ x: number; y: number; registryId?: string | null }>;
+            for (const prop of props) {
+                if (prop.registryId && REST_ZONE_IDS.has(prop.registryId)) {
+                    const dx = hero.x - prop.x;
+                    const dy = hero.y - prop.y;
+                    if (Math.sqrt(dx * dx + dy * dy) < restRadius) {
+                        isAtHome = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        const wasAtHome = this._heroAtHome || false;
+        hero.isAtHomeOutpost = isAtHome;
+
+        if (isAtHome && !wasAtHome) {
+            if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
+            Logger.debug('[HomeBase]', 'Hero entered rest area');
+        } else if (!isAtHome && wasAtHome) {
+            if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
+            Logger.debug('[HomeBase]', 'Hero exited rest area');
+        }
+        this._heroAtHome = isAtHome;
 
         // === Forge Proximity Detection ===
         if (this._forgePos) {

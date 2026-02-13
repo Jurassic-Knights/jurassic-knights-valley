@@ -2,7 +2,7 @@
  * EnvironmentRendererStorm – Lightning and wind state/update/render for storms.
  */
 import { Logger } from '@core/Logger';
-import { ProceduralSFX } from '../audio/ProceduralSFX';
+import { SFX } from '../audio/SFX_Core';
 
 export interface LightningBolt {
     points: { x: number; y: number }[];
@@ -82,7 +82,7 @@ export function triggerLightning(
 
     lightning.bolt = { points, life: 150 };
 
-    if (ProceduralSFX) ProceduralSFX.playThunder();
+    if (SFX) SFX.playThunder();
     Logger.info('[Weather] Lightning Strike!');
 }
 

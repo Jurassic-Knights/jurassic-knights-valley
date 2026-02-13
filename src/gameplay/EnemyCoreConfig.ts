@@ -1,7 +1,7 @@
 /**
  * EnemyCoreConfig – Config merging, elite and biome multipliers for Enemy.
  */
-import { EntityConfig as EntityConfigValue } from '@config/EntityConfig';
+import { EnemyConfig } from '@config/EnemyConfig';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { GameConstants } from '@data/GameConstants';
 import { BiomeConfig } from '@data/BiomeConfig';
@@ -19,25 +19,20 @@ export interface EnemyConfigResult {
 }
 
 export function buildEnemyConfig(config: EntityConfig): EnemyConfigResult {
-    const defaults = EntityConfigValue.defaults || EntityConfigValue.enemy?.defaults || {};
+    const defaults = (EnemyConfig.defaults as Record<string, unknown>) || {};
     let typeConfig: EntityConfig = {};
     if (config.enemyType) {
-        typeConfig =
-            EntityRegistry.enemies?.[config.enemyType] ||
-            EntityConfigValue.get?.(config.enemyType) ||
-            EntityConfigValue.enemy?.dinosaurs?.[config.enemyType] ||
-            EntityConfigValue.enemy?.soldiers?.[config.enemyType] ||
-            {};
+        typeConfig = EntityRegistry.enemies?.[config.enemyType] || {};
     }
 
     const finalConfig = { ...defaults, ...typeConfig, ...config };
 
     const eliteChance =
-        EntityConfigValue.enemy?.eliteSpawnChance || BiomeConfig.Biome?.ELITE_SPAWN_CHANCE || 0.05;
+        (EnemyConfig.eliteSpawnChance as number) ?? BiomeConfig.Biome?.ELITE_SPAWN_CHANCE ?? 0.05;
     const isElite = config.isElite || (!config.forceNormal && Math.random() < eliteChance);
 
     if (isElite) {
-        const mult = EntityConfigValue.enemy?.eliteMultipliers || {
+        const mult = (EnemyConfig.eliteMultipliers as { health: number; damage: number; xpReward: number; lootDrops: number }) || {
             health: 2.0,
             damage: 2.0,
             xpReward: 3.0,

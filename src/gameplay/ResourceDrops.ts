@@ -3,7 +3,7 @@
  */
 import { Logger } from '@core/Logger';
 import { EntityRegistry } from '@entities/EntityLoader';
-import { spawnManager } from '@systems/SpawnManager';
+import { spawnDrop } from './SpawnHelper';
 
 export function spawnResourceDrops(
     x: number,
@@ -11,7 +11,6 @@ export function spawnResourceDrops(
     amount: number,
     resourceType: string
 ): void {
-    if (!spawnManager) return;
     const typeConfig = EntityRegistry.nodes?.[resourceType] || EntityRegistry.resources?.[resourceType] || {};
 
     if (typeConfig.drops && Array.isArray(typeConfig.drops) && typeConfig.drops.length > 0) {
@@ -23,14 +22,14 @@ export function spawnResourceDrops(
                 if (Array.isArray(drop.amount)) {
                     count = Math.floor(Math.random() * (drop.amount[1] - drop.amount[0] + 1)) + drop.amount[0];
                 } else if (typeof drop.amount === 'number') count = drop.amount;
-                spawnManager.spawnDrop(x, y, drop.item, count);
+                spawnDrop(x, y, drop.item, count);
             }
         });
     } else if (typeConfig.resourceDrop) {
-        spawnManager.spawnDrop(x, y, typeConfig.resourceDrop, amount);
+        spawnDrop(x, y, typeConfig.resourceDrop, amount);
     } else if (typeConfig.loot && Array.isArray(typeConfig.loot)) {
         typeConfig.loot.forEach((drop: { item: string; chance?: number }) => {
-            if (Math.random() <= (drop.chance || 1)) spawnManager.spawnDrop(x, y, drop.item, 1);
+            if (Math.random() <= (drop.chance || 1)) spawnDrop(x, y, drop.item, 1);
         });
     } else {
         Logger.warn(`[Resource] No drop configured for ${resourceType}. Dropping nothing.`);

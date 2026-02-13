@@ -8,7 +8,7 @@
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
-import { ProceduralSFX } from './ProceduralSFX';
+import { SFX } from './SFX_Core';
 import { weatherSystem } from '@systems/WeatherSystem';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
@@ -28,8 +28,8 @@ const AudioManager = {
         // Listen for Weather
         if (EventBus && GameConstants) {
             EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: { type: string }) => {
-                if (ProceduralSFX) {
-                    ProceduralSFX.setWeather(data.type);
+                if (SFX) {
+                    SFX.setWeather(data.type);
                 }
             });
             EventBus.on(GameConstants.Events.HERO_LEVEL_UP, () => {
@@ -62,19 +62,19 @@ const AudioManager = {
             this.masterGain.connect(this.context.destination);
 
             // Initialize procedural SFX
-            if (ProceduralSFX) {
-                ProceduralSFX.init(this.context, this.sfxGain);
+            if (SFX) {
+                SFX.init(this.context, this.sfxGain);
 
                 // Sync weather from EnvironmentRenderer (visual source of truth)
                 if (environmentRenderer?.weatherType) {
-                    ProceduralSFX.setWeather(environmentRenderer.weatherType);
+                    SFX.setWeather(environmentRenderer.weatherType);
                 } else if (weatherSystem?.currentWeather) {
-                    ProceduralSFX.setWeather(weatherSystem.currentWeather);
+                    SFX.setWeather(weatherSystem.currentWeather);
                 }
             }
 
             this.initialized = true;
-            Logger.info('[AudioManager] Initialized with ProceduralSFX');
+            Logger.info('[AudioManager] Initialized with SFX');
         } catch (e) {
             Logger.error('[AudioManager] Failed to initialize:', e);
         }
@@ -92,8 +92,8 @@ const AudioManager = {
         }
 
         // Use procedural synthesis
-        if (ProceduralSFX) {
-            ProceduralSFX.play(id);
+        if (SFX) {
+            SFX.play(id);
         }
     },
 

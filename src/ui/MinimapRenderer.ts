@@ -1,11 +1,13 @@
 /**
- * MinimapRenderer – Draw minimap content (biomes, roads, islands, enemies, hero).
+ * MinimapRenderer – Draw minimap content (mapgen4 terrain, entities, hero).
  */
-import { BiomeManager } from '../world/BiomeManager';
+import { Registry } from '@core/Registry';
 import { entityManager } from '@core/EntityManager';
-import { IslandManager } from '../world/IslandManager';
-import { IslandType } from '@config/WorldTypes';
 import { GameConstants } from '@data/GameConstants';
+import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4Generator';
+
+const WORLD_SIZE = 160000;
+const MESH_SIZE = 1000;
 
 export function renderMinimap(
     ctx: CanvasRenderingContext2D,
@@ -13,73 +15,57 @@ export function renderMinimap(
     scale: number,
     viewLeft: number,
     viewTop: number,
+    viewWidth: number,
+    viewHeight: number,
     hero: { x: number; y: number } | null,
     zoomLevel: number
 ): void {
-    ctx.fillStyle = '#0d1117';
-    ctx.fillRect(0, 0, canvasSize, canvasSize);
-
     const toCanvas = (worldX: number, worldY: number) => ({
         x: (worldX - viewLeft) * scale,
         y: (worldY - viewTop) * scale
     });
 
-    if (BiomeManager) {
-        for (const biome of Object.values(BiomeManager.BIOMES)) {
-            const polygon = biome.polygon;
-            if (!polygon || polygon.length < 3) continue;
-            const points = polygon.map((p: { x: number; y: number }) => toCanvas(p.x, p.y));
-            ctx.fillStyle = biome.color + '60';
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
-            ctx.closePath();
-            ctx.fill();
-            ctx.strokeStyle = biome.color;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            let cx = 0, cy = 0;
-            for (const p of points) { cx += p.x; cy += p.y; }
-            cx /= points.length;
-            cy /= points.length;
-            if (cx > 20 && cx < canvasSize - 20 && cy > 20 && cy < canvasSize - 20) {
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 10px sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(biome.name, cx, cy);
-            }
+    // Draw mapgen4 polygon map as base terrain
+    const worldManager = Registry?.get<{
+        getMesh: () => { mesh: unknown; map: unknown } | null;
+        getMapgen4Param: () => unknown;
+        getCachedTownsAndRoads?: () => {
+            towns: unknown[];
+            roadSegments: unknown[];
+            railroadPath: number[];
+            railroadCrossings: unknown[];
+        };
+    }>('IslandManager');
+    const meshAndMap = worldManager?.getMesh?.();
+    if (meshAndMap) {
+        const param = worldManager.getMapgen4Param();
+        const { mesh, map } = meshAndMap;
+        const { towns = [], roadSegments = [], railroadPath = [], railroadCrossings = [] } =
+            worldManager.getCachedTownsAndRoads?.() ?? {};
+        const vpX = (viewLeft / WORLD_SIZE) * MESH_SIZE;
+        const vpY = (viewTop / WORLD_SIZE) * MESH_SIZE;
+        const vpW = (viewWidth / WORLD_SIZE) * MESH_SIZE;
+        const vpH = (viewHeight / WORLD_SIZE) * MESH_SIZE;
+        const canvas = ctx.canvas;
+        if (canvas) {
+            drawCachedMeshToCanvas(
+                canvas,
+                mesh,
+                map,
+                param,
+                vpX,
+                vpY,
+                vpW,
+                vpH,
+                towns,
+                roadSegments,
+                railroadPath,
+                railroadCrossings
+            );
         }
-        ctx.strokeStyle = '#8B4513';
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        for (const road of BiomeManager.ROADS) {
-            if (!road.points || road.points.length < 4) continue;
-            const p0 = toCanvas(road.points[0].x, road.points[0].y);
-            const p1 = toCanvas(road.points[1].x, road.points[1].y);
-            const p2 = toCanvas(road.points[2].x, road.points[2].y);
-            const p3 = toCanvas(road.points[3].x, road.points[3].y);
-            ctx.beginPath();
-            ctx.moveTo(p0.x, p0.y);
-            ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
-            ctx.stroke();
-        }
-    }
-
-    if (IslandManager) {
-        const islands = IslandManager.islands || [];
-        for (const island of islands) {
-            const pos = toCanvas(island.worldX, island.worldY);
-            const w = island.width * scale;
-            const h = island.height * scale;
-            if (pos.x + w < 0 || pos.x > canvasSize || pos.y + h < 0 || pos.y > canvasSize) continue;
-            ctx.fillStyle = island.type === IslandType.HOME ? '#4CAF50' : island.unlocked ? '#2196F3' : '#37474F';
-            ctx.fillRect(pos.x, pos.y, w, h);
-            ctx.strokeStyle = island.unlocked ? '#fff' : '#555';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(pos.x, pos.y, w, h);
-        }
+    } else {
+        ctx.fillStyle = '#0d1117';
+        ctx.fillRect(0, 0, canvasSize, canvasSize);
     }
 
     if (entityManager) {
@@ -113,6 +99,7 @@ export function renderMinimap(
         }
     }
 
+    // Hero: always at center (view scrolls with hero)
     if (hero) {
         const centerX = canvasSize / 2;
         const centerY = canvasSize / 2;
@@ -131,14 +118,6 @@ export function renderMinimap(
         ctx.closePath();
         ctx.fill();
         ctx.restore();
-    }
-
-    if (BiomeManager && hero) {
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 12px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'top';
-        ctx.fillText(BiomeManager.getDebugInfo(hero.x, hero.y), 10, 10);
     }
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';

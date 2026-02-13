@@ -55,12 +55,13 @@ class Prop extends Entity {
         // Draw shadow first (underneath)
         this.drawShadow(ctx);
 
-        // Try to get from cache first
-        let img = AssetLoader ? AssetLoader.getImage(this.sprite) : null;
+        // Use registryId when sprite is null (MapObjectSpawner passes registryId, not sprite)
+        const assetId = this.sprite ?? this.registryId ?? null;
+        let img = AssetLoader && assetId ? AssetLoader.getImage(assetId) : null;
 
         // Lazy load
-        if (!img && AssetLoader && this.sprite) {
-            const path = AssetLoader.getImagePath(this.sprite);
+        if (!img && AssetLoader && assetId) {
+            const path = AssetLoader.getImagePath(assetId);
             if (path) {
                 if (!this._img) {
                     this._img = AssetLoader.createImage(path);

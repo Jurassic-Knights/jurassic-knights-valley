@@ -15,7 +15,7 @@ export default {
     "sprite": "node_harvesting_t1_02",
     "status": "pending",
     "files": {
-        "original": "assets/images/nodes/node_mining_t1_01_original.png"
+        "original": "assets/images/nodes/node_harvesting_t1_02_original.png"
     },
     "type": "plant",
     "biome": "grasslands",

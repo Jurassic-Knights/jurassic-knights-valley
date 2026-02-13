@@ -19,6 +19,7 @@ const TOOLS_DIR = path.resolve(BASE_DIR, 'tools');
 const IMAGES_DIR = path.resolve(BASE_DIR, 'assets/images');
 const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
 const MAPS_DIR = path.resolve(BASE_DIR, 'src/data/maps');
+const PUBLIC_MAPS_DIR = path.resolve(BASE_DIR, 'public/maps');
 const GAME_CONSTANTS_PATH = path.resolve(BASE_DIR, 'src/data/GameConstants.ts');
 const GAME_CONFIG_PATH = path.resolve(BASE_DIR, 'src/data/GameConfig.ts');
 const BODY_TYPE_CONFIG_PATH = path.resolve(BASE_DIR, 'src/config/BodyTypeConfig.ts');
@@ -104,6 +105,12 @@ function saveMap(
         );
 
         writeJsonFile(filepath, data);
+        if (safeName === 'default' || safeName === 'default.json') {
+            if (!fs.existsSync(PUBLIC_MAPS_DIR)) fs.mkdirSync(PUBLIC_MAPS_DIR, { recursive: true });
+            const publicPath = path.join(PUBLIC_MAPS_DIR, 'default.json');
+            fs.copyFileSync(filepath, publicPath);
+            console.log(`[API] Synced default map to ${publicPath}`);
+        }
         console.log(`[API] Saved map: ${safeName}`);
         return { success: true, message: `Map saved to ${safeName}` };
     } catch (e) {
@@ -998,7 +1005,7 @@ export function dashboardApiPlugin() {
 
             // Serve images from assets/images
             server.middlewares.use('/images', (req, res, next) => {
-                const urlPath = (req.url || '').split('?')[0]; // Strip query params
+                const urlPath = (req.url || '').split('?')[0].replace(/^\//, ''); // Strip query + leading slash
                 const imagePath = path.join(IMAGES_DIR, urlPath);
                 if (fs.existsSync(imagePath)) {
                     const ext = path.extname(imagePath).toLowerCase();

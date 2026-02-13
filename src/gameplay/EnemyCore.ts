@@ -14,7 +14,7 @@
  */
 import { Entity } from '@core/Entity';
 import { Logger } from '@core/Logger';
-import { EntityConfig as EntityConfigValue } from '@config/EntityConfig';
+import { EnemyConfig } from '@config/EnemyConfig';
 import { GameConstants } from '@data/GameConstants';
 import { HealthComponent } from '../components/HealthComponent';
 import { StatsComponent } from '../components/StatsComponent';
@@ -170,7 +170,7 @@ class Enemy extends Entity {
         this.lootTableId = finalConfig.lootTableId || 'common_enemy';
         this.lootTable = finalConfig.lootTable || null;
         this.lootMultiplier = isElite
-            ? EntityConfigValue.enemy?.eliteMultipliers?.lootDrops || 3.0
+            ? (EnemyConfig.eliteMultipliers as { lootDrops?: number })?.lootDrops ?? 3.0
             : 1.0;
 
         // Entity SFX (from entity JSON)

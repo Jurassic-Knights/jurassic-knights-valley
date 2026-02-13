@@ -41,8 +41,8 @@ const SystemConfig: SystemConfigEntry[] = [
 
     // --- 3. World Logic ---
     { global: 'BiomeManager', priority: 9, init: true }, // Biome boundaries & roads
-    { global: 'IslandManager', priority: 10, init: true, critical: true },
-    { global: 'SpawnManager', priority: 11, init: true, start: true, critical: true },
+    { global: 'IslandManager', priority: 10, init: true, critical: true }, // WorldManager registered as IslandManager
+    { global: 'MapObjectSpawner', priority: 11, init: true, isAsync: true },
     { global: 'DinosaurSystem', priority: 12, init: true }, // Herbivore AI & loot
     { global: 'EnemySystem', priority: 12, init: true }, // Enemy AI
     { global: 'ResourceSystem', priority: 13, init: false }, // Logic only
@@ -71,7 +71,7 @@ const SystemConfig: SystemConfigEntry[] = [
     { global: 'GameRenderer', priority: 33, init: true, critical: true },
     { global: 'UIManager', priority: 40, init: true },
     { global: 'InventoryUI', priority: 41, init: true },
-    { global: 'MinimapSystem', priority: 42, init: true },
+    { global: 'MinimapSystem', priority: 52, init: true }, // After HeroSystem (50) so hero position is current
 
     // --- 6. Entities ---
     { global: 'HeroSystem', priority: 50, init: true },

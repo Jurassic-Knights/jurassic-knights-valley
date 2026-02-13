@@ -1,21 +1,8 @@
 /**
- * IslandManager - Main barrel export for IslandManager singleton
+ * IslandManager - Re-exports WorldManager for backward compatibility
  *
- * The singleton is created from the consolidated IslandManagerService class
- * which now contains all methods directly (no prototype patching needed).
+ * WorldManager replaces IslandManager. All systems that use IslandManager
+ * get WorldManager (mapgen4 polygon map, walk everywhere).
  */
 
-import { IslandManagerService } from './IslandManagerCore';
-import { Logger } from '@core/Logger';
-import { Registry } from '@core/Registry';
-
-// Create the singleton instance
-const IslandManager = new IslandManagerService();
-
-// Register globally
-if (Registry) Registry.register('IslandManager', IslandManager);
-
-Logger.info('[IslandManager] Singleton created');
-
-// ES6 Module Export
-export { IslandManager, IslandManagerService };
+export { WorldManager as IslandManager, WorldManagerService } from './WorldManager';

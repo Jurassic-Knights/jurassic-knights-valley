@@ -65,6 +65,7 @@ import { showLootView } from './lootRenderer';
 import { buildCategoryFilters, renderAssets } from './legacyAssets';
 
 import { initEventDelegation, disposeDelegation } from './ActionDelegator';
+import { initResizeHandle } from './ResizePanels';
 
 // ============================================
 // LIVE POLLING
@@ -153,6 +154,16 @@ function initApp() {
 
         // Initialize Event Delegation (Replaces inline onclicks)
         initEventDelegation();
+
+        // Resizable sidebars
+        initResizeHandle('resize-sidebar', 'sidebar', true, {
+            defaultPx: 260,
+            storageKey: 'dashboard-sidebar-width',
+        });
+        initResizeHandle('resize-inspector', 'inspectorPanel', false, {
+            defaultPx: 350,
+            storageKey: 'dashboard-inspector-width',
+        });
 
     // Load Global Asset Lookup (for Drops/Sources)
     loadGlobalAssetLookup().then(() => {

@@ -152,11 +152,11 @@ The codebase has **53 source files** that exceed the 300-line limit. Below they 
 | File                                       | Lines   | Suggested split                                                                                 |
 | ------------------------------------------ | ------- | ----------------------------------------------------------------------------------------------- |
 | `src/tools/map-editor/GroundSystem.ts`     | ~~620~~ DONE | Split into GroundSystemSplat, GroundSystemPalette, GroundSystemAssets, GroundSystemTileTexture. |
-| `src/tools/map-editor/MapEditorCore.ts`    | 498     | Mode handling vs. tools vs. save/load vs. canvas.                                               |
+| `src/tools/map-editor/MapEditorCore.ts`    | ~530    | Procedural renderer extracted; mode/tools/save/load remain.                                     |
 | `src/tools/map-editor/mapgen4/map.ts`      | 416     | Mapgen4 library code: consider splitting by algorithm step or leave as vendor if from upstream. |
-| `src/tools/map-editor/ChunkManager.ts`     | 328     | Chunk lifecycle vs. serialization vs. LOD.                                                      |
-| `src/tools/map-editor/Mapgen4Generator.ts` | 322     | Integration vs. conversion vs. config.                                                          |
-| `src/tools/map-editor/ZoneSystem.ts`       | 306     | Zone logic vs. palette vs. rendering.                                                           |
+| `src/tools/map-editor/ChunkManager.ts`     | ~502    | Serialization extracted to ChunkManagerSerialization.                                          |
+| `src/tools/map-editor/Mapgen4Generator.ts` | ~~322~~ DONE | Split into Mapgen4RegionUtils, ZoneMapping, RiverUtils, SplineUtils, PreviewRenderer, Param. |
+| `src/tools/map-editor/ZoneSystem.ts`       | ~~306~~ DONE | Splat regen extracted to ZoneSystemSplatRegen.                                                 |
 
 ---
 

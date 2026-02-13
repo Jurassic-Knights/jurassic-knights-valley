@@ -1,7 +1,9 @@
 ---
-description: API, database, and server-side patterns
-globs: "**/api/**"
-alwaysApply: true
+description: Backend API standards — REST design, error handling, validation, data layer, security. Apply when working on server routes, API endpoints, validation, database queries, or auth.
+globs:
+  - "tools/dashboard/src/api-server.ts"
+  - "tools/dashboard/**/*server*.ts"
+alwaysApply: false
 ---
 
 # Backend / API

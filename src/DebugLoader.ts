@@ -81,7 +81,6 @@ async function loadAllModules() {
 
     // Audio
     await loadModule('./audio/SFX_Core');
-    await loadModule('./audio/ProceduralSFX');
     await loadModule('./audio/AudioManager');
 
     // Systems
@@ -101,13 +100,6 @@ async function loadAllModules() {
     await loadModule('./systems/CombatController');
     await loadModule('./systems/Farming');
     await loadModule('./systems/Mining');
-
-    // Spawners
-    await loadModule('./systems/spawners/PropSpawner');
-    await loadModule('./systems/spawners/ResourceSpawner');
-    await loadModule('./systems/spawners/EnemySpawner');
-    await loadModule('./systems/spawners/DropSpawner');
-    await loadModule('./systems/SpawnManager');
 
     // Rendering
     await loadModule('./rendering/WorldRenderer');
@@ -136,7 +128,7 @@ async function loadAllModules() {
     await loadModule('./vfx/weather/SnowVFX');
 
     // World
-    await loadModule('./world/IslandManagerCore');
+    await loadModule('./world/WorldManager');
     await loadModule('./world/HomeBase');
     await loadModule('./world/AmbientSystem');
     await loadModule('./vfx/FogOfWarSystem');

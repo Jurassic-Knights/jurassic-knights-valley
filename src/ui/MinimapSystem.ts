@@ -3,9 +3,9 @@
  * Renders a miniature world map centered on the player with zoom controls.
  *
  * Features:
- * - Player-centered view for large 30k×30k world
+ * - Player-centered view for 160k×160k mapgen4 world
  * - Zoom in/out with +/- buttons
- * - Shows biome colors, roads, islands, enemies
+ * - Shows mapgen4 terrain, enemies, hero
  *
  * Owner: UI Engineer
  */
@@ -15,6 +15,7 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
+import { GameInstance } from '@core/Game';
 import type { IGame } from '../types/core.d';
 import { renderMinimap } from './MinimapRenderer';
 
@@ -31,6 +32,7 @@ class MinimapSystem {
     baseViewRadius: number;
     game: IGame | null;
     scale: number = 1;
+    private _rafId: number | null = null;
 
     constructor() {
         this.canvas = null;
@@ -45,7 +47,7 @@ class MinimapSystem {
         this.zoomStep = GameConstants.UI.MINIMAP_ZOOM_STEP;
 
         // View radius at zoom 1 (how much world to show)
-        this.baseViewRadius = 3000; // pixels of world radius to show
+        this.baseViewRadius = 20000; // 160k world: show 40k×40k at zoom 1
         this.game = null;
 
         Logger.info('[MinimapSystem] Constructed');
@@ -200,29 +202,51 @@ class MinimapSystem {
         this.modal.style.display = 'flex';
         this.isOpen = true;
         this.render();
+        this._startRenderLoop();
     }
 
     close() {
         if (!this.modal) return;
         this.modal.style.display = 'none';
         this.isOpen = false;
+        this._stopRenderLoop();
 
         // Show weapon swap button again
         const btnSwap = document.getElementById('btn-weapon-swap');
         if (btnSwap) btnSwap.style.display = '';
     }
 
+    private _startRenderLoop() {
+        this._stopRenderLoop();
+        const loop = () => {
+            if (!this.isOpen) return;
+            this.render();
+            this._rafId = requestAnimationFrame(loop);
+        };
+        this._rafId = requestAnimationFrame(loop);
+    }
+
+    private _stopRenderLoop() {
+        if (this._rafId !== null) {
+            cancelAnimationFrame(this._rafId);
+            this._rafId = null;
+        }
+    }
+
     render() {
         if (!this.ctx || !this.canvas) return;
-        const hero = this.game?.hero;
+        // Use GameInstance for hero to ensure we get the latest position each frame
+        const hero = GameInstance?.hero ?? this.game?.hero ?? null;
         const canvasSize = this.canvas.width;
         const viewRadius = this.baseViewRadius / this.zoomLevel;
-        const heroX = hero?.x || 15000;
-        const heroY = hero?.y || 15000;
-        this.scale = canvasSize / (viewRadius * 2);
+        const heroX = hero?.x ?? 80000;
+        const heroY = hero?.y ?? 80000;
+        const viewWidth = viewRadius * 2;
+        const viewHeight = viewRadius * 2;
+        this.scale = canvasSize / viewWidth;
         const viewLeft = heroX - viewRadius;
         const viewTop = heroY - viewRadius;
-        renderMinimap(this.ctx, canvasSize, this.scale, viewLeft, viewTop, hero ?? null, this.zoomLevel);
+        renderMinimap(this.ctx, canvasSize, this.scale, viewLeft, viewTop, viewWidth, viewHeight, hero, this.zoomLevel);
     }
 
     /**

@@ -70,6 +70,18 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         overlayId: 'ground_base_dirt_grasslands_01',
         noiseId: 'ground_base_gravel_grasslands_01'
     },
+    biome_grasslands_civ_town: {
+        baseId: 'ground_base_dirt_grasslands_01',
+        midId: 'ground_base_gravel_grasslands_01',
+        overlayId: 'ground_damage_churned_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    biome_grasslands_civ_bridge: {
+        baseId: 'ground_interior_planks_grasslands_01',
+        midId: 'ground_base_gravel_grasslands_01',
+        overlayId: 'ground_interior_planks_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
 
     default_civ_trench: {
         baseId: 'ground_damage_churned_grasslands_01',
@@ -83,8 +95,26 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         overlayId: 'ground_base_dirt_grasslands_01',
         noiseId: 'ground_base_gravel_grasslands_01'
     },
+    default_civ_town: {
+        baseId: 'ground_base_dirt_grasslands_01',
+        midId: 'ground_base_gravel_grasslands_01',
+        overlayId: 'ground_damage_churned_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    default_civ_bridge: {
+        baseId: 'ground_interior_planks_grasslands_01',
+        midId: 'ground_base_gravel_grasslands_01',
+        overlayId: 'ground_interior_planks_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
 
-    // --- TUNDRA terrain (water / coast) ---
+    // --- TUNDRA terrain (deep_water / water / coast) ---
+    biome_tundra_terrain_deep_water: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
     biome_tundra_terrain_water: {
         baseId: 'ground_base_snow_tundra_01',
         midId: 'ground_base_rock_tundra_01',
@@ -98,7 +128,13 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         noiseId: 'ground_base_gravel_tundra_01'
     },
 
-    // --- DESERT terrain (water / coast) ---
+    // --- DESERT terrain (deep_water / water / coast) ---
+    biome_desert_terrain_deep_water: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
     biome_desert_terrain_water: {
         baseId: 'ground_base_sand_desert_01',
         midId: 'ground_base_rock_desert_01',
@@ -138,15 +174,65 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         noiseId: 'ground_base_gravel_desert_01'
     },
 
-    // --- ELEVATION TERRAIN (mapgen4 lowland / hill / mountain) — reuse biome textures ---
+    // --- WATER (deep < water) ---
+    biome_grasslands_terrain_deep_water: {
+        baseId: 'ground_base_sand_grasslands_01',
+        midId: 'ground_base_dirt_grasslands_01',
+        overlayId: 'ground_base_dirt_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    // --- DIRTBANK (elevation 0..0.1) ---
+    biome_grasslands_terrain_dirtbank: {
+        baseId: 'ground_base_dirt_grasslands_01',
+        midId: 'ground_base_gravel_grasslands_01',
+        overlayId: 'ground_damage_churned_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    biome_tundra_terrain_dirtbank: {
+        baseId: 'ground_base_dirt_grasslands_01',
+        midId: 'ground_base_gravel_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+    biome_desert_terrain_dirtbank: {
+        baseId: 'ground_base_dirt_grasslands_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
+    biome_badlands_terrain_dirtbank: {
+        baseId: 'ground_base_cracked_earth_badlands_01',
+        midId: 'ground_base_rock_badlands_01',
+        overlayId: 'ground_base_rock_badlands_01',
+        noiseId: 'ground_base_gravel_badlands_01'
+    },
+    // --- ELEVATION TERRAIN (mapgen4 lowland / land / highland / hill / midmountain / mountain) ---
     biome_grasslands_terrain_lowland: {
         baseId: 'ground_base_grass_grasslands_01',
         midId: 'ground_base_sand_grasslands_01',
         overlayId: 'ground_damage_churned_grasslands_01',
         noiseId: 'ground_base_gravel_grasslands_01'
     },
+    biome_grasslands_terrain_land: {
+        baseId: 'ground_base_grass_grasslands_01',
+        midId: 'ground_base_dirt_grasslands_01',
+        overlayId: 'ground_damage_churned_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    biome_grasslands_terrain_highland: {
+        baseId: 'ground_base_grass_grasslands_01',
+        midId: 'ground_base_dirt_grasslands_01',
+        overlayId: 'ground_damage_churned_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
     biome_grasslands_terrain_hill: {
         baseId: 'ground_base_grass_grasslands_01',
+        midId: 'ground_base_dirt_grasslands_01',
+        overlayId: 'ground_damage_churned_grasslands_01',
+        noiseId: 'ground_base_gravel_grasslands_01'
+    },
+    biome_grasslands_terrain_midmountain: {
+        baseId: 'ground_base_gravel_grasslands_01',
         midId: 'ground_base_dirt_grasslands_01',
         overlayId: 'ground_damage_churned_grasslands_01',
         noiseId: 'ground_base_gravel_grasslands_01'
@@ -163,9 +249,27 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         overlayId: 'ground_base_rock_tundra_01',
         noiseId: 'ground_base_gravel_tundra_01'
     },
+    biome_tundra_terrain_land: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+    biome_tundra_terrain_highland: {
+        baseId: 'ground_base_snow_tundra_01',
+        midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
     biome_tundra_terrain_hill: {
         baseId: 'ground_base_snow_tundra_01',
         midId: 'ground_base_rock_tundra_01',
+        overlayId: 'ground_base_rock_tundra_01',
+        noiseId: 'ground_base_gravel_tundra_01'
+    },
+    biome_tundra_terrain_midmountain: {
+        baseId: 'ground_base_rock_tundra_01',
+        midId: 'ground_base_gravel_tundra_01',
         overlayId: 'ground_base_rock_tundra_01',
         noiseId: 'ground_base_gravel_tundra_01'
     },
@@ -181,9 +285,27 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         overlayId: 'ground_base_rock_desert_01',
         noiseId: 'ground_base_gravel_desert_01'
     },
+    biome_desert_terrain_land: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
+    biome_desert_terrain_highland: {
+        baseId: 'ground_base_sand_desert_01',
+        midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
     biome_desert_terrain_hill: {
         baseId: 'ground_base_sand_desert_01',
         midId: 'ground_base_rock_desert_01',
+        overlayId: 'ground_base_rock_desert_01',
+        noiseId: 'ground_base_gravel_desert_01'
+    },
+    biome_desert_terrain_midmountain: {
+        baseId: 'ground_base_rock_desert_01',
+        midId: 'ground_base_gravel_desert_01',
         overlayId: 'ground_base_rock_desert_01',
         noiseId: 'ground_base_gravel_desert_01'
     },
@@ -199,9 +321,27 @@ export const GroundPalette: Record<string, GroundPaletteEntry> = {
         overlayId: 'ground_base_rock_badlands_01',
         noiseId: 'ground_base_gravel_badlands_01'
     },
+    biome_badlands_terrain_land: {
+        baseId: 'ground_base_cracked_earth_badlands_01',
+        midId: 'ground_base_rock_badlands_01',
+        overlayId: 'ground_base_rock_badlands_01',
+        noiseId: 'ground_base_gravel_badlands_01'
+    },
+    biome_badlands_terrain_highland: {
+        baseId: 'ground_base_cracked_earth_badlands_01',
+        midId: 'ground_base_rock_badlands_01',
+        overlayId: 'ground_base_rock_badlands_01',
+        noiseId: 'ground_base_gravel_badlands_01'
+    },
     biome_badlands_terrain_hill: {
         baseId: 'ground_base_cracked_earth_badlands_01',
         midId: 'ground_base_rock_badlands_01',
+        overlayId: 'ground_base_rock_badlands_01',
+        noiseId: 'ground_base_gravel_badlands_01'
+    },
+    biome_badlands_terrain_midmountain: {
+        baseId: 'ground_base_rock_badlands_01',
+        midId: 'ground_base_gravel_badlands_01',
         overlayId: 'ground_base_rock_badlands_01',
         noiseId: 'ground_base_gravel_badlands_01'
     },

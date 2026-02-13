@@ -9,7 +9,7 @@ import { entityManager } from '@core/EntityManager';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
-import { spawnManager } from './SpawnManager';
+import { spawnDrop } from '../gameplay/SpawnHelper';
 import { GameConstants } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
@@ -115,7 +115,7 @@ class DinosaurSystem {
 
                 // Drop loot directly using SpawnManager (same pattern as Resource.js)
                 // This bypasses the complex LootSystem chain and works on file:// protocol
-                if (spawnManager && dino.lootTable && Array.isArray(dino.lootTable)) {
+                if (dino.lootTable && Array.isArray(dino.lootTable)) {
                     for (const entry of dino.lootTable) {
                         // Roll chance (0-1 format)
                         if (Math.random() > (entry.chance || 1)) continue;
@@ -132,7 +132,7 @@ class DinosaurSystem {
                         }
 
                         // Spawn the drop directly
-                        spawnManager.spawnDrop(dino.x, dino.y, entry.item, amount);
+                        spawnDrop(dino.x, dino.y, entry.item, amount);
                     }
                 }
             }

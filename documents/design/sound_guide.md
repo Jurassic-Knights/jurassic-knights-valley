@@ -7,7 +7,7 @@
 ## Core Aesthetic
 
 Low-frequency, analog, grounded. No bright 8-bit bleeps.
-**Reference**: `restMelody()` in `ProceduralSFX.js` - the benchmark for thematic audio.
+**Reference**: `restMelody()` in `SFX_Core.ts` - the benchmark for thematic audio.
 
 ---
 

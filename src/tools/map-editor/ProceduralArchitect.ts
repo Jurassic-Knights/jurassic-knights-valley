@@ -3,6 +3,10 @@ import { ChunkData } from './MapEditorTypes';
 import { Logger } from '@core/Logger';
 import { createNoise2D } from 'simplex-noise';
 import { MapEditorConfig } from './MapEditorConfig';
+import {
+    WATER_TERRAIN_IDS,
+    WATER_SPLAT_TERRAIN_IDS
+} from './Mapgen4BiomeConfig';
 
 /**
  * ProceduralArchitect
@@ -73,9 +77,9 @@ export class ProceduralArchitect {
         dirtyChunkKeys: Set<string>
     ): { x: number; y: number; category: string; zoneId: string | null }[] {
         const updates: { x: number; y: number; category: string; zoneId: string | null }[] = [];
-        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
+        const { CHUNK_SIZE, TILE_SIZE, Procedural } = MapEditorConfig;
         const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-        const COAST_DEPTH = 2; // tiles of coast from water edge
+        const COAST_DEPTH = Procedural.COAST_DEPTH;
 
         const getNeighborTerrain = (gx: number, gy: number): string | null => {
             const nCX = Math.floor(gx / chunkSizePx);
@@ -94,11 +98,8 @@ export class ProceduralArchitect {
                     if (dx === 0 && dy === 0) continue;
                     const nx = tileLeftX + dx * TILE_SIZE;
                     const ny = tileLeftY + dy * TILE_SIZE;
-                    if (
-                        getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2) ===
-                        'terrain_water'
-                    )
-                        return true;
+                    const n = getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2);
+                    if (n && WATER_SPLAT_TERRAIN_IDS.includes(n as (typeof WATER_SPLAT_TERRAIN_IDS)[number])) return true;
                 }
             }
             return false;
@@ -111,7 +112,7 @@ export class ProceduralArchitect {
                     const nx = tileLeftX + dx * TILE_SIZE;
                     const ny = tileLeftY + dy * TILE_SIZE;
                     const t = getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2);
-                    if (t === 'terrain_water') return true;
+                    if (t && WATER_SPLAT_TERRAIN_IDS.includes(t as (typeof WATER_SPLAT_TERRAIN_IDS)[number])) return true;
                 }
             }
             return false;
@@ -142,8 +143,8 @@ export class ProceduralArchitect {
                 } else if (
                     isGrasslands &&
                     hasWaterNearby &&
-                    terrain !== 'terrain_water' &&
-                    terrain !== 'terrain_coast'
+                    terrain &&
+                    !WATER_TERRAIN_IDS.includes(terrain as (typeof WATER_TERRAIN_IDS)[number])
                 ) {
                     updates.push({
                         x: gx + TILE_SIZE / 2,
@@ -167,11 +168,10 @@ export class ProceduralArchitect {
         worldData: Map<string, ChunkData>
     ): { x: number; y: number; radius: number; intensity: number }[] {
         const splatResults: { x: number; y: number; radius: number; intensity: number }[] = [];
-        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
+        const { CHUNK_SIZE, TILE_SIZE, Procedural } = MapEditorConfig;
         const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-        const WATER_RADIUS = 8;
-        const WATER_INTENSITY = 200;
+        const WATER_RADIUS = Procedural.WATER_SPLAT_RADIUS;
+        const WATER_INTENSITY = Procedural.WATER_SPLAT_INTENSITY;
 
         dirtyTiles.forEach((tile) => {
             const chunkX = Math.floor(tile.x / chunkSizePx);
@@ -188,7 +188,7 @@ export class ProceduralArchitect {
             const centerX = tile.x + TILE_SIZE / 2;
             const centerY = tile.y + TILE_SIZE / 2;
 
-            if (terrain === 'terrain_water') {
+            if (terrain && WATER_SPLAT_TERRAIN_IDS.includes(terrain as (typeof WATER_SPLAT_TERRAIN_IDS)[number])) {
                 splatResults.push({
                     x: centerX,
                     y: centerY,

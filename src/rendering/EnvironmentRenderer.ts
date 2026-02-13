@@ -10,7 +10,7 @@
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
-import { ProceduralSFX } from '../audio/ProceduralSFX';
+import { SFX } from '../audio/SFX_Core';
 import { RainVFX } from '@vfx/weather/RainVFX';
 import { SnowVFX } from '@vfx/weather/SnowVFX';
 import { IGame, IViewport } from '@app-types/core';
@@ -111,8 +111,8 @@ class EnvironmentRenderer {
         if (type === 'STORM') this.lightning.timer = 1 + Math.random() * 3;
 
         // DIRECT AUDIO SYNC: Trigger weather ambience
-        if (ProceduralSFX && ProceduralSFX.ctx) {
-            ProceduralSFX.setWeather(type);
+        if (SFX && SFX.ctx) {
+            SFX.setWeather(type);
         }
     }
 

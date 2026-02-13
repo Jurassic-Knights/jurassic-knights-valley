@@ -35,14 +35,12 @@ import './systems/EconomySystem';
 import './gameplay/CraftingManager';
 import './gameplay/QuestManager';
 
-// Systems - World (BiomeManager and IslandManager self-register on import)
+// Systems - World (BiomeManager, WorldManager registered as IslandManager)
 import './world/BiomeManager';
-import './world/IslandManager';
+import './world/WorldManager';
+import './world/MapObjectSpawner';
 import './world/HomeBase';
 import './world/AmbientSystem';
-
-// Systems - Spawning
-import './systems/SpawnManager';
 import './systems/DinosaurSystem';
 import './systems/EnemySystem';
 import './gameplay/EnemyBehavior'; // Attach prototype methods to Enemy after class is loaded

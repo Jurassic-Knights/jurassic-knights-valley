@@ -26,7 +26,6 @@ declare let BalanceManager: import('../gameplay/BalanceManager').BalanceManager;
 declare let QuestManager: import('../gameplay/QuestManager').QuestManager;
 declare let ProgressionSystem: import('../gameplay/ProgressionSystem').ProgressionSystem;
 declare let BiomeManager: import('../world/BiomeManager').BiomeManager;
-declare let SpawnManager: import('../systems/SpawnManager').SpawnManager;
 declare let PathfindingSystem: import('../systems/PathfindingSystem').PathfindingSystem;
 declare let EconomySystem: import('../systems/EconomySystem').EconomySystem;
 declare let EquipmentSlotManager: import('../ui/EquipmentSlotManager').EquipmentSlotManager;

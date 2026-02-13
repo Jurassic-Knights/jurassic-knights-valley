@@ -14,7 +14,7 @@ import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
 import { EntityTypes } from '@config/EntityTypes';
-import { spawnManager as SpawnManager } from '@systems/SpawnManager';
+import { spawnDrop } from './SpawnHelper';
 import { GameInstance } from '@core/Game';
 import type { IEntity } from '../types/core';
 import { MathUtils } from '@core/MathUtils';
@@ -255,7 +255,7 @@ Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
     this.health = 0;
     this.respawnTimer = this.respawnTime;
 
-    if (SpawnManager && this.lootTable && Array.isArray(this.lootTable)) {
+    if (this.lootTable && Array.isArray(this.lootTable)) {
         for (const entry of this.lootTable) {
             if (Math.random() > (entry.chance || 1)) continue;
 
@@ -276,7 +276,7 @@ Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
                 amount = Math.ceil(amount * (this.lootMultiplier || 2));
             }
 
-            SpawnManager.spawnDrop(this.x, this.y, entry.item, amount);
+            spawnDrop(this.x, this.y, entry.item, amount);
         }
     }
 

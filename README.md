@@ -124,7 +124,7 @@ This project uses AI-assisted development via `.agent/`:
 
 1. Create `src/audio/SFX_[Category]_T[Tier]_[Num].ts`
 2. Import `Logger` from `../core/Logger`
-3. Import `ProceduralSFX` from `./ProceduralSFX`
+3. Import `SFX` from `./SFX_Core`
 4. Add registration to `src/audio/SFXLoader.ts`
 
 ### Adding a New Entity

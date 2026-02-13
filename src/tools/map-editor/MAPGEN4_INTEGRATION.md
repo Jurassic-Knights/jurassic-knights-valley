@@ -19,7 +19,7 @@ We **did not** import the GitHub repo as a dependency and use it unchanged. We *
 | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`mapgen4/`** (this folder) | **Vendored** mapgen4 algorithm code. Adapted from [redblobgames/mapgen4](https://github.com/redblobgames/mapgen4) (Apache-2.0). Only **import paths and one replacement** were changed; **algorithm logic is unchanged**. See “Vendor adaptations” below. |
 | **`Mapgen4Generator.ts`**    | **Our code only.** Builds mesh (via vendored `buildMesh`), runs Map (vendored), then **rasterizes** mesh → 1250×1250 tile grid → `ChunkData` / zones. Uses `mapgen4ToZones()` for zone mapping; preview uses `drawPreviewToGraphics()` (vector). No edits to mapgen4 source. |
-| **`Mapgen4BiomeConfig.ts`**   | **Our code only.** Rainfall and elevation thresholds for `mapgen4ToZones()`.                                                                                                                                                                               |
+| **`Mapgen4BiomeConfig.ts`**   | **Our code only.** Radial biome layout (`positionToBiome`), elevation→terrain thresholds, biome preview palette.                                                                                                                                           |
 | **`ZoneColorHelper.ts`**      | **Our code only.** `getTileColorHex(zones)` used by placeholder ground and procedural preview.                                                                                                                                                           |
 | **Dashboard procedural tab** | **Our code only.** UI and dynamic `import()` of `Mapgen4Generator`; no mapgen4 source.                                                                                                                                                                    |
 
@@ -67,14 +67,20 @@ All mapgen4 outputs are mapped to editor zones via `mapgen4ToZones()` in `Mapgen
 
 | Mapgen4 data        | Condition                    | Zone category | ZoneConfig ID        |
 | ------------------- | ---------------------------- | ------------- | -------------------- |
-| Deep water          | `elevation < -0.1`           | terrain       | `terrain_water`      |
-| Coast               | `-0.1 ≤ elevation < 0`      | terrain       | `terrain_coast`      |
+| Deep water          | `elevation < -0.2`           | terrain       | `terrain_deep_water` |
+| Water               | `-0.2 ≤ elevation < -0.1`    | terrain       | `terrain_water`      |
+| Coast               | `-0.1 ≤ elevation < 0`       | terrain       | `terrain_coast`      |
+| Dirtbank            | `0 ≤ elevation < 0.1`        | terrain       | `terrain_dirtbank`   |
 | River               | `isTileOnRiver(...)`         | terrain       | `terrain_river`      |
-| Lowland             | land, elevation 0..lowlandMax | terrain     | `terrain_lowland`    |
-| Hills               | land, elevation lowlandMax..hillMax | terrain | `terrain_hill`       |
-| Mountain            | land, elevation ≥ hillMax   | terrain       | `terrain_mountain`   |
-| Land biome          | land (elevation ≥ 0), not river | biome     | `rainfallToBiomeFromConfig(rainfall)` → desert, badlands, tundra, grasslands |
+| Lowland             | land, elevation 0.1..0.2     | terrain       | `terrain_lowland`    |
+| Land                | land, elevation 0.2..0.35   | terrain       | `terrain_land`       |
+| Highland            | land, elevation 0.35..0.5   | terrain       | `terrain_highland`   |
+| Hill                | land, elevation 0.5..0.65   | terrain       | `terrain_hill`       |
+| Mid-Mountain        | land, elevation 0.65..0.8   | terrain       | `terrain_midmountain`|
+| Mountain            | land, elevation ≥ 0.8       | terrain       | `terrain_mountain`   |
+| Land biome          | land (elevation ≥ 0), not river | biome     | `positionToBiome(x, y, meshSeed, elevation)` → grasslands (center), tundra/desert/badlands (3 outer sectors). Organic boundaries via simplex noise; elevation subtly shifts boundaries along terrain. |
 
-- **Terrain + biome:** Water, coast, and river tiles get a default `biome` (e.g. `grasslands`) so palette resolution works. Land tiles get both a terrain (elevation band) and a biome (rainfall).
-- **Config:** `MAPGEN4_RAINFALL_THRESHOLDS` (desertMax, badlandsMax, tundraMax) and `MAPGEN4_ELEVATION_THRESHOLDS` (lowlandMax, hillMax) in `Mapgen4BiomeConfig.ts`.
+- **Terrain + biome:** Water, coast, and river tiles get a default `biome` (e.g. `grasslands`) so palette resolution works. Land tiles get both a terrain (elevation band) and a biome (radial position with organic wobble).
+- **Organic boundaries:** Simplex noise perturbs the grasslands radius (±`MAPGEN4_BIOME_RADIUS_NOISE`) and sector angles (±`MAPGEN4_BIOME_ANGLE_NOISE`). Elevation influence (`MAPGEN4_BIOME_ELEVATION_INFLUENCE`) makes boundaries slightly follow valleys and ridges.
+- **Config:** `MAPGEN4_INNER_RADIUS`, `MAPGEN4_BIOME_RADIUS_NOISE`, `MAPGEN4_BIOME_ANGLE_NOISE`, `MAPGEN4_BIOME_ELEVATION_INFLUENCE`, `MAPGEN4_ELEVATION_THRESHOLDS`, `BIOME_PREVIEW_PALETTE` in `Mapgen4BiomeConfig.ts`.
 - **Preview:** The procedural preview in the main map view uses the same `mapgen4ToZones()` and `getTileColorHex(zones)` so preview colors match the applied map.

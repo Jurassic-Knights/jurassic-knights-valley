@@ -8,7 +8,6 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
-import { spawnManager } from './SpawnManager';
 import { IslandManager } from '../world/IslandManager';
 import { DroppedItem } from '../gameplay/DroppedItem';
 import { AudioManager } from '../audio/AudioManager';
@@ -67,13 +66,12 @@ class InteractionSystem {
      * Replaces Game.updateUITriggers
      */
     updateSpatialTriggers(hero: IEntity) {
-        // Merchant Button
-        if (spawnManager && EventBus) {
-            const nearbyMerchant = spawnManager.getMerchantNearHero(hero);
+        // Merchant Button (merchants removed; placeholder for future map-placed merchants)
+        if (EventBus) {
             EventBus.emit(GameConstants.Events.INTERACTION_OPPORTUNITY, {
                 type: 'merchant',
-                target: nearbyMerchant,
-                visible: !!nearbyMerchant
+                target: null,
+                visible: false
             });
         }
 

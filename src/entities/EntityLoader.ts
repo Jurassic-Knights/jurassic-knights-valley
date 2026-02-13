@@ -134,10 +134,9 @@ const EntityLoader = {
             if (manifest && (manifest.enemies || manifest.hero)) {
                 await this.loadFromManifest(manifest);
             } else {
-                Logger.warn('[EntityLoader] No manifest data found, using fallback');
-                await this.loadCategory('enemies');
-                await this.loadCategory('bosses');
-                await this.loadHero();
+                Logger.warn('[EntityLoader] No manifest data found, using TS fallback');
+                await this.loadGenericEntity('enemies', 'enemy_dinosaur_t1_01');
+                await this.loadGenericEntity('hero', 'hero_t1_01');
             }
 
             this.loaded = true;
@@ -163,10 +162,6 @@ const EntityLoader = {
                     promises.push(this.loadGenericEntity(category, id));
                 }
             }
-        }
-
-        if (manifestData.hero === true) {
-            promises.push(this.loadLegacyHero());
         }
 
         await Promise.all(promises);
@@ -217,54 +212,6 @@ const EntityLoader = {
         if (data.display) Object.assign(entity, data.display);
         if (EntityRegistry[category]) EntityRegistry[category][id] = entity;
         return entity;
-    },
-
-    async loadCategory(category: string) {
-        try {
-            const indexResp = await fetch(`${this.basePath}${category}/index.json`);
-            if (!indexResp.ok) return;
-            const index = await indexResp.json();
-            await Promise.all(index.map((id: string) => this.loadEntity(category, id)));
-        } catch {
-            Logger.warn(`[EntityLoader] Could not load category ${category}`);
-        }
-    },
-
-    async loadEntity(category: string, id: string) {
-        try {
-            const resp = await fetch(`${this.basePath}${category}/${id}.json`);
-            if (!resp.ok) return null;
-            const data = await resp.json();
-            const entity = processEntity(data, category);
-            const validCategory = category as keyof EntityRegistryStrict;
-            if (category === 'bosses') {
-                EntityRegistry.bosses[id] = entity;
-                EntityRegistry.enemies[id] = entity;
-            } else if (EntityRegistry[validCategory]) {
-                EntityRegistry[validCategory][id] = entity;
-            }
-            return entity;
-        } catch (e: unknown) {
-            Logger.warn(`[EntityLoader] Could not load ${category}/${id}: ${(e as Error).message}`);
-            return null;
-        }
-    },
-
-    async loadLegacyHero() {
-        try {
-            const resp = await fetch(`${this.basePath}hero/hero.json`);
-            if (!resp.ok) return null;
-            const data = await resp.json();
-            EntityRegistry.hero['hero'] = { id: 'hero', entityType: 'Hero', ...data };
-            return EntityRegistry.hero['hero'];
-        } catch {
-            Logger.warn('[EntityLoader] Could not load legacy hero');
-            return null;
-        }
-    },
-
-    async loadHero() {
-        return this.loadLegacyHero();
     },
 
     getEnemy(id: string) {

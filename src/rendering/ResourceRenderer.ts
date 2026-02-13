@@ -34,7 +34,8 @@ class ResourceRendererService implements ISystem {
 
         // Shake logic (if damaged) - skipped for simplification or handled by Tween?
         // Check if this resource type uses custom rendering (e.g., trees handled elsewhere)
-        const typeConfig = EntityRegistry?.resources?.[res.resourceType] || {};
+        const typeConfig =
+            EntityRegistry?.nodes?.[res.resourceType] || EntityRegistry?.resources?.[res.resourceType] || {};
         if (typeConfig.skipDefaultRender) return;
 
         if (res.state === 'depleted') {

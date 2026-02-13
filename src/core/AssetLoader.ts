@@ -112,7 +112,8 @@ const AssetLoader = {
             'resources',
             'items',
             'npcs',
-            'environment'
+            'environment',
+            'hero'
         ];
 
         for (const cat of categories) {
@@ -271,7 +272,7 @@ const AssetLoader = {
      * @returns {null}
      */
     getAudio(_id: string): null {
-        // Procedural audio handled by ProceduralSFX.js
+        // Procedural audio handled by SFX_Core
         // This is only for pre-recorded files (BGM, ambient)
         return null;
     },

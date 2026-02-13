@@ -1,9 +1,9 @@
 /**
  * MapEditorMount - PixiJS app initialization for map editor
  *
- * When no map is loaded: main view uses an HTML canvas (same as minimap).
- * When map is loaded: main view uses PIXI chunks.
- * No legacy world scaling — procedural map lives in mesh coords 0..1000.
+ * Polygon map is the ground (mapgen4 mesh). Rendered as a PIXI sprite on stage
+ * so it's guaranteed visible. Procedural canvas is offscreen; we draw to it and
+ * display via sprite texture.
  */
 import * as PIXI from 'pixi.js';
 import { ChunkManager } from './ChunkManager';
@@ -12,8 +12,10 @@ import { MapEditorConfig } from './MapEditorConfig';
 export interface MountResult {
     app: PIXI.Application;
     worldContainer: PIXI.Container;
-    /** HTML canvas for procedural preview — same drawing path as minimap. */
+    /** Offscreen canvas for polygon map — drawn to, displayed via proceduralSprite. */
     proceduralCanvas: HTMLCanvasElement;
+    /** PIXI sprite displaying procedural map; added to stage behind worldContainer. */
+    proceduralSprite: PIXI.Sprite;
     chunkManager: ChunkManager;
     brushCursor: PIXI.Graphics;
     initialZoom: number;
@@ -33,12 +35,22 @@ export async function createPixiApp(
         width: container.clientWidth,
         height: container.clientHeight,
         backgroundColor: 0x1a1a1a,
+        backgroundAlpha: MapEditorConfig.USE_POLYGON_MAP_AS_GROUND ? 0 : 1,
         resizeTo: container,
         antialias: false,
         roundPixels: true
     });
 
-    container.appendChild(app.canvas);
+    container.style.position = 'relative';
+
+    const appCanvas = app.canvas as HTMLCanvasElement;
+    appCanvas.style.position = 'absolute';
+    appCanvas.style.top = '0';
+    appCanvas.style.left = '0';
+    appCanvas.style.zIndex = '1';
+    appCanvas.style.pointerEvents = 'auto';
+    appCanvas.style.cursor = 'default';
+    container.appendChild(appCanvas);
 
     const fitZoom = Math.max(
         MapEditorConfig.MIN_ZOOM,
@@ -49,9 +61,27 @@ export async function createPixiApp(
     );
 
     const worldContainer = new PIXI.Container();
+    worldContainer.sortableChildren = true;
     worldContainer.scale.set(fitZoom);
     worldContainer.x = app.canvas.width / 2 - MAP_CENTER * fitZoom;
     worldContainer.y = app.canvas.height / 2 - MAP_CENTER * fitZoom;
+
+    // Offscreen canvas for procedural map — displayed as a PIXI sprite.
+    // Use CanvasSource with dynamic:true so texture re-uploads each frame.
+    const proceduralCanvas = document.createElement('canvas');
+    proceduralCanvas.width = Math.max(1, app.canvas.width);
+    proceduralCanvas.height = Math.max(1, app.canvas.height);
+    const canvasSource = new PIXI.CanvasSource({ resource: proceduralCanvas, dynamic: true });
+    const proceduralTexture = new PIXI.Texture({ source: canvasSource });
+    const proceduralSprite = new PIXI.Sprite(proceduralTexture);
+    proceduralSprite.anchor.set(0, 0);
+    proceduralSprite.position.set(0, 0);
+    proceduralSprite.width = app.canvas.width;
+    proceduralSprite.height = app.canvas.height;
+    proceduralSprite.zIndex = -1;
+
+    app.stage.sortableChildren = true;
+    app.stage.addChild(proceduralSprite);
     app.stage.addChild(worldContainer);
 
     const chunkManager = new ChunkManager(worldContainer);
@@ -61,23 +91,11 @@ export async function createPixiApp(
     brushCursor.visible = false;
     worldContainer.addChild(brushCursor);
 
-    // Procedural preview: HTML canvas, same approach as minimap. No PIXI, no scaling.
-    const proceduralCanvas = document.createElement('canvas');
-    proceduralCanvas.style.position = 'absolute';
-    proceduralCanvas.style.top = '0';
-    proceduralCanvas.style.left = '0';
-    proceduralCanvas.style.width = '100%';
-    proceduralCanvas.style.height = '100%';
-    proceduralCanvas.style.pointerEvents = 'none';
-    proceduralCanvas.width = container.clientWidth;
-    proceduralCanvas.height = container.clientHeight;
-    container.style.position = 'relative';
-    container.appendChild(proceduralCanvas); // On top of PIXI canvas; pointer-events:none so events reach PIXI
-
     return {
         app,
         worldContainer,
         proceduralCanvas,
+        proceduralSprite,
         chunkManager,
         brushCursor,
         initialZoom: fitZoom

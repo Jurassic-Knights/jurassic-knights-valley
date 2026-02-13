@@ -24,6 +24,9 @@ export const MapEditorConfig = {
     VIEWPORT_PADDING: 128 * 4, // 4 tiles padding
     MIN_ZOOM: 0.006,
     MAX_ZOOM: 4.0,
+    /** Game viewport dimensions (match GameRendererViewport). Portrait: 1100 wide. Landscape: 1950 tall. */
+    GAME_VIEWPORT_PORTRAIT_WIDTH: 1100,
+    GAME_VIEWPORT_LANDSCAPE_HEIGHT: 1950,
 
     // Colors for Debug/UI
     Colors: {
@@ -40,5 +43,24 @@ export const MapEditorConfig = {
     },
 
     /** When true, main view uses color-block placeholders instead of textures (fast). */
-    USE_PLACEHOLDER_GROUND: true
+    USE_PLACEHOLDER_GROUND: true,
+
+    /** When true, polygon map is the ground; chunks render only objects (no tile grid). */
+    USE_POLYGON_MAP_AS_GROUND: true,
+
+    /** Road generator: grid divisions for coverage lookup; max shortcut edges. */
+    RoadGenerator: {
+        COVERAGE_GRID_N: 25,
+        MAX_SHORTCUTS: 10
+    },
+
+    /** Procedural coast/splat constants. */
+    Procedural: {
+        /** Tiles of coast gradient from water edge. */
+        COAST_DEPTH: 2,
+        /** Radius (tiles) for water splat gradient. */
+        WATER_SPLAT_RADIUS: 8,
+        /** Intensity for water splat gradient. */
+        WATER_SPLAT_INTENSITY: 200
+    }
 };

@@ -173,5 +173,28 @@ export const AssetManifest: Record<string, string> = {
     building_industrial_01: 'images/buildings/building_industrial_01_original.png',
 
     // Fallback tools
-    tool_t1_01: 'images/equipment/tools/tool_t1_01_original.png'
+    tool_t1_01: 'images/equipment/tools/tool_t1_01_original.png',
+
+    // Railroad textures (grasslands only; other biomes use ph.png)
+    arch_railtrack_metal_grasslands_clean: 'images/environment/architecture/arch_railtrack_metal_grasslands_clean.png',
+    arch_railtrack_wood_01_grasslands_clean: 'images/environment/architecture/arch_railtrack_wood_01_grasslands_clean.png',
+    arch_railtrack_wood_02_grasslands_clean: 'images/environment/architecture/arch_railtrack_wood_02_grasslands_clean.png',
+    arch_railtrack_wood_03_grasslands_clean: 'images/environment/architecture/arch_railtrack_wood_03_grasslands_clean.png',
+    arch_railtrack_metal_tundra_clean: 'images/PH.png',
+    arch_railtrack_metal_desert_clean: 'images/PH.png',
+    arch_railtrack_metal_badlands_clean: 'images/PH.png',
+    arch_railtrack_wood_01_tundra_clean: 'images/PH.png',
+    arch_railtrack_wood_01_desert_clean: 'images/PH.png',
+    arch_railtrack_wood_01_badlands_clean: 'images/PH.png',
+    arch_railtrack_wood_02_tundra_clean: 'images/PH.png',
+    arch_railtrack_wood_02_desert_clean: 'images/PH.png',
+    arch_railtrack_wood_02_badlands_clean: 'images/PH.png',
+    arch_railtrack_wood_03_tundra_clean: 'images/PH.png',
+    arch_railtrack_wood_03_desert_clean: 'images/PH.png',
+    arch_railtrack_wood_03_badlands_clean: 'images/PH.png',
+
+    // Ground gravel for railroad dirt layer (non-grasslands use ph)
+    ground_base_gravel_tundra_01: 'images/PH.png',
+    ground_base_gravel_desert_01: 'images/PH.png',
+    ground_base_gravel_badlands_01: 'images/PH.png'
 };

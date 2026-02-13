@@ -10,8 +10,6 @@ import { EntityLoader } from '@entities/EntityLoader';
 import { entityManager } from './EntityManager';
 import { GameState } from './State';
 import { Hero } from '../gameplay/Hero';
-// IslandManager singleton from barrel file (ensures proper prototype extension order)
-import { IslandManager } from '../world/IslandManager';
 import { GameRenderer } from './GameRenderer';
 
 // Modules that don't exist yet - use ambient declarations
@@ -54,6 +52,11 @@ class Game {
     async init() {
         Logger.info('[Game] Initializing...');
 
+        // Pre-fetch map data before WorldManager builds, so we avoid flashing default map on refresh
+        const { fetchMapData, setPrefetchedMapData } = await import('../world/MapDataService');
+        const mapData = await fetchMapData();
+        setPrefetchedMapData(mapData);
+
         // Debug helper - writes status to loading screen for headless debugging
         const debugStatus = (msg: string) => {
             const loading = document.getElementById('loading');
@@ -86,15 +89,9 @@ class Game {
             try {
                 debugStatus(`Loading: ${name}`);
 
-                // Special case: Use directly imported singletons to avoid module duplication issues
-                // The Registry/window lookup can return a different module instance due to Vite bundling
-                if (name === 'IslandManager') {
-                    sys = IslandManager;
-                } else {
-                    const globalWindow = window as unknown as Record<string, unknown>;
-                    sys = Registry ? Registry.get(name) : (globalWindow[name] as ISystem);
-                    if (!sys) sys = globalWindow[name] as ISystem; // Fallback
-                }
+                const globalWindow = window as unknown as Record<string, unknown>;
+                sys = Registry ? Registry.get(name) : (globalWindow[name] as ISystem);
+                if (!sys) sys = globalWindow[name] as ISystem; // Fallback
 
                 if (!sys) {
                     Logger.warn(`[Game] System not found: ${name}`);
@@ -144,11 +141,10 @@ class Game {
         // Tween (External Lib) verification
         if (Tween && !this.systems.includes(Tween)) this.systems.push(Tween);
 
-        // IslandUpgrades (Requires IslandManager data, so init here or in start phase)
-        if (IslandUpgrades && IslandManager && IslandManager.islands) {
-            // Check if IslandUpgrades was already init in loop?
-            // Currently SystemConfig says init:false for it because it needs args.
-            IslandUpgrades.init(IslandManager.islands);
+        // IslandUpgrades (Requires world data, so init here or in start phase)
+        const worldManager = Registry?.get('IslandManager');
+        if (IslandUpgrades && worldManager && (worldManager as { islands?: unknown[] }).islands) {
+            IslandUpgrades.init((worldManager as { islands: unknown[] }).islands);
             Logger.info('[Game] Initialized IslandUpgrades');
         }
 
@@ -166,9 +162,32 @@ class Game {
             }
         }
 
+        // Hero spawn (replaces SpawnManager.spawnHero)
+        this.spawnHero();
+
         if (MerchantUI) MerchantUI.init();
         Logger.info('[Game] Boot Complete.');
         return true;
+    }
+
+    private spawnHero(): void {
+        try {
+            const worldManager = Registry?.get<{ getHeroSpawnPosition: () => { x: number; y: number } }>('IslandManager');
+            const gameRenderer = Registry?.get<{ setHero: (h: IEntity) => void; worldWidth?: number; worldHeight?: number }>('GameRenderer');
+            const spawn = worldManager?.getHeroSpawnPosition?.() ?? {
+                x: GameConstants.World.DEFAULT_SPAWN_X,
+                y: GameConstants.World.DEFAULT_SPAWN_Y
+            };
+            const hero = new Hero({ x: spawn.x, y: spawn.y });
+            this.hero = hero;
+            if (gameRenderer?.setHero) gameRenderer.setHero(hero);
+            entityManager.add(hero);
+            const savedGold = GameState.get('gold');
+            if (savedGold !== undefined && savedGold !== null) hero.inventory.gold = savedGold;
+            Logger.info('[Game] Hero spawned at', spawn.x, spawn.y);
+        } catch (err) {
+            Logger.error('[Game] Failed to spawn hero:', err);
+        }
     }
 
     /** Start the game loop */

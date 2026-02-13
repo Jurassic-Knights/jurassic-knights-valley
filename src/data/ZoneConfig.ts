@@ -56,10 +56,16 @@ const biomeZones: Record<string, ZoneDefinition> = Object.values(BiomeConfig.typ
 export const ZoneConfig: Record<string, ZoneDefinition> = {
     ...biomeZones,
     // --- TERRAIN ZONES (Overrides Biomes) ---
+    terrain_deep_water: {
+        id: 'terrain_deep_water',
+        category: ZoneCategory.TERRAIN,
+        name: 'Deep Water',
+        color: 0x1a5276
+    }, // Dark blue (lowest)
     terrain_water: {
         id: 'terrain_water',
         category: ZoneCategory.TERRAIN,
-        name: 'Deep Water',
+        name: 'Water',
         color: 0x2980b9
     }, // Blue
     terrain_coast: {
@@ -68,6 +74,12 @@ export const ZoneConfig: Record<string, ZoneDefinition> = {
         name: 'Coastal Grass',
         color: 0xf39c12
     }, // Sand Orange
+    terrain_dirtbank: {
+        id: 'terrain_dirtbank',
+        category: ZoneCategory.TERRAIN,
+        name: 'Dirtbank',
+        color: 0x8b6914
+    }, // Dirt brown
     terrain_river: {
         id: 'terrain_river',
         category: ZoneCategory.TERRAIN,
@@ -78,20 +90,38 @@ export const ZoneConfig: Record<string, ZoneDefinition> = {
         id: 'terrain_lowland',
         category: ZoneCategory.TERRAIN,
         name: 'Lowland',
+        color: 0x7cb342
+    }, // Bright green (flat, near sea)
+    terrain_land: {
+        id: 'terrain_land',
+        category: ZoneCategory.TERRAIN,
+        name: 'Land',
         color: 0x6b8e23
-    },
+    }, // Olive green (plains)
+    terrain_highland: {
+        id: 'terrain_highland',
+        category: ZoneCategory.TERRAIN,
+        name: 'Highland',
+        color: 0x8b9a46
+    }, // Yellow-green (elevated plains)
     terrain_hill: {
         id: 'terrain_hill',
         category: ZoneCategory.TERRAIN,
         name: 'Hill',
         color: 0x8b7355
-    },
+    }, // Brown (rolling hills)
+    terrain_midmountain: {
+        id: 'terrain_midmountain',
+        category: ZoneCategory.TERRAIN,
+        name: 'Mid-Mountain',
+        color: 0x6d6d6d
+    }, // Grey (mid-elevation)
     terrain_mountain: {
         id: 'terrain_mountain',
         category: ZoneCategory.TERRAIN,
         name: 'Mountain',
-        color: 0x696969
-    },
+        color: 0x4a4a4a
+    }, // Dark grey (peaks)
 
     // --- CIVILIZATION ZONES (WW1 Theme) ---
     civ_outpost: {
@@ -124,6 +154,18 @@ export const ZoneConfig: Record<string, ZoneDefinition> = {
         name: 'Supply Depot',
         color: 0xe67e22
     }, // Orange
+    civ_town: {
+        id: 'civ_town',
+        category: ZoneCategory.CIVILIZATION,
+        name: 'Town',
+        color: 0xcd853f
+    }, // Peru/orange-brown (stand out from terrain)
+    civ_bridge: {
+        id: 'civ_bridge',
+        category: ZoneCategory.CIVILIZATION,
+        name: 'Bridge',
+        color: 0x5d4e37
+    }, // Wood/stone bridge (road over river)
 
     // --- ENCOUNTER ZONES ---
     enc_safe: {

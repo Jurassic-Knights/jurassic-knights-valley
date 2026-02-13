@@ -4,6 +4,12 @@ export interface MapObject {
     y: number; // World Y
 }
 
+/** Map-level hero spawn position. Stored in serialized payload alongside chunks. */
+export interface HeroSpawnPosition {
+    x: number;
+    y: number;
+}
+
 export interface ChunkData {
     id: string; // x,y
     objects: MapObject[];
