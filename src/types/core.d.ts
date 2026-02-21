@@ -82,8 +82,6 @@ export interface EntityConfig {
     height?: number;
     color?: string;
     sprite?: string;
-    islandGridX?: number;
-    islandGridY?: number;
     collision?: {
         bounds?: {
             x?: number;
@@ -154,10 +152,6 @@ export interface IEntity {
 
     /** Biome the entity belongs to */
     biomeId?: string;
-    /** Island grid X coordinate */
-    islandGridX?: number;
-    /** Island grid Y coordinate */
-    islandGridY?: number;
     /** Group ID for pack behavior */
     groupId?: string | null;
     /** Whether entity uses pack aggro */
@@ -251,8 +245,6 @@ export interface ICombatEntity extends IEntity {
  * Entity tied to island grid (resources, nodes, trees)
  */
 export interface IResourceEntity extends IEntity {
-    islandGridX?: number;
-    islandGridY?: number;
     resourceType?: string;
     respawnTimer?: number;
     recalculateRespawnTimer?(): void;

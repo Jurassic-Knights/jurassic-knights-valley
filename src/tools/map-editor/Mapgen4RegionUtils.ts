@@ -4,8 +4,52 @@
  */
 
 import type { Mesh } from './mapgen4/types';
+import type Mapgen4Map from './mapgen4/map';
+import { MAPGEN4_MAP_SIZE, MAPGEN4_WATER_ELEVATION_THRESHOLDS } from './Mapgen4BiomeConfig';
 
-export const MAPGEN4_MAP_SIZE = 1000;
+export { MAPGEN4_MAP_SIZE };
+
+/** BFS from water; returns distance from nearest water (0 = water, 1 = adjacent, etc.). Runs until all reachable regions visited. */
+export function computeRegionDistanceFromWater(
+    mesh: Mesh,
+    map: Mapgen4Map,
+    _maxSteps: number
+): Map<number, number> {
+    const { waterMax } = MAPGEN4_WATER_ELEVATION_THRESHOLDS;
+    const water = new Set<number>();
+    for (let r = 0; r < mesh.numSolidRegions; r++) {
+        if (mesh.is_ghost_r(r)) continue;
+        const elev = map.elevation_r[r] ?? 0;
+        if (elev < waterMax) water.add(r);
+    }
+
+    const dist = new Map<number, number>();
+    for (const r of water) dist.set(r, 0);
+
+    const sides: number[] = [];
+    let frontier = Array.from(water);
+
+    while (frontier.length > 0) {
+        const next: number[] = [];
+        for (const r of frontier) {
+            const d = dist.get(r)!;
+            mesh.s_around_r(r, sides);
+            for (const s of sides) {
+                if (s < 0 || mesh.is_ghost_s(s)) continue;
+                const rA = mesh.r_begin_s(s);
+                const rB = mesh.r_end_s(s);
+                const rNext = rA === r ? rB : rA;
+                if (mesh.is_ghost_r(rNext) || dist.has(rNext)) continue;
+                dist.set(rNext, d + 1);
+                next.push(rNext);
+            }
+        }
+        frontier = next;
+    }
+
+    return dist;
+}
+
 export const MAPGEN4_GRID_CELL = 20;
 export const MAPGEN4_GRID_N = MAPGEN4_MAP_SIZE / MAPGEN4_GRID_CELL;
 

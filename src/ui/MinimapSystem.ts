@@ -18,6 +18,7 @@ import { DOMUtils } from '@core/DOMUtils';
 import { GameInstance } from '@core/Game';
 import type { IGame } from '../types/core.d';
 import { renderMinimap } from './MinimapRenderer';
+import { UIManager } from './UIManager';
 
 class MinimapSystem {
     // Property declarations

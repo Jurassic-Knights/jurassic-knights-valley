@@ -21,11 +21,9 @@ import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
 import { UICapture } from './UICapture';
-import * as UnlockPrompt from './UIManagerUnlockPrompt';
 import { GameInstance } from '@core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
 import { HUDController } from './controllers/HUDController';
-import type { Island } from '../types/world';
 import type { IUIPanel, IQuest } from '../types/ui';
 
 interface IFullscreenUI {
@@ -42,6 +40,7 @@ class UIManagerService {
         enter?(): void;
         exit?(): void;
     } | null = null;
+    isFooterOverridden: boolean = false;
 
     constructor() {
         Logger.debug('[UIManager]', 'Constructed');
@@ -54,7 +53,7 @@ class UIManagerService {
 
         // Listen for platform changes
         if (PlatformManager) {
-            PlatformManager.on('modechange', (config: { mode: string }) =>
+            PlatformManager.on('modechange', (config: any) =>
                 this.onPlatformChange(config)
             );
             this.onPlatformChange(PlatformManager.getConfig());
@@ -64,7 +63,6 @@ class UIManagerService {
             );
         }
 
-        UnlockPrompt.createUnlockPrompt(() => UnlockPrompt.tryUnlock());
         this.loadIcons();
 
         // Global click sound
@@ -100,7 +98,7 @@ class UIManagerService {
         if (btnMagnet) {
             btnMagnet.addEventListener('click', () => {
                 // Skip if footer is in override mode (equipment/inventory screen has taken over)
-                if ((btnMagnet as HTMLElement).dataset.footerOverride) return;
+                if (this.isFooterOverridden) return;
                 const eventName =
                     GameConstants && GameConstants.Events
                         ? GameConstants.Events.REQUEST_MAGNET
@@ -139,6 +137,19 @@ class UIManagerService {
                     if (data?.source) this.closeOtherFullscreenUIs(data.source);
                 }
             );
+
+            // Track when main UI panels override the footer
+            EventBus.on('UI_PANEL_OPENED', (data: { panelId: string }) => {
+                // Determine if this panel should override the footer (e.g., inventory/equipment)
+                if (data && ['inventory', 'equipment', 'crafting'].includes(data.panelId)) {
+                    this.isFooterOverridden = true;
+                }
+            });
+            EventBus.on('UI_PANEL_CLOSED', (data: { panelId: string }) => {
+                if (data && ['inventory', 'equipment', 'crafting'].includes(data.panelId)) {
+                    this.isFooterOverridden = false;
+                }
+            });
         }
 
         this.initialized = true;
@@ -164,9 +175,6 @@ class UIManagerService {
         });
     }
 
-    showUnlockPrompt(island: Island) { UnlockPrompt.showUnlockPrompt(island); }
-    hideUnlockPrompt() { UnlockPrompt.hideUnlockPrompt(); }
-    tryUnlock() { UnlockPrompt.tryUnlock(); }
 
     // === Platform/Layout ===
     onPlatformChange(_config: unknown) {

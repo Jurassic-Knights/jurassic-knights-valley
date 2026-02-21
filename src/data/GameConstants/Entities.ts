@@ -98,11 +98,7 @@ export const Quest = {
     NEXT_QUEST_DELAY_MS: 2000
 };
 
-export const IslandUpgrades = {
-    BASE_COSTS: { resourceSlots: 100, autoChance: 150, respawnTime: 75 },
-    CAPS: { resourceSlots: 15, autoChance: 80, respawnTime: 100 },
-    DEFAULT_BASE_COST: 100
-};
+
 
 export const DroppedItem = {
     MAGNET_SPEED: 100,

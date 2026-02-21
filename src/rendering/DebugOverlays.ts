@@ -24,7 +24,7 @@ const DebugOverlays = {
         ctx.strokeRect(0, 0, worldWidth, worldHeight);
 
         // DEBUG: Show Collision Blocks (Red)
-        const islandManager = game ? game.getSystem('IslandManager') as typeof import('../world/IslandManager').IslandManager : null;
+        const islandManager = game ? game.getSystem('WorldManager') as typeof import('../world/WorldManager').WorldManager : null;
         if (islandManager && islandManager.collisionBlocks) {
             ctx.strokeStyle = '#FF0000';
             ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';

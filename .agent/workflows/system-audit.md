@@ -16,54 +16,47 @@ description: How to conduct a full system audit of the codebase
 ### 2.1 Allocation Detection (Performance)
 Find `new` keyword inside update/render loops:
 ```bash
-grep -rn "new " src/systems/ --include="*.js" | grep -E "(update|render|draw)\s*\("
+grep -rn "new " src/systems/ --include="*.ts" | grep -E "(update|render|draw)\s*\("
 ```
 **Red flags:** `new Array`, `new Object`, `new Vector`, `new Date` in hot paths.
 
 ### 2.2 Asset Validation
-1. Extract all asset IDs from `src/core/AssetLoader.ts`
-2. For each ID, verify file exists in `assets/images/`
-3. Reverse: find images in `assets/` not registered in AssetLoader
-
-```bash
-# Find orphan images (not in AssetLoader)
-ls assets/images/**/*.png | xargs -I {} basename {} | sort > actual_assets.txt
-grep -oP '"[a-z_]+_t\d+_\d+"' src/core/AssetLoader.ts | sort > registered_assets.txt
-diff actual_assets.txt registered_assets.txt
+With the migration to dynamic TS-based arrays, run a custom Node script to check for orphan images. Example:
+```javascript
+import fs from 'fs';
+// Read AssetManifest.ts and AssetLoader.ts, grep through src/entities/**/*.ts 
+// Compare against all files in assets/images/
 ```
 
 ### 2.3 Orphan File Detection
-Find JS files not loaded in index.html:
+Find TS modules not imported by Vite:
 ```bash
-ls src/**/*.js | xargs -I {} basename {} | while read f; do
-  grep -q "$f" index.html || echo "ORPHAN: $f"
-done
+# Using ts-prune or similar static analysis tool to find dead code
+npx ts-prune | grep -v "(used in module)"
 ```
 
 ### 2.4 Coupling Analysis
 Find direct class calls that should use EventBus:
 ```bash
 # Bad: Direct system calls
-grep -rn "\.update\(" src/ --include="*.js" | grep -v "this\.update"
+grep -rn "\.update\(" src/ --include="*.ts" | grep -v "this\.update"
 
 # Good: EventBus usage
-grep -rn "EventBus.emit\|EventBus.on" src/ --include="*.js" | wc -l
+grep -rn "EventBus.emit\|EventBus.on" src/ --include="*.ts" | wc -l
 ```
 
 ### 2.5 Magic Number Scan
 Find hardcoded numbers in logic:
 ```bash
-grep -rn "[^a-zA-Z]\d\{2,\}[^x]" src/ --include="*.js" | grep -v "0x" | grep -v "//"
+grep -rn "[^a-zA-Z]\d\{2,\}[^x]" src/ --include="*.ts" | grep -v "0x" | grep -v "//"
 ```
 **Exceptions:** Line numbers, hex colors, common values (0, 1, 100).
 
-### 2.6 Entity JSON Validation
-Verify all entity JSONs have required fields:
-```javascript
-// Required fields by category:
-enemies: ["id", "name", "tier", "stats", "combat", "loot", "sfx"]
-nodes: ["id", "name", "tier", "drops", "sfx"]
-items: ["id", "name", "tier"]
+### 2.6 Entity TS Validation
+Verify all entity TypeScript configurations match interfaces:
+```bash
+# Verify all entities correctly export default config objects
+grep -L "export default" src/entities/**/*.ts
 ```
 
 ---

@@ -2,7 +2,7 @@
  * CollisionSystemCollision – Collision detection and trigger event handling.
  */
 import { Entity } from '../core/Entity';
-import { IslandManager } from '../world/IslandManager';
+import { WorldManager } from '../world/WorldManager';
 import { GameConstants } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
 import { getCollisionBounds, isHardCollision, isTriggerCollision } from './CollisionSystemUtils';
@@ -16,10 +16,10 @@ export function checkCollision(
     const col = entity.collision;
     const bounds = getBounds(entity);
 
-    if (IslandManager.isBlocked(bounds.x, bounds.y) ||
-        IslandManager.isBlocked(bounds.x + bounds.width, bounds.y) ||
-        IslandManager.isBlocked(bounds.x, bounds.y + bounds.height) ||
-        IslandManager.isBlocked(bounds.x + bounds.width, bounds.y + bounds.height)) {
+    if (WorldManager.isBlocked(bounds.x, bounds.y) ||
+        WorldManager.isBlocked(bounds.x + bounds.width, bounds.y) ||
+        WorldManager.isBlocked(bounds.x, bounds.y + bounds.height) ||
+        WorldManager.isBlocked(bounds.x + bounds.width, bounds.y + bounds.height)) {
         return true;
     }
 

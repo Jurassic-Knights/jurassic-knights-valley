@@ -6,10 +6,24 @@ import { ChunkData, MapObject } from './MapEditorTypes';
 import { ZoneConfig, ZoneCategory } from '@data/ZoneConfig';
 import { EditorContext } from './EditorContext';
 import { CommandManager } from './commands/CommandManager';
-import { PaintSplatCommand, SplatChange } from './commands/PaintSplatCommand';
+
 import { BatchObjectCommand } from './commands/BatchObjectCommand';
 import { MoveObjectCommand } from './commands/MoveObjectCommand';
+import { PlaceObjectCommand } from './commands/PlaceObjectCommand';
+import { RemoveObjectCommand } from './commands/RemoveObjectCommand';
+import { AddWaypointCommand } from './commands/AddWaypointCommand';
+import { RemoveWaypointCommand } from './commands/RemoveWaypointCommand';
+import { UpdateWaypointRegionCommand } from './commands/UpdateWaypointRegionCommand';
+import { AddManualTownCommand } from './commands/AddManualTownCommand';
+import { AddManualStationCommand } from './commands/AddManualStationCommand';
+import { RemoveManualTownCommand } from './commands/RemoveManualTownCommand';
+import { RemoveManualStationCommand } from './commands/RemoveManualStationCommand';
+import { SetManualTownAtCommand } from './commands/SetManualTownAtCommand';
+import { SetManualStationRegionCommand } from './commands/SetManualStationRegionCommand';
+import { SetHeroSpawnCommand } from './commands/SetHeroSpawnCommand';
+import { EditorCommand } from './commands/EditorCommand';
 import type { Mapgen4Param } from './Mapgen4Generator';
+import type { ManualStation, RailroadWaypointEntry } from '../../world/MapDataService';
 import {
     buildProceduralCache,
     drawProceduralToCanvas,
@@ -21,14 +35,25 @@ import {
 import { createZoomUI, updateZoomUI, updateCursorCoords } from './MapEditorUIOverlays';
 import { createScaleReferenceOverlay, type ScaleReferenceOverlay } from './MapEditorScaleReference';
 import { updateBrushCursor } from './MapEditorBrushCursor';
-import { handleZoom as handleZoomImpl, screenToWorld, toCanvasCoords } from './MapEditorInputHandlers';
+import { screenToWorld, toCanvasCoords } from './MapEditorInputHandlers';
+import { handleZoom as handleZoomViewport, resetZoomToGame } from './MapEditorViewport';
+import { createHistoryUI } from './MapEditorHistoryOverlay';
+import { findRegionAt } from './Mapgen4RegionUtils';
 import { executeTool } from './MapEditorToolUse';
 import { preloadRegistry } from './MapEditorRegistry';
 import { AssetLoader } from '@core/AssetLoader';
 import { createPixiApp } from './MapEditorMount';
 import { runMapEditorUpdate } from './MapEditorUpdate';
 import { EntityLoader } from '@entities/EntityLoader';
-import { computeZoomReset } from './MapEditorZoomReset';
+import {
+    SPLINE_HIT_THRESHOLD_WORLD,
+    isWorldPointOnSplinePath,
+    getNearestLegIndexForWorldPoint,
+    getWaypointInsertionIndex
+} from './MapEditorRailroadUtils';
+import { MapEditorDebugOverlay } from './MapEditorDebugOverlay';
+import { MapEditorWaypointManager } from './MapEditorWaypointManager';
+import { MapEditorManipulationHandles } from './MapEditorManipulationHandles';
 
 /**
  * MapEditorCore
@@ -59,12 +84,7 @@ export class MapEditorCore {
     private currentLayer: number = MapEditorConfig.Layers.GROUND;
 
     // Zone Editor State
-    private editingMode: 'object' | 'zone' | 'ground' = 'object';
-    private activeZoneCategory: ZoneCategory = ZoneCategory.BIOME;
-    private selectedZoneId: string | null = null;
-    private brushSize: number = 1; // 1 = 1x1, 2 = 3x3 approx (radius)
-    /** Zone IDs that are currently hidden. Empty = everything visible (default). */
-    private hiddenZoneIds: Set<string> = new Set();
+    private editingMode: 'object' | 'manipulation' = 'object';
 
     // Viewport State
     private zoom: number = 1.0; // Default to 100% (Gameplay parity)
@@ -72,7 +92,6 @@ export class MapEditorCore {
     private isPainting: boolean = false;
     private isSpacePressed: boolean = false;
     private lastMousePosition: { x: number; y: number } = { x: 0, y: 0 };
-    private currentSplatChanges: SplatChange[] = [];
     private currentObjectActions: {
         type: 'add' | 'remove';
         x: number;
@@ -86,9 +105,21 @@ export class MapEditorCore {
     private scaleReferenceOverlay: ScaleReferenceOverlay | null = null;
 
     /** Debug: show train station order numbers above each station polygon. */
-    private debugShowStationNumbers: boolean = false;
-    private debugOverlayContainer: PIXI.Container | null = null;
-    private debugConnectionGraphics: PIXI.Graphics | null = null;
+    private debugShowStationNumbers = false;
+    private debugShowSplinePath = false;
+
+    private readonly debugOverlay = new MapEditorDebugOverlay();
+    private readonly waypointManager = new MapEditorWaypointManager();
+    private readonly manipulationHandles = new MapEditorManipulationHandles();
+
+    /** Manual towns (region IDs). When non-empty, override procedural towns. */
+    private manualTowns: number[] = [];
+    /** Manual stations with order. When non-empty, railroad uses this order. */
+    private manualStations: ManualStation[] = [];
+    /** Waypoints per leg for railroad shaping. */
+    private railroadWaypoints: RailroadWaypointEntry[] = [];
+    /** Callback when manual data changes (e.g. dashboard refresh, save). */
+    private onManualDataChange: (() => void) | null = null;
 
     // Commands
     private commandManager: CommandManager;
@@ -98,18 +129,16 @@ export class MapEditorCore {
         Logger.info('[MapEditorCore] Instantiated');
     }
 
+    public executeCommand(cmd: EditorCommand): void {
+        this.commandManager.execute(cmd);
+    }
+
     public selectAsset(id: string, category: string) {
-        if (category === 'zone') {
-            this.selectedZoneId = id;
-            this.selectedAsset = null;
-            this.editingMode = 'zone';
-        } else {
-            this.selectedAsset = { id, category };
-            this.selectedZoneId = null; // Clear zone selection to avoid confusion
-            this.editingMode = 'object';
-            // Preload so the actual asset appears immediately on first placement (no placeholder)
-            AssetLoader.preloadImage(id);
-        }
+        this.selectedAsset = { id, category };
+        this.editingMode = 'object';
+        // Preload so the actual asset appears immediately on first placement (no placeholder)
+        AssetLoader.preloadImage(id);
+
         this.currentTool = 'brush';
         Logger.info(`[MapEditor] Selected: ${id} (${category})`);
     }
@@ -118,7 +147,7 @@ export class MapEditorCore {
         containerId: string,
         dataFetcher?: (
             category: string
-        ) => Promise<{ entities: Array<{ id: string; [key: string]: unknown }> }>
+        ) => Promise<{ entities: Array<{ id: string;[key: string]: unknown }> }>
     ): Promise<void> {
         if (this.isInitialized) return;
 
@@ -154,7 +183,6 @@ export class MapEditorCore {
         });
 
         this.isInitialized = true;
-        EditorContext.hiddenZoneIds = this.hiddenZoneIds;
 
         Logger.info('[MapEditorCore] Initialized successfully');
     }
@@ -181,56 +209,22 @@ export class MapEditorCore {
         };
     }
 
-    public setMode(mode: 'object' | 'zone' | 'ground') {
+    public setMode(mode: 'object' | 'manipulation') {
         this.editingMode = mode;
         Logger.info(`[MapEditor] Mode set to ${mode}`);
-    }
-    public setZoneCategory(cat: ZoneCategory) {
-        this.activeZoneCategory = cat;
-        EditorContext.activeZoneCategory = cat;
-        Logger.info(`[MapEditor] Zone Category: ${cat}`);
-    }
-    public setSelectedZone(id: string) {
-        this.selectedZoneId = id;
-        Logger.info(`[MapEditor] Zone Selected: ${id}`);
-    }
-    public setBrushSize(size: number) {
-        this.brushSize = size;
-        Logger.info(`[MapEditor] Brush Size: ${size}`);
-    }
-    public toggleZoneVisibility(id: string, visible: boolean) {
-        if (visible) this.hiddenZoneIds.delete(id);
-        else this.hiddenZoneIds.add(id);
-
-        EditorContext.hiddenZoneIds = this.hiddenZoneIds;
-        this.updateRailroadMeshesFromCache();
-        this.lastMainViewViewportKey = null;
-        this.refreshZoneRendering();
-    }
-
-    public toggleCategoryVisibility(cat: ZoneCategory, visible: boolean) {
-        Object.values(ZoneConfig).forEach((def) => {
-            if (def.category === cat) {
-                if (visible) this.hiddenZoneIds.delete(def.id);
-                else this.hiddenZoneIds.add(def.id);
-            }
-        });
-        EditorContext.hiddenZoneIds = this.hiddenZoneIds;
-        this.updateRailroadMeshesFromCache();
-        this.lastMainViewViewportKey = null;
-        this.refreshZoneRendering();
     }
 
     public setGridOpacity(opacity: number) { this.chunkManager?.setGridOpacity(opacity); }
 
     private createUIOverlays() {
         createZoomUI(this.container, () => this.resetZoomToGame());
+        createHistoryUI(this.container, this.commandManager);
         updateZoomUI(this.zoom);
     }
 
     private resetZoomToGame(): void {
         if (!this.app || !this.worldContainer) return;
-        const { zoom, worldX, worldY } = computeZoomReset({
+        const { zoom, worldX, worldY } = resetZoomToGame({
             canvasWidth: this.app.canvas.width,
             canvasHeight: this.app.canvas.height,
             worldContainer: this.worldContainer,
@@ -251,13 +245,14 @@ export class MapEditorCore {
         this.app.ticker.remove(this.update, this);
         this.scaleReferenceOverlay?.destroy();
         this.scaleReferenceOverlay = null;
+        this.debugOverlay.destroy();
+        this.waypointManager.destroy();
+        this.manipulationHandles.destroy();
         this.app.destroy(true, { children: true });
         this.app = this.container = this.worldContainer = this.chunkManager = null;
         this.proceduralCanvas = null;
         this.proceduralSprite = null;
         this.procCache = null;
-        this.debugOverlayContainer = null;
-        this.debugConnectionGraphics = null;
         this.railroadState = { railroadMeshContainer: null, railroadMeshes: [], cacheKey: null };
         this.lastMainViewViewportKey = null;
         this.isInitialized = false;
@@ -272,7 +267,64 @@ export class MapEditorCore {
         }
         this.drawProceduralToMainView();
         this.scaleReferenceOverlay?.update(this.zoom, this.app.canvas.width, this.app.canvas.height);
-        this.updateDebugOverlay();
+        try {
+            this.debugOverlay.update(this.getDebugOverlayHost());
+        } catch (err) {
+            Logger.warn('[MapEditor] debugOverlay.update error', err);
+        }
+        this.waypointManager.update(this.getWaypointManagerHost());
+        this.manipulationHandles.update(this.getManipulationHandlesHost());
+    }
+
+    private getDebugOverlayHost() {
+        return {
+            procCache: this.procCache,
+            worldContainer: this.worldContainer,
+            app: this.app,
+            zoom: this.zoom,
+            debugShowStationNumbers: this.debugShowStationNumbers,
+            debugShowSplinePath: this.debugShowSplinePath
+        };
+    }
+
+    private getWaypointManagerHost() {
+        return {
+            procCache: this.procCache,
+            worldContainer: this.worldContainer,
+            app: this.app,
+            zoom: this.zoom,
+            manualStations: this.manualStations,
+            railroadWaypoints: this.railroadWaypoints,
+            editingMode: this.editingMode,
+            debugShowStationNumbers: this.debugShowStationNumbers,
+            debugShowSplinePath: this.debugShowSplinePath,
+            onRemoveWaypoint: (leg: number, idx: number) => this.executeCommand(new RemoveWaypointCommand(this, leg, idx)),
+            onUpdateWaypointRegion: (leg: number, idx: number, regionId: number) => this.executeCommand(new UpdateWaypointRegionCommand(this, leg, idx, regionId)),
+            getRegionAtWorld: (wx: number, wy: number) => this.getRegionAtWorld(wx, wy)
+        };
+    }
+
+    private getManipulationHandlesHost() {
+        return {
+            procCache: this.procCache,
+            worldContainer: this.worldContainer,
+            app: this.app,
+            zoom: this.zoom,
+            manualTowns: this.manualTowns,
+            manualStations: this.manualStations,
+            editingMode: this.editingMode,
+            onSetTownAt: (idx: number, regionId: number) => {
+                this.executeCommand(new SetManualTownAtCommand(this, idx, regionId));
+                const param = this.getMapgen4Param();
+                if (param) void this.setProceduralPreview(param);
+            },
+            onSetStationRegion: (idx: number, regionId: number) => {
+                this.executeCommand(new SetManualStationRegionCommand(this, idx, regionId));
+                const param = this.getMapgen4Param();
+                if (param) void this.setProceduralPreview(param);
+            },
+            getRegionAtWorld: (wx: number, wy: number) => this.getRegionAtWorld(wx, wy)
+        };
     }
 
     private setupInputListeners(): void {
@@ -280,6 +332,7 @@ export class MapEditorCore {
         const canvas = this.app.canvas;
         canvas.addEventListener('wheel', (e) => this.handleZoom(e), { passive: false });
         canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+        canvas.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
         window.addEventListener('mousemove', (e) => this.handleMouseMove(e));
         window.addEventListener('mouseup', (e) => this.handleMouseUp(e));
         window.addEventListener('keydown', (e) => {
@@ -299,20 +352,22 @@ export class MapEditorCore {
     }
 
     private handleZoom(e: WheelEvent): void {
-        handleZoomImpl(
-            e,
-            this.app!,
-            this.worldContainer,
-            this.zoom,
-            (v) => { this.zoom = v; this.worldContainer?.scale.set(v); },
-            (x, y) => {
+        handleZoomViewport(e, {
+            app: this.app,
+            worldContainer: this.worldContainer,
+            zoom: this.zoom,
+            onZoomChange: (v) => {
+                this.zoom = v;
+                this.worldContainer?.scale.set(v);
+            },
+            onWorldContainerMove: (x, y) => {
                 if (this.worldContainer) {
                     this.worldContainer.x = x;
                     this.worldContainer.y = y;
                 }
             },
-            () => this.updateZoomUI()
-        );
+            onZoomUIUpdate: () => this.updateZoomUI()
+        });
     }
 
     private handleMouseDown(e: MouseEvent): void {
@@ -331,7 +386,7 @@ export class MapEditorCore {
                 fn(worldX, worldY);
                 return;
             }
-            this.isPainting = true;
+            if (this.editingMode !== 'manipulation') this.isPainting = true;
             this.useTool(e);
         }
     }
@@ -363,7 +418,7 @@ export class MapEditorCore {
                     worldY,
                     editingMode: this.editingMode,
                     currentTool: this.currentTool,
-                    brushSize: this.brushSize,
+                    brushSize: 1, // Default to 1
                     zoom: this.zoom,
                     shiftKey: e.shiftKey
                 });
@@ -374,11 +429,6 @@ export class MapEditorCore {
     private handleMouseUp(_e: MouseEvent): void {
         this.isDragging = false;
         this.isPainting = false;
-        if (this.currentSplatChanges.length > 0) {
-            this.commandManager.execute(new PaintSplatCommand(this.chunkManager!, [...this.currentSplatChanges]));
-            this.currentSplatChanges = [];
-            Logger.info('[MapEditor] Paint Stroke Recorded');
-        }
         if (this.currentObjectActions.length > 0) {
             this.commandManager.record(new BatchObjectCommand(this.chunkManager!, [...this.currentObjectActions]));
             this.currentObjectActions = [];
@@ -386,8 +436,122 @@ export class MapEditorCore {
         }
     }
 
+    /** Resolve world coords to mesh region ID. Returns null if no procedural cache. */
+    public getRegionAtWorld(worldX: number, worldY: number): number | null {
+        if (!this.procCache) return null;
+        const { mesh } = this.procCache.meshAndMap;
+        const { cellRegions } = this.procCache;
+        const worldSize = MapEditorConfig.WORLD_WIDTH_TILES * MapEditorConfig.TILE_SIZE;
+        const meshPerWorld = 1000 / worldSize;
+        const meshX = worldX * meshPerWorld;
+        const meshY = worldY * meshPerWorld;
+        return findRegionAt(mesh, meshX, meshY, cellRegions);
+    }
+
+    private handleContextMenu(e: MouseEvent): void {
+        e.preventDefault();
+        if (!this.app || !this.worldContainer) return;
+        const { worldX, worldY } = screenToWorld(e, this.app, this.worldContainer, this.zoom);
+
+        const waypointAt = this.waypointManager.getWaypointHandleAtWorldCoords(
+            { procCache: this.procCache, railroadWaypoints: this.railroadWaypoints },
+            worldX,
+            worldY
+        );
+        if (waypointAt !== null) {
+            const menu = document.createElement('div');
+            menu.style.cssText = 'position:fixed;background:#2d2d2d;border:1px solid #555;border-radius:6px;padding:4px 0;min-width:160px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.4);';
+            menu.style.left = `${e.clientX}px`;
+            menu.style.top = `${e.clientY}px`;
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.textContent = 'Remove spline waypoint';
+            item.style.cssText = 'display:block;width:100%;padding:8px 14px;border:none;background:transparent;color:#eee;text-align:left;cursor:pointer;font-size:13px;';
+            item.addEventListener('mouseenter', () => { item.style.background = '#3d3d3d'; });
+            item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
+            item.addEventListener('click', () => {
+                this.executeCommand(new RemoveWaypointCommand(this, waypointAt.legIndex, waypointAt.waypointIndex));
+                Logger.info('[MapEditor] Removed spline waypoint for leg', waypointAt.legIndex);
+                menu.remove();
+                document.removeEventListener('click', close);
+            });
+            menu.appendChild(item);
+            document.body.appendChild(menu);
+            const close = () => {
+                menu.remove();
+                document.removeEventListener('click', close);
+            };
+            requestAnimationFrame(() => document.addEventListener('click', close));
+            return;
+        }
+
+        const regionId = this.getRegionAtWorld(worldX, worldY);
+        if (regionId == null) return;
+        const menu = document.createElement('div');
+        menu.style.cssText = 'position:fixed;background:#2d2d2d;border:1px solid #555;border-radius:6px;padding:4px 0;min-width:140px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.4);';
+        menu.style.left = `${e.clientX}px`;
+        menu.style.top = `${e.clientY}px`;
+        const addItem = (label: string, onClick: () => void) => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.textContent = label;
+            item.style.cssText = 'display:block;width:100%;padding:8px 14px;border:none;background:transparent;color:#eee;text-align:left;cursor:pointer;font-size:13px;';
+            item.addEventListener('mouseenter', () => { item.style.background = '#3d3d3d'; });
+            item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
+            item.addEventListener('click', () => {
+                onClick();
+                menu.remove();
+            });
+            menu.appendChild(item);
+        };
+        addItem('Place town', () => {
+            this.executeCommand(new AddManualTownCommand(this, regionId));
+            Logger.info('[MapEditor] Placed town at region', regionId);
+        });
+        addItem('Place station', () => {
+            const nextOrder = this.manualStations.reduce((m, s) => Math.max(m, s.order), 0) + 1;
+            this.executeCommand(new AddManualStationCommand(this, regionId, nextOrder));
+            Logger.info('[MapEditor] Placed station', nextOrder, 'at region', regionId);
+        });
+        if (
+            isWorldPointOnSplinePath(
+                this.procCache,
+                worldX,
+                worldY,
+                SPLINE_HIT_THRESHOLD_WORLD
+            )
+        ) {
+            const leg = getNearestLegIndexForWorldPoint(
+                this.procCache,
+                (wx, wy) => this.getRegionAtWorld(wx, wy),
+                worldX,
+                worldY
+            );
+            if (leg !== null) {
+                addItem('Add spline point', () => {
+                    const insertIndex = getWaypointInsertionIndex(
+                        this.procCache,
+                        leg,
+                        this.railroadWaypoints,
+                        worldX,
+                        worldY
+                    );
+                    this.executeCommand(new AddWaypointCommand(this, leg, regionId, insertIndex));
+                    Logger.info('[MapEditor] Added spline point (waypoint) for leg', leg);
+                });
+            }
+        }
+        document.body.appendChild(menu);
+        const close = () => {
+            menu.remove();
+            document.removeEventListener('click', close);
+        };
+        requestAnimationFrame(() => document.addEventListener('click', close));
+    }
+
     private useTool(e: MouseEvent): void {
         if (!this.chunkManager || !this.worldContainer || !this.app) return;
+        if (this.editingMode === 'manipulation') return;
 
         const { worldX, worldY } = screenToWorld(e, this.app, this.worldContainer, this.zoom);
 
@@ -398,16 +562,13 @@ export class MapEditorCore {
             {
                 currentTool: this.currentTool,
                 editingMode: this.editingMode,
-                brushSize: this.brushSize,
-                selectedAsset: this.selectedAsset,
-                selectedZoneId: this.selectedZoneId,
-                activeZoneCategory: this.activeZoneCategory
+                brushSize: 1, // Defaulting as brush size is no longer tracked
+                selectedAsset: this.selectedAsset
             },
             this.chunkManager,
             this.commandManager,
             this.currentObjectActions,
             {
-                onSplatChanges: (changes) => this.currentSplatChanges.push(...changes),
                 onObjectAction: (action) => this.currentObjectActions.push(action)
             }
         );
@@ -431,123 +592,12 @@ export class MapEditorCore {
         return this.debugShowStationNumbers;
     }
 
-    private updateDebugOverlay(): void {
-        if (!this.worldContainer || !this.app) return;
+    public setDebugShowSplinePath(show: boolean): void {
+        this.debugShowSplinePath = show;
+    }
 
-        if (!this.debugShowStationNumbers) {
-            if (this.debugOverlayContainer) {
-                this.debugOverlayContainer.visible = false;
-            }
-            return;
-        }
-
-        if (!this.procCache || this.procCache.railroadPath.length < 2) {
-            if (this.debugOverlayContainer) this.debugOverlayContainer.visible = false;
-            return;
-        }
-
-        const path = this.procCache.railroadPath;
-        const mesh = this.procCache.meshAndMap.mesh;
-        const MESH_TO_WORLD = (MapEditorConfig.WORLD_WIDTH_TILES * MapEditorConfig.TILE_SIZE) / 1000;
-
-        const n = path.length - 1; // unique stations (path includes closing duplicate)
-        if (n < 1) return;
-
-        if (!this.debugOverlayContainer) {
-            this.debugOverlayContainer = new PIXI.Container();
-            this.debugOverlayContainer.zIndex = 10000;
-            this.debugOverlayContainer.eventMode = 'none';
-            this.app.stage.addChild(this.debugOverlayContainer);
-        }
-
-        this.debugOverlayContainer.visible = true;
-
-        const wc = this.worldContainer;
-        const screenX = (worldX: number) => wc.x + worldX * this.zoom;
-        const screenY = (worldY: number) => wc.y + worldY * this.zoom;
-
-        // Pre-compute screen positions for all unique stations
-        const stationScreenPos: { sx: number; sy: number }[] = [];
-        for (let i = 0; i < n; i++) {
-            const regionId = path[i];
-            const mx = mesh.x_of_r(regionId);
-            const my = mesh.y_of_r(regionId);
-            stationScreenPos.push({
-                sx: screenX(mx * MESH_TO_WORLD),
-                sy: screenY(my * MESH_TO_WORLD)
-            });
-        }
-
-        // --- Draw connection lines between consecutive stations ---
-        if (!this.debugConnectionGraphics) {
-            this.debugConnectionGraphics = new PIXI.Graphics();
-            this.debugConnectionGraphics.eventMode = 'none';
-            this.debugOverlayContainer.addChildAt(this.debugConnectionGraphics, 0);
-        }
-        const gfx = this.debugConnectionGraphics;
-        gfx.clear();
-
-        // Color palette for segments: cycle through distinct colors
-        const segColors = [0xff0000, 0x00ff00, 0x0088ff, 0xff8800, 0xff00ff, 0x00ffff, 0xffff00, 0x88ff00, 0xff0088, 0x8800ff];
-        for (let i = 0; i < path.length - 1; i++) {
-            const fromIdx = i;
-            const toIdx = (i + 1) % n; // wrap for the closing segment
-            const from = stationScreenPos[fromIdx < n ? fromIdx : 0];
-            const to = stationScreenPos[toIdx];
-            const color = segColors[i % segColors.length];
-
-            gfx.moveTo(from.sx, from.sy);
-            gfx.lineTo(to.sx, to.sy);
-            gfx.stroke({ width: 3, color, alpha: 0.8 });
-
-            // Draw small arrowhead at midpoint pointing in the direction of travel
-            const midX = (from.sx + to.sx) / 2;
-            const midY = (from.sy + to.sy) / 2;
-            const dx = to.sx - from.sx;
-            const dy = to.sy - from.sy;
-            const len = Math.hypot(dx, dy);
-            if (len > 10) {
-                const ux = dx / len;
-                const uy = dy / len;
-                const arrowSize = 10;
-                gfx.moveTo(midX - ux * arrowSize + uy * arrowSize * 0.5, midY - uy * arrowSize - ux * arrowSize * 0.5);
-                gfx.lineTo(midX, midY);
-                gfx.lineTo(midX - ux * arrowSize - uy * arrowSize * 0.5, midY - uy * arrowSize + ux * arrowSize * 0.5);
-                gfx.stroke({ width: 2, color, alpha: 1 });
-            }
-        }
-
-        // --- Draw station number labels ---
-        const FONT_SIZE = 24;
-        // Labels start after the graphics child (index 0 = graphics)
-        const labelStartIdx = 1;
-        const existingLabels = this.debugOverlayContainer.children.length - labelStartIdx;
-        for (let i = 0; i < n; i++) {
-            const { sx, sy } = stationScreenPos[i];
-            let label: PIXI.Text;
-            if (i < existingLabels) {
-                label = this.debugOverlayContainer.children[i + labelStartIdx] as PIXI.Text;
-            } else {
-                label = new PIXI.Text({
-                    text: String(i + 1),
-                    style: {
-                        fontFamily: 'monospace',
-                        fontSize: FONT_SIZE,
-                        fill: 0xffff00,
-                        stroke: { color: 0x000000, width: 2 }
-                    }
-                });
-                label.anchor.set(0.5, 1);
-                label.eventMode = 'none';
-                this.debugOverlayContainer.addChild(label);
-            }
-            label.text = String(i + 1);
-            label.position.set(sx, sy);
-            label.visible = true;
-        }
-        for (let i = n; i < existingLabels; i++) {
-            (this.debugOverlayContainer.children[i + labelStartIdx] as PIXI.Text).visible = false;
-        }
+    public getDebugShowSplinePath(): boolean {
+        return this.debugShowSplinePath;
     }
 
     public getChunkManager(): ChunkManager | null { return this.chunkManager; }
@@ -559,13 +609,13 @@ export class MapEditorCore {
         this.onNextClickAction = fn;
     }
 
-    private enterHeroSpawnPlacementMode(): void {
+    public enterHeroSpawnPlacementMode(): void {
         if (!this.chunkManager || !this.app || !this.worldContainer) return;
         const viewport = this.getViewportWorldRect();
         if (!viewport) return;
         const centerX = viewport.x + viewport.width / 2;
         const centerY = viewport.y + viewport.height / 2;
-        this.chunkManager.setHeroSpawn(centerX, centerY);
+        this.executeCommand(new SetHeroSpawnCommand(this.chunkManager, Math.round(centerX), Math.round(centerY)));
         Logger.info(`[MapEditor] Hero spawn set to view center: ${Math.round(centerX)}, ${Math.round(centerY)}`);
     }
 
@@ -592,9 +642,44 @@ export class MapEditorCore {
         return this.procCache?.param ?? null;
     }
 
-    /** Update procedural preview — builds cache when param changes. Awaits railroad asset preload so tracks render immediately. */
+    /** Update procedural preview — builds cache when param changes. Uses manual towns/stations/waypoints when set. */
     public async setProceduralPreview(param: Mapgen4Param): Promise<void> {
-        this.procCache = await buildProceduralCache(param);
+        const manual: import('./Mapgen4Generator').ManualTownsAndRailroads | undefined =
+            this.manualTowns.length > 0 ||
+                this.manualStations.length > 0 ||
+                this.railroadWaypoints.length > 0
+                ? {
+                    manualTowns: this.manualTowns.length > 0 ? [...this.manualTowns] : undefined,
+                    manualStations: this.manualStations.length > 0 ? this.manualStations.map((s) => ({ ...s })) : undefined,
+                    railroadWaypoints: this.railroadWaypoints.length > 0 ? this.railroadWaypoints.map((w) => ({ ...w })) : undefined
+                }
+                : undefined;
+        let newCache: import('./MapEditorProceduralRenderer').ProceduralCache;
+        try {
+            newCache = await buildProceduralCache(param, manual);
+        } catch (err) {
+            Logger.error('[MapEditor] buildProceduralCache failed (possibly OOM)', err);
+            return;
+        }
+        const wantedStations = this.manualStations.length >= 2;
+        const newPathEmpty = newCache.railroadPath.length < 2;
+        const hadPath = (this.procCache?.railroadPath?.length ?? 0) >= 2;
+        if (wantedStations && newPathEmpty && this.procCache && hadPath) {
+            this.procCache = {
+                ...newCache,
+                railroadPath: this.procCache.railroadPath,
+                railroadCrossings: this.procCache.railroadCrossings,
+                railroadStationIds: this.procCache.railroadStationIds
+            };
+        } else {
+            this.procCache = newCache;
+        }
+        if (this.railroadState.railroadMeshContainer) {
+            this.railroadState.railroadMeshContainer.destroy({ children: true });
+            this.railroadState.railroadMeshContainer = null;
+        }
+        for (const m of this.railroadState.railroadMeshes) m.destroy();
+        this.railroadState = { railroadMeshContainer: null, railroadMeshes: [], cacheKey: null };
         this.updateRailroadMeshesFromCache();
         this.lastMainViewViewportKey = null;
     }
@@ -608,7 +693,7 @@ export class MapEditorCore {
         viewport?: { x: number; y: number; width: number; height: number }
     ): boolean {
         if (!this.procCache) return false;
-        return drawProceduralToCanvas(this.procCache, canvas, viewport, this.hiddenZoneIds);
+        return drawProceduralToCanvas(this.procCache, canvas, viewport, EditorContext.hiddenZoneIds);
     }
 
     /** Update railroad PIXI meshes when cache or visibility changes. Uses spline mesh for gapless rendering. */
@@ -617,7 +702,7 @@ export class MapEditorCore {
         this.railroadState = updateRailroadMeshes(
             this.procCache,
             this.worldContainer,
-            this.hiddenZoneIds,
+            EditorContext.hiddenZoneIds,
             this.railroadState,
             true
         );
@@ -626,8 +711,9 @@ export class MapEditorCore {
     /** Draw procedural map to offscreen canvas; display via PIXI sprite on stage. */
     private drawProceduralToMainView(): void {
         if (!this.procCache || !this.proceduralCanvas || !this.proceduralSprite || !this.app || !this.worldContainer) return;
-        const w = this.app.canvas.width;
-        const h = this.app.canvas.height;
+        const maxSize = MapEditorConfig.MAX_PROCEDURAL_CANVAS_SIZE;
+        const w = Math.min(this.app.canvas.width, maxSize);
+        const h = Math.min(this.app.canvas.height, maxSize);
         if (w < 1 || h < 1) return;
 
         const { vpX, vpY, vpW, vpH } = worldToMeshViewport(
@@ -637,7 +723,7 @@ export class MapEditorCore {
             h
         );
         if (!Number.isFinite(vpX + vpY + vpW + vpH) || vpW < 1 || vpH < 1) return;
-        const visKey = [...this.hiddenZoneIds].sort().join(',');
+        const visKey = [...EditorContext.hiddenZoneIds].sort().join(',');
         const vpKey = `${Math.round(vpX * 10) / 10},${Math.round(vpY * 10) / 10},${Math.round(vpW * 10) / 10},${Math.round(vpH * 10) / 10}|${visKey}`;
         if (vpKey === this.lastMainViewViewportKey) return;
         this.lastMainViewViewportKey = vpKey;
@@ -657,7 +743,7 @@ export class MapEditorCore {
             this.procCache,
             this.proceduralCanvas,
             { x: vpX, y: vpY, width: vpW, height: vpH },
-            this.hiddenZoneIds,
+            EditorContext.hiddenZoneIds,
             true
         );
 
@@ -679,12 +765,137 @@ export class MapEditorCore {
         this.worldContainer.x = cx - worldX * this.zoom;
         this.worldContainer.y = cy - worldY * this.zoom;
     }
-    public serialize(): { version: number; chunks: ChunkData[] } | null {
-        return this.chunkManager?.serialize() ?? null;
+    public serialize(): {
+        version: number;
+        chunks: ChunkData[];
+        heroSpawn?: import('./MapEditorTypes').HeroSpawnPosition;
+        manualTowns?: number[];
+        manualStations?: import('../../world/MapDataService').ManualStation[];
+        railroadWaypoints?: import('../../world/MapDataService').RailroadWaypointEntry[];
+    } | null {
+        const base = this.chunkManager?.serialize() ?? null;
+        if (!base) return null;
+        const out: any = { ...base };
+        if (this.manualTowns.length > 0) out.manualTowns = [...this.manualTowns];
+        if (this.manualStations.length > 0) out.manualStations = this.manualStations.map((s) => ({ ...s }));
+        if (this.railroadWaypoints.length > 0) out.railroadWaypoints = this.railroadWaypoints.map((w) => ({ ...w }));
+        return out;
     }
-    public loadData(data: { version?: number; chunks?: ChunkData[] }): void {
+    public loadData(data: {
+        version?: number;
+        chunks?: ChunkData[];
+        heroSpawn?: import('./MapEditorTypes').HeroSpawnPosition;
+        manualTowns?: number[];
+        manualStations?: import('../../world/MapDataService').ManualStation[];
+        railroadWaypoints?: import('../../world/MapDataService').RailroadWaypointEntry[];
+    }): void {
         this.chunkManager?.deserialize(data);
         this.commandManager.clear();
+        this.manualTowns = Array.isArray(data.manualTowns) ? [...data.manualTowns] : [];
+        this.manualStations = Array.isArray(data.manualStations)
+            ? data.manualStations.map((s) => ({ regionId: s.regionId, order: s.order }))
+            : [];
+        this.railroadWaypoints = Array.isArray(data.railroadWaypoints)
+            ? data.railroadWaypoints.map((w) => ({ legIndex: w.legIndex, regionId: w.regionId }))
+            : [];
+        this.onManualDataChange?.();
+    }
+
+    public setOnManualDataChange(fn: (() => void) | null): void {
+        this.onManualDataChange = fn;
+    }
+    public getManualTowns(): number[] {
+        return [...this.manualTowns];
+    }
+    public getManualStations(): ManualStation[] {
+        return this.manualStations.map((s) => ({ ...s }));
+    }
+    public getRailroadWaypoints(): RailroadWaypointEntry[] {
+        return this.railroadWaypoints.map((w) => ({ ...w }));
+    }
+    public addManualTown(regionId: number): void {
+        if (this.manualTowns.includes(regionId)) return;
+        this.manualTowns.push(regionId);
+        this.onManualDataChange?.();
+    }
+    public removeManualTown(regionId: number): void {
+        this.manualTowns = this.manualTowns.filter((r) => r !== regionId);
+        this.onManualDataChange?.();
+    }
+    public addManualStation(regionId: number, order: number): void {
+        const next = order <= 0
+            ? (this.manualStations.reduce((m, s) => Math.max(m, s.order), 0) + 1)
+            : order;
+        this.manualStations.push({ regionId, order: next });
+        this.onManualDataChange?.();
+    }
+    public setStationOrder(index: number, order: number): void {
+        if (index < 0 || index >= this.manualStations.length) return;
+        this.manualStations[index] = { ...this.manualStations[index]!, order };
+        this.onManualDataChange?.();
+    }
+    /** Move town at index to a new polygon. Removes duplicate if regionId already exists at another index. */
+    public setManualTownAt(index: number, regionId: number): void {
+        if (index < 0 || index >= this.manualTowns.length) return;
+        const out: number[] = [];
+        for (let i = 0; i < this.manualTowns.length; i++) {
+            if (i === index) {
+                out.push(regionId);
+            } else if (this.manualTowns[i] !== regionId) {
+                out.push(this.manualTowns[i]);
+            }
+        }
+        this.manualTowns = out;
+        this.onManualDataChange?.();
+    }
+    /** Move station at index to a new polygon (keeps order). */
+    public setManualStationRegion(index: number, regionId: number): void {
+        if (index < 0 || index >= this.manualStations.length) return;
+        this.manualStations[index] = { ...this.manualStations[index]!, regionId };
+        this.onManualDataChange?.();
+    }
+    public removeManualStation(regionId: number): void {
+        this.manualStations = this.manualStations.filter((s) => s.regionId !== regionId);
+        this.onManualDataChange?.();
+    }
+    public addWaypoint(legIndex: number, regionId: number, insertIndex?: number): void {
+        const waypoint = { legIndex, regionId };
+        if (insertIndex !== undefined) {
+            let legCount = 0;
+            let inserted = false;
+            for (let i = 0; i < this.railroadWaypoints.length; i++) {
+                if (this.railroadWaypoints[i]!.legIndex === legIndex) {
+                    if (legCount === insertIndex) {
+                        this.railroadWaypoints.splice(i, 0, waypoint);
+                        inserted = true;
+                        break;
+                    }
+                    legCount++;
+                }
+            }
+            if (!inserted) {
+                this.railroadWaypoints.push(waypoint);
+            }
+        } else {
+            this.railroadWaypoints.push(waypoint);
+        }
+        this.onManualDataChange?.();
+    }
+    public updateWaypointRegion(legIndex: number, waypointIndex: number, regionId: number): void {
+        const entries = this.railroadWaypoints.filter((w) => w.legIndex === legIndex);
+        if (waypointIndex < 0 || waypointIndex >= entries.length) return;
+        const globalIdx = this.railroadWaypoints.indexOf(entries[waypointIndex]!);
+        if (globalIdx >= 0) this.railroadWaypoints[globalIdx] = { legIndex, regionId };
+        this.onManualDataChange?.();
+    }
+    public removeWaypoint(legIndex: number, waypointIndex: number): void {
+        const entries = this.railroadWaypoints
+            .map((w, i) => ({ w, i }))
+            .filter(({ w }) => w.legIndex === legIndex);
+        if (waypointIndex < 0 || waypointIndex >= entries.length) return;
+        const globalIdx = entries[waypointIndex]!.i;
+        this.railroadWaypoints.splice(globalIdx, 1);
+        this.onManualDataChange?.();
     }
 
     private refreshZoneRendering() { this.chunkManager?.refreshZones(); }

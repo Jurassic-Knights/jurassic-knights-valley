@@ -3,7 +3,7 @@
  */
 import { Enemy } from './EnemyCore';
 import { GameConstants } from '@data/GameConstants';
-import { IslandManager } from '../world/IslandManager';
+import { WorldManager } from '../world/WorldManager';
 import { pathfindingSystem as PathfindingSystem } from '@systems/PathfindingSystem';
 import { MathUtils } from '@core/MathUtils';
 
@@ -77,7 +77,7 @@ export function setupEnemyPathBehavior() {
         const newX = this.x + (dx / dist) * moveSpeed;
         const newY = this.y + (dy / dist) * moveSpeed;
 
-        const im = IslandManager;
+        const im = WorldManager;
         if (!im || (im.isWalkable(newX, this.y) && !im.isBlocked(newX, this.y))) this.x = newX;
         if (!im || (im.isWalkable(this.x, newY) && !im.isBlocked(this.x, newY))) this.y = newY;
         this.facingRight = dx > 0;

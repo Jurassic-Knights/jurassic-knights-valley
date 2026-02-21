@@ -10,13 +10,13 @@
 
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
+import * as PIXI from 'pixi.js';
 import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4Generator';
-import { drawRailroadSpline } from '../tools/map-editor/Mapgen4RailroadPreview';
-import { RAILROAD_TILE_WORLD_PX } from '../tools/map-editor/Mapgen4SplineUtils';
+import { createRailroadMeshes } from '../tools/map-editor/RailroadMeshRenderer';
 import { MapEditorConfig } from '../tools/map-editor/MapEditorConfig';
 import type { Mesh } from '../tools/map-editor/mapgen4/types';
 import type Mapgen4Map from '../tools/map-editor/mapgen4/map';
-import type { Mapgen4Param, RailroadCrossing } from '../tools/map-editor/Mapgen4Param';
+import type { Mapgen4Param, RailroadCrossing, TownSite, RoadSegment } from '../tools/map-editor/Mapgen4Param';
 import type { IGame, IViewport } from '../types/core';
 
 const MESH_SIZE = 1000;
@@ -26,10 +26,11 @@ type WorldManagerLike = {
     getMesh: () => { mesh: Mesh; map: Mapgen4Map } | null;
     getMapgen4Param: () => Mapgen4Param;
     getCachedTownsAndRoads?: () => {
-        towns: unknown[];
-        roadSegments: unknown[];
+        towns: TownSite[];
+        roadSegments: RoadSegment[];
         railroadPath: number[];
         railroadCrossings: RailroadCrossing[];
+        railroadStationIds: number[];
     };
 };
 
@@ -37,6 +38,11 @@ class WorldRendererMapgen4 {
     game: IGame | null = null;
     _worldManager: WorldManagerLike | null = null;
     private _loggedOnce = false;
+    private _pixiApp: PIXI.Application | null = null;
+    private _pixiAppInitPromise: Promise<void> | null = null;
+    private _railroadContainer: PIXI.Container | null = null;
+    private _lastRailroadPath: string = '';
+    private _railroadMeshes: PIXI.Mesh[] = [];
 
     constructor() {
         Logger.info('[WorldRendererMapgen4] Constructed');
@@ -44,9 +50,9 @@ class WorldRendererMapgen4 {
 
     init(game: IGame) {
         this.game = game;
-        this._worldManager = game.getSystem('IslandManager') as typeof this._worldManager;
+        this._worldManager = game.getSystem('WorldManager') as typeof this._worldManager;
         if (!this._worldManager) {
-            this._worldManager = Registry?.get('IslandManager') as typeof this._worldManager;
+            this._worldManager = Registry?.get('WorldManager') as typeof this._worldManager;
         }
         Logger.info('[WorldRendererMapgen4] Initialized');
     }
@@ -68,12 +74,13 @@ class WorldRendererMapgen4 {
 
         if (!ctx?.canvas) return;
 
-        const { towns, roadSegments, railroadPath, railroadCrossings } =
+        const { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds = [] } =
             this._worldManager.getCachedTownsAndRoads?.() ?? {
                 towns: [],
                 roadSegments: [],
                 railroadPath: [],
-                railroadCrossings: []
+                railroadCrossings: [],
+                railroadStationIds: []
             };
 
         // One-time diagnostic log to confirm railroad data is present
@@ -103,6 +110,7 @@ class WorldRendererMapgen4 {
             roadSegments,
             railroadPath,
             railroadCrossings,
+            railroadStationIds,
             new Set<string>(), // no hidden zones in game
             true // skipRailroad — drawn explicitly below
         );
@@ -110,7 +118,7 @@ class WorldRendererMapgen4 {
         // 2. Railroad — separate pass, directly on game canvas
         if (railroadPath.length >= 2) {
             this.renderRailroad(
-                ctx, mesh, map, param, railroadPath, railroadCrossings,
+                ctx, mesh, map, param, railroadPath, railroadCrossings, railroadStationIds,
                 vpX, vpY, vpW, vpH
             );
         }
@@ -128,6 +136,7 @@ class WorldRendererMapgen4 {
         param: Mapgen4Param,
         railroadPath: number[],
         railroadCrossings: RailroadCrossing[],
+        railroadStationIds: number[],
         vpX: number,
         vpY: number,
         vpW: number,
@@ -146,39 +155,72 @@ class WorldRendererMapgen4 {
             y: (y - vpY) * scaleY
         });
 
-        const WORLD_WIDTH_PX = MapEditorConfig.WORLD_WIDTH_TILES * MapEditorConfig.TILE_SIZE;
-        const tileWidthCanvas = RAILROAD_TILE_WORLD_PX * scale * (MESH_SIZE / WORLD_WIDTH_PX);
+        // Initialize PIXI App asynchronously if needed for WebGL context to render true continuous UV meshes
+        if (!this._pixiApp && !this._pixiAppInitPromise) {
+            this._pixiApp = new PIXI.Application();
 
-        const margin = 80;
-        const vpMinX = vpX - margin;
-        const vpMaxX = vpX + vpW + margin;
-        const vpMinY = vpY - margin;
-        const vpMaxY = vpY + vpH + margin;
+            // PIXI v8 requires async initialization. Catch errors to prevent silent fails.
+            this._pixiAppInitPromise = this._pixiApp.init({
+                width: w,
+                height: h,
+                backgroundAlpha: 0,
+                autoStart: false,
+                preserveDrawingBuffer: true
+            }).then(() => {
+                this._railroadContainer = new PIXI.Container();
+                this._pixiApp!.stage.addChild(this._railroadContainer);
+            }).catch(err => {
+                Logger.error('[WorldRendererMapgen4] PIXI Railroad Renderer init failed:', err);
+            });
+        }
 
-        try {
-            drawRailroadSpline(
-                ctx,
+        // The game render loop is synchronous. Fall back to simple lines while PIXI mounts in the background
+        if (!this._pixiApp || !this._railroadContainer || !this._pixiApp.canvas) {
+            this.renderRailroadFallbackLines(ctx, mesh, railroadPath, toCanvas);
+            return;
+        }
+
+        // Ensure canvas stays synchronized with game viewport resizes
+        if (this._pixiApp.canvas.width !== w || this._pixiApp.canvas.height !== h) {
+            this._pixiApp.renderer.resize(w, h);
+        }
+
+        // Rebuild mesh geometry if the path changes
+        const currentPathStr = railroadPath.join(',');
+        if (this._lastRailroadPath !== currentPathStr) {
+            this._lastRailroadPath = currentPathStr;
+
+            // Clean up old meshes to prevent WebGL buffer leaks
+            for (const m of this._railroadMeshes) {
+                m.destroy({ children: true, texture: false });
+            }
+            this._railroadContainer!.removeChildren();
+
+            this._railroadMeshes = createRailroadMeshes(
                 mesh,
                 map,
                 railroadPath,
-                railroadCrossings,
-                param.meshSeed,
-                toCanvas,
-                scale,
-                tileWidthCanvas,
-                vpMinX,
-                vpMaxX,
-                vpMinY,
-                vpMaxY
+                this._railroadContainer!,
+                railroadStationIds
             );
-        } catch (err) {
-            Logger.warn('[WorldRendererMapgen4] Railroad spline render error:', err);
         }
 
-        // Fallback: if the spline fails to produce visible output, draw simple
-        // thick lines between stations so the railroad is always visible.
-        // This also serves as a debug layer to confirm the data is correct.
-        this.renderRailroadFallbackLines(ctx, mesh, railroadPath, toCanvas);
+        if (this._railroadMeshes.length > 0) {
+            // Transform the container to match the viewport camera.
+            // Mapgen4 coordinates (rx, ry) in mesh space (0-1000).
+            this._railroadContainer!.scale.set(scaleX, scaleY);
+            this._railroadContainer!.position.set(-vpX * scaleX, -vpY * scaleY);
+
+            // Render the PIXI stage to its internal WebGL canvas
+            this._pixiApp.renderer.render(this._pixiApp.stage);
+
+            // Composite the PIXI WebGL canvas onto the Game's native 2D canvas
+            // PIXI v8 uses .canvas instead of .view
+            ctx.drawImage(this._pixiApp.canvas, 0, 0);
+        } else {
+            // Fallback: if the spline fails to produce visible output
+            this.renderRailroadFallbackLines(ctx, mesh, railroadPath, toCanvas);
+        }
     }
 
     /**

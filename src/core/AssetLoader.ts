@@ -17,6 +17,8 @@ import { GameConstants } from '@data/GameConstants';
 import { ParticleOptions } from '../types/vfx';
 import { constructPathFromId } from './AssetLoaderPathPatterns';
 
+const SESSION_CACHE_BUSTER = Date.now();
+
 const AssetLoader = {
     cache: new Map(),
     basePath: '/assets/',
@@ -24,29 +26,41 @@ const AssetLoader = {
     // Threshold for white pixel detection (250-255 catches near-white)
     WHITE_THRESHOLD: GameConstants.Rendering.WHITE_BG_THRESHOLD,
 
+    /** Skip white removal when image exceeds this pixel count to avoid getImageData/toDataURL OOM. */
+    MAX_PIXELS_FOR_WHITE_REMOVAL: 2048 * 2048,
+
     /**
      * Remove white background from an image
      * Used as fallback when _clean.png doesn't exist
+     * Skips processing for very large images and catches getImageData OOM.
      * @param {HTMLImageElement} img - Source image
-     * @returns {HTMLCanvasElement} - Canvas with transparent background
+     * @returns {HTMLCanvasElement} - Canvas with transparent background (or unchanged if skipped)
      */
     _removeWhiteBackground(img: HTMLImageElement): HTMLCanvasElement {
         const canvas = DOMUtils.createCanvas(img.width, img.height);
         const ctx = canvas.getContext('2d')!;
         ctx.drawImage(img, 0, 0);
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const threshold = this.WHITE_THRESHOLD;
-
-        for (let i = 0; i < data.length; i += 4) {
-            // If R, G, B are all >= threshold, make transparent
-            if (data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold) {
-                data[i + 3] = 0; // Set alpha to 0
-            }
+        const pixels = img.width * img.height;
+        if (pixels > this.MAX_PIXELS_FOR_WHITE_REMOVAL) {
+            return canvas;
         }
 
-        ctx.putImageData(imageData, 0, 0);
+        try {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const threshold = this.WHITE_THRESHOLD;
+
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold) {
+                    data[i + 3] = 0;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        } catch {
+            // getImageData can throw RangeError (OOM); return canvas with image only
+        }
         return canvas;
     },
 
@@ -65,33 +79,37 @@ const AssetLoader = {
         return true;
     },
 
-    /**
-     * Get image path by ID
-     * Priority: EntityRegistry → static assets → pattern-based fallback → placeholder
-     * @param {string} id - Asset ID
-     * @returns {string} - File path
-     */
     getImagePath(id: string) {
+        let finalPath = '';
+
         // 1. Try static assets first (fastest)
         if (this.staticAssets[id]) {
-            return this.basePath + this.staticAssets[id];
+            finalPath = this.basePath + this.staticAssets[id];
+        } else {
+            // 2. Try EntityRegistry lookup
+            const entityPath = this._getEntityImagePath(id);
+            if (entityPath) {
+                finalPath = this.basePath + entityPath;
+            } else {
+                // 3. Pattern-based fallback (construct path from ID conventions)
+                const patternPath = constructPathFromId(id);
+                if (patternPath) {
+                    finalPath = this.basePath + patternPath;
+                } else {
+                    // 4. Fallback to placeholder
+                    Logger.warn(`[AssetLoader] Unknown asset ID: ${id}`);
+                    finalPath = this.basePath + 'images/PH.png';
+                }
+            }
         }
 
-        // 2. Try EntityRegistry lookup
-        const entityPath = this._getEntityImagePath(id);
-        if (entityPath) {
-            return this.basePath + entityPath;
+        // In development mode, bust browser cache per session (on page refresh)
+        // so edits to source files always show up immediately when developers refresh
+        if (import.meta.env && import.meta.env.DEV) {
+            return finalPath + `?v=${SESSION_CACHE_BUSTER}`;
         }
 
-        // 3. Pattern-based fallback (construct path from ID conventions)
-        const patternPath = constructPathFromId(id);
-        if (patternPath) {
-            return this.basePath + patternPath;
-        }
-
-        // 4. Fallback to placeholder
-        Logger.warn(`[AssetLoader] Unknown asset ID: ${id}`);
-        return this.basePath + 'images/PH.png';
+        return finalPath;
     },
 
     /**
@@ -210,12 +228,20 @@ const AssetLoader = {
                 if (onLoad) onLoad();
                 return;
             }
+            // Skip processing for large images to avoid getImageData/toDataURL OOM
+            const pixels = img.width * img.height;
+            if (pixels > self.MAX_PIXELS_FOR_WHITE_REMOVAL) {
+                if (onLoad) onLoad();
+                return;
+            }
 
             // Remove white background from ALL images
             const processed = self._removeWhiteBackground(img);
-            // Replace image source with processed canvas data
-            img.src = processed.toDataURL('image/png');
-            // Don't retrigger onload for the data URL (handled by startsWith check above)
+            try {
+                img.src = processed.toDataURL('image/png');
+            } catch {
+                // toDataURL can OOM on large canvases; keep original img
+            }
             if (onLoad) onLoad();
         };
 

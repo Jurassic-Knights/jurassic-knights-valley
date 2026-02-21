@@ -10,6 +10,10 @@ import * as Lookup from '@entities/EntityLoaderLookup';
 /** Label for object sprites so we can find and refresh them on entity display updates */
 export const OBJECT_SPRITE_LABEL = 'map_object';
 
+/**
+ * ObjectSystem — Object placement and rendering for map editor chunks.
+ * Renders entity sprites at world positions using EntityRegistry sizes.
+ */
 export class ObjectSystem {
 
     public addObject(data: ChunkData, assetId: string, x: number, y: number) {

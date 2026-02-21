@@ -36,8 +36,7 @@ export async function computeTileTexture(
     textureCache: Record<string, PIXI.Texture>,
     renderer: GroundBlendRenderer
 ): Promise<PIXI.Texture> {
-    const { CHUNK_SIZE } = MapEditorConfig;
-    const SPLAT_RES = CHUNK_SIZE * 4;
+    const { CHUNK_SIZE, SPLAT_RES } = MapEditorConfig;
 
     let maxWeight = 0;
     const weights = new Uint8ClampedArray(36); // 6x6

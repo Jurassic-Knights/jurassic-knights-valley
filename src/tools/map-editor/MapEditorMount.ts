@@ -68,9 +68,11 @@ export async function createPixiApp(
 
     // Offscreen canvas for procedural map — displayed as a PIXI sprite.
     // Use CanvasSource with dynamic:true so texture re-uploads each frame.
+    // Cap dimensions to avoid OOM on 4K+ displays.
+    const maxSize = MapEditorConfig.MAX_PROCEDURAL_CANVAS_SIZE;
     const proceduralCanvas = document.createElement('canvas');
-    proceduralCanvas.width = Math.max(1, app.canvas.width);
-    proceduralCanvas.height = Math.max(1, app.canvas.height);
+    proceduralCanvas.width = Math.max(1, Math.min(app.canvas.width, maxSize));
+    proceduralCanvas.height = Math.max(1, Math.min(app.canvas.height, maxSize));
     const canvasSource = new PIXI.CanvasSource({ resource: proceduralCanvas, dynamic: true });
     const proceduralTexture = new PIXI.Texture({ source: canvasSource });
     const proceduralSprite = new PIXI.Sprite(proceduralTexture);

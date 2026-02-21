@@ -15,8 +15,7 @@ export function regenerateSplats(
     worldData: Map<string, ChunkData>,
     architect: ProceduralArchitect
 ): void {
-    const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
-    const SPLAT_RES = CHUNK_SIZE * 4;
+    const { CHUNK_SIZE, TILE_SIZE, SPLAT_RES } = MapEditorConfig;
 
     for (const data of worldData.values()) {
         data.splatMap = Array.from(new Uint8ClampedArray(SPLAT_RES * SPLAT_RES));
@@ -39,7 +38,7 @@ export function regenerateSplats(
     const splats = architect.evaluateSplats(allTiles, worldData);
 
     const SPLAT_CELL_SIZE = TILE_SIZE / 4;
-    const SPLATS_PER_CHUNK = CHUNK_SIZE * 4;
+    const SPLATS_PER_CHUNK = SPLAT_RES;
 
     for (const op of splats) {
         const centerSplatX = Math.floor(op.x / SPLAT_CELL_SIZE);

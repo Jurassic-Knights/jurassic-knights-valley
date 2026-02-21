@@ -11,6 +11,9 @@ import {
     BIOME_PREVIEW_PALETTE
 } from './Mapgen4BiomeConfig';
 
+/** Max polygon steps from water for terrain_coast. Prevents coastal grass extending too far inland. */
+export const COAST_MAX_POLYGON_STEPS = 3;
+
 /** Central mapping: mapgen4 elevation/position/river → editor zones. */
 export function mapgen4ToZones(
     elevation: number,
@@ -18,7 +21,8 @@ export function mapgen4ToZones(
     isRiver: boolean,
     x: number,
     y: number,
-    meshSeed: number
+    meshSeed: number,
+    distanceFromWater?: number
 ): Record<string, string> {
     const zones: Record<string, string> = {};
     const biome = positionToBiome(x, y, meshSeed, elevation);
@@ -30,7 +34,9 @@ export function mapgen4ToZones(
         zones['terrain'] = 'terrain_water';
         zones['biome'] = biome;
     } else if (elevation < coastMax) {
-        zones['terrain'] = 'terrain_coast';
+        const withinCoastRange =
+            distanceFromWater !== undefined && distanceFromWater <= COAST_MAX_POLYGON_STEPS;
+        zones['terrain'] = withinCoastRange ? 'terrain_coast' : 'terrain_dirtbank';
         zones['biome'] = biome;
     } else if (isRiver) {
         zones['terrain'] = 'terrain_river';

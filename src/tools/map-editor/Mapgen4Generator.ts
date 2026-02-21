@@ -10,22 +10,25 @@ import { buildMesh, makeDefaultConstraints } from './mapgen4/buildMesh';
 import Mapgen4Map from './mapgen4/map';
 import type { MapConstraints } from './mapgen4/map';
 import type { Mesh } from './mapgen4/types';
-import { runTownGenerator } from './TownGenerator';
 import { runRoadGenerator } from './RoadGenerator';
 import { runRailroadGenerator } from './RailroadGenerator';
-import { MAPGEN4_ELEVATION_THRESHOLDS } from './Mapgen4BiomeConfig';
-import { buildCellRegions, findRegionAt, MAPGEN4_MAP_SIZE } from './Mapgen4RegionUtils';
-import { mapgen4ToZones } from './Mapgen4ZoneMapping';
+import {
+    buildCellRegions,
+    findRegionAt,
+    MAPGEN4_MAP_SIZE,
+    computeRegionDistanceFromWater
+} from './Mapgen4RegionUtils';
+import { mapgen4ToZones, COAST_MAX_POLYGON_STEPS } from './Mapgen4ZoneMapping';
 import { isTileOnRiver } from './Mapgen4RiverUtils';
 import { drawCachedMeshToCanvas } from './Mapgen4PreviewRenderer';
-import { buildRailroadSplineMeshData } from './Mapgen4SplineUtils';
+import { buildRailroadSplineMeshData } from './RailroadSplineBuilder';
 
 import type { Mapgen4Param } from './Mapgen4Param';
 export type { TownSite, RoadSegment, RailroadCrossing, Mapgen4Param } from './Mapgen4Param';
 export type { TownsParam, RoadsParam, RailroadsParam } from './Mapgen4Param';
 
 export { drawCachedMeshToCanvas } from './Mapgen4PreviewRenderer';
-export { buildRailroadSplineMeshData } from './Mapgen4SplineUtils';
+export { buildRailroadSplineMeshData } from './RailroadSplineBuilder';
 export { mapgen4ToZones } from './Mapgen4ZoneMapping';
 
 export interface MeshAndMap {
@@ -49,124 +52,34 @@ export function buildMeshAndMap(param: Mapgen4Param): MeshAndMap {
     return { mesh, map };
 }
 
-/** Compute towns, roads, and railroads once; cache alongside mesh+map. */
+/** Manual editor data: when present, overrides procedural towns/stations/waypoints. */
+export interface ManualTownsAndRailroads {
+    manualTowns?: number[];
+    manualStations?: { regionId: number; order: number }[];
+    railroadWaypoints?: { legIndex: number; regionId: number }[];
+}
+
+/** Compute towns, roads, and railroads from manual data only. No procedural towns or railroads. */
 export function computeTownsAndRoads(
     mesh: Mesh,
     map: Mapgen4Map,
-    param: Mapgen4Param
+    param: Mapgen4Param,
+    manual?: ManualTownsAndRailroads
 ): {
     towns: import('./TownGenerator').TownSite[];
     roadSegments: import('./RoadGenerator').RoadSegment[];
     railroadPath: number[];
     railroadCrossings: import('./RailroadGenerator').RailroadCrossing[];
+    railroadStationIds: number[];
 } {
-    const highlandMax = MAPGEN4_ELEVATION_THRESHOLDS.highlandMax;
     const townsParam = param.towns;
-    const railroadsEnabled = param.railroads?.enabled && param.railroads && townsParam?.enabled;
+    const defaultZoneId = townsParam?.defaultZoneId ?? 'zone_grasslands';
 
-    const effectiveTownsParam =
-        townsParam && railroadsEnabled
-            ? { ...townsParam, elevationMax: Math.min(townsParam.elevationMax, highlandMax) }
-            : townsParam;
-
-    const towns =
-        townsParam?.enabled && effectiveTownsParam
-            ? runTownGenerator(mesh, map, effectiveTownsParam, param.rivers, param.meshSeed)
+    const towns: import('./TownGenerator').TownSite[] =
+        manual?.manualTowns && manual.manualTowns.length > 0
+            ? manual.manualTowns.map((regionId) => ({ regionId, zoneId: defaultZoneId }))
             : [];
 
-    const roadsOk =
-        param.roads?.enabled &&
-        param.roads &&
-        (towns.length >= 2 || (param.roads.coverageGridSize ?? 0) >= 2);
-    const roadSegments = roadsOk
-        ? runRoadGenerator(
-              mesh,
-              map,
-              towns.map((t) => t.regionId),
-              {
-                  shortcutsPerTown: param.roads.shortcutsPerTown ?? 1,
-                  riverCrossingCost: param.roads.riverCrossingCost ?? 1.2,
-                  seed: param.roads.seed ?? param.meshSeed,
-                  coverageGridSize: param.roads.coverageGridSize ?? 0,
-                  slopeWeight: param.roads.slopeWeight ?? 3,
-                  waypointCurviness: param.roads.waypointCurviness ?? 0.15
-              },
-              param.rivers
-          )
-        : [];
-
-    const railroadsOk = railroadsEnabled && towns.length >= 2;
-    let railroadPath: number[] = [];
-    let railroadCrossings: import('./RailroadGenerator').RailroadCrossing[] = [];
-    if (railroadsOk) {
-        try {
-            const result = runRailroadGenerator(
-                mesh,
-                map,
-                towns.map((t) => t.regionId),
-                roadSegments,
-                {
-                    slopeWeight: param.railroads!.slopeWeight ?? 12,
-                    turnWeight: param.railroads!.turnWeight ?? 8,
-                    riverCrossingCost: param.railroads!.riverCrossingCost ?? 1.5,
-                    seed: param.railroads!.seed ?? param.meshSeed
-                },
-                param.rivers,
-                townsParam?.townRadius ?? 30
-            );
-            railroadPath = result.path;
-            railroadCrossings = result.crossings;
-        } catch (err) {
-            Logger.warn('[Mapgen4] Railroad generation failed:', err);
-            railroadPath = [];
-            railroadCrossings = [];
-        }
-    }
-
-    return { towns, roadSegments, railroadPath, railroadCrossings };
-}
-
-/** Run mesh + map only and draw to canvas for instant preview. */
-export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param): void {
-    const { mesh, map } = buildMeshAndMap(param);
-    drawCachedMeshToCanvas(canvas, mesh, map, param, 0, 0, PREVIEW_MAP_SIZE, PREVIEW_MAP_SIZE);
-}
-
-/** Draw procedural preview with a viewport in mesh coords (0..1000). */
-export function runAndDrawPreviewWithViewport(
-    canvas: HTMLCanvasElement,
-    param: Mapgen4Param,
-    vpX: number,
-    vpY: number,
-    vpW: number,
-    vpH: number
-): void {
-    const { mesh, map } = buildMeshAndMap(param);
-    drawCachedMeshToCanvas(canvas, mesh, map, param, vpX, vpY, vpW, vpH);
-}
-
-/** Generate world data from mapgen4 params and rasterize to ChunkData map. */
-export function generateMapgen4(param: Mapgen4Param): Map<string, ChunkData> {
-    const { mesh, t_peaks } = buildMesh(param.meshSeed, param.spacing, param.mountainSpacing);
-    const constraints: MapConstraints = makeDefaultConstraints(
-        param.elevation.seed,
-        param.elevation.island
-    );
-    const map = new Mapgen4Map(mesh, t_peaks, { spacing: param.spacing });
-    map.assignElevation(param.elevation, constraints);
-    map.assignRainfall(param.biomes);
-    map.assignRivers(param.rivers);
-
-    const cellRegions = buildCellRegions(mesh);
-    const worldW = MapEditorConfig.WORLD_WIDTH_TILES;
-    const worldH = MapEditorConfig.WORLD_HEIGHT_TILES;
-    const CHUNK_SIZE = MapEditorConfig.CHUNK_SIZE;
-    const TILE_SIZE = MapEditorConfig.TILE_SIZE;
-
-    const towns = param.towns?.enabled
-        ? runTownGenerator(mesh, map, param.towns, param.rivers, param.meshSeed)
-        : [];
-    const townRadiusSq = (param.towns?.townRadius ?? 30) ** 2;
     const roadsOk =
         param.roads?.enabled &&
         param.roads &&
@@ -191,33 +104,83 @@ export function generateMapgen4(param: Mapgen4Param): Map<string, ChunkData> {
     const railroadsOk =
         param.railroads?.enabled &&
         param.railroads &&
-        towns.length >= 2;
+        (manual?.manualStations?.length ?? 0) >= 2;
     let railroadPath: number[] = [];
     let railroadCrossings: import('./RailroadGenerator').RailroadCrossing[] = [];
-    if (railroadsOk) {
+    let railroadStationIds: number[] = [];
+    if (railroadsOk && manual?.manualStations && manual.manualStations.length >= 2) {
+        const sorted = [...manual.manualStations].sort((a, b) => a.order - b.order);
+        const explicitOrder = sorted.map((s) => s.regionId);
+        railroadStationIds = explicitOrder;
         try {
+            const waypointsByLeg: number[][] = [];
+            if (manual.railroadWaypoints?.length) {
+                for (const w of manual.railroadWaypoints) {
+                    const i = w.legIndex;
+                    while (waypointsByLeg.length <= i) waypointsByLeg.push([]);
+                    waypointsByLeg[i]!.push(w.regionId);
+                }
+            }
+            const overrides: import('./RailroadGenerator').RailroadGeneratorOverrides = {
+                explicitStationOrder: explicitOrder,
+                waypointsByLeg: waypointsByLeg.length ? waypointsByLeg : undefined
+            };
             const result = runRailroadGenerator(
                 mesh,
                 map,
-                towns.map((t) => t.regionId),
-                roadSegments,
-                {
-                    slopeWeight: param.railroads!.slopeWeight ?? 12,
-                    turnWeight: param.railroads!.turnWeight ?? 8,
-                    riverCrossingCost: param.railroads!.riverCrossingCost ?? 1.5,
-                    seed: param.railroads!.seed ?? param.meshSeed
-                },
                 param.rivers,
-                param.towns?.townRadius ?? 30
+                townsParam?.townRadius ?? 30,
+                overrides
             );
             railroadPath = result.path;
             railroadCrossings = result.crossings;
+            railroadStationIds = result.stationRegionIds;
         } catch (err) {
             Logger.warn('[Mapgen4] Railroad generation failed:', err);
+            railroadPath = [];
+            railroadCrossings = [];
         }
     }
 
+    return { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds };
+}
+
+/** Run mesh + map only and draw to canvas for instant preview. */
+export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param): void {
+    const { mesh, map } = buildMeshAndMap(param);
+    drawCachedMeshToCanvas(canvas, mesh, map, param, 0, 0, PREVIEW_MAP_SIZE, PREVIEW_MAP_SIZE);
+}
+
+/** Draw procedural preview with a viewport in mesh coords (0..1000). */
+export function runAndDrawPreviewWithViewport(
+    canvas: HTMLCanvasElement,
+    param: Mapgen4Param,
+    vpX: number,
+    vpY: number,
+    vpW: number,
+    vpH: number
+): void {
+    const { mesh, map } = buildMeshAndMap(param);
+    drawCachedMeshToCanvas(canvas, mesh, map, param, vpX, vpY, vpW, vpH);
+}
+
+/** Generate world data from mapgen4 params and rasterize to ChunkData map. */
+export function generateMapgen4(param: Mapgen4Param): Map<string, ChunkData> {
+    const { mesh, map } = buildMeshAndMap(param);
+    const { towns, roadSegments, railroadPath, railroadCrossings } = computeTownsAndRoads(
+        mesh,
+        map,
+        param
+    );
+
+    const cellRegions = buildCellRegions(mesh);
+    const worldW = MapEditorConfig.WORLD_WIDTH_TILES;
+    const worldH = MapEditorConfig.WORLD_HEIGHT_TILES;
+    const CHUNK_SIZE = MapEditorConfig.CHUNK_SIZE;
+    const townRadiusSq = (param.towns?.townRadius ?? 30) ** 2;
+
     const worldData = new Map<string, ChunkData>();
+    const distanceFromWater = computeRegionDistanceFromWater(mesh, map, COAST_MAX_POLYGON_STEPS);
 
     for (let ty = 0; ty < worldH; ty++) {
         for (let tx = 0; tx < worldW; tx++) {
@@ -242,7 +205,16 @@ export function generateMapgen4(param: Mapgen4Param): Map<string, ChunkData> {
             const elevation = map.elevation_r[r];
             const rainfall = map.rainfall_r[r];
             const isRiver = isTileOnRiver(x, y, r, mesh, map.flow_s, param.rivers, param.spacing);
-            chunk.zones![tileKey] = mapgen4ToZones(elevation, rainfall, isRiver, x, y, param.meshSeed);
+            const dist = distanceFromWater.get(r);
+            chunk.zones![tileKey] = mapgen4ToZones(
+                elevation,
+                rainfall,
+                isRiver,
+                x,
+                y,
+                param.meshSeed,
+                dist
+            );
 
             for (const t of towns) {
                 const txMesh = mesh.x_of_r(t.regionId);
@@ -376,9 +348,6 @@ export const DEFAULT_MAPGEN4_PARAM: Mapgen4Param = {
         waypointCurviness: 0.15
     },
     railroads: {
-        enabled: true,
-        slopeWeight: 12,
-        turnWeight: 8,
-        riverCrossingCost: 1.5
+        enabled: true
     }
 };

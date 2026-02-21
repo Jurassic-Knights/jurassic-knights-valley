@@ -6,6 +6,7 @@
 import type { Mesh } from './mapgen4/types';
 import type Mapgen4Map from './mapgen4/map';
 import { positionToBiome } from './Mapgen4BiomeConfig';
+import { seededRandom } from './utils/SeededRandom';
 
 /** Max towns per biome (total max = 4 biomes × 2 = 8). */
 export const TOWNS_PER_BIOME = 2;
@@ -150,12 +151,4 @@ export function runTownGenerator(
     }
 
     return towns;
-}
-
-function seededRandom(seed: number): () => number {
-    let s = seed;
-    return () => {
-        s = (s * 1664525 + 1013904223) >>> 0;
-        return s / 0xffffffff;
-    };
 }

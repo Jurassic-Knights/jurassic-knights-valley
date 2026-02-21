@@ -4,6 +4,7 @@ import { ZoneConfig, ZoneCategories } from '../../../src/data/ZoneConfig';
 import { AssetPaletteView } from './AssetPaletteView';
 import { initResizeHandle } from './ResizePanels';
 import { loadDefaultMap, saveDefaultMap } from './MapStorage';
+import type { MapEditorDataPayload } from '../../../src/tools/map-editor/MapEditorTypes';
 
 /** Mapgen4 param shape (loaded only when user generates). */
 interface ProcParam {
@@ -15,7 +16,7 @@ interface ProcParam {
     rivers: Record<string, number>;
     towns?: { enabled: boolean; numTowns: number; minSpacing: number; townRadius: number; defaultZoneId: string; elevationMin: number; elevationMax: number; rainfallMin: number; rainfallMax: number; seed?: number };
     roads?: { enabled: boolean; baseWidth: number; shortcutsPerTown: number; riverCrossingCost: number; coverageGridSize?: number; slopeWeight?: number; waypointCurviness?: number; seed?: number };
-    railroads?: { enabled: boolean; slopeWeight?: number; turnWeight?: number; seed?: number };
+    railroads?: { enabled: boolean };
 }
 
 const DEFAULT_MAP_FILENAME = 'default';
@@ -70,38 +71,49 @@ export async function showMapEditorView(pushState = true): Promise<void> {
         const loadingOverlay = document.getElementById('map-editor-loading-overlay');
         if (loadingOverlay) loadingOverlay.style.display = 'flex';
 
-        // Wait for layout so map-editor-canvas has non-zero dimensions before mount
-        await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        try {
+            // Wait for layout so map-editor-canvas has non-zero dimensions before mount
+            await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
 
-        editorInstance = new MapEditorCore();
-        await editorInstance.mount('map-editor-canvas', async (cat) => {
-            const { fetchCategory } = await import('./api');
-            return fetchCategory(cat);
-        });
-
-        paletteInstance = new AssetPaletteView('palette-content', (id, cat) => {
-            if (editorInstance) editorInstance.selectAsset(id, cat);
-        });
-
-        await loadDefaultMapOnFirstOpen();
-        initMapPanel();
-        initModeAndTools();
-        initMapEditorResize();
-        initProceduralPreviewClickAndViewport();
-        initMapEditBroadcast();
-        await runPreviewCanvas({ skipRebuildIfLoaded: true });
-        initMapEditorBeforeUnload();
-
-        const canvasContainer = document.getElementById('map-editor-canvas');
-        if (canvasContainer) {
-            const ro = new ResizeObserver(() => {
-                editorInstance?.resize?.();
-                editorInstance?.invalidateProceduralViewport?.();
+            editorInstance = new MapEditorCore();
+            await editorInstance.mount('map-editor-canvas', async (cat) => {
+                const { fetchCategory } = await import('./api');
+                return fetchCategory(cat) as any;
             });
-            ro.observe(canvasContainer);
-        }
 
-        if (loadingOverlay) loadingOverlay.style.display = 'none';
+            paletteInstance = new AssetPaletteView('palette-content', (id, cat) => {
+                if (editorInstance) editorInstance.selectAsset(id, cat);
+            });
+
+            await loadDefaultMapOnFirstOpen();
+            initMapPanel();
+            if (editorInstance) {
+                editorInstance.setOnManualDataChange(() => {
+                    refreshOutliner();
+                    runPreviewCanvas().catch(() => { });
+                    if (getAutoSaveEnabled()) scheduleAutoSave();
+                });
+            }
+            initModeAndTools();
+            initMapEditorResize();
+            initProceduralPreviewClickAndViewport();
+            initMapEditBroadcast();
+            await runPreviewCanvas({ skipRebuildIfLoaded: true });
+            initMapEditorBeforeUnload();
+
+            const canvasContainer = document.getElementById('map-editor-canvas');
+            if (canvasContainer) {
+                const ro = new ResizeObserver(() => {
+                    editorInstance?.resize?.();
+                    editorInstance?.invalidateProceduralViewport?.();
+                });
+                ro.observe(canvasContainer);
+            }
+        } catch (err) {
+            Logger.error('[MapEditor] First-time init failed', err);
+        } finally {
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
+        }
     } else {
         refreshMapList();
         runPreviewCanvas();
@@ -154,13 +166,13 @@ function scheduleAutoSave(): void {
 
 async function loadDefaultMapOnFirstOpen(): Promise<void> {
     if (!editorInstance || currentLoadedMap) return;
-    let data: { version?: number; chunks?: unknown[]; mapgen4Param?: ProcParam } | null = null;
+    let data: MapEditorDataPayload | null = null;
     let loadSource: 'localStorage' | 'indexedDB' | 'API' | 'static' | null = null;
 
     // 1. Try MapStorage (localStorage then IndexedDB) — survives refresh, avoids quota for large maps
     const stored = await loadDefaultMap();
     if (stored?.data) {
-        data = stored.data as { version?: number; chunks?: unknown[]; mapgen4Param?: ProcParam };
+        data = stored.data as MapEditorDataPayload;
         loadSource = stored.source;
     }
 
@@ -173,7 +185,15 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
             );
             const result = await res.json();
             if (result.success && result.data) {
-                data = result.data as { version?: number; chunks?: unknown[]; mapgen4Param?: ProcParam };
+                // If the backend returns an array of chunks, we need to convert it to a record
+                if (Array.isArray(result.data.chunks)) {
+                    const chunksRecord: Record<string, import('../../../src/tools/map-editor/MapEditorTypes').ChunkData> = {};
+                    result.data.chunks.forEach((chunk: any) => {
+                        chunksRecord[chunk.id] = chunk;
+                    });
+                    result.data.chunks = chunksRecord;
+                }
+                data = result.data as MapEditorDataPayload;
                 loadSource = 'API';
             }
         } catch {
@@ -186,7 +206,13 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
         try {
             const res = await fetch(`/maps/default.json?_=${Date.now()}`, { cache: 'no-store' });
             if (res.ok) {
-                data = (await res.json()) as { version?: number; chunks?: unknown[]; mapgen4Param?: ProcParam };
+                const json = await res.json();
+                if (Array.isArray(json.chunks)) {
+                    const chunksRecord: Record<string, import('../../../src/tools/map-editor/MapEditorTypes').ChunkData> = {};
+                    json.chunks.forEach((chunk: any) => chunksRecord[chunk.id] = chunk);
+                    json.chunks = chunksRecord;
+                }
+                data = json as MapEditorDataPayload;
                 loadSource = 'static';
             }
         } catch {
@@ -196,10 +222,11 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
 
     if (data) {
         editorInstance.loadData(data);
-        lastLoadedMapgen4Param = data.mapgen4Param ?? null;
-        setProcParamFromData(data.mapgen4Param);
-        if (data.mapgen4Param) {
-            await editorInstance.setProceduralPreview(data.mapgen4Param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
+        const param = data.mapgen4Param as ProcParam | undefined;
+        lastLoadedMapgen4Param = param ?? null;
+        setProcParamFromData(param);
+        if (param) {
+            await editorInstance.setProceduralPreview(param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
         }
         currentLoadedMap = DEFAULT_MAP_FILENAME;
         updateLoadedDisplay();
@@ -269,9 +296,9 @@ function initMapEditorBeforeUnload(): void {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filename, mapData }),
                     keepalive: true
-                }).catch(() => {});
+                }).catch(() => { });
                 if (filename === DEFAULT_MAP_FILENAME || filename === 'default') {
-                    saveDefaultMap(mapData).catch(() => {});
+                    saveDefaultMap(mapData).catch(() => { });
                 }
             }
         }
@@ -455,8 +482,82 @@ export function refreshOutliner(): void {
     const selectedLabel = document.getElementById('outliner-selected-label');
     const moveBtn = document.getElementById('outliner-move-btn');
     const deleteBtn = document.getElementById('outliner-delete-btn');
+    const townsEl = document.getElementById('outliner-towns');
+    const stationsEl = document.getElementById('outliner-stations');
 
     if (!listEl || !editorInstance) return;
+
+    if (townsEl) {
+        const towns = editorInstance.getManualTowns();
+        townsEl.innerHTML = '';
+        if (towns.length === 0) {
+            townsEl.innerHTML = '<div style="color:#666; padding:6px; font-size:11px;">None. Right-click map → Place town.</div>';
+        } else {
+            towns.forEach((regionId, i) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:6px 8px; background:#252525; border-radius:4px; margin-bottom:4px;';
+                const label = document.createElement('span');
+                label.textContent = `Town ${i + 1} (region ${regionId})`;
+                label.style.cssText = 'flex:1; font-size:12px; color:#ccc;';
+                row.appendChild(label);
+                const del = document.createElement('button');
+                del.type = 'button';
+                del.textContent = 'Delete';
+                del.style.cssText = 'font-size:10px; padding:2px 6px; background:#5a2525; color:#fff; border:none; border-radius:4px; cursor:pointer;';
+                del.addEventListener('click', () => {
+                    editorInstance?.removeManualTown(regionId);
+                    refreshOutliner();
+                    runPreviewCanvas().catch(() => { });
+                });
+                row.appendChild(del);
+                townsEl.appendChild(row);
+            });
+        }
+    }
+
+    if (stationsEl) {
+        const stations = editorInstance.getManualStations();
+        const sorted = [...stations].sort((a, b) => a.order - b.order);
+        stationsEl.innerHTML = '';
+        if (sorted.length === 0) {
+            stationsEl.innerHTML = '<div style="color:#666; padding:6px; font-size:11px;">None. Right-click polygon → Place station.</div>';
+        } else {
+            const manualStations = editorInstance.getManualStations();
+            sorted.forEach((s) => {
+                const idx = manualStations.findIndex((m) => m.regionId === s.regionId && m.order === s.order);
+                if (idx < 0) return;
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:6px 8px; background:#252525; border-radius:4px; margin-bottom:4px;';
+                const orderInput = document.createElement('input');
+                orderInput.type = 'number';
+                orderInput.min = '1';
+                orderInput.value = String(s.order);
+                orderInput.style.cssText = 'width:36px; padding:2px 4px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; font-size:11px;';
+                orderInput.addEventListener('change', () => {
+                    const v = parseInt(orderInput.value, 10);
+                    if (!Number.isNaN(v)) editorInstance?.setStationOrder(idx, v);
+                    refreshOutliner();
+                    runPreviewCanvas().catch(() => { });
+                });
+                row.appendChild(orderInput);
+                const label = document.createElement('span');
+                label.textContent = `Station (region ${s.regionId})`;
+                label.style.cssText = 'flex:1; font-size:12px; color:#ccc;';
+                row.appendChild(label);
+                const del = document.createElement('button');
+                del.type = 'button';
+                del.textContent = 'Delete';
+                del.style.cssText = 'font-size:10px; padding:2px 6px; background:#5a2525; color:#fff; border:none; border-radius:4px; cursor:pointer;';
+                del.addEventListener('click', () => {
+                    editorInstance?.removeManualStation(s.regionId);
+                    refreshOutliner();
+                    runPreviewCanvas().catch(() => { });
+                });
+                row.appendChild(del);
+                stationsEl.appendChild(row);
+            });
+        }
+    }
 
     const cm = editorInstance.getChunkManager();
     const objects = cm?.getAllObjects() ?? [];
@@ -526,7 +627,7 @@ async function runPreviewCanvas(opts?: { skipRebuildIfLoaded?: boolean }): Promi
     const canvasSidebar = document.getElementById('proc-preview-canvas') as HTMLCanvasElement;
     try {
         const param = getProcParam();
-        const mapgenParam = param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
+        const mapgenParam = param as any as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
         if (editorInstance) {
             const shouldRebuild = !currentLoadedMap || !skipRebuildIfLoaded;
             if (shouldRebuild) {
@@ -556,10 +657,8 @@ function bindSlider(id: string, valueId: string, parse: (s: string) => number): 
     const updateDisplay = () => {
         if (valueEl) valueEl.textContent = input.value;
     };
-    input.addEventListener('input', () => {
-        updateDisplay();
-        scheduleLivePreview();
-    });
+    input.addEventListener('input', updateDisplay);
+    input.addEventListener('change', scheduleLivePreview);
     updateDisplay();
     return parse(input.value);
 }
@@ -567,7 +666,6 @@ function bindSlider(id: string, valueId: string, parse: (s: string) => number): 
 function bindNumberInput(id: string): void {
     const input = document.getElementById(id) as HTMLInputElement;
     if (!input) return;
-    input.addEventListener('input', scheduleLivePreview);
     input.addEventListener('change', scheduleLivePreview);
 }
 
@@ -629,22 +727,34 @@ function getProcParam(): ProcParam {
             waypointCurviness: num('proc-road-waypoint-curviness') ?? 0.15
         },
         railroads: {
-            enabled: checked('proc-railroads-enabled'),
-            slopeWeight: num('proc-railroad-slope-weight') ?? 12,
-            turnWeight: num('proc-railroad-turn-weight') ?? 8
+            enabled: checked('proc-railroads-enabled')
         }
     };
 }
 
 /** Build full map payload including procedural params for save/broadcast. Uses editor procCache when available, else last-loaded param, else form. */
-function buildMapPayload(): { version?: number; chunks?: unknown[]; mapgen4Param?: ProcParam } | null {
-    const serialized = editorInstance?.serialize();
-    if (!serialized) return null;
-    const fromEditor = editorInstance?.getMapgen4Param?.() as ProcParam | null | undefined;
-    const mapgen4Param = fromEditor ?? lastLoadedMapgen4Param ?? getProcParam();
+function buildMapPayload(): MapEditorDataPayload | null {
+    if (!editorInstance) return null;
+
+    const serialized = editorInstance.serialize();
+    const fromEditor = editorInstance?.getMapgen4Param?.() as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param | undefined;
+    const fromUIParam = getProcParam() as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
+
+    const mapgen4Param = fromEditor && Object.keys(fromEditor).length > 0 ? fromEditor : fromUIParam;
     const paramSource = fromEditor ? 'procCache' : lastLoadedMapgen4Param ? 'lastLoaded' : 'form';
     Logger.info(`[MapEditor] buildMapPayload: mapgen4Param source=${paramSource}`);
-    return { ...serialized, mapgen4Param };
+
+    // MapEditorDataPayload requires `chunks` to be a Record<string, ChunkData>, not an Array.
+    // Ensure that mapping occurs if needed.
+    const payload: MapEditorDataPayload = {
+        chunks: serialized.chunks,
+        heroSpawn: serialized.heroSpawn,
+        mapgen4Param,
+        manualTowns: serialized.manualTowns,
+        manualStations: serialized.manualStations
+    };
+
+    return payload;
 }
 
 /** Restore procedural form inputs from saved mapgen4 param. Does not trigger live preview. */
@@ -706,8 +816,6 @@ function setProcParamFromData(param: ProcParam | null | undefined): void {
     if (param.railroads) {
         const cb = document.getElementById('proc-railroads-enabled') as HTMLInputElement;
         if (cb) cb.checked = param.railroads.enabled ?? true;
-        setInput('proc-railroad-slope-weight', param.railroads.slopeWeight ?? 12);
-        setInput('proc-railroad-turn-weight', param.railroads.turnWeight ?? 8);
     }
 }
 
@@ -737,7 +845,7 @@ function initProceduralPanel(): void {
         const input = document.getElementById('proc-num-towns') as HTMLInputElement;
         if (el && input) el.textContent = input.value;
     };
-    document.getElementById('proc-num-towns')?.addEventListener('input', () => { updateTownNum(); scheduleLivePreview(); });
+    document.getElementById('proc-num-towns')?.addEventListener('input', updateTownNum);
     updateTownNum();
     bindSlider('proc-town-spacing', 'proc-town-spacing-val', parseFloat);
     bindSlider('proc-town-radius', 'proc-town-radius-val', parseFloat);
@@ -764,9 +872,9 @@ function initProceduralPanel(): void {
         const input = document.getElementById('proc-road-coverage') as HTMLInputElement;
         if (el && input) el.textContent = input.value;
     };
-    document.getElementById('proc-road-width')?.addEventListener('input', () => { updateRoadWidth(); scheduleLivePreview(); });
-    document.getElementById('proc-road-shortcuts')?.addEventListener('input', () => { updateRoadShortcuts(); scheduleLivePreview(); });
-    document.getElementById('proc-road-coverage')?.addEventListener('input', () => { updateRoadCoverage(); scheduleLivePreview(); });
+    document.getElementById('proc-road-width')?.addEventListener('input', updateRoadWidth);
+    document.getElementById('proc-road-shortcuts')?.addEventListener('input', updateRoadShortcuts);
+    document.getElementById('proc-road-coverage')?.addEventListener('input', updateRoadCoverage);
     updateRoadWidth();
     updateRoadShortcuts();
     updateRoadCoverage();
@@ -774,8 +882,19 @@ function initProceduralPanel(): void {
     bindSlider('proc-road-slope-weight', 'proc-road-slope-weight-val', parseFloat);
     bindSlider('proc-road-waypoint-curviness', 'proc-road-waypoint-curviness-val', parseFloat);
     bindCheckbox('proc-railroads-enabled');
-    bindSlider('proc-railroad-slope-weight', 'proc-railroad-slope-weight-val', parseFloat);
-    bindSlider('proc-railroad-turn-weight', 'proc-railroad-turn-weight-val', parseFloat);
+
+    const rebuildBtn = document.getElementById('proc-railroad-rebuild');
+    if (rebuildBtn) {
+        rebuildBtn.addEventListener('click', async () => {
+            if (!editorInstance) {
+                setProcStatus('Editor not ready', true);
+                return;
+            }
+            const param = editorInstance.getMapgen4Param() ?? getProcParam();
+            await editorInstance.setProceduralPreview(param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
+            setProcStatus('Railroad path rebuilt.');
+        });
+    }
 }
 
 function setMapStatus(message: string, isError = false): void {
@@ -916,12 +1035,12 @@ async function loadMapByName(filename: string): Promise<void> {
         const res = await fetch(`/api/load_map?filename=${encodeURIComponent(filename)}`, { cache: 'no-store' });
         const result = await res.json();
         if (result.success && result.data) {
-            const data = result.data as { version?: number; chunks?: unknown[]; mapgen4Param?: ProcParam };
+            const data = result.data as unknown as MapEditorDataPayload;
             editorInstance.loadData(data);
-            lastLoadedMapgen4Param = data.mapgen4Param ?? null;
-            setProcParamFromData(data.mapgen4Param);
+            lastLoadedMapgen4Param = (data.mapgen4Param as unknown as ProcParam) ?? null;
+            setProcParamFromData(data.mapgen4Param as unknown as ProcParam);
             if (data.mapgen4Param) {
-                await editorInstance.setProceduralPreview(data.mapgen4Param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
+                await editorInstance.setProceduralPreview(data.mapgen4Param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
             }
             currentLoadedMap = filename;
             updateLoadedDisplay();
@@ -965,11 +1084,9 @@ async function deleteMapByName(filename: string): Promise<void> {
 
 function initModeAndTools(): void {
     const btnObj = document.getElementById('mode-object');
-    const btnGround = document.getElementById('mode-ground');
-    const btnZone = document.getElementById('mode-zone');
-    const zoneControls = document.getElementById('zone-controls');
+    const btnManipulation = document.getElementById('mode-manipulation');
 
-    const updateModeUI = (mode: 'object' | 'zone' | 'ground') => {
+    const updateModeUI = (mode: 'object' | 'manipulation') => {
         const resetBtn = (btn: HTMLElement | null) => {
             if (btn) {
                 btn.style.setProperty('background', '#2d2d2d');
@@ -984,32 +1101,17 @@ function initModeAndTools(): void {
         };
 
         resetBtn(btnObj);
-        resetBtn(btnGround);
-        resetBtn(btnZone);
+        resetBtn(btnManipulation);
 
         if (mode === 'object') activeBtn(btnObj);
-        else if (mode === 'ground') activeBtn(btnGround);
-        else if (mode === 'zone') activeBtn(btnZone);
-
-        if (zoneControls) {
-            zoneControls.style.display = mode === 'zone' ? 'block' : 'none';
-        }
+        else if (mode === 'manipulation') activeBtn(btnManipulation);
 
         if (editorInstance) editorInstance.setMode(mode);
         if (paletteInstance) paletteInstance.setMode(mode);
     };
 
     btnObj?.addEventListener('click', () => updateModeUI('object'));
-    btnGround?.addEventListener('click', () => updateModeUI('ground'));
-    btnZone?.addEventListener('click', () => updateModeUI('zone'));
-
-    const brushInput = document.getElementById('editor-brush-size') as HTMLInputElement;
-    const brushVal = document.getElementById('editor-brush-val');
-    brushInput?.addEventListener('input', (e) => {
-        const val = parseInt((e.target as HTMLInputElement).value);
-        if (brushVal) brushVal.innerText = val.toString();
-        if (editorInstance) editorInstance.setBrushSize(val);
-    });
+    btnManipulation?.addEventListener('click', () => updateModeUI('manipulation'));
 
     const gridInput = document.getElementById('editor-grid-opacity') as HTMLInputElement;
     const gridVal = document.getElementById('editor-grid-val');
@@ -1022,6 +1124,7 @@ function initModeAndTools(): void {
     const debugBtn = document.getElementById('debug-btn');
     const debugPanel = document.getElementById('debug-panel');
     const debugStationNumbersCheck = document.getElementById('debug-station-numbers') as HTMLInputElement;
+    const debugSplinePathCheck = document.getElementById('debug-spline-path') as HTMLInputElement;
     debugBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
         if (debugPanel) debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
@@ -1029,110 +1132,21 @@ function initModeAndTools(): void {
     debugStationNumbersCheck?.addEventListener('change', () => {
         if (editorInstance) editorInstance.setDebugStationNumbers(debugStationNumbersCheck.checked);
     });
+    debugSplinePathCheck?.addEventListener('change', () => {
+        if (editorInstance) editorInstance.setDebugShowSplinePath(debugSplinePathCheck.checked);
+    });
     if (editorInstance && debugStationNumbersCheck) {
         debugStationNumbersCheck.checked = editorInstance.getDebugStationNumbers();
+    }
+    if (editorInstance && debugSplinePathCheck) {
+        debugSplinePathCheck.checked = editorInstance.getDebugShowSplinePath();
     }
     document.addEventListener('click', () => {
         if (debugPanel) debugPanel.style.display = 'none';
     });
     debugPanel?.addEventListener('click', (e) => e.stopPropagation());
 
-    const catSelect = document.getElementById('zone-category-select') as HTMLSelectElement;
-    if (catSelect) {
-        ZoneCategories.forEach((cat) => {
-            const opt = document.createElement('option');
-            opt.value = cat;
-            opt.innerText = cat.charAt(0).toUpperCase() + cat.slice(1);
-            catSelect.appendChild(opt);
-        });
 
-        catSelect.addEventListener('change', (e) => {
-            const val = (e.target as HTMLSelectElement).value;
-            if (editorInstance) editorInstance.setZoneCategory(val as string);
-            if (paletteInstance) paletteInstance.setCategory(val);
-        });
-    }
-
-    const filterContainer = document.getElementById('zone-visibility-filters');
-    if (filterContainer) {
-        filterContainer.innerHTML = '';
-
-        const zonesByCategory: Record<string, unknown[]> = {};
-        Object.values(ZoneConfig).forEach((z) => {
-            if (!zonesByCategory[z.category]) zonesByCategory[z.category] = [];
-            zonesByCategory[z.category].push(z);
-        });
-
-        Object.entries(zonesByCategory).forEach(([cat, zones]) => {
-            const groupDiv = document.createElement('div');
-            groupDiv.style.marginBottom = '8px';
-
-            const createCheckbox = (
-                id: string,
-                label: string,
-                isGroup: boolean,
-                onChange: (checked: boolean) => void
-            ) => {
-                const row = document.createElement('div');
-                row.style.display = 'flex';
-                row.style.alignItems = 'center';
-                row.style.gap = '8px';
-                row.style.padding = '2px 0';
-                if (!isGroup) row.style.paddingLeft = '12px';
-
-                const cb = document.createElement('input');
-                cb.type = 'checkbox';
-                cb.id = `filter-${id}`;
-                cb.checked = true;
-                cb.style.cursor = 'pointer';
-                cb.style.accentColor = '#66fcf1';
-
-                const lbl = document.createElement('label');
-                lbl.htmlFor = `filter-${id}`;
-                lbl.innerText = label;
-                lbl.style.fontSize = isGroup ? '12px' : '11px';
-                lbl.style.fontWeight = isGroup ? '700' : '400';
-                lbl.style.color = isGroup ? '#fff' : '#ccc';
-                lbl.style.cursor = 'pointer';
-                lbl.style.textTransform = isGroup ? 'uppercase' : 'none';
-                lbl.style.fontFamily = isGroup ? 'Chakra Petch' : 'Inter';
-
-                cb.addEventListener('change', (e) =>
-                    onChange((e.target as HTMLInputElement).checked)
-                );
-
-                row.appendChild(cb);
-                row.appendChild(lbl);
-                return { row, cb };
-            };
-
-            const { row: groupRow } = createCheckbox(`cat-${cat}`, cat, true, (checked) => {
-                zones.forEach((z) => {
-                    const childCb = document.getElementById(
-                        `filter-zone-${z.id}`
-                    ) as HTMLInputElement;
-                    if (childCb) childCb.checked = checked;
-                });
-                if (editorInstance) editorInstance.toggleCategoryVisibility(cat as string, checked);
-            });
-
-            groupDiv.appendChild(groupRow);
-
-            zones.forEach((z) => {
-                const { row: childRow } = createCheckbox(
-                    `zone-${z.id}`,
-                    z.name,
-                    false,
-                    (checked) => {
-                        if (editorInstance) editorInstance.toggleZoneVisibility(z.id, checked);
-                    }
-                );
-                groupDiv.appendChild(childRow);
-            });
-
-            filterContainer.appendChild(groupDiv);
-        });
-    }
 }
 
 export function hideMapEditorView(): void {
@@ -1149,4 +1163,31 @@ export function hideMapEditorView(): void {
     document.querySelectorAll('.nav-item[data-action="toggle-map-editor"]').forEach((btn) => {
         btn.classList.remove('active');
     });
+}
+
+// HMR: when any of these map-editor modules change, refresh procedural preview instead of full page reload.
+// Vite requires string literals here (no variables).
+if (import.meta.hot) {
+    import.meta.hot.accept(
+        [
+            '../../../src/tools/map-editor/Mapgen4SplineUtils.ts',
+            '../../../src/tools/map-editor/RailroadSplineBuilder.ts',
+            '../../../src/tools/map-editor/MapEditorCore.ts',
+            '../../../src/tools/map-editor/MapEditorProceduralRenderer.ts',
+            '../../../src/tools/map-editor/Mapgen4Generator.ts',
+            '../../../src/tools/map-editor/RailroadGenerator.ts',
+            '../../../src/tools/map-editor/RailroadDijkstra.ts',
+            '../../../src/tools/map-editor/RailroadPathfinder.ts',
+            '../../../src/tools/map-editor/Mapgen4Param.ts',
+            '../../../src/tools/map-editor/Mapgen4PreviewRenderer.ts',
+            '../../../src/tools/map-editor/Mapgen4RailroadPreview.ts',
+            '../../../src/tools/map-editor/RailroadGeneratorTypes.ts',
+            '../../../src/tools/map-editor/RailroadMeshRenderer.ts',
+        ],
+        () => {
+            if (editorInstance) {
+                runPreviewCanvas().catch(() => { });
+            }
+        }
+    );
 }

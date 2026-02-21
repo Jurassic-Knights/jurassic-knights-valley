@@ -35,7 +35,7 @@ import './systems/EconomySystem';
 import './gameplay/CraftingManager';
 import './gameplay/QuestManager';
 
-// Systems - World (BiomeManager, WorldManager registered as IslandManager)
+// Systems - World (BiomeManager, WorldManager registered as WorldManager)
 import './world/BiomeManager';
 import './world/WorldManager';
 import './world/MapObjectSpawner';
@@ -59,8 +59,7 @@ import './systems/CombatController';
 import './ui/controllers/ForgeController';
 import './systems/BossSystem';
 
-// Systems - Upgrades
-import './gameplay/IslandUpgrades';
+
 
 // Rendering
 import './rendering/WorldRenderer';

@@ -8,7 +8,7 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
-import { IslandManager } from '../world/IslandManager';
+import { WorldManager } from '../world/WorldManager';
 import { DroppedItem } from '../gameplay/DroppedItem';
 import { AudioManager } from '../audio/AudioManager';
 import { QuestManager } from '../gameplay/QuestManager';
@@ -73,16 +73,6 @@ class InteractionSystem {
                 target: null,
                 visible: false
             });
-        }
-
-        // Bridge Unlocks
-        if (IslandManager) {
-            const lockedIsland = IslandManager.getUnlockTrigger(hero.x, hero.y);
-            if (lockedIsland) {
-                if (EventBus) EventBus.emit(GameConstants.Events.UI_UNLOCK_PROMPT, lockedIsland);
-            } else {
-                if (EventBus) EventBus.emit(GameConstants.Events.UI_HIDE_UNLOCK_PROMPT);
-            }
         }
     }
 

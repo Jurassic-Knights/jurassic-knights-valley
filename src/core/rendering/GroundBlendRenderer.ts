@@ -58,17 +58,36 @@ export class GroundBlendRenderer {
         };
     }
 
+    /** Skip extractData when image exceeds this pixel count to avoid getImageData OOM. */
+    private static readonly MAX_PIXELS_FOR_EXTRACT = 4096 * 4096;
+
+    /** 1x1 magenta fallback when extractData would OOM. */
+    private static readonly FALLBACK_1X1 = new Uint8ClampedArray([255, 0, 255, 255]);
+
     /**
-     * Extracts ImageData from an Image Source (Once)
+     * Extracts ImageData from an Image Source (Once).
+     * Returns fallback on oversized images or getImageData OOM.
      */
     public static extractData(img: HTMLImageElement | HTMLCanvasElement): Uint8ClampedArray {
+        const pixels = img.width * img.height;
+        if (pixels > this.MAX_PIXELS_FOR_EXTRACT) {
+            Logger.warn(
+                `[GroundBlendRenderer] extractData skipped: image ${img.width}x${img.height} exceeds ${this.MAX_PIXELS_FOR_EXTRACT} pixels`
+            );
+            return this.FALLBACK_1X1;
+        }
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Context failure');
         ctx.drawImage(img, 0, 0);
-        return ctx.getImageData(0, 0, img.width, img.height).data;
+        try {
+            return ctx.getImageData(0, 0, img.width, img.height).data;
+        } catch {
+            Logger.warn('[GroundBlendRenderer] getImageData OOM, using fallback');
+            return this.FALLBACK_1X1;
+        }
     }
 
     /**

@@ -9,6 +9,10 @@ import { resolvePaletteId } from './GroundSystemPalette';
 import { getAssetData, preloadPaletteAssets, AssetCaches } from './GroundSystemAssets';
 import { computeTileTexture } from './GroundSystemTileTexture';
 
+/**
+ * GroundSystem — Ground rendering for map editor chunks.
+ * Manages tile textures, splat painting, caching, and procedural ground blending.
+ */
 export class GroundSystem {
     private renderer: GroundBlendRenderer;
     private spriteCache: Map<string, PIXI.Sprite[][]> = new Map();
@@ -44,8 +48,7 @@ export class GroundSystem {
         groundLayer.zIndex = 0;
         chunkContainer.addChildAt(groundLayer, 0);
 
-        const { CHUNK_SIZE } = MapEditorConfig;
-        const SPLAT_RES = CHUNK_SIZE * 4;
+        const { CHUNK_SIZE, SPLAT_RES } = MapEditorConfig;
         const splatData = data.splatMap
             ? new Uint8ClampedArray(data.splatMap)
             : new Uint8ClampedArray(SPLAT_RES * SPLAT_RES);
@@ -111,8 +114,7 @@ export class GroundSystem {
         preloadedAssets?: unknown,
         worldData?: Map<string, ChunkData>
     ) {
-        const { TILE_SIZE, CHUNK_SIZE } = MapEditorConfig;
-        const SPLAT_RES = CHUNK_SIZE * 4;
+        const { TILE_SIZE, CHUNK_SIZE, SPLAT_RES } = MapEditorConfig;
 
         if (!resolvedPaletteId) {
             const tileKey = `${lx},${ly}`;

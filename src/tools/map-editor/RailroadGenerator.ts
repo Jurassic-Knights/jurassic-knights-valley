@@ -1,93 +1,92 @@
 /**
- * RailroadGenerator — Build simple railroad track through all towns.
- * Straight-line spline: one polygon per town (outside town), connected in order, loop back to first.
- * No pathfinding; spline interpolates between station positions.
+ * RailroadGenerator — Build railroad track through manual stations and waypoints.
+ * Uses unconstrained BFS for every leg. Requires explicit station order (no procedural stations).
  */
 
 import type { Mesh } from './mapgen4/types';
 import type Mapgen4Map from './mapgen4/map';
-import { orderStationsByAngleAroundCentroid } from './RailroadPathUtils';
-import type { RailroadGeneratorParam, RailroadCrossing } from './RailroadGeneratorTypes';
+import { findRailroadPath, findRailroadPathVia } from './RailroadPathfinder';
+import { findSideBetween, getFlowForSide } from './Mapgen4PathUtils';
+import { Logger } from '@core/Logger';
+import type { RailroadCrossing } from './RailroadGeneratorTypes';
 
-export type { RailroadGeneratorParam, RailroadCrossing } from './RailroadGeneratorTypes';
+export type { RailroadCrossing } from './RailroadGeneratorTypes';
 
-/** Find one polygon adjacent to town center, outside town radius. Exactly one polygon away. */
-function findStationOnePolygonAway(
-    mesh: Mesh,
-    townCenter: number,
-    townRadius: number
-): number {
-    const tx = mesh.x_of_r(townCenter);
-    const ty = mesh.y_of_r(townCenter);
-    const townRadiusSq = townRadius * townRadius;
-
-    const sides: number[] = [];
-    mesh.s_around_r(townCenter, sides);
-
-    let best: number | null = null;
-    let bestDistSq = -1;
-
-    for (const s of sides) {
-        if (s < 0 || mesh.is_ghost_s(s)) continue;
-        const rNext = mesh.r_begin_s(s) === townCenter ? mesh.r_end_s(s) : mesh.r_begin_s(s);
-        if (mesh.is_ghost_r(rNext)) continue;
-
-        const dx = mesh.x_of_r(rNext) - tx;
-        const dy = mesh.y_of_r(rNext) - ty;
-        const distSq = dx * dx + dy * dy;
-
-        if (distSq > townRadiusSq) return rNext;
-        if (distSq > bestDistSq) {
-            bestDistSq = distSq;
-            best = rNext;
-        }
-    }
-    return best ?? townCenter;
+/** Manual station order and waypoints per leg. Required for railroad generation. */
+export interface RailroadGeneratorOverrides {
+    /** Station region IDs in visit order (1->2->3...). Required. */
+    explicitStationOrder: number[];
+    /** Waypoint region IDs per leg. waypointsByLeg[i] = waypoints for leg from station i to i+1. */
+    waypointsByLeg?: number[][];
 }
 
 /**
- * Build one continuous closed railroad loop through all towns.
- * Path: first town station → each town in order → back to first town.
- * Straight lines between stations; one polygon outside each town.
+ * Build one continuous closed railroad loop through manual stations and waypoints.
+ * No terrain constraints — the path goes wherever the user's stations and waypoints say.
+ * Returns path, crossings, and stationRegionIds for debug overlay.
  */
 export function runRailroadGenerator(
     mesh: Mesh,
-    _map: Mapgen4Map,
-    townRegionIds: number[],
-    _roadSegments: { r1: number; r2: number }[],
-    _param: RailroadGeneratorParam,
-    _riversParam: { lg_min_flow: number },
-    townRadius?: number
-): { path: number[]; crossings: RailroadCrossing[] } {
-    if (townRegionIds.length < 2) return { path: [], crossings: [] };
+    map: Mapgen4Map,
+    riversParam: { lg_min_flow: number },
+    townRadius?: number,
+    overrides?: RailroadGeneratorOverrides
+): { path: number[]; crossings: RailroadCrossing[]; stationRegionIds: number[] } {
+    if (!overrides?.explicitStationOrder || overrides.explicitStationOrder.length < 2) {
+        return { path: [], crossings: [], stationRegionIds: [] };
+    }
 
-    const radius = townRadius ?? 30;
-    const stationIds = townRegionIds.map((t) => findStationOnePolygonAway(mesh, t, radius));
-    let tour = orderStationsByAngleAroundCentroid(mesh, townRegionIds, stationIds);
-
+    const tour = [...overrides.explicitStationOrder];
     const n = tour.length;
-    if (n < 2) return { path: [], crossings: [] };
+    const minFlow = Math.exp(riversParam.lg_min_flow);
 
-    const distSq = (a: number, b: number) => {
-        const dx = mesh.x_of_r(a) - mesh.x_of_r(b);
-        const dy = mesh.y_of_r(a) - mesh.y_of_r(b);
-        return dx * dx + dy * dy;
-    };
-    let bestCloseDistSq = distSq(tour[n - 1], tour[0]);
-    let bestStart = 0;
-    for (let start = 1; start < n; start++) {
-        const prev = (start - 1 + n) % n;
-        const d = distSq(tour[prev], tour[start]);
-        if (d < bestCloseDistSq) {
-            bestCloseDistSq = d;
-            bestStart = start;
+    let path: number[] = [];
+
+    for (let i = 0; i < n; i++) {
+        const from = tour[i]!;
+        const to = tour[(i + 1) % n]!;
+        const manualWaypoints = overrides?.waypointsByLeg?.[i];
+
+        let seg: number[];
+        if (manualWaypoints && manualWaypoints.length > 0) {
+            seg = findRailroadPathVia(mesh, from, to, manualWaypoints);
+        } else {
+            seg = findRailroadPath(mesh, from, to);
+        }
+
+        if (seg.length < 2) {
+            Logger.warn(`[RailroadGenerator] BFS failed leg ${from}->${to}, using direct hop`);
+            seg = [from, to];
+        }
+
+        if (path.length === 0) {
+            path = [...seg];
+        } else {
+            path = path.concat(seg.slice(1));
         }
     }
-    if (bestStart > 0) {
-        tour = [...tour.slice(bestStart), ...tour.slice(0, bestStart)];
+
+    const crossings = collectRiverCrossings(mesh, map, path, minFlow);
+    return { path, crossings, stationRegionIds: tour };
+}
+
+/** Walk path and collect edges that cross rivers for bridge zones. */
+function collectRiverCrossings(
+    mesh: Mesh,
+    map: Mapgen4Map,
+    path: number[],
+    minFlow: number
+): RailroadCrossing[] {
+    const crossings: RailroadCrossing[] = [];
+    for (let i = 0; i < path.length - 1; i++) {
+        const r1 = path[i]!;
+        const r2 = path[i + 1]!;
+        const s = findSideBetween(mesh, r1, r2);
+        if (s < 0) continue;
+        const flow = getFlowForSide(mesh, map, s);
+        if (flow >= minFlow) {
+            crossings.push({ r1, r2, crossesRiver: true });
+        }
     }
-
-    const path: number[] = [...tour, tour[0]];
-
-    return { path, crossings: [] };
+    return crossings;
 }

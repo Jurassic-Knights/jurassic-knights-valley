@@ -22,7 +22,6 @@ import {
     Progression,
     Crafting,
     Quest,
-    IslandUpgrades,
     DroppedItem,
     FloatingText,
     EnemyRender
@@ -62,7 +61,6 @@ const GameConstants = {
     Progression,
     Crafting,
     Quest,
-    IslandUpgrades,
     DroppedItem,
     FloatingText,
     EnemyRender,

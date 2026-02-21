@@ -108,8 +108,23 @@ export async function createScaleReferenceOverlay(
         }
     }
 
+    let lastZoom = -1;
+    let lastCanvasW = -1;
+    let lastCanvasH = -1;
+    let spriteLoaded = false;
+
     function update(zoom: number, canvasWidth: number, canvasHeight: number): void {
         if (!background) return;
+
+        const currentSpriteLoaded = sprite !== null;
+        if (zoom === lastZoom && canvasWidth === lastCanvasW && canvasHeight === lastCanvasH && currentSpriteLoaded === spriteLoaded) {
+            return;
+        }
+
+        lastZoom = zoom;
+        lastCanvasW = canvasWidth;
+        lastCanvasH = canvasHeight;
+        spriteLoaded = currentSpriteLoaded;
 
         const screenW = heroW * zoom;
         const screenH = heroH * zoom;

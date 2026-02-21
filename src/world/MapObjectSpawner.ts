@@ -13,7 +13,8 @@ import { Enemy } from '../gameplay/EnemyCore';
 import { Boss } from '../gameplay/Boss';
 import { Registry } from '@core/Registry';
 import { fetchMapData, getObjectsFromMapData, getPrefetchedMapData, clearPrefetchedMapData } from './MapDataService';
-import type { Mapgen4Param } from '../tools/map-editor/Mapgen4Generator';
+import type { MapData } from './MapDataService';
+import type { Mapgen4Param, ManualTownsAndRailroads } from '../tools/map-editor/Mapgen4Generator';
 import type { MapObject, HeroSpawnPosition } from '../tools/map-editor/MapEditorTypes';
 import type { IEntity } from '../types/core';
 
@@ -107,7 +108,7 @@ const MapObjectSpawner = {
                     break;
                 case 'MAP_HERO_SPAWN':
                     if (typeof x === 'number' && typeof y === 'number') {
-                        const wm = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void }>('IslandManager');
+                        const wm = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void }>('WorldManager');
                         wm?.setHeroSpawn(x, y);
                     }
                     break;
@@ -139,17 +140,16 @@ const MapObjectSpawner = {
         clearPrefetchedMapData();
     },
 
-    _applyFullMap(data: {
-        version?: number;
-        chunks?: Array<{ id: string; objects?: MapObject[] }>;
-        mapgen4Param?: Mapgen4Param;
-        heroSpawn?: HeroSpawnPosition;
-    } | null): void {
+    _applyFullMap(data: MapData | null): void {
         if (data?.mapgen4Param) {
-            const worldManager = Registry?.get<{ setMapgen4ParamAndRebuild: (p: Mapgen4Param) => void }>('IslandManager');
-            worldManager?.setMapgen4ParamAndRebuild(data.mapgen4Param);
+            const worldManager = Registry?.get<{ setMapgen4ParamAndRebuild: (p: Mapgen4Param, m?: ManualTownsAndRailroads) => void }>('WorldManager');
+            worldManager?.setMapgen4ParamAndRebuild(data.mapgen4Param, {
+                manualTowns: data.manualTowns,
+                manualStations: data.manualStations,
+                railroadWaypoints: data.railroadWaypoints
+            });
         }
-        const worldManager = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void; clearHeroSpawn: () => void }>('IslandManager');
+        const worldManager = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void; clearHeroSpawn: () => void }>('WorldManager');
         if (data?.heroSpawn && typeof data.heroSpawn.x === 'number' && typeof data.heroSpawn.y === 'number') {
             worldManager?.setHeroSpawn(data.heroSpawn.x, data.heroSpawn.y);
         } else {

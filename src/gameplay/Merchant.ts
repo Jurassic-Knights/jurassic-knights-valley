@@ -20,8 +20,8 @@ import { EntityScaling } from '../utils/EntityScaling';
 class Merchant extends Entity {
     // Merchant properties
     registryId: string = 'npc_merchant'; // Required for EntityLoader hot-reload
-    islandId: string = 'unknown';
-    islandName: string = 'Unknown Island';
+    zoneId: string = 'unknown';
+    zoneName: string = 'Unknown Zone';
     interactRadius: number = 140;
     bobTime: number = 0;
     scale: number = 1.0;
@@ -33,7 +33,7 @@ class Merchant extends Entity {
     _cachedSpriteId: string | null = null;
     _iconImg: HTMLImageElement | null = null;
 
-    constructor(config: { x?: number; y?: number; [key: string]: unknown } = {}) {
+    constructor(config: { x?: number; y?: number;[key: string]: unknown } = {}) {
         // 1. Load Config
         const defaults = {
             gridSize: 1.5,
@@ -43,13 +43,13 @@ class Merchant extends Entity {
             color: '#8E44AD'
         };
 
-        // Determine correct Registry ID based on Island Name (same logic as Sprite ID)
-        const islandName = config.islandName || 'Unknown Island';
+        // Determine correct Registry ID based on Zone Name (same logic as Sprite ID)
+        const zoneName = config.zoneName || 'Unknown Zone';
 
-        // If config provides specific ID, use it. Otherwise derive from island.
+        // If config provides specific ID, use it. Otherwise derive from zone.
         let registryId = config.registryId;
         if (!registryId) {
-            const name = islandName.toLowerCase();
+            const name = zoneName.toLowerCase();
             if (name.includes('quarry')) registryId = 'npc_merchant_01';
             else if (name.includes('iron')) registryId = 'npc_merchant_02';
             else if (name.includes('dead')) registryId = 'npc_merchant_03';
@@ -85,8 +85,8 @@ class Merchant extends Entity {
 
         this.scale = size.scale;
         this.registryId = registryId;
-        this.islandId = config.islandId || 'unknown';
-        this.islandName = islandName;
+        this.zoneId = config.zoneId || 'unknown';
+        this.zoneName = zoneName;
         this.interactRadius = finalConfig.interactRadius || 140;
 
         // Animation timer
@@ -118,8 +118,8 @@ class Merchant extends Entity {
      * Maps to numbered IDs: npc_merchant_01 through npc_merchant_08
      */
     getSpriteId() {
-        if (!this.islandName) return 'npc_merchant_04'; // Default: Crossroads
-        const name = this.islandName.toLowerCase();
+        if (!this.zoneName) return 'npc_merchant_04'; // Default: Crossroads
+        const name = this.zoneName.toLowerCase();
 
         // Biome to numbered ID mapping
         if (name.includes('home'))

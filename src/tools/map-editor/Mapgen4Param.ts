@@ -35,11 +35,6 @@ export interface RoadsParam {
 
 export interface RailroadsParam {
     enabled: boolean;
-    slopeWeight: number;
-    turnWeight?: number;
-    /** Cost multiplier when crossing rivers (>1 = prefer land). Bridges added at river crossings. */
-    riverCrossingCost?: number;
-    seed?: number;
 }
 
 export interface Mapgen4Param {

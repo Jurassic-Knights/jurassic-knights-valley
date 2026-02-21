@@ -8,6 +8,7 @@ interface ObjectAction {
     assetId: string;
 }
 
+/** Command to batch add/remove multiple objects in one undo step. */
 export class BatchObjectCommand implements EditorCommand {
     public type = 'Batch Object Action';
 

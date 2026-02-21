@@ -5,15 +5,21 @@
 
 import { MapEditorConfig } from './MapEditorConfig';
 import { EditorContext } from './EditorContext';
-import { mapgen4ToZones, polygonPreviewColor } from './Mapgen4ZoneMapping';
-import { RAILROAD_TILE_WORLD_PX } from './Mapgen4SplineUtils';
+import {
+    mapgen4ToZones,
+    polygonPreviewColor,
+    COAST_MAX_POLYGON_STEPS
+} from './Mapgen4ZoneMapping';
+import { computeRegionDistanceFromWater } from './Mapgen4RegionUtils';
+import { RAILROAD_TILE_WORLD_PX } from './RailroadSplineBuilder';
 import { drawRailroadSpline } from './Mapgen4RailroadPreview';
 import type { Mesh } from './mapgen4/types';
 import type Mapgen4Map from './mapgen4/map';
 import type { Mapgen4Param, TownSite, RoadSegment, RailroadCrossing } from './Mapgen4Param';
-import { runTownGenerator } from './TownGenerator';
 import { runRoadGenerator } from './RoadGenerator';
-import { runRailroadGenerator } from './RailroadGenerator';
+
+/** Fill color for polygons used as railroad stations (distinct from zone/terrain). */
+const STATION_POLYGON_FILL = '#8B6914';
 
 /**
  * Draw cached mesh + map to canvas (cheap). Viewport in mesh coords (0..1000).
@@ -35,8 +41,10 @@ export function drawCachedMeshToCanvas(
     cachedRoadSegments?: RoadSegment[],
     cachedRailroadPath?: number[],
     cachedRailroadCrossings?: RailroadCrossing[],
+    cachedRailroadStationIds?: number[],
     hiddenZoneIds?: Set<string>,
-    skipRailroad?: boolean
+    skipRailroad?: boolean,
+    cachedDistanceFromWater?: Map<number, number>
 ): void {
     const ctx = 'getContext' in target ? target.getContext('2d') : target;
     if (!ctx) return;
@@ -46,7 +54,6 @@ export function drawCachedMeshToCanvas(
     ctx.clearRect(0, 0, w, h);
     const scaleX = w / vpW;
     const scaleY = h / vpH;
-
     const toCanvas = (x: number, y: number) => ({
         x: (x - vpX) * scaleX,
         y: (y - vpY) * scaleY
@@ -55,11 +62,7 @@ export function drawCachedMeshToCanvas(
     const hidden = hiddenZoneIds ?? EditorContext.hiddenZoneIds;
     const townsParam = param.towns;
     const roadsParam = param.roads;
-    const towns =
-        cachedTowns ??
-        (townsParam?.enabled && townsParam
-            ? runTownGenerator(mesh, map, townsParam, param.rivers, param.meshSeed)
-            : []);
+    const towns = cachedTowns ?? [];
     const townRadiusSq = (townsParam?.townRadius ?? 30) ** 2;
     const roadsOk =
         roadsParam?.enabled &&
@@ -84,28 +87,14 @@ export function drawCachedMeshToCanvas(
               )
             : []);
 
-    const railroadsParam = param.railroads;
-    const railroadsOk =
-        railroadsParam?.enabled && railroadsParam && towns.length >= 2;
-    const { railroadPath, railroadCrossings } =
-        cachedRailroadPath != null && cachedRailroadCrossings != null
-            ? { railroadPath: cachedRailroadPath, railroadCrossings: cachedRailroadCrossings }
-            : railroadsOk
-                ? runRailroadGenerator(
-                      mesh,
-                      map,
-                      towns.map((t) => t.regionId),
-                      roadSegments,
-                      {
-                          slopeWeight: railroadsParam.slopeWeight ?? 12,
-                          turnWeight: railroadsParam.turnWeight ?? 8,
-                          riverCrossingCost: railroadsParam.riverCrossingCost ?? 1.5,
-                          seed: railroadsParam.seed ?? param.meshSeed
-                      },
-                      param.rivers,
-                      townsParam?.townRadius ?? 30
-                  )
-                : { railroadPath: [], railroadCrossings: [] };
+    let railroadPath: number[] = [];
+    let railroadCrossings: RailroadCrossing[] = [];
+    let railroadStationIds: number[] = [];
+    if (cachedRailroadStationIds != null) railroadStationIds = cachedRailroadStationIds;
+    if (cachedRailroadPath != null && cachedRailroadCrossings != null) {
+        railroadPath = cachedRailroadPath;
+        railroadCrossings = cachedRailroadCrossings;
+    }
 
     const margin = 80;
     const vpMinX = vpX - margin;
@@ -113,6 +102,9 @@ export function drawCachedMeshToCanvas(
     const vpMinY = vpY - margin;
     const vpMaxY = vpY + vpH + margin;
 
+    const distanceFromWater =
+        cachedDistanceFromWater ?? computeRegionDistanceFromWater(mesh, map, COAST_MAX_POLYGON_STEPS);
+    const stationRegionSet = new Set(railroadStationIds);
     const tOut: number[] = [];
     for (let r = 0; r < mesh.numSolidRegions; r++) {
         if (mesh.is_ghost_r(r)) continue;
@@ -123,7 +115,8 @@ export function drawCachedMeshToCanvas(
         if (tOut.length < 3) continue;
         const elev = map.elevation_r[r];
         const rain = map.rainfall_r[r];
-        const zones = mapgen4ToZones(elev, rain, false, rx, ry, param.meshSeed);
+        const dist = distanceFromWater.get(r);
+        const zones = mapgen4ToZones(elev, rain, false, rx, ry, param.meshSeed, dist);
         let civ: string | undefined;
         for (const t of towns) {
             const tx = mesh.x_of_r(t.regionId);
@@ -139,14 +132,20 @@ export function drawCachedMeshToCanvas(
             if (v && !hidden.has(v)) filteredZones[k] = v;
         }
         ctx.beginPath();
-        const first = toCanvas(mesh.x_of_t(tOut[0]), mesh.y_of_t(tOut[0]));
-        ctx.moveTo(first.x, first.y);
+        ctx.moveTo(
+            (mesh.x_of_t(tOut[0]) - vpX) * scaleX,
+            (mesh.y_of_t(tOut[0]) - vpY) * scaleY
+        );
         for (let i = 1; i < tOut.length; i++) {
-            const p = toCanvas(mesh.x_of_t(tOut[i]), mesh.y_of_t(tOut[i]));
-            ctx.lineTo(p.x, p.y);
+            ctx.lineTo(
+                (mesh.x_of_t(tOut[i]) - vpX) * scaleX,
+                (mesh.y_of_t(tOut[i]) - vpY) * scaleY
+            );
         }
         ctx.closePath();
-        ctx.fillStyle = polygonPreviewColor(elev, filteredZones);
+        ctx.fillStyle = stationRegionSet.has(r)
+            ? STATION_POLYGON_FILL
+            : polygonPreviewColor(elev, filteredZones);
         ctx.fill();
     }
 
@@ -178,11 +177,9 @@ export function drawCachedMeshToCanvas(
             continue;
         const widthMesh = Math.sqrt(flow - MIN_FLOW) * param.spacing * RIVER_WIDTH;
         ctx.lineWidth = Math.max(1, widthMesh * scale);
-        const a = toCanvas(ax, ay);
-        const b = toCanvas(bx, by);
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+        ctx.moveTo((ax - vpX) * scaleX, (ay - vpY) * scaleY);
+        ctx.lineTo((bx - vpX) * scaleX, (by - vpY) * scaleY);
         ctx.stroke();
     }
 
@@ -205,11 +202,9 @@ export function drawCachedMeshToCanvas(
             continue;
         ctx.strokeStyle = seg.crossesRiver ? '#5a5a5a' : '#c4a574';
         ctx.lineWidth = Math.max(2, roadWidthPx);
-        const a = toCanvas(ax, ay);
-        const b = toCanvas(bx, by);
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+        ctx.moveTo((ax - vpX) * scaleX, (ay - vpY) * scaleY);
+        ctx.lineTo((bx - vpX) * scaleX, (by - vpY) * scaleY);
         ctx.stroke();
     }
 
@@ -229,7 +224,8 @@ export function drawCachedMeshToCanvas(
             vpMinX,
             vpMaxX,
             vpMinY,
-            vpMaxY
+            vpMaxY,
+            railroadStationIds
         );
     }
 }

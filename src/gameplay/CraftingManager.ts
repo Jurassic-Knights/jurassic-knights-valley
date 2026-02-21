@@ -15,7 +15,7 @@ import { GameState } from '@core/State';
 import { GameInstance } from '@core/Game';
 import { UIManager } from '@ui/UIManager';
 import { spawnCraftedItem } from './SpawnHelper';
-import { IslandManager } from '../world/IslandManager';
+import { WorldManager } from '../world/WorldManager';
 
 import { GameConstants } from '@data/GameConstants';
 import { economySystem as EconomySystem } from '@systems/EconomySystem';
@@ -126,7 +126,7 @@ const CraftingManager = {
         const cost = GameConstants.Crafting.FORGE_SLOT_UNLOCK_COST;
 
         if (!GameState) return false;
-        const gold = GameState.get('gold') || 0;
+        const gold = (GameState.get('gold') as number) || 0;
 
         if (gold < cost) return false;
 
@@ -233,21 +233,10 @@ const CraftingManager = {
         // 2. Visuals: Spawn via SpawnHelper
         let spawnX = 0;
         let spawnY = 0;
-        if (IslandManager) {
-            const home = IslandManager.getHomeIsland();
-            if (home) {
-                const bounds = IslandManager.getPlayableBounds(home);
-                if (bounds) {
-                    const forgeSize = 250;
-                    spawnX = bounds.x + forgeSize / 2 + 30;
-                    spawnY = bounds.y + bounds.height - forgeSize / 2 - 30;
-                }
-            }
-            if (spawnX === 0) {
-                const h = IslandManager.getHomeIsland();
-                spawnX = h ? h.worldX + h.width / 2 : 80000;
-                spawnY = h ? h.worldY + h.height / 2 : 80000;
-            }
+        if (WorldManager) {
+            const spawn = WorldManager.getHeroSpawnPosition();
+            spawnX = spawn ? spawn.x + 100 : 80000;
+            spawnY = spawn ? spawn.y + 100 : 80000;
         } else {
             spawnX = 80000;
             spawnY = 80000;

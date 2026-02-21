@@ -67,13 +67,18 @@ export function updateChunkViewport(
 
             if (isVisible) {
                 const lineWidth = Math.max(32, 2 / zoom);
-                g.clear();
-                g.rect(0, 0, chunkSizePx, chunkSizePx);
-                g.stroke({
-                    width: lineWidth,
-                    color: MapEditorConfig.Colors.CHUNK_BORDER,
-                    alpha: ctx.gridOpacity
-                });
+                // Basic check to avoid rebuilding geometry every frame if nothing changed
+                const currentKey = `${lineWidth}_${ctx.gridOpacity}`;
+                if ((g as any).__borderKey !== currentKey) {
+                    (g as any).__borderKey = currentKey;
+                    g.clear();
+                    g.rect(0, 0, chunkSizePx, chunkSizePx);
+                    g.stroke({
+                        width: lineWidth,
+                        color: MapEditorConfig.Colors.CHUNK_BORDER,
+                        alpha: ctx.gridOpacity
+                    });
+                }
             }
         }
     }

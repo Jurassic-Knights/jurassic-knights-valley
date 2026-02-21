@@ -6,6 +6,7 @@ import { GroundSystem } from './GroundSystem';
 import { ProceduralArchitect } from './ProceduralArchitect';
 import { EditorContext } from './EditorContext';
 import { regenerateSplats } from './ZoneSystemSplatRegen';
+import { worldToChunkTile, markTileAndNeighbors } from './ZoneSystemUtils';
 
 export class ZoneSystem {
     private architect: ProceduralArchitect;
@@ -34,21 +35,13 @@ export class ZoneSystem {
         loadedChunks: Map<string, PIXI.Container>
     ): Promise<{ chunkKey: string; idx: number; oldVal: number; newVal: number }[]> {
         const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
-        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
 
         const chunksToUpdate = new Set<string>();
-        // Track dirty tiles for ground update: Map<ChunkKey, Set<tileKey "lx,ly">>
         const dirtyGroundTiles = new Map<string, Set<string>>();
 
         // 1. Process Updates (apply zone changes to worldData)
         rawUpdates.forEach((u) => {
-            const chunkX = Math.floor(u.x / chunkSizePx);
-            const chunkY = Math.floor(u.y / chunkSizePx);
-            const chunkKey = `${chunkX},${chunkY}`;
-
-            const localX = Math.floor((u.x - chunkX * chunkSizePx) / TILE_SIZE);
-            const localY = Math.floor((u.y - chunkY * chunkSizePx) / TILE_SIZE);
-            const tileKey = `${localX},${localY}`;
+            const { chunkKey, tileKey } = worldToChunkTile(u.x, u.y);
 
             let data = worldData.get(chunkKey);
             if (!data) {
@@ -58,19 +51,15 @@ export class ZoneSystem {
             if (!data.zones) data.zones = {};
             if (!data.zones[tileKey]) data.zones[tileKey] = {};
 
-            // Optimization: Skip if value is same
             const currentZoneId = data.zones[tileKey][u.category];
-
             let changed = false;
-            // Handle clearing specific category
+
             if (u.zoneId === null) {
-                // Delete
                 if (currentZoneId !== undefined) {
                     delete data.zones[tileKey][u.category];
                     changed = true;
                 }
             } else {
-                // Set/Update
                 if (currentZoneId !== u.zoneId) {
                     data.zones[tileKey][u.category] = u.zoneId;
                     changed = true;
@@ -79,42 +68,12 @@ export class ZoneSystem {
 
             if (changed) {
                 chunksToUpdate.add(chunkKey);
-                // If this is a ground-affecting category, mark for ground update
                 if (
                     u.category === ZoneCategory.BIOME ||
                     u.category === ZoneCategory.CIVILIZATION ||
                     u.category === ZoneCategory.TERRAIN
                 ) {
-                    if (!dirtyGroundTiles.has(chunkKey)) dirtyGroundTiles.set(chunkKey, new Set());
-                    // Mark Current
-                    dirtyGroundTiles.get(chunkKey)!.add(`${localX},${localY}`);
-
-                    // Mark Neighbors (3x3) to fix blending seams
-                    for (let dx = -1; dx <= 1; dx++) {
-                        for (let dy = -1; dy <= 1; dy++) {
-                            if (dx === 0 && dy === 0) continue;
-                            const nx = localX + dx;
-                            const ny = localY + dy;
-                            // Note: This logic assumes neighbors are in SAME chunk.
-                            // For cross-chunk, we need global-to-chunk conversion again.
-
-                            // Simplified: Just re-calculate Global for neighbor
-                            const gx = u.x + dx * TILE_SIZE;
-                            const gy = u.y + dy * TILE_SIZE;
-
-                            const nChunkX = Math.floor(gx / chunkSizePx);
-                            const nChunkY = Math.floor(gy / chunkSizePx);
-                            const nChunkKey = `${nChunkX},${nChunkY}`;
-
-                            if (!dirtyGroundTiles.has(nChunkKey))
-                                dirtyGroundTiles.set(nChunkKey, new Set());
-
-                            const nLocalX = Math.floor((gx - nChunkX * chunkSizePx) / TILE_SIZE);
-                            const nLocalY = Math.floor((gy - nChunkY * chunkSizePx) / TILE_SIZE);
-
-                            dirtyGroundTiles.get(nChunkKey)!.add(`${nLocalX},${nLocalY}`);
-                        }
-                    }
+                    markTileAndNeighbors(u.x, u.y, chunkKey, tileKey, dirtyGroundTiles);
                 }
             }
         });
@@ -125,12 +84,7 @@ export class ZoneSystem {
             new Set(dirtyGroundTiles.keys())
         );
         for (const u of coastUpdates) {
-            const chunkX = Math.floor(u.x / chunkSizePx);
-            const chunkY = Math.floor(u.y / chunkSizePx);
-            const chunkKey = `${chunkX},${chunkY}`;
-            const localX = Math.floor((u.x - chunkX * chunkSizePx) / TILE_SIZE);
-            const localY = Math.floor((u.y - chunkY * chunkSizePx) / TILE_SIZE);
-            const tileKey = `${localX},${localY}`;
+            const { chunkKey, tileKey } = worldToChunkTile(u.x, u.y);
 
             const data = worldData.get(chunkKey);
             if (!data) continue;
@@ -142,42 +96,12 @@ export class ZoneSystem {
                 if (current !== undefined) {
                     delete data.zones[tileKey][u.category];
                     chunksToUpdate.add(chunkKey);
-                    if (!dirtyGroundTiles.has(chunkKey)) dirtyGroundTiles.set(chunkKey, new Set());
-                    dirtyGroundTiles.get(chunkKey)!.add(tileKey);
-                    for (let dx = -1; dx <= 1; dx++) {
-                        for (let dy = -1; dy <= 1; dy++) {
-                            if (dx === 0 && dy === 0) continue;
-                            const gx = u.x + dx * TILE_SIZE;
-                            const gy = u.y + dy * TILE_SIZE;
-                            const nCX = Math.floor(gx / chunkSizePx);
-                            const nCY = Math.floor(gy / chunkSizePx);
-                            const nKey = `${nCX},${nCY}`;
-                            if (!dirtyGroundTiles.has(nKey)) dirtyGroundTiles.set(nKey, new Set());
-                            const nLX = Math.floor((gx - nCX * chunkSizePx) / TILE_SIZE);
-                            const nLY = Math.floor((gy - nCY * chunkSizePx) / TILE_SIZE);
-                            dirtyGroundTiles.get(nKey)!.add(`${nLX},${nLY}`);
-                        }
-                    }
+                    markTileAndNeighbors(u.x, u.y, chunkKey, tileKey, dirtyGroundTiles);
                 }
             } else if (current !== u.zoneId) {
                 data.zones[tileKey][u.category] = u.zoneId;
                 chunksToUpdate.add(chunkKey);
-                if (!dirtyGroundTiles.has(chunkKey)) dirtyGroundTiles.set(chunkKey, new Set());
-                dirtyGroundTiles.get(chunkKey)!.add(tileKey);
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        if (dx === 0 && dy === 0) continue;
-                        const gx = u.x + dx * TILE_SIZE;
-                        const gy = u.y + dy * TILE_SIZE;
-                        const nCX = Math.floor(gx / chunkSizePx);
-                        const nCY = Math.floor(gy / chunkSizePx);
-                        const nKey = `${nCX},${nCY}`;
-                        if (!dirtyGroundTiles.has(nKey)) dirtyGroundTiles.set(nKey, new Set());
-                        const nLX = Math.floor((gx - nCX * chunkSizePx) / TILE_SIZE);
-                        const nLY = Math.floor((gy - nCY * chunkSizePx) / TILE_SIZE);
-                        dirtyGroundTiles.get(nKey)!.add(`${nLX},${nLY}`);
-                    }
-                }
+                markTileAndNeighbors(u.x, u.y, chunkKey, tileKey, dirtyGroundTiles);
             }
         }
 
@@ -218,8 +142,7 @@ export class ZoneSystem {
         // 3. Update Ground Textures (only tiles not already re-rendered by paintSplatBatch)
         const alreadyRendered = new Set<string>();
         for (const c of allSplatChanges) {
-            const { CHUNK_SIZE } = MapEditorConfig;
-            const SPLATS_PER_CHUNK = CHUNK_SIZE * 4;
+            const SPLATS_PER_CHUNK = MapEditorConfig.SPLAT_RES;
             const localSx = c.idx % SPLATS_PER_CHUNK;
             const localSy = Math.floor(c.idx / SPLATS_PER_CHUNK);
             alreadyRendered.add(
@@ -269,20 +192,9 @@ export class ZoneSystem {
         category: string,
         worldData: Map<string, ChunkData>
     ): string | null {
-        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
-        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-        const chunkX = Math.floor(x / chunkSizePx);
-        const chunkY = Math.floor(y / chunkSizePx);
-        const chunkKey = `${chunkX},${chunkY}`;
-
+        const { chunkKey, tileKey } = worldToChunkTile(x, y);
         const data = worldData.get(chunkKey);
         if (!data || !data.zones) return null;
-
-        const localX = Math.floor((x - chunkX * chunkSizePx) / TILE_SIZE);
-        const localY = Math.floor((y - chunkY * chunkSizePx) / TILE_SIZE);
-        const tileKey = `${localX},${localY}`;
-
         return data.zones[tileKey]?.[category] || null;
     }
 
@@ -295,31 +207,47 @@ export class ZoneSystem {
         container: PIXI.Container,
         zones: Record<string, Record<string, string>>
     ) {
-        // Reuse or create Graphics for zones
-        let g = container.getChildByName('zone_overlay') as PIXI.Graphics;
-        if (!g) {
-            g = new PIXI.Graphics();
-            (g as { label?: string }).label = 'zone_overlay';
-            container.addChild(g);
+        // Reuse or create a Container for zone sprites
+        let overlayContainer = container.getChildByLabel('zone_overlay') as PIXI.Container;
+        if (!overlayContainer) {
+            overlayContainer = new PIXI.Container();
+            overlayContainer.label = 'zone_overlay';
+            container.addChild(overlayContainer);
         }
 
-        g.clear();
         const { TILE_SIZE } = MapEditorConfig;
+
+        // Hide all existing sprites (return to pool)
+        for (let i = 0; i < overlayContainer.children.length; i++) {
+            overlayContainer.children[i].visible = false;
+        }
+
+        let spriteIndex = 0;
 
         // Iterate all tiles in this chunk that have zones
         for (const [tileKey, categories] of Object.entries(zones)) {
             const [lx, ly] = tileKey.split(',').map(Number);
 
             Object.entries(categories).forEach(([cat, zoneId]) => {
-                // TODO: Fix unknown type or circular ref if ZoneConfig is not available?
-                // ZoneConfig is imported.
                 const def = ZoneConfig[zoneId];
-
                 const isVisible = !EditorContext.hiddenZoneIds.has(zoneId);
 
                 if (def && isVisible) {
-                    g.rect(lx * TILE_SIZE, ly * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                    g.fill({ color: def.color, alpha: 0.3 });
+                    let sprite = overlayContainer.children[spriteIndex] as PIXI.Sprite;
+                    if (!sprite) {
+                        sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+                        sprite.width = TILE_SIZE;
+                        sprite.height = TILE_SIZE;
+                        overlayContainer.addChild(sprite);
+                    }
+
+                    sprite.x = lx * TILE_SIZE;
+                    sprite.y = ly * TILE_SIZE;
+                    sprite.tint = def.color;
+                    sprite.alpha = 0.3;
+                    sprite.visible = true;
+
+                    spriteIndex++;
                 }
             });
         }

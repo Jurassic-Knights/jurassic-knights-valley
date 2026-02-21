@@ -19,18 +19,12 @@ const Events = {
     // Economy & Progression
     RESOURCE_COLLECTED: 'RESOURCE_COLLECTED', // { type, amount, total }
     INVENTORY_UPDATED: 'INVENTORY_UPDATED', // { inventory }
-    REQUEST_UNLOCK: 'REQUEST_UNLOCK', // { gridX, gridY, cost }
     REQUEST_UPGRADE: 'REQUEST_UPGRADE', // { gridX, gridY, type, cost }
     UPGRADE_PURCHASED: 'UPGRADE_PURCHASED', // { gridX, gridY, type }
     ADD_GOLD: 'ADD_GOLD', // (amount)
 
     // World
     GAME_STATE_CHANGE: 'GAME_STATE_CHANGE', // { state }
-    ISLAND_UNLOCKED: 'ISLAND_UNLOCKED', // { gridX, gridY }
-
-    // UI
-    UI_UNLOCK_PROMPT: 'UI_UNLOCK_PROMPT', // { island }
-    UI_HIDE_UNLOCK_PROMPT: 'UI_HIDE_UNLOCK_PROMPT', // (void)
 
     // Combat - Enemy AI
     ENEMY_AGGRO: 'ENEMY_AGGRO', // { enemy, target }

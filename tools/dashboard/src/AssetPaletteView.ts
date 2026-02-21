@@ -40,7 +40,7 @@ export class AssetPaletteView {
     private container: HTMLElement;
     private onSelect: (id: string, category: string) => void;
 
-    private mode: 'object' | 'zone' | 'ground' = 'object';
+    private mode: 'object' | 'zone' | 'ground' | 'manipulation' = 'object';
     private currentCategory: string = 'nodes';
     private currentZoneCategory: string = ZoneCategory.BIOME;
     private selectedAssetId: string | null = null;
@@ -112,7 +112,7 @@ export class AssetPaletteView {
         this.render();
     }
 
-    public setMode(mode: 'object' | 'zone' | 'ground') {
+    public setMode(mode: 'object' | 'zone' | 'ground' | 'manipulation') {
         this.mode = mode;
         this.render();
     }
@@ -182,6 +182,9 @@ export class AssetPaletteView {
             this.renderZones();
         } else if (this.mode === 'ground') {
             this.renderGround();
+        } else if (this.mode === 'manipulation') {
+            this.container.innerHTML =
+                '<p style="padding:12px; color:#aaa; font-size:12px; line-height:1.4;">Drag towns and stations to move them to another polygon.</p>';
         } else {
             this.renderObjects();
         }

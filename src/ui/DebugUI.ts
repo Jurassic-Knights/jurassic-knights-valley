@@ -5,7 +5,7 @@
  */
 
 import { Logger } from '@core/Logger';
-import { IslandManager } from '../world/IslandManager';
+import { WorldManager } from '../world/WorldManager';
 import { PlatformManager } from '@core/PlatformManager';
 import { GameRenderer } from '@core/GameRenderer';
 import { timeSystem } from '@systems/TimeSystem';
@@ -51,8 +51,8 @@ const DebugUI = {
         const unlockBtn = DOMUtils.create('button', {
             text: 'Unlock All',
             onClick: () => {
-                if (IslandManager) {
-                    for (const island of IslandManager.islands) {
+                if (WorldManager) {
+                    for (const island of WorldManager.islands) {
                         island.unlocked = true;
                     }
                     Logger.info('[DebugUI] All islands unlocked!');

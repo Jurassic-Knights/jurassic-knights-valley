@@ -11,10 +11,13 @@ import * as PIXI from 'pixi.js';
 import { MapEditorConfig } from './MapEditorConfig';
 import { AssetLoader } from '@core/AssetLoader';
 import { drawCachedMeshToCanvas } from './Mapgen4PreviewRenderer';
+import { Logger } from '@core/Logger';
 import { createRailroadMeshes } from './RailroadMeshRenderer';
-import { buildMeshAndMap, computeTownsAndRoads } from './Mapgen4Generator';
+import { buildMeshAndMap, computeTownsAndRoads, type ManualTownsAndRailroads } from './Mapgen4Generator';
 import type { Mapgen4Param } from './Mapgen4Param';
 import type { MeshAndMap } from './Mapgen4Generator';
+import { buildCellRegions, computeRegionDistanceFromWater } from './Mapgen4RegionUtils';
+import { COAST_MAX_POLYGON_STEPS } from './Mapgen4ZoneMapping';
 
 export interface ProceduralCache {
     meshAndMap: MeshAndMap;
@@ -23,6 +26,11 @@ export interface ProceduralCache {
     roadSegments: import('./Mapgen4Generator').RoadSegment[];
     railroadPath: number[];
     railroadCrossings: import('./Mapgen4Generator').RailroadCrossing[];
+    railroadStationIds: number[];
+    /** For world→region hit-test (context menu, waypoints). */
+    cellRegions: number[][];
+    /** Cached BFS distance from water (region → distance); avoids per-frame recompute. */
+    distanceFromWater: Map<number, number>;
 }
 
 export interface RailroadMeshState {
@@ -84,24 +92,29 @@ export function updateRailroadMeshes(
         worldContainer.addChild(railroadMeshContainer);
     }
     for (const m of railroadMeshes) m.destroy();
-    railroadMeshes = createRailroadMeshes(
-        cache.meshAndMap.mesh,
-        cache.meshAndMap.map,
-        cache.railroadPath,
-        railroadMeshContainer
-    );
-
+    try {
+        railroadMeshes = createRailroadMeshes(
+            cache.meshAndMap.mesh,
+            cache.meshAndMap.map,
+            cache.railroadPath,
+            railroadMeshContainer,
+            cache.railroadStationIds
+        );
+    } catch (err) {
+        Logger.error('[MapEditorProceduralRenderer] createRailroadMeshes failed (possibly OOM)', err);
+        railroadMeshes = [];
+    }
     return { railroadMeshContainer, railroadMeshes, cacheKey };
 }
 
-/** Build procedural cache from param. Preloads railroad assets when enabled. */
-export async function buildProceduralCache(param: Mapgen4Param): Promise<ProceduralCache> {
+/** Build procedural cache from param. Preloads railroad assets when enabled. Optional manual data overrides procedural towns/stations/waypoints. */
+export async function buildProceduralCache(
+    param: Mapgen4Param,
+    manual?: ManualTownsAndRailroads
+): Promise<ProceduralCache> {
     const meshAndMap = buildMeshAndMap(param);
-    const { towns, roadSegments, railroadPath, railroadCrossings } = computeTownsAndRoads(
-        meshAndMap.mesh,
-        meshAndMap.map,
-        param
-    );
+    const { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds } =
+        computeTownsAndRoads(meshAndMap.mesh, meshAndMap.map, param, manual);
     if (param.railroads?.enabled && railroadPath.length >= 2) {
         const preloads: Promise<unknown>[] = [];
         for (const biome of ['grasslands', 'tundra', 'desert', 'badlands']) {
@@ -113,7 +126,23 @@ export async function buildProceduralCache(param: Mapgen4Param): Promise<Procedu
         }
         await Promise.all(preloads);
     }
-    return { meshAndMap, param, towns, roadSegments, railroadPath, railroadCrossings };
+    const cellRegions = buildCellRegions(meshAndMap.mesh);
+    const distanceFromWater = computeRegionDistanceFromWater(
+        meshAndMap.mesh,
+        meshAndMap.map,
+        COAST_MAX_POLYGON_STEPS
+    );
+    return {
+        meshAndMap,
+        param,
+        towns,
+        roadSegments,
+        railroadPath,
+        railroadCrossings,
+        railroadStationIds,
+        cellRegions,
+        distanceFromWater
+    };
 }
 
 /** Draw cached procedural map to canvas. Returns true if drawn. */
@@ -141,8 +170,10 @@ export function drawProceduralToCanvas(
         cache.roadSegments,
         cache.railroadPath,
         cache.railroadCrossings,
+        cache.railroadStationIds,
         hiddenZoneIds ?? new Set(),
-        skipRailroad ?? false
+        skipRailroad ?? false,
+        cache.distanceFromWater
     );
     return true;
 }

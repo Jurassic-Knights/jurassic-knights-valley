@@ -11,13 +11,13 @@ import { Logger } from '@core/Logger';
 import { GameRenderer } from '@core/GameRenderer';
 import { GameConstants } from '@data/GameConstants';
 import { getConfig } from '@data/GameConfig';
-import { IslandManager } from './IslandManager';
+import { WorldManager } from './WorldManager';
 import { AssetLoader } from '@core/AssetLoader';
 import { entityManager } from '@core/EntityManager';
 import { EventBus } from '@core/EventBus';
 import { Registry } from '@core/Registry';
 import { renderHomeBase } from './HomeBaseRenderer';
-import type { Island, Bounds } from '../types/world';
+import type { Bounds } from '../types/world';
 import type { IEntity } from '../types/core';
 
 // entityManager instance is imported, but we also need the EntityManager reference for static access
@@ -27,7 +27,6 @@ const HomeBase = {
     treeBorderWidth: 100,
 
     // Private cache properties
-    _cachedHome: null as Island | null,
     _cachedBounds: null as Bounds | null,
     _treeCacheFrame: 0,
     _cachedTrees: [] as IEntity[],
@@ -75,15 +74,15 @@ const HomeBase = {
             return this._cachedTrees;
         }
 
-        if (!EntityManager || !this._cachedHome) return [];
+        if (!EntityManager || !this._cachedBounds) return [];
 
         // Query and cache
-        const home = this._cachedHome;
+        const bounds = this._cachedBounds;
         this._cachedTrees = EntityManager.getByType('Resource').filter(
             (r) =>
                 r.resourceType.startsWith('node_woodcutting_') &&
-                r.islandGridX === home.gridX &&
-                r.islandGridY === home.gridY
+                r.x >= bounds.x && r.x <= bounds.x + bounds.width &&
+                r.y >= bounds.y && r.y <= bounds.y + bounds.height
         );
         this._treeCacheFrame = frame;
 
@@ -97,20 +96,25 @@ const HomeBase = {
      * Initialize the home base (trees now spawned via SpawnManager)
      */
     init() {
-        if (!IslandManager) {
-            Logger.error('[HomeBase]', 'IslandManager not found');
+        if (!WorldManager) {
+            Logger.error('[HomeBase]', 'WorldManager not found');
             return;
         }
 
-        const home = IslandManager.getHomeIsland();
-        if (!home) {
-            Logger.error('[HomeBase]', 'Home island not found');
+        const spawn = WorldManager.getHeroSpawnPosition();
+        if (!spawn) {
+            Logger.error('[HomeBase]', 'Hero spawn not found');
             return;
         }
 
-        // PERF: Cache home island and bounds (don't change during gameplay)
-        this._cachedHome = home;
-        this._cachedBounds = IslandManager.getPlayableBounds(home);
+        // PERF: Cache bounds around spawn point
+        const size = 2000;
+        this._cachedBounds = {
+            x: spawn.x - size / 2,
+            y: spawn.y - size / 2,
+            width: size,
+            height: size
+        };
 
         // PERF: Cache image paths at init
         if (AssetLoader) {
@@ -197,11 +201,16 @@ const HomeBase = {
     // Trees are now queried via the treeResources getter from EntityManager
 
     render(ctx: CanvasRenderingContext2D) {
-        if (!this._cachedBounds && IslandManager) {
-            const home = IslandManager.getHomeIsland();
-            if (home) {
-                this._cachedHome = home;
-                this._cachedBounds = IslandManager.getPlayableBounds(home);
+        if (!this._cachedBounds && WorldManager) {
+            const spawn = WorldManager.getHeroSpawnPosition();
+            if (spawn) {
+                const size = 2000;
+                this._cachedBounds = {
+                    x: spawn.x - size / 2,
+                    y: spawn.y - size / 2,
+                    width: size,
+                    height: size
+                };
                 if (AssetLoader) {
                     this._outpostPath = AssetLoader.getImagePath('building_residential_01');
                     this._forgePath = AssetLoader.getImagePath('building_industrial_01');
@@ -210,7 +219,7 @@ const HomeBase = {
                 }
             }
         }
-        this.treeResources;
+        const _ = this.treeResources;
         renderHomeBase(ctx, this as unknown as import('./HomeBaseRenderer').HomeBaseRenderState);
     },
 
@@ -219,17 +228,15 @@ const HomeBase = {
      * @returns {{x: number, y: number, width: number, height: number}}
      */
     getSafeArea() {
-        if (!IslandManager) return null;
+        if (!this._cachedBounds) return null;
 
-        const home = IslandManager.getHomeIsland();
-        if (!home) return null;
-
+        const b = this._cachedBounds;
         const border = this.treeBorderWidth;
         return {
-            x: home.worldX + border,
-            y: home.worldY + border,
-            width: home.width - border * 2,
-            height: home.height - border * 2
+            x: b.x + border,
+            y: b.y + border,
+            width: b.width - border * 2,
+            height: b.height - border * 2
         };
     },
 

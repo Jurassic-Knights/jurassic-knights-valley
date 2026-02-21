@@ -1,15 +1,6 @@
 /**
- * RailroadGeneratorTypes — Param and crossing types for RailroadGenerator.
+ * RailroadGeneratorTypes — Shared types for railroad generation.
  */
-
-export interface RailroadGeneratorParam {
-    slopeWeight: number;
-    /** Penalty for sharp turns (0 = no penalty). Higher = prefer sweeping curves. */
-    turnWeight?: number;
-    /** Cost multiplier when crossing rivers (>1 = prefer land). Bridges added at river crossings. */
-    riverCrossingCost?: number;
-    seed?: number;
-}
 
 export interface RailroadCrossing {
     r1: number;

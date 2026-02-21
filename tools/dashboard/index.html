@@ -125,6 +125,8 @@
                     style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer; border-left:1px solid #444;">GROUND</button>
                 <button id="mode-zone" data-action="set-editor-mode" data-mode="zone"
                     style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer; border-left:1px solid #444;">ZONES</button>
+                <button id="mode-manipulation" data-action="set-editor-mode" data-mode="manipulation"
+                    style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer; border-left:1px solid #444;">MANIPULATION</button>
             </div>
 
             <!-- Zone Category (Only visible in Zone Mode via JS) -->
@@ -160,6 +162,7 @@
                     <button type="button" id="debug-btn" class="map-editor-debug-btn" title="Debug options">🐛 Debug</button>
                     <div id="debug-panel" class="map-editor-debug-panel" style="display:none;">
                         <label class="map-editor-debug-option"><input type="checkbox" id="debug-station-numbers"> Station numbers</label>
+                        <label class="map-editor-debug-option"><input type="checkbox" id="debug-spline-path"> Spline path</label>
                     </div>
                 </div>
                 <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
@@ -215,6 +218,11 @@
                 <div id="map-list" class="map-editor-list"></div>
             </div>
             <div id="outliner-panel-body" class="map-editor-panel-body" style="display:none;">
+                <div class="map-editor-label" style="margin-bottom:4px;">Town</div>
+                <div id="outliner-towns" class="map-editor-list" style="margin-bottom:12px;"></div>
+                <div class="map-editor-label" style="margin-bottom:4px;">Railroad</div>
+                <div class="map-editor-label" style="font-size:10px; color:#888; margin-bottom:2px;">Stations (order 1→2→3…)</div>
+                <div id="outliner-stations" class="map-editor-list" style="margin-bottom:12px;"></div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                     <span class="map-editor-label" style="margin:0;">Objects in world</span>
                     <button type="button" id="outliner-refresh-btn" style="font-size:10px; padding:2px 6px;">↻</button>
@@ -283,8 +291,9 @@
                 <div class="proc-section">
                     <div class="map-editor-label">Railroads</div>
                     <div class="proc-row"><label><input type="checkbox" id="proc-railroads-enabled" checked> Enabled</label></div>
-                    <div class="proc-row"><label>Slope weight</label><input type="range" id="proc-railroad-slope-weight" min="5" max="25" step="1" value="12" title="Higher = scenic flatter routes; towns limited to highland"><span id="proc-railroad-slope-weight-val">12</span></div>
-                    <div class="proc-row"><label>Turn weight</label><input type="range" id="proc-railroad-turn-weight" min="0" max="20" step="1" value="8" title="Higher = sweeping curves, less sharp corners; 0 = no penalty"><span id="proc-railroad-turn-weight-val">8</span></div>
+                    <div class="proc-row">
+                        <button type="button" id="proc-railroad-rebuild" title="Recompute path between stations and waypoints">Rebuild path</button>
+                    </div>
                 </div>
                 <div class="proc-preview-wrap" id="proc-preview-wrap" title="Click to go to location">
                     <canvas id="proc-preview-canvas" width="380" height="380" class="proc-preview-canvas"></canvas>

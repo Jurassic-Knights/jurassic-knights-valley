@@ -8,7 +8,7 @@
  */
 
 import type { IViewport, IGame } from '../types/core';
-import { IslandType, BridgeOrientation } from '@config/WorldTypes';
+
 
 const GridRenderer = {
     _zoneImages: {} as Record<string, HTMLImageElement>,
@@ -21,7 +21,7 @@ const GridRenderer = {
      * @param {Object} game - Game reference
      */
     drawGrid(ctx: CanvasRenderingContext2D, viewport: IViewport, canvas: HTMLCanvasElement, game: IGame | null) {
-        const islandManager = game ? game.getSystem('IslandManager') : null;
+        const islandManager = game ? game.getSystem('WorldManager') : null;
         const assetLoader = game ? game.getSystem('AssetLoader') : null;
 
         if (!islandManager) {
@@ -42,7 +42,7 @@ const GridRenderer = {
     },
 
     /**
-     * Fallback grid when IslandManager not available
+     * Fallback grid when WorldManager not available
      */
     drawFallbackGrid(ctx: CanvasRenderingContext2D, viewport: IViewport, canvas: HTMLCanvasElement) {
         const gridSize = 50;
@@ -68,7 +68,7 @@ const GridRenderer = {
     /**
      * Draw all islands
      */
-    drawIslands(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string; type?: string; [key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
+    drawIslands(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string; type?: string;[key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
         const islandColor = '#4A5D23';
         const islandBorder = '#3A4D13';
 
@@ -78,7 +78,7 @@ const GridRenderer = {
             // Try background image
             if (assetLoader) {
                 let assetId = 'zone_' + island.name.toLowerCase().replace(/ /g, '_');
-                if (island.type === IslandType.HOME) assetId = 'world_island_home';
+                if (island.type === 'home') assetId = 'world_island_home';
 
                 const bgPath = assetLoader.getImagePath(assetId);
                 if (bgPath) {
@@ -123,7 +123,7 @@ const GridRenderer = {
     /**
      * Draw lock overlay for locked islands
      */
-    drawLockOverlay(ctx: CanvasRenderingContext2D, island: { name: string; [key: string]: unknown }) {
+    drawLockOverlay(ctx: CanvasRenderingContext2D, island: { name: string;[key: string]: unknown }) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.font = 'bold 80px "Courier New", sans-serif';
         ctx.textAlign = 'center';
@@ -146,7 +146,7 @@ const GridRenderer = {
     /**
      * Draw all bridges
      */
-    drawBridges(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string; [key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
+    drawBridges(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string;[key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
         const bridges = islandManager.getBridges();
         let planksImg = null;
 
@@ -163,7 +163,7 @@ const GridRenderer = {
             if (planksImg) {
                 ctx.translate(bridge.x + bridge.width / 2, bridge.y + bridge.height / 2);
 
-                if (bridge.type === BridgeOrientation.HORIZONTAL) {
+                if (bridge.type === 'horizontal') {
                     ctx.rotate(Math.PI / 2);
                     ctx.drawImage(
                         planksImg,
@@ -188,7 +188,7 @@ const GridRenderer = {
 
                 ctx.strokeStyle = '#5A4A2A';
                 ctx.lineWidth = 2;
-                if (bridge.type === BridgeOrientation.HORIZONTAL) {
+                if (bridge.type === 'horizontal') {
                     for (let x = bridge.x + 10; x < bridge.x + bridge.width; x += 15) {
                         ctx.beginPath();
                         ctx.moveTo(x, bridge.y);

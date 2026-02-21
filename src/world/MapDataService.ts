@@ -8,11 +8,29 @@ import { Logger } from '@core/Logger';
 import type { MapObject, HeroSpawnPosition } from '../tools/map-editor/MapEditorTypes';
 import type { Mapgen4Param } from '../tools/map-editor/Mapgen4Generator';
 
+/** Manual station placement: region ID and visit order (1, 2, 3...). */
+export interface ManualStation {
+    regionId: number;
+    order: number;
+}
+
+/** Waypoint on a railroad leg. legIndex 0 = between station 1 and 2. */
+export interface RailroadWaypointEntry {
+    legIndex: number;
+    regionId: number;
+}
+
 export interface MapData {
     version?: number;
     chunks?: Array<{ id: string; objects?: MapObject[] }>;
     mapgen4Param?: Mapgen4Param;
     heroSpawn?: HeroSpawnPosition;
+    /** When non-empty, town centers for roads/railroads (region IDs). */
+    manualTowns?: number[];
+    /** When non-empty, station order for railroad legs 1→2→3... */
+    manualStations?: ManualStation[];
+    /** Waypoints per leg for manual railroad shaping. */
+    railroadWaypoints?: RailroadWaypointEntry[];
 }
 
 const DEFAULT_MAP_FILENAME = 'default';

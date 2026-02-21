@@ -13,7 +13,7 @@ import { entityManager } from '@core/EntityManager';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { DroppedItem } from './DroppedItem';
 import { Registry } from '@core/Registry';
-import type { IIslandManager } from '../types/world';
+import type { IWorldManager } from '../types/world';
 
 interface CraftedItemOptions {
     amount?: number;
@@ -24,8 +24,8 @@ interface CraftedItemOptions {
 
 const WORLD_SIZE = 160000;
 
-function getWorldManager(): IIslandManager | null {
-    return Registry?.get<IIslandManager>('IslandManager') ?? null;
+function getWorldManager(): IWorldManager | null {
+    return Registry?.get<IWorldManager>('WorldManager') ?? null;
 }
 
 function clampToWorldBounds(x: number, y: number): { x: number; y: number } {

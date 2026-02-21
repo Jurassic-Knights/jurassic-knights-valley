@@ -16,7 +16,8 @@
         "test:coverage": "vitest run --coverage",
         "typecheck": "tsc --noEmit",
         "prepare": "husky",
-        "dashboard:build": "node tools/dashboard/scripts/build.mjs"
+        "dashboard:build": "node tools/dashboard/scripts/build.mjs",
+        "sync:agent": "node scripts/sync-cursor-to-agent.mjs"
     },
     "lint-staged": {
         "*.{js,ts}": [

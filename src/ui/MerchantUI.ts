@@ -5,12 +5,8 @@
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
-import { IslandUpgrades, UpgradeLevel } from '../gameplay/IslandUpgrades';
 import { Registry } from '@core/Registry';
 import { UIPanel } from './core/UIPanel';
-// Merchant type from types/ui is for NPCs, this UI handles Island Upgrades
-// We define a local interface for the interaction target
-
 interface IslandInteraction {
     islandId: string;
     islandName: string;
@@ -136,79 +132,21 @@ class MerchantPanel extends UIPanel {
     }
 
     render() {
-        if (!this.currentMerchant || !IslandUpgrades) return;
-
-        const [gridX, gridY] = this.currentMerchant.islandId.split('_').map(Number);
-        const island = IslandUpgrades.getIsland(gridX, gridY);
-        if (!island) return;
+        if (!this.currentMerchant) return;
 
         const title = document.getElementById('merchant-title');
         if (title) {
-            title.textContent = island.name.toUpperCase();
+            title.textContent = this.currentMerchant.islandName?.toUpperCase() || 'MERCHANT';
         }
-
-        this.renderUpgradeRow('resourceSlots', island.resourceSlots, 'Resource Slots', 'nodes');
-        this.renderUpgradeRow('autoChance', island.autoChance, 'Auto Collect', '%');
-
-        const currentRespawn = IslandUpgrades.calculateRespawnTime(
-            island.respawnTime.level,
-            30
-        ).toFixed(1);
-        const nextRespawn = IslandUpgrades.calculateRespawnTime(
-            island.respawnTime.level + 1,
-            30
-        ).toFixed(1);
-        const respawnText = `${island.respawnTime.level}/${island.respawnTime.max} lvl (${currentRespawn}s -> ${nextRespawn}s)`;
-        this.renderUpgradeRow(
-            'respawnTime',
-            island.respawnTime,
-            'Production Speed',
-            'lvl',
-            respawnText
-        );
+        // Island logic removed
     }
 
-    renderUpgradeRow(type: string, data: UpgradeLevel, label: string, unit: string, customDisplay: string | null = null) {
-        const levelEl = document.getElementById(`upgrade-${type}-level`);
-        const costEl = document.getElementById(`upgrade-${type}-cost`);
-        const btn = document.getElementById(`btn-upgrade-${type}`);
-
-        if (levelEl) {
-            levelEl.textContent = customDisplay
-                ? customDisplay
-                : `${data.level}/${data.max} ${unit}`;
-        }
-
-        if (costEl) {
-            const cost = IslandUpgrades.getUpgradeCost(type, data.level);
-            costEl.textContent = data.level >= data.max ? 'MAX' : `${cost} Gold`;
-        }
-
-        if (btn) {
-            (btn as HTMLButtonElement).disabled = data.level >= data.max;
-        }
+    renderUpgradeRow(type: string, data: any, label: string, unit: string, customDisplay: string | null = null) {
+        // Obsolete
     }
 
     purchaseUpgrade(type: string) {
-        if (!this.currentMerchant || !IslandUpgrades) return;
-
-        const [gridX, gridY] = this.currentMerchant.islandId.split('_').map(Number);
-        const island = IslandUpgrades.getIsland(gridX, gridY);
-        if (!island) return;
-
-        const upgrade = island[type];
-        if (!upgrade || upgrade.level >= upgrade.max) return;
-
-        const cost = IslandUpgrades.getUpgradeCost(type, upgrade.level);
-
-        if (EventBus) {
-            EventBus.emit('REQUEST_UPGRADE', {
-                gridX: gridX,
-                gridY: gridY,
-                type: type,
-                cost: cost
-            });
-        }
+        // Obsolete
     }
 }
 

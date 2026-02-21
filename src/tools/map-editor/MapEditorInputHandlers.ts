@@ -25,7 +25,7 @@ export function handleZoom(
 ): void {
     e.preventDefault();
 
-    const zoomFactor = 1.1;
+    const zoomFactor = MapEditorConfig.UI.ZOOM_FACTOR;
     let newZoom = e.deltaY < 0 ? zoom * zoomFactor : zoom / zoomFactor;
     newZoom = Math.max(MapEditorConfig.MIN_ZOOM, Math.min(MapEditorConfig.MAX_ZOOM, newZoom));
 

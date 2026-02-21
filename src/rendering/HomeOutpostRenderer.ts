@@ -22,13 +22,13 @@ const HomeOutpostRenderer = {
         let centerX = worldWidth / 2;
         let centerY = worldHeight / 2;
 
-        // Use IslandManager if available
-        const islandManager = game ? game.getSystem('IslandManager') : null;
-        if (islandManager) {
-            const home = islandManager.getHomeIsland();
-            if (home) {
-                centerX = home.worldX + home.width / 2;
-                centerY = home.worldY + home.height / 2;
+        // Use WorldManager if available
+        const worldMgr = game ? game.getSystem('WorldManager') as any : null;
+        if (worldMgr && worldMgr.getHeroSpawnPosition) {
+            const spawn = worldMgr.getHeroSpawnPosition();
+            if (spawn) {
+                centerX = spawn.x;
+                centerY = spawn.y;
             }
         }
 

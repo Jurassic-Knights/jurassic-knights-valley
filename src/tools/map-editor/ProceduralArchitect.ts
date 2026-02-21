@@ -7,14 +7,12 @@ import {
     WATER_TERRAIN_IDS,
     WATER_SPLAT_TERRAIN_IDS
 } from './Mapgen4BiomeConfig';
+import { ProceduralRules } from './data/ProceduralRules';
 
 /**
- * ProceduralArchitect
- *
- * Handles smart generation of map content.
- * - Biome-based transitions
- * - City grid generation
- * - Organic forest clustering
+ * ProceduralArchitect — Smart generation of map content from zone state.
+ * Handles biome-based transitions, city grid generation, organic forest clustering,
+ * coast sync, and splat evaluation for ground blending.
  */
 export class ProceduralArchitect {
     private noise: (x: number, y: number) => number;
@@ -69,8 +67,7 @@ export class ProceduralArchitect {
     }
 
     /**
-     * Compute coast zone updates: terrain_coast on grasslands adjacent to water.
-     * Expands 2 tiles deep from water for a natural gradient. Uses BFS from water.
+     * Compute coast zone updates based on data-driven ProceduralRules.
      */
     public computeCoastUpdates(
         worldData: Map<string, ChunkData>,
@@ -91,6 +88,8 @@ export class ProceduralArchitect {
             return nData.zones[`${nLX},${nLY}`]?.['terrain'] ?? null;
         };
 
+        const ruleInfo = ProceduralRules.COASTLINE_INTERPOLATION;
+
         // Coast extends N tiles from water; check all tiles within COAST_DEPTH steps
         const hasWaterWithin = (tileLeftX: number, tileLeftY: number, steps: number): boolean => {
             for (let dx = -steps; dx <= steps; dx++) {
@@ -99,20 +98,22 @@ export class ProceduralArchitect {
                     const nx = tileLeftX + dx * TILE_SIZE;
                     const ny = tileLeftY + dy * TILE_SIZE;
                     const n = getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2);
-                    if (n && WATER_SPLAT_TERRAIN_IDS.includes(n as (typeof WATER_SPLAT_TERRAIN_IDS)[number])) return true;
+                    if (n && ruleInfo.requiredAdjacentZoneIds.includes(n)) return true;
                 }
             }
             return false;
         };
 
-        const hasWaterNeighbor = (tileLeftX: number, tileLeftY: number): boolean => {
-            for (let dx = -1; dx <= 1; dx++) {
-                for (let dy = -1; dy <= 1; dy++) {
+        /** Directly adjacent to water (using rule radius). Used for ADD to respect polygon cap. */
+        const hasRuleRequiredNeighbor = (tileLeftX: number, tileLeftY: number): boolean => {
+            const steps = ruleInfo.radiusTiles;
+            for (let dx = -steps; dx <= steps; dx++) {
+                for (let dy = -steps; dy <= steps; dy++) {
                     if (dx === 0 && dy === 0) continue;
                     const nx = tileLeftX + dx * TILE_SIZE;
                     const ny = tileLeftY + dy * TILE_SIZE;
                     const t = getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2);
-                    if (t && WATER_SPLAT_TERRAIN_IDS.includes(t as (typeof WATER_SPLAT_TERRAIN_IDS)[number])) return true;
+                    if (t && ruleInfo.requiredAdjacentZoneIds.includes(t)) return true;
                 }
             }
             return false;
@@ -129,28 +130,31 @@ export class ProceduralArchitect {
                 const gy = (cy * CHUNK_SIZE + ly) * TILE_SIZE;
                 const biome = categories['biome'];
                 const terrain = categories['terrain'];
-                const isGrasslands = biome === 'grasslands' || biome === 'biome_grasslands';
-                const hasWater = hasWaterNeighbor(gx, gy);
+                const isTargetBiome = ruleInfo.validBaseBiomes.includes(biome);
+
+                // Using hardcoded COAST_DEPTH here for the fade-out logic
                 const hasWaterNearby = hasWaterWithin(gx, gy, COAST_DEPTH);
 
-                if (terrain === 'terrain_coast' && !hasWaterNearby) {
+                if (terrain === ruleInfo.targetZoneId && !hasWaterNearby) {
+                    // Remove coast if no water nearby
                     updates.push({
                         x: gx + TILE_SIZE / 2,
                         y: gy + TILE_SIZE / 2,
-                        category: 'terrain',
+                        category: ruleInfo.targetZoneCategory,
                         zoneId: null
                     });
                 } else if (
-                    isGrasslands &&
-                    hasWaterNearby &&
+                    isTargetBiome &&
+                    hasRuleRequiredNeighbor(gx, gy) &&
                     terrain &&
                     !WATER_TERRAIN_IDS.includes(terrain as (typeof WATER_TERRAIN_IDS)[number])
                 ) {
+                    // Add coast if directly adjacent to water and valid
                     updates.push({
                         x: gx + TILE_SIZE / 2,
                         y: gy + TILE_SIZE / 2,
-                        category: 'terrain',
-                        zoneId: 'terrain_coast'
+                        category: ruleInfo.targetZoneCategory,
+                        zoneId: ruleInfo.targetZoneId
                     });
                 }
             }

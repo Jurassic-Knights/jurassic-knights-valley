@@ -1,6 +1,7 @@
 import { EditorCommand } from './EditorCommand';
 import { ChunkManager } from '../ChunkManager';
 
+/** Command to remove an object at a world position. Undo restores it. */
 export class RemoveObjectCommand implements EditorCommand {
     public type = 'Remove Object';
 

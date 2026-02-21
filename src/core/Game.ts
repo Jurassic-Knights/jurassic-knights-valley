@@ -16,7 +16,7 @@ import { GameRenderer } from './GameRenderer';
 import { EventBus } from './EventBus';
 import { SystemConfig } from '@config/SystemConfig';
 import { Tween } from '../animation/Tween';
-import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+
 import { logProfileResults } from './GameProfile';
 import { MerchantUI } from '@ui/MerchantUI';
 import { VFXController } from '@vfx/VFXController';
@@ -27,7 +27,7 @@ class Game {
     private lastTime: number = 0;
     private tickRate: number;
     private accumulator: number = 0;
-    public hero: Hero | null = null;
+    private _hero: Hero | null = null;
     private systems: ISystem[] = [];
     private _boundGameLoop: (timestamp: number) => void;
     private _profile: import('./GameProfile').ProfileData | null = null;
@@ -106,9 +106,9 @@ class Game {
                         if (config.isAsync) {
                             Logger.info(`[Game] Awaiting async init: ${name}`);
                             debugStatus(`Awaiting: ${name}...`);
-                            await sys.init(this);
+                            await (sys as any).init(this);
                         } else {
-                            sys.init(this);
+                            (sys as any).init(this);
                         }
                         Logger.info(`[Game] Initialized ${name}`);
                         debugStatus(`OK: ${name}`);
@@ -118,7 +118,7 @@ class Game {
                 }
 
                 // Register for Update Loop
-                if (typeof sys.update === 'function') {
+                if (typeof (sys as any).update === 'function') {
                     this.systems.push(sys);
                 }
             } catch (err) {
@@ -140,13 +140,6 @@ class Game {
 
         // Tween (External Lib) verification
         if (Tween && !this.systems.includes(Tween)) this.systems.push(Tween);
-
-        // IslandUpgrades (Requires world data, so init here or in start phase)
-        const worldManager = Registry?.get('IslandManager');
-        if (IslandUpgrades && worldManager && (worldManager as { islands?: unknown[] }).islands) {
-            IslandUpgrades.init((worldManager as { islands: unknown[] }).islands);
-            Logger.info('[Game] Initialized IslandUpgrades');
-        }
 
         // 4. Start Phase
         Logger.info('[Game] Starting systems...');
@@ -172,17 +165,17 @@ class Game {
 
     private spawnHero(): void {
         try {
-            const worldManager = Registry?.get<{ getHeroSpawnPosition: () => { x: number; y: number } }>('IslandManager');
+            const worldManager = Registry?.get<{ getHeroSpawnPosition: () => { x: number; y: number } }>('WorldManager');
             const gameRenderer = Registry?.get<{ setHero: (h: IEntity) => void; worldWidth?: number; worldHeight?: number }>('GameRenderer');
             const spawn = worldManager?.getHeroSpawnPosition?.() ?? {
                 x: GameConstants.World.DEFAULT_SPAWN_X,
                 y: GameConstants.World.DEFAULT_SPAWN_Y
             };
             const hero = new Hero({ x: spawn.x, y: spawn.y });
-            this.hero = hero;
-            if (gameRenderer?.setHero) gameRenderer.setHero(hero);
+            this._hero = hero;
+            if (gameRenderer?.setHero) gameRenderer.setHero(hero as unknown as IEntity);
             entityManager.add(hero);
-            const savedGold = GameState.get('gold');
+            const savedGold = GameState.get('gold') as number | undefined;
             if (savedGold !== undefined && savedGold !== null) hero.inventory.gold = savedGold;
             Logger.info('[Game] Hero spawned at', spawn.x, spawn.y);
         } catch (err) {
@@ -264,12 +257,12 @@ class Game {
             for (const system of this.systems) {
                 const name = system.constructor?.name || 'Unknown';
                 const start = performance.now();
-                system.update(dt);
+                (system as any).update(dt);
                 profile.systems[name] = (profile.systems[name] || 0) + (performance.now() - start);
             }
         } else {
             for (const system of this.systems) {
-                system.update(dt);
+                (system as any).update(dt);
             }
         }
 
@@ -337,6 +330,13 @@ class Game {
         if (!this._profile) return;
         logProfileResults(this._profile);
         this._profile = null;
+    }
+
+    /**
+     * Get the primary local hero (Standardized Accessor)
+     */
+    get hero(): Hero | null {
+        return this._hero;
     }
 }
 

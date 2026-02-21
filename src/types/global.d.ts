@@ -20,7 +20,7 @@ declare let AssetLoader: typeof import('../core/AssetLoader').AssetLoader;
 declare let AudioManager: typeof import('../core/AudioManager').AudioManager;
 declare let UIManager: import('../ui/UIManager').UIManagerService;
 declare let EntityManager: import('../core/EntityManager').EntityManagerService;
-declare let IslandManager: import('../world/IslandManager').IslandManager;
+declare let WorldManager: import('../world/WorldManager').WorldManager;
 declare let CraftingManager: import('../gameplay/CraftingManager').CraftingManager;
 declare let BalanceManager: import('../gameplay/BalanceManager').BalanceManager;
 declare let QuestManager: import('../gameplay/QuestManager').QuestManager;

@@ -41,7 +41,7 @@ const SystemConfig: SystemConfigEntry[] = [
 
     // --- 3. World Logic ---
     { global: 'BiomeManager', priority: 9, init: true }, // Biome boundaries & roads
-    { global: 'IslandManager', priority: 10, init: true, critical: true }, // WorldManager registered as IslandManager
+    { global: 'WorldManager', priority: 10, init: true, critical: true }, // WorldManager registered as WorldManager
     { global: 'MapObjectSpawner', priority: 11, init: true, isAsync: true },
     { global: 'DinosaurSystem', priority: 12, init: true }, // Herbivore AI & loot
     { global: 'EnemySystem', priority: 12, init: true }, // Enemy AI
@@ -49,8 +49,6 @@ const SystemConfig: SystemConfigEntry[] = [
     { global: 'AmbientSystem', priority: 14, init: false }, // Logic only
     { global: 'InteractionSystem', priority: 15, init: true }, // Pickups/Magnet
     { global: 'RestSystem', priority: 16, init: true }, // Rest Mechanic
-    { global: 'IslandUpgrades', priority: 17, init: false }, // Logic helper (init manually or via valid method?) Check usages.
-    // IslandUpgrades.init takes (islands), not (game). We might need a wrapper or handle in start().
     { global: 'DamageSystem', priority: 19, init: true }, // (06-damage-system)
     { global: 'ProgressionSystem', priority: 19, init: true }, // XP/Leveling (08-leveling-system)
 

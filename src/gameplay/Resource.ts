@@ -7,8 +7,7 @@
  */
 import { Entity } from '@core/Entity';
 import { Logger } from '@core/Logger';
-import { IslandManager } from '../world/IslandManager';
-import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { WorldManager } from '../world/WorldManager';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { IEntity } from '../types/core';
@@ -16,7 +15,7 @@ import { spawnResourceDrops } from './ResourceDrops';
 import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
-import { IslandType } from '@config/WorldTypes';
+
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { EntityScaling } from '../utils/EntityScaling';
@@ -40,9 +39,6 @@ class Resource extends Entity {
     respawnTimer: number = 0;
     maxRespawnTime: number = 30;
 
-    // Island context (inherited from Entity - use declare to avoid overwrite error)
-    declare islandGridX: number | undefined;
-    declare islandGridY: number | undefined;
 
     // Respawn tracking
     currentRespawnDuration: number = 30;
@@ -51,7 +47,7 @@ class Resource extends Entity {
      * Create a resource
      * @param {object} config
      */
-    constructor(config: { resourceType?: string; x?: number; y?: number; islandGridX?: number; islandGridY?: number; [key: string]: unknown } = {}) {
+    constructor(config: { resourceType?: string; x?: number; y?: number;[key: string]: unknown } = {}) {
         // 1. Load Config from EntityRegistry (nodes or resources)
         const nodeConfig = EntityRegistry.nodes?.[config.resourceType];
         const resConfig = EntityRegistry.resources?.[config.resourceType];
@@ -112,13 +108,11 @@ class Resource extends Entity {
         const isMapPlaced = !!config.isMapPlaced;
         if (!isMapPlaced) {
             let onHome = false;
-            if (this.islandGridX === 0 && this.islandGridY === 0) {
+            if (WorldManager) {
+                const mapGenParams = WorldManager.getMapgen4Param();
+                // To maintain parity, we can assume town index 0 is "home" conceptually,
+                // or just allow all nodes. We'll simply let all map nodes spawn.
                 onHome = true;
-            } else if (IslandManager) {
-                const island = IslandManager.getIslandAt(this.x, this.y);
-                if (island && island.type === IslandType.HOME) {
-                    onHome = true;
-                }
             }
 
             // Home island allows T1 nodes (trees in starter area)
@@ -205,17 +199,11 @@ class Resource extends Entity {
             this.health = 0;
             this.state = 'depleted';
 
-            // Look up respawn time from upgrades if possible
-            if (IslandUpgrades && this.islandGridX !== undefined) {
-                const defaultBase = GameConstants.Resource.DEFAULT_BASE_RESPAWN;
-        const baseTime = (Resource.TYPES[this.resourceType] as { baseRespawnTime?: number } | undefined)?.baseRespawnTime ?? defaultBase;
-                this.maxRespawnTime = IslandUpgrades.getRespawnTime(
-                    this.islandGridX,
-                    this.islandGridY,
-                    baseTime
-                );
-            } else if (this.resourceType.includes('_t1_')) {
+            if (this.resourceType.includes('_t1_')) {
                 this.maxRespawnTime = GameConstants.Resource.T1_FAST_RESPAWN;
+            } else {
+                const defaultBase = GameConstants.Resource.DEFAULT_BASE_RESPAWN;
+                this.maxRespawnTime = (Resource.TYPES[this.resourceType] as { baseRespawnTime?: number } | undefined)?.baseRespawnTime ?? defaultBase;
             }
             this.respawnTimer = this.maxRespawnTime;
 
@@ -230,7 +218,7 @@ class Resource extends Entity {
      * Handles proportional time reduction if already respawning
      */
     recalculateRespawnTimer() {
-        if (!IslandUpgrades) return;
+        if (!WorldManager) return;
 
         // Calculate new total duration
         let newDuration = this.maxRespawnTime; // Default base
@@ -238,15 +226,7 @@ class Resource extends Entity {
         // Base value lookup
         const typeConfig = EntityRegistry.resources?.[this.resourceType] || {};
         const defaultBase = GameConstants.Resource.DEFAULT_BASE_RESPAWN;
-        const baseTime = typeConfig.respawnTime ?? defaultBase;
-
-        if (this.islandGridX !== undefined) {
-            newDuration = IslandUpgrades.getRespawnTime(
-                this.islandGridX,
-                this.islandGridY,
-                baseTime
-            );
-        }
+        newDuration = typeConfig.respawnTime ?? defaultBase;
 
         // If depleted/respawning, scale remaining time
         const currentTotal = this.currentRespawnDuration || this.maxRespawnTime;
@@ -340,7 +320,7 @@ class Resource extends Entity {
     static COLORS = RESOURCE_COLORS;
     static RARITY = RESOURCE_RARITY;
     static RARITY_COLORS = RESOURCE_RARITY_COLORS;
-    static TYPES: Record<string, { baseRespawnTime?: number; [key: string]: unknown }> = {};
+    static TYPES: Record<string, { baseRespawnTime?: number;[key: string]: unknown }> = {};
 }
 
 // ES6 Module Export

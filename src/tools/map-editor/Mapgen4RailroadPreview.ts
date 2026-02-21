@@ -8,17 +8,11 @@ import { positionToBiome } from './Mapgen4BiomeConfig';
 import { buildCellRegions, findRegionAt } from './Mapgen4RegionUtils';
 import {
     RAILROAD_TILE_MESH,
-    RAILROAD_PLANK_TILE_MESH,
-    RAILROAD_PLANK_WIDTH_FACTOR,
-    insertGentleCurveWaypoints,
-    buildSplineFineSamplesClosed,
-    buildSplineFineSamples
-} from './Mapgen4SplineUtils';
+    buildRailroadSplineSamples
+} from './RailroadSplineBuilder';
 import type { Mesh } from './mapgen4/types';
 import type Mapgen4Map from './mapgen4/map';
 import type { RailroadCrossing } from './Mapgen4Param';
-
-const STEPS_PER_SEGMENT = 24;
 
 export function drawRailroadSpline(
     ctx: CanvasRenderingContext2D,
@@ -33,20 +27,12 @@ export function drawRailroadSpline(
     vpMinX: number,
     vpMaxX: number,
     vpMinY: number,
-    vpMaxY: number
+    vpMaxY: number,
+    railroadStationIds?: number[]
 ): void {
     if (path.length < 2) return;
 
-    const pts = path.map((r) => ({ x: mesh.x_of_r(r), y: mesh.y_of_r(r) }));
-    const isClosed = path.length >= 3 && path[0] === path[path.length - 1];
-    const rawPoints = isClosed ? pts.slice(0, -1) : pts;
-    const points = insertGentleCurveWaypoints(rawPoints, isClosed);
-
-    const samples =
-        isClosed && points.length >= 3
-            ? buildSplineFineSamplesClosed(points, STEPS_PER_SEGMENT, false)
-            : buildSplineFineSamples(points, STEPS_PER_SEGMENT, false);
-
+    const samples = buildRailroadSplineSamples(mesh, path, railroadStationIds);
     if (samples.length < 2) return;
 
     const cellRegions = buildCellRegions(mesh);
@@ -57,8 +43,6 @@ export function drawRailroadSpline(
     };
 
     const getDirtId = (biome: string) => `ground_base_gravel_${biome}_01`;
-    const getPlankId = (biome: string, variant: 1 | 2 | 3) =>
-        `arch_railtrack_wood_0${variant}_${biome}_clean`;
     const getMetalId = (biome: string) => `arch_railtrack_metal_${biome}_clean`;
 
     const halfW = RAILROAD_TILE_MESH / 2;
@@ -99,7 +83,6 @@ export function drawRailroadSpline(
     if (hasTextures) {
         // Quad-by-quad: each segment is one quad with exact strip vertices (left[i], right[i], right[i+1], left[i+1]).
         // Quads share edges so there are no gaps. Texture tiles continuously using cumLen.
-        const plankWidthCanvas = tileWidthCanvas * RAILROAD_PLANK_WIDTH_FACTOR;
 
         const drawTexturedStrip = (
             left: { x: number; y: number }[],
@@ -150,11 +133,34 @@ export function drawRailroadSpline(
 
                     ctx.save();
                     ctx.beginPath();
-                    const l0 = toCanvas(left0.x, left0.y);
+                    // Expand clipping boundaries slightly to overlap adjacent quads
+                    // preventing 1px subpixel rendering gaps typical of Canvas API
+                    const overlap = 0.05;
+                    const ot0 = Math.max(0, t0 - overlap);
+                    const ot1 = Math.min(1, t1 + overlap);
+
+                    const ol0 = {
+                        x: left[i].x + ot0 * (left[i + 1].x - left[i].x),
+                        y: left[i].y + ot0 * (left[i + 1].y - left[i].y)
+                    };
+                    const or0 = {
+                        x: right[i].x + ot0 * (right[i + 1].x - right[i].x),
+                        y: right[i].y + ot0 * (right[i + 1].y - right[i].y)
+                    };
+                    const or1 = {
+                        x: right[i].x + ot1 * (right[i + 1].x - right[i].x),
+                        y: right[i].y + ot1 * (right[i + 1].y - right[i].y)
+                    };
+                    const ol1 = {
+                        x: left[i].x + ot1 * (left[i + 1].x - left[i].x),
+                        y: left[i].y + ot1 * (left[i + 1].y - left[i].y)
+                    };
+
+                    const l0 = toCanvas(ol0.x, ol0.y);
                     ctx.moveTo(l0.x, l0.y);
-                    ctx.lineTo(toCanvas(right0.x, right0.y).x, toCanvas(right0.x, right0.y).y);
-                    ctx.lineTo(toCanvas(right1.x, right1.y).x, toCanvas(right1.x, right1.y).y);
-                    ctx.lineTo(toCanvas(left1.x, left1.y).x, toCanvas(left1.x, left1.y).y);
+                    ctx.lineTo(toCanvas(or0.x, or0.y).x, toCanvas(or0.x, or0.y).y);
+                    ctx.lineTo(toCanvas(or1.x, or1.y).x, toCanvas(or1.x, or1.y).y);
+                    ctx.lineTo(toCanvas(ol1.x, ol1.y).x, toCanvas(ol1.x, ol1.y).y);
                     ctx.closePath();
                     ctx.clip();
 
@@ -174,14 +180,6 @@ export function drawRailroadSpline(
             const s = samples[Math.min(idx >= 0 ? idx : samples.length - 1, samples.length - 1)];
             return AssetLoader.getImage(getDirtId(getBiome(s.x, s.y)));
         }, RAILROAD_TILE_MESH, tileWidthCanvas);
-
-        const { left: pLeft, right: pRight } = buildStripEdges(RAILROAD_PLANK_WIDTH_FACTOR);
-        drawTexturedStrip(pLeft, pRight, (cumLen) => {
-            const idx = samples.findIndex((s) => s.cumLen >= cumLen);
-            const s = samples[Math.min(idx >= 0 ? idx : samples.length - 1, samples.length - 1)];
-            const variant = (Math.floor(cumLen / RAILROAD_PLANK_TILE_MESH) % 3) + 1 as 1 | 2 | 3;
-            return AssetLoader.getImage(getPlankId(getBiome(s.x, s.y), variant));
-        }, RAILROAD_PLANK_TILE_MESH, plankWidthCanvas);
 
         drawTexturedStrip(left, right, (cumLen) => {
             const idx = samples.findIndex((s) => s.cumLen >= cumLen);

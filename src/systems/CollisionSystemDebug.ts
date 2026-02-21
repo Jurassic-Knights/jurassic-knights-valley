@@ -6,8 +6,8 @@ import { Entity } from '../core/Entity';
 import { GameConstants } from '../data/GameConstants';
 import { EntityTypes } from '../config/EntityTypes';
 import { CollisionLayers } from '../components/CollisionComponent';
-import { IslandManager } from '../world/IslandManager';
-import { ZoneType } from '../config/WorldTypes';
+import { WorldManager } from '../world/WorldManager';
+
 import type { IEntity } from '../types/core';
 
 export interface CollisionDebugData {
@@ -17,20 +17,20 @@ export interface CollisionDebugData {
 }
 
 function drawTerrainDebug(ctx: CanvasRenderingContext2D): void {
-    if (!IslandManager?.collisionBlocks) return;
+    if (!WorldManager?.collisionBlocks) return;
 
     ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
     ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
 
-    for (const block of IslandManager.collisionBlocks) {
+    for (const block of WorldManager.collisionBlocks) {
         ctx.fillRect(block.x, block.y, block.width, block.height);
         ctx.strokeRect(block.x, block.y, block.width, block.height);
     }
 
     ctx.fillStyle = 'rgba(0, 0, 255, 0.2)';
-    if (IslandManager.walkableZones) {
-        for (const zone of IslandManager.walkableZones) {
-            if (zone.type === ZoneType.BRIDGE) {
+    if (WorldManager.walkableZones) {
+        for (const zone of WorldManager.walkableZones) {
+            if (zone.type === 'bridge') {
                 ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
             }
         }

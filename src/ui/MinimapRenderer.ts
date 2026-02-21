@@ -35,12 +35,12 @@ export function renderMinimap(
             railroadPath: number[];
             railroadCrossings: unknown[];
         };
-    }>('IslandManager');
+    }>('WorldManager');
     const meshAndMap = worldManager?.getMesh?.();
     if (meshAndMap) {
         const param = worldManager.getMapgen4Param();
         const { mesh, map } = meshAndMap;
-        const { towns = [], roadSegments = [], railroadPath = [], railroadCrossings = [] } =
+        const { towns = [], roadSegments = [], railroadPath = [], railroadCrossings = [], railroadStationIds = [] } =
             worldManager.getCachedTownsAndRoads?.() ?? {};
         const vpX = (viewLeft / WORLD_SIZE) * MESH_SIZE;
         const vpY = (viewTop / WORLD_SIZE) * MESH_SIZE;
@@ -60,7 +60,8 @@ export function renderMinimap(
                 towns,
                 roadSegments,
                 railroadPath,
-                railroadCrossings
+                railroadCrossings,
+                railroadStationIds
             );
         }
     } else {

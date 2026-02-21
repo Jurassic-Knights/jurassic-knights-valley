@@ -6,7 +6,7 @@
  */
 
 import * as PIXI from 'pixi.js';
-import { buildRailroadSplineMeshData } from './Mapgen4Generator';
+import { buildRailroadSplineMeshData } from './RailroadSplineBuilder';
 import type { Mesh } from './mapgen4/types';
 import type Mapgen4Map from './mapgen4/map';
 import { AssetLoader } from '@core/AssetLoader';
@@ -16,16 +16,19 @@ const METAL_ID = 'arch_railtrack_metal_grasslands_clean';
 
 function getTexture(id: string, repeat: boolean): PIXI.Texture | null {
     const img = AssetLoader.getImage(id);
-    if (img?.complete && img.naturalWidth) {
-        const tex = PIXI.Texture.from(img);
-        if (repeat && tex.source?.style) tex.source.style.addressMode = 'repeat';
-        return tex;
+    if (img) {
+        const isImage = img instanceof HTMLImageElement && img.complete && img.naturalWidth > 0;
+        const isCanvas = img instanceof HTMLCanvasElement && img.width > 0;
+
+        if (isImage || isCanvas) {
+            const tex = PIXI.Texture.from(img as HTMLImageElement | HTMLCanvasElement);
+            if (repeat && tex?.source?.style) {
+                tex.source.style.addressMode = 'repeat';
+            }
+            return tex;
+        }
     }
-    const path = AssetLoader.getImagePath(id);
-    if (!path) return null;
-    const tex = PIXI.Texture.from(path);
-    if (repeat && tex.source?.style) tex.source.style.addressMode = 'repeat';
-    return tex;
+    return null;
 }
 
 /**
@@ -35,10 +38,11 @@ export function createRailroadMeshes(
     mesh: Mesh,
     _map: Mapgen4Map,
     path: number[],
-    parent: PIXI.Container
+    parent: PIXI.Container,
+    stationRegionIds?: number[]
 ): PIXI.Mesh[] {
     const meshes: PIXI.Mesh[] = [];
-    const meshData = buildRailroadSplineMeshData(mesh, path);
+    const meshData = buildRailroadSplineMeshData(mesh, path, stationRegionIds);
     if (meshData.length === 0) return meshes;
 
     const dirtTex = getTexture(DIRT_ID, true);

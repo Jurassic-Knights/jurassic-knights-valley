@@ -33,8 +33,25 @@ function createFallbackTexture(): { data: Uint8ClampedArray; texture: PIXI.Textu
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, size / 2, size / 2);
     ctx.fillRect(size / 2, size / 2, size / 2, size / 2);
-    const data = ctx.getImageData(0, 0, size, size).data;
-    return { data, texture: PIXI.Texture.from(c) };
+    try {
+        const data = ctx.getImageData(0, 0, size, size).data;
+        return { data, texture: PIXI.Texture.from(c) };
+    } catch {
+        const minimalData = new Uint8ClampedArray(4);
+        minimalData[0] = 255;
+        minimalData[1] = 0;
+        minimalData[2] = 255;
+        minimalData[3] = 255;
+        const tiny = document.createElement('canvas');
+        tiny.width = 1;
+        tiny.height = 1;
+        const tCtx = tiny.getContext('2d');
+        if (tCtx) {
+            tCtx.fillStyle = '#ff00ff';
+            tCtx.fillRect(0, 0, 1, 1);
+        }
+        return { data: minimalData, texture: PIXI.Texture.from(tiny) };
+    }
 }
 
 export async function getAssetData(

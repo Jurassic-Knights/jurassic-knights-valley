@@ -1,6 +1,7 @@
 import { EditorCommand } from './EditorCommand';
 import { ChunkManager } from '../ChunkManager';
 
+/** Command to move an object from one position to another. */
 export class MoveObjectCommand implements EditorCommand {
     public type = 'Move Object';
 

@@ -1,7 +1,7 @@
 /**
  * PathfindingSystem - A* pathfinding for grid-based navigation
  *
- * Uses the IslandManager's grid system to find paths around obstacles.
+ * Uses the WorldManager's grid system to find paths around obstacles.
  * Enemies use this to intelligently navigate to destinations.
  *
  * Owner: AI Systems
@@ -257,7 +257,7 @@ class PathfindingSystem implements ISystem {
      */
     isGridBlocked(gx: number, gy: number) {
         const worldPos = this.gridToWorld(gx, gy);
-        const im = Registry?.get<{ isWalkable: (x: number, y: number) => boolean; isBlocked: (x: number, y: number) => boolean }>('IslandManager');
+        const im = Registry?.get<{ isWalkable: (x: number, y: number) => boolean; isBlocked: (x: number, y: number) => boolean }>('WorldManager');
 
         if (!im) return false;
 

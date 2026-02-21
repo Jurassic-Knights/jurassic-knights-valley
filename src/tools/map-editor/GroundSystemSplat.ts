@@ -13,8 +13,7 @@ export function getSplatWeight(
     data: ChunkData,
     worldData?: Map<string, ChunkData>
 ): number {
-    const { CHUNK_SIZE } = MapEditorConfig;
-    const SPLAT_RES = CHUNK_SIZE * 4;
+    const SPLAT_RES = MapEditorConfig.SPLAT_RES;
 
     if (sampleX >= 0 && sampleX < SPLAT_RES && sampleY >= 0 && sampleY < SPLAT_RES) {
         const idx = sampleY * SPLAT_RES + sampleX;
@@ -62,7 +61,7 @@ export function applyPaintOps(
     const dirtyTiles = new Map<string, Set<string>>();
     const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
     const SPLAT_CELL_SIZE = TILE_SIZE / 4;
-    const SPLATS_PER_CHUNK = CHUNK_SIZE * 4;
+    const SPLATS_PER_CHUNK = MapEditorConfig.SPLAT_RES;
 
     for (const op of ops) {
         const centerSplatX = Math.floor(op.x / SPLAT_CELL_SIZE);
@@ -130,7 +129,7 @@ export function applyRestoreSplat(
     worldData: Map<string, ChunkData>
 ): Map<string, Set<string>> {
     const dirtyTiles = new Map<string, Set<string>>();
-    const SPLATS_PER_CHUNK = MapEditorConfig.CHUNK_SIZE * 4;
+    const SPLATS_PER_CHUNK = MapEditorConfig.SPLAT_RES;
 
     for (const [chunkKey, changes] of changesByChunk) {
         const data = worldData.get(chunkKey);
