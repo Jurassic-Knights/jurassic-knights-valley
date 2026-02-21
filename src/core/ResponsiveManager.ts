@@ -21,7 +21,7 @@ const ResponsiveManager = {
     currentOrientation: 'portrait',
 
     // Event listeners
-    listeners: [] as { event: string; callback: Function }[],
+    listeners: [] as { event: string; callback: (data: unknown) => void }[],
 
     /**
      * Initialize the responsive manager
@@ -86,7 +86,7 @@ const ResponsiveManager = {
      * @param {string} event - Event name ('change')
      * @param {function} callback - Handler function
      */
-    on(event: string, callback: Function) {
+    on(event: string, callback: (data: unknown) => void) {
         this.listeners.push({ event, callback });
     },
 

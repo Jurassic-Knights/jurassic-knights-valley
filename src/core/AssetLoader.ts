@@ -67,7 +67,6 @@ const AssetLoader = {
     // Static registry for non-entity assets only
     staticAssets: AssetManifest,
 
-
     /**
      * Initialize the asset loader
      * EntityRegistry must be loaded first (handled by SystemConfig priority)
@@ -141,7 +140,7 @@ const AssetLoader = {
 
             // Direct ID match
             if (registry[id]?.files) {
-                return this._selectBestPath((registry[id]!.files as Record<string, string>));
+                return this._selectBestPath(registry[id]!.files as Record<string, string>);
             }
 
             // Try with category prefix (e.g., "dinosaur_t1_01" → "enemy_dinosaur_t1_01")
@@ -150,7 +149,7 @@ const AssetLoader = {
 
         // Special case: hero
         if (id === 'hero' && EntityRegistry.hero?.files) {
-            return this._selectBestPath((EntityRegistry.hero.files as Record<string, string>));
+            return this._selectBestPath(EntityRegistry.hero.files as Record<string, string>);
         }
 
         return null;
@@ -207,7 +206,6 @@ const AssetLoader = {
     createImage(src: string, onLoad?: () => void, onError?: () => void): HTMLImageElement {
         const img = new Image();
         const fallback = this.getOriginalPath(src);
-        const self = this;
 
         img.onerror = () => {
             if (onError) {
@@ -222,7 +220,7 @@ const AssetLoader = {
             }
         };
 
-        img.onload = function () {
+        img.onload = () => {
             // Skip processing for data URLs (already processed) and placeholder
             if (img.src.startsWith('data:') || img.src.includes('PH.png')) {
                 if (onLoad) onLoad();
@@ -230,13 +228,13 @@ const AssetLoader = {
             }
             // Skip processing for large images to avoid getImageData/toDataURL OOM
             const pixels = img.width * img.height;
-            if (pixels > self.MAX_PIXELS_FOR_WHITE_REMOVAL) {
+            if (pixels > this.MAX_PIXELS_FOR_WHITE_REMOVAL) {
                 if (onLoad) onLoad();
                 return;
             }
 
             // Remove white background from ALL images
-            const processed = self._removeWhiteBackground(img);
+            const processed = this._removeWhiteBackground(img);
             try {
                 img.src = processed.toDataURL('image/png');
             } catch {
@@ -256,7 +254,10 @@ const AssetLoader = {
      * @param {boolean} allowFallback - If true, returns PH.png on missingID. If false, returns null.
      * @returns {Promise<HTMLImageElement | HTMLCanvasElement | null>}
      */
-    preloadImage(id: string, allowFallback: boolean = true): Promise<HTMLImageElement | HTMLCanvasElement | null> {
+    preloadImage(
+        id: string,
+        allowFallback: boolean = true
+    ): Promise<HTMLImageElement | HTMLCanvasElement | null> {
         const path = this.getImagePath(id);
 
         if (!allowFallback && path.includes('PH.png')) {
@@ -326,7 +327,7 @@ const AssetLoader = {
         // The script generates [basename]_height.png
 
         // E.g. assets/images/ground/grass_01_original.png -> assets/images/ground/grass_01_original_height.png
-        // Just replace .png with _height.png? 
+        // Just replace .png with _height.png?
         // Be careful with case sensitivity or other extensions.
         return primaryPath.replace('.png', '_height.png');
     },

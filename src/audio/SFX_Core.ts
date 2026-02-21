@@ -21,7 +21,7 @@ const SFX = {
     TARGET_VOLUME: 0.5,
 
     // Sound handlers registry - populated by category files
-    handlers: {} as Record<string, Function>,
+    handlers: {} as Record<string, () => void>,
 
     init(audioContext: AudioContext, masterGain: GainNode) {
         this.ctx = audioContext;
@@ -32,7 +32,7 @@ const SFX = {
     /**
      * Register sound handlers from category modules
      */
-    register(categoryHandlers: Record<string, Function>) {
+    register(categoryHandlers: Record<string, () => void>) {
         Object.assign(this.handlers, categoryHandlers);
     },
 
@@ -88,7 +88,14 @@ const SFX = {
         return { noise, gain, filter };
     },
 
-    playTone(freq: number, duration: number, type: OscillatorType = 'sine', volume = 0.3, attack = 0.01, decay: number | null = null) {
+    playTone(
+        freq: number,
+        duration: number,
+        type: OscillatorType = 'sine',
+        volume = 0.3,
+        attack = 0.01,
+        decay: number | null = null
+    ) {
         if (!this.ctx) return { osc: null, gain: null };
 
         const osc = this.ctx.createOscillator();

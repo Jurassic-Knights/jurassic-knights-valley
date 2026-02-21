@@ -3,8 +3,8 @@
  *
  * Shared helpers for zone/chunk coordinate conversion and neighbor marking.
  * Avoids duplication across ZoneSystem.
- * 
- * NOTE: Coordinate math has been extracted to `utils/CoordinateTransform`. 
+ *
+ * NOTE: Coordinate math has been extracted to `utils/CoordinateTransform`.
  * This file retains proxy exports for backwards compatibility across the Map Editor.
  */
 import { MapEditorConfig } from './MapEditorConfig';
@@ -12,7 +12,7 @@ import { CoordinateTransform, ChunkTileCoords as CCTileCoords } from './utils/Co
 const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
 const CHUNK_SIZE_PX = CHUNK_SIZE * TILE_SIZE;
 
-export interface ChunkTileCoords extends CCTileCoords { }
+export type ChunkTileCoords = CCTileCoords;
 
 /** @deprecated Use CoordinateTransform.worldToChunkTile directly */
 export function worldToChunkTile(x: number, y: number): ChunkTileCoords {

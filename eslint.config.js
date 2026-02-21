@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 // Flat Config for ESLint 9+
 export default tseslint.config(
     {
-        ignores: ['dist', 'node_modules', 'tools/dashboard/dist']
+        ignores: ['dist', 'node_modules', 'tools/dashboard/dist', 'libs/rpgui/**', '**/*.cjs']
     },
     js.configs.recommended,
     ...tseslint.configs.recommended,

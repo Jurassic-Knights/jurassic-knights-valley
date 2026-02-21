@@ -94,7 +94,7 @@ class EquipmentManager {
      * @returns {boolean} Success
      */
     equip(slotId: string, equipmentData: EquipmentItem) {
-        if (!this.slots.hasOwnProperty(slotId)) {
+        if (!Object.prototype.hasOwnProperty.call(this.slots, slotId)) {
             Logger.warn(`[EquipmentManager] Invalid slot: ${slotId}`);
             return false;
         }
@@ -141,7 +141,7 @@ class EquipmentManager {
      * @returns {Object|null} The unequipped item or null
      */
     unequip(slotId: string) {
-        if (!this.slots.hasOwnProperty(slotId)) {
+        if (!Object.prototype.hasOwnProperty.call(this.slots, slotId)) {
             return null;
         }
 
@@ -197,8 +197,11 @@ class EquipmentManager {
 
         // Sum from equipped items (excluding inactive weapon set)
         for (const item of this.getEquippedItemsForStats()) {
-            if (item.stats && typeof item.stats[statKey] === 'number') {
-                total += item.stats[statKey];
+            if (
+                item.stats &&
+                typeof (item.stats as Record<string, unknown>)[statKey] === 'number'
+            ) {
+                total += (item.stats as Record<string, number>)[statKey];
             }
         }
 
@@ -220,7 +223,7 @@ class EquipmentManager {
      */
     hasEffect(effectKey: string): boolean {
         for (const item of this.getEquippedItems()) {
-            if (item.stats && item.stats[effectKey] === true) {
+            if (item.stats && (item.stats as Record<string, unknown>)[effectKey] === true) {
                 return true;
             }
         }
@@ -236,8 +239,11 @@ class EquipmentManager {
     getMaxStat(statKey: string) {
         let max = 0;
         for (const item of this.getEquippedItems()) {
-            if (item.stats && typeof item.stats[statKey] === 'number') {
-                max = Math.max(max, item.stats[statKey]);
+            if (
+                item.stats &&
+                typeof (item.stats as Record<string, unknown>)[statKey] === 'number'
+            ) {
+                max = Math.max(max, (item.stats as Record<string, number>)[statKey]);
             }
         }
         return max;
@@ -264,7 +270,12 @@ class EquipmentManager {
 
         // Build result
         for (const [setId, count] of Object.entries(setCounts) as [string, number][]) {
-            const set = (SetBonusesConfig.sets as Record<string, { name: string; pieces: string[]; bonuses: Record<string, ItemStats> }>)[setId];
+            const set = (
+                SetBonusesConfig.sets as Record<
+                    string,
+                    { name: string; pieces: string[]; bonuses: Record<string, ItemStats> }
+                >
+            )[setId];
             const activeBonuses: Partial<ItemStats> = {};
 
             for (const [threshold, stats] of Object.entries(set.bonuses) as [string, ItemStats][]) {

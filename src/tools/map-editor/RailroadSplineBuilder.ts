@@ -92,7 +92,9 @@ function smoothSplineSamples(
         result.push({ x: curr.x, y: curr.y, angle, cumLen });
     }
     if (isClosed && n >= 2) {
-        const totalLen = cumLen + Math.hypot(smoothed[0]!.x - smoothed[n - 1]!.x, smoothed[0]!.y - smoothed[n - 1]!.y);
+        const totalLen =
+            cumLen +
+            Math.hypot(smoothed[0]!.x - smoothed[n - 1]!.x, smoothed[0]!.y - smoothed[n - 1]!.y);
         result[n - 1] = {
             x: smoothed[0]!.x,
             y: smoothed[0]!.y,
@@ -131,10 +133,16 @@ export function buildRailroadSplineSamples(
         preserveIndices
     );
 
-    const arcPreserve = preservedResultIndices && preservedResultIndices.size > 0
-        ? preservedResultIndices
-        : undefined;
-    const points = insertArcWaypointsAtCorners(simplified, isClosed, DEFAULT_ARC_RADIUS_MESH, arcPreserve);
+    const arcPreserve =
+        preservedResultIndices && preservedResultIndices.size > 0
+            ? preservedResultIndices
+            : undefined;
+    const points = insertArcWaypointsAtCorners(
+        simplified,
+        isClosed,
+        DEFAULT_ARC_RADIUS_MESH,
+        arcPreserve
+    );
 
     const rawSamples =
         isClosed && points.length >= 3
@@ -147,9 +155,12 @@ export function buildRailroadSplineSamples(
         isClosed && points.length >= 3
     );
     const closed = isClosed && points.length >= 3;
-    let fixedSamples = new Set<number>();
+    const fixedSamples = new Set<number>();
     if (closed && stationSet && stationSet.size > 0) {
-        const stationCoords = Array.from(stationSet).map((r) => ({ x: mesh.x_of_r(r), y: mesh.y_of_r(r) }));
+        const stationCoords = Array.from(stationSet).map((r) => ({
+            x: mesh.x_of_r(r),
+            y: mesh.y_of_r(r)
+        }));
         for (let i = 0; i < thinned.length; i++) {
             const s = thinned[i]!;
             for (const sc of stationCoords) {
@@ -263,9 +274,11 @@ export function buildRailroadSplineMeshData(
         indices.push(va, vb + 1, vb);
     }
 
-    return [{
-        positions: new Float32Array(positions),
-        uvs: new Float32Array(uvs),
-        indices: new Uint32Array(indices)
-    }];
+    return [
+        {
+            positions: new Float32Array(positions),
+            uvs: new Float32Array(uvs),
+            indices: new Uint32Array(indices)
+        }
+    ];
 }

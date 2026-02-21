@@ -62,9 +62,26 @@ class EquipmentUI {
         this.targetEquipSet = 1;
         this.originalFooterConfigs = null;
 
-        const equipCfg = GameConstants?.Equipment || { ALL_SLOTS: undefined, TOOL_SLOTS: undefined };
-        this.slots = equipCfg.ALL_SLOTS || ['head', 'body', 'hands', 'legs', 'accessory', 'hand1', 'hand2', 'accessory2'];
-        this.toolSlots = equipCfg.TOOL_SLOTS || ['tool_mining', 'tool_woodcutting', 'tool_harvesting', 'tool_fishing'];
+        const equipCfg = GameConstants?.Equipment || {
+            ALL_SLOTS: undefined,
+            TOOL_SLOTS: undefined
+        };
+        this.slots = equipCfg.ALL_SLOTS || [
+            'head',
+            'body',
+            'hands',
+            'legs',
+            'accessory',
+            'hand1',
+            'hand2',
+            'accessory2'
+        ];
+        this.toolSlots = equipCfg.TOOL_SLOTS || [
+            'tool_mining',
+            'tool_woodcutting',
+            'tool_harvesting',
+            'tool_fishing'
+        ];
         this.modeCategories = MODE_CATEGORIES;
 
         if (document.readyState === 'loading') {
@@ -116,7 +133,11 @@ class EquipmentUI {
     }
 
     toggle() {
-        this.isOpen ? this.close() : this.open();
+        if (this.isOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
     }
 
     open() {
@@ -168,12 +189,17 @@ class EquipmentUI {
         const subtype = filterParts[2];
 
         if (this.selectedMode === 'armor') {
-            this.cachedEquipment = allEquipment.filter((e) =>
-                grip === 'all' || e.sourceFile === grip || e.slot === grip || e.equipSlot === grip
+            this.cachedEquipment = allEquipment.filter(
+                (e) =>
+                    grip === 'all' ||
+                    e.sourceFile === grip ||
+                    e.slot === grip ||
+                    e.equipSlot === grip
             );
         } else if (this.selectedMode === 'weapon') {
             this.cachedEquipment = allEquipment.filter((e) => {
-                const isWeapon = e.weaponType !== undefined || e.sourceFile === 'weapon' || e.slot === 'weapon';
+                const isWeapon =
+                    e.weaponType !== undefined || e.sourceFile === 'weapon' || e.slot === 'weapon';
                 if (!isWeapon) return false;
                 if (grip !== 'all' && e.gripType !== grip) return false;
                 if (weaponType) {
@@ -242,7 +268,8 @@ class EquipmentUI {
             const statsRow = this.container!.querySelector('.item-stats-row');
             if (nameEl) {
                 nameEl.textContent = equippedItem.name;
-                if (statsRow) statsRow.innerHTML = EquipmentUIRenderer.renderItemStats(equippedItem);
+                if (statsRow)
+                    statsRow.innerHTML = EquipmentUIRenderer.renderItemStats(equippedItem);
                 this.container!.querySelector('.equip-summary-bar')?.classList.add('has-item');
                 this.container!.querySelector('.equip-summary-bar')?.classList.remove('empty');
             }

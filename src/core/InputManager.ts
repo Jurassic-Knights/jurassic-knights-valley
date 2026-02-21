@@ -155,8 +155,8 @@ const InputManager = {
      * Handle key down
      */
     onKeyDown(e: KeyboardEvent) {
-        if (this.keys.hasOwnProperty(e.key)) {
-            this.keys[e.key] = true;
+        if (Object.prototype.hasOwnProperty.call(this.keys, e.key)) {
+            this.keys[e.key as keyof typeof this.keys] = true;
             this.updateKeyboardMovement();
             e.preventDefault();
         }
@@ -166,8 +166,8 @@ const InputManager = {
      * Handle key up
      */
     onKeyUp(e: KeyboardEvent) {
-        if (this.keys.hasOwnProperty(e.key)) {
-            this.keys[e.key] = false;
+        if (Object.prototype.hasOwnProperty.call(this.keys, e.key)) {
+            this.keys[e.key as keyof typeof this.keys] = false;
             this.updateKeyboardMovement();
             e.preventDefault();
         }

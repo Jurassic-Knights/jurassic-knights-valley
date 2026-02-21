@@ -177,11 +177,7 @@ export function findNearestLandRegion(
 }
 
 /** Sample coverage waypoints on a grid across land. */
-export function sampleCoverageWaypoints(
-    mesh: Mesh,
-    map: Mapgen4Map,
-    gridSize: number
-): number[] {
+export function sampleCoverageWaypoints(mesh: Mesh, map: Mapgen4Map, gridSize: number): number[] {
     if (gridSize < 2) return [];
     const cellSize = MAP_SIZE / gridSize;
     const grid = buildCoverageGrid(mesh, map, gridSize);
@@ -276,7 +272,7 @@ export function getPathBetween(
     const vias = [...new Set([via1, via2].filter((v) => v >= 0 && v !== from && v !== to))];
     if (vias.length === 0) return runDirect();
 
-    let path: number[] = [];
+    const path: number[] = [];
     let last = from;
     for (const via of vias) {
         const { dist, prev } = dijkstra(mesh, map, last, param, minFlow);

@@ -123,25 +123,27 @@ export let manifest: Manifest | null = null;
 export let declineNotes: Record<string, string> = {};
 export let assetPrompts: Record<string, string> = {};
 export let missingAssets: Array<{ id: string; expectedFile: string }> = [];
-export let unsyncedAssets: unknown[] = [];
+export const unsyncedAssets: unknown[] = [];
 export let currentFilter = 'all';
 export let currentCategory = 'all';
 
 // Category view state
 export let categoryData: CategoryData | null = null;
 export let currentCategoryName = '';
-export let categoryFilter: CategoryFilter = {
+export const categoryFilter: CategoryFilter = {
     status: 'all',
     biome: 'all',
     tier: 'all',
     file: 'all',
     weaponType: 'all',
     hands: 'all',
-    nodeSubtype: 'all',
+    nodeSubtype: 'all'
 };
 export let categoryImageSize = parseInt(localStorage.getItem('categoryImageSize') || '200');
 export let categorySort = localStorage.getItem('categorySort') || 'tier';
-export let categoryFiltersCache: Record<string, Partial<CategoryFilter>> = JSON.parse(localStorage.getItem('categoryFiltersCache') || '{}');
+export const categoryFiltersCache: Record<string, Partial<CategoryFilter>> = JSON.parse(
+    localStorage.getItem('categoryFiltersCache') || '{}'
+);
 
 export function saveCategoryFiltersCache(category: string, filters: Partial<CategoryFilter>) {
     categoryFiltersCache[category] = { ...filters };
@@ -154,9 +156,9 @@ export function getCategoryFiltersFromCache(category: string): Partial<CategoryF
 
 // Loot view state
 export let lootData: unknown = null;
-export let lootFilter: LootFilter = { category: 'all', biome: 'all', tier: 'all' };
+export const lootFilter: LootFilter = { category: 'all', biome: 'all', tier: 'all' };
 export let lootDataHash = '';
-export let autoRefreshInterval: ReturnType<typeof setInterval> | null = null;
+export const autoRefreshInterval: ReturnType<typeof setInterval> | null = null;
 
 // SFX regeneration queue
 export let sfxRegenerationQueue: Array<{ assetId: string; sfxIds: string[] }> = JSON.parse(
@@ -172,7 +174,7 @@ export let assetLookupLoaded = false;
 // Selection State (for Inspector)
 export let selectedAssetId: string | null = null;
 export let currentInspectorTab: string = 'general';
-export let imageParams: Record<string, number> = {}; // AssetId -> Timestamp map
+export const imageParams: Record<string, number> = {}; // AssetId -> Timestamp map
 
 // ============================================
 // STATE SETTERS (for module encapsulation)
@@ -288,7 +290,7 @@ export const CATEGORY_ICONS: Record<string, string> = {
     audio: '🔊',
     config: '⚙️',
     hero: '🛡️',
-    ground: '⛰️',
+    ground: '⛰️'
 };
 
 export const CATEGORY_COLORS: Record<string, string> = {
@@ -307,7 +309,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
     audio: '#9c27b0',
     config: '#607d8b',
     hero: '#2196f3',
-    ground: '#795548',
+    ground: '#795548'
 };
 
 // Weapon types - mirrors GameConstants.Weapons from game code
@@ -320,7 +322,7 @@ export const WEAPON_TYPES: Record<string, string[]> = {
         'flamethrower',
         'shotgun',
         'sniper_rifle',
-        'bazooka',
+        'bazooka'
     ],
     melee: [
         'sword',
@@ -333,8 +335,8 @@ export const WEAPON_TYPES: Record<string, string[]> = {
         'halberd',
         'spear',
         'flail',
-        'knife',
-    ],
+        'knife'
+    ]
 };
 
 // Combat role types
@@ -349,7 +351,7 @@ export const HERO_SFX_TYPES = [
     'jump',
     'land',
     'dodge',
-    'interact',
+    'interact'
 ];
 
 // Species lists
@@ -403,7 +405,7 @@ export const ALL_DINOSAUR_SPECIES = [
     'Corythosaurus',
     // Herbivores - Dome-headed
     'Pachycephalosaurus',
-    'Stygimoloch',
+    'Stygimoloch'
 ];
 
 export const DINOSAUR_SPECIES = ALL_DINOSAUR_SPECIES;
@@ -432,7 +434,7 @@ export const HERBIVORE_SPECIES = [
     'Corythosaurus',
     'Lambeosaurus',
     'Pachycephalosaurus',
-    'Stygimoloch',
+    'Stygimoloch'
 ];
 
 // ============================================
@@ -440,7 +442,11 @@ export const HERBIVORE_SPECIES = [
 // ============================================
 
 export function escapeHtml(str: string): string {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
 
 export function isHeroCategory(categoryName: string): boolean {

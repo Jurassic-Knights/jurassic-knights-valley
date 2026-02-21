@@ -1,6 +1,6 @@
 /**
  * Config Renderer - Renders the Master Config tab UI
- * 
+ *
  * Displays editable config sections with instant auto-save on change.
  */
 
@@ -67,7 +67,6 @@ const CONFIG_GROUPS: Record<string, string[]> = {
 };
 
 export async function renderConfigView(container: HTMLElement): Promise<void> {
-
     // Inject Styles locally to avoid touching global CSS for now
     const styleId = 'config-page-styles';
     if (!document.getElementById(styleId)) {
@@ -348,7 +347,10 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
         // Render Groups
         for (const [groupTitle, sectionKeys] of Object.entries(CONFIG_GROUPS)) {
             // Check if group has any valid data
-            const validKeys = sectionKeys.filter(key => currentConfig?.[key] && Object.keys(currentConfig[key] as object).length > 0);
+            const validKeys = sectionKeys.filter(
+                (key) =>
+                    currentConfig?.[key] && Object.keys(currentConfig[key] as object).length > 0
+            );
             if (validKeys.length === 0) continue;
 
             const groupId = 'group-' + groupTitle.replace(/\s+/g, '-').toLowerCase();
@@ -361,7 +363,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                 const target = document.getElementById(groupId);
                 if (target) {
                     // Update active state
-                    navEl.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    navEl.querySelectorAll('.nav-btn').forEach((b) => b.classList.remove('active'));
                     navBtn.classList.add('active');
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -387,7 +389,12 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
 
         // Render Orphans (any section in config but not in a group)
         const allSections = Object.keys(currentConfig) as Array<string>;
-        const orphans = allSections.filter(key => !renderedSections.has(key) && currentConfig?.[key] && Object.keys(currentConfig[key] as object).length > 0);
+        const orphans = allSections.filter(
+            (key) =>
+                !renderedSections.has(key) &&
+                currentConfig?.[key] &&
+                Object.keys(currentConfig[key] as object).length > 0
+        );
 
         if (orphans.length > 0) {
             const groupId = 'group-other';
@@ -399,7 +406,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
             navBtn.onclick = () => {
                 const target = document.getElementById(groupId);
                 if (target) {
-                    navEl.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                    navEl.querySelectorAll('.nav-btn').forEach((b) => b.classList.remove('active'));
                     navBtn.classList.add('active');
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
@@ -426,9 +433,8 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
             navEl.firstElementChild.classList.add('active');
         }
 
-
         // Event Listeners for Card Actions (Reset/Save)
-        container.querySelectorAll('.btn-reset').forEach(btn => {
+        container.querySelectorAll('.btn-reset').forEach((btn) => {
             btn.addEventListener('click', async () => {
                 const section = (btn as HTMLElement).dataset.section;
                 if (!confirm(`Reset ${section} to default values?`)) return;
@@ -444,7 +450,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
             });
         });
 
-        container.querySelectorAll('.btn-save-defaults').forEach(btn => {
+        container.querySelectorAll('.btn-save-defaults').forEach((btn) => {
             btn.addEventListener('click', async () => {
                 const section = (btn as HTMLElement).dataset.section;
                 if (!confirm(`Overwrite defaults for ${section}? This is permanent.`)) return;
@@ -459,13 +465,16 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
                 else alert('Save failed: ' + result.error);
             });
         });
-
     } catch (error) {
         container.innerHTML = `<div class="error">Error: ${error}</div>`;
     }
 }
 
-function renderSectionCard(sectionKey: string, sectionData: Record<string, unknown>, container: HTMLElement) {
+function renderSectionCard(
+    sectionKey: string,
+    sectionData: Record<string, unknown>,
+    container: HTMLElement
+) {
     const meta = SECTION_META[sectionKey] || {
         name: formatLabel(sectionKey),
         description: `Settings for ${sectionKey}`
@@ -498,13 +507,19 @@ function renderSectionCard(sectionKey: string, sectionData: Record<string, unkno
 
     if (sectionKey === 'BodyTypes') {
         contentEl.classList.add('body-type-grid');
-        for (const [bodyType, data] of Object.entries(sectionData as Record<string, { scale: number }>)) {
-            contentEl.appendChild(createField(sectionKey, bodyType, data.scale, 'number', formatLabel(bodyType)));
+        for (const [bodyType, data] of Object.entries(
+            sectionData as Record<string, { scale: number }>
+        )) {
+            contentEl.appendChild(
+                createField(sectionKey, bodyType, data.scale, 'number', formatLabel(bodyType))
+            );
         }
     } else if (sectionKey === 'WeaponDefaults') {
         contentEl.classList.add('weapon-grid-container');
 
-        for (const [weaponType, stats] of Object.entries(sectionData as Record<string, { range: number; damage: number; attackSpeed: number }>)) {
+        for (const [weaponType, stats] of Object.entries(
+            sectionData as Record<string, { range: number; damage: number; attackSpeed: number }>
+        )) {
             const weaponCard = document.createElement('div');
             weaponCard.className = 'weapon-card';
 
@@ -513,15 +528,38 @@ function renderSectionCard(sectionKey: string, sectionData: Record<string, unkno
             const row = document.createElement('div');
             row.className = 'stat-row';
 
-            const f1 = createField(sectionKey, `${weaponType}.range`, stats.range, 'number', 'Range');
-            const f2 = createField(sectionKey, `${weaponType}.damage`, stats.damage, 'number', 'Dmg');
-            const f3 = createField(sectionKey, `${weaponType}.attackSpeed`, stats.attackSpeed, 'number', 'Spd');
+            const f1 = createField(
+                sectionKey,
+                `${weaponType}.range`,
+                stats.range,
+                'number',
+                'Range'
+            );
+            const f2 = createField(
+                sectionKey,
+                `${weaponType}.damage`,
+                stats.damage,
+                'number',
+                'Dmg'
+            );
+            const f3 = createField(
+                sectionKey,
+                `${weaponType}.attackSpeed`,
+                stats.attackSpeed,
+                'number',
+                'Spd'
+            );
 
-            f1.classList.add('compact'); f1.style.flex = '1';
-            f2.classList.add('compact'); f2.style.flex = '1';
-            f3.classList.add('compact'); f3.style.flex = '1';
+            f1.classList.add('compact');
+            f1.style.flex = '1';
+            f2.classList.add('compact');
+            f2.style.flex = '1';
+            f3.classList.add('compact');
+            f3.style.flex = '1';
 
-            row.appendChild(f1); row.appendChild(f2); row.appendChild(f3);
+            row.appendChild(f1);
+            row.appendChild(f2);
+            row.appendChild(f3);
             weaponCard.appendChild(row);
             contentEl.appendChild(weaponCard);
         }
@@ -540,12 +578,18 @@ function formatLabel(key: string): string {
     // 1. Replace underscores/dots with spaces
     // 2. Insert space before TitleCase (e.g. movementSpeed -> movement Speed)
     // 3. Capitalize first letter
-    let label = key.replace(/[_\.]/g, ' ');
+    let label = key.replace(/[_.]/g, ' ');
     label = label.replace(/([A-Z])/g, ' $1').trim();
     return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-function createField(section: string, key: string, value: unknown, type: 'number' | 'text', labelOverride?: string): HTMLElement {
+function createField(
+    section: string,
+    key: string,
+    value: unknown,
+    type: 'number' | 'text',
+    labelOverride?: string
+): HTMLElement {
     const group = document.createElement('div');
     group.className = 'input-group';
 

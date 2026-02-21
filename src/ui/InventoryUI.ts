@@ -17,7 +17,11 @@ import { WeaponWheelInstance } from './WeaponWheel';
 import type { Hero } from '../gameplay/Hero';
 import { IFooterConfig } from '../types/ui';
 import type { EntityConfig } from '../types/core';
-import { swapToInventoryMode, restoreFooterButtons, updateFooterActiveStates } from './InventoryUIFooter';
+import {
+    swapToInventoryMode,
+    restoreFooterButtons,
+    updateFooterActiveStates
+} from './InventoryUIFooter';
 
 // Define FullscreenUI interface to match UIManager expectation
 interface FullscreenUI {
@@ -47,7 +51,9 @@ class InventoryPanel {
      * Public init() for SystemConfig bootloader compatibility.
      * Actual initialization is handled in constructor via _init().
      */
-    init() { /* No-op: already initialized in constructor */ }
+    init() {
+        /* No-op: already initialized in constructor */
+    }
 
     _init() {
         // Bind to inventory button
@@ -144,7 +150,11 @@ class InventoryPanel {
     }
 
     toggle() {
-        this.isOpen ? this.close() : this.open();
+        if (this.isOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
     }
 
     open() {
@@ -216,7 +226,11 @@ class InventoryPanel {
     /**
      * Get all sub-types across both items and resources
      */
-    getAllSubTypes() { return [...new Set([...this.getSubTypes('items'), ...this.getSubTypes('resources')])].sort(); }
+    getAllSubTypes() {
+        return [
+            ...new Set([...this.getSubTypes('items'), ...this.getSubTypes('resources')])
+        ].sort();
+    }
 
     /**
      * Get entity info from EntityRegistry
@@ -268,23 +282,24 @@ class InventoryPanel {
                     <!-- Inventory Grid (reuses equip-inventory) -->
                     <div class="equip-inventory">
                         <div class="inventory-grid">
-                            ${filteredItems.length === 0
-                    ? '<div class="empty-inventory">No items match filter</div>'
-                    : filteredItems
-                        .map(([key, amount]) => {
-                            const entity = this.getEntityInfo(key) as {
-                                name?: string;
-                            } | null;
-                            const name = entity?.name || key;
-                            return `
+                            ${
+                                filteredItems.length === 0
+                                    ? '<div class="empty-inventory">No items match filter</div>'
+                                    : filteredItems
+                                          .map(([key, amount]) => {
+                                              const entity = this.getEntityInfo(key) as {
+                                                  name?: string;
+                                              } | null;
+                                              const name = entity?.name || key;
+                                              return `
                                         <div class="inventory-item" data-id="${key}" title="${name}">
                                             <div class="item-icon" data-icon-id="${key}"></div>
                                             <div class="item-count">${amount}</div>
                                         </div>
                                     `;
-                        })
-                        .join('')
-                }
+                                          })
+                                          .join('')
+                            }
                         </div>
                     </div>
                 </div>
@@ -314,9 +329,14 @@ class InventoryPanel {
     /**
      * Set grid size for layout strategies
      */
-    setGridSize(size: number) { this.gridSize = size; if (this.isOpen) this._render(); }
+    setGridSize(size: number) {
+        this.gridSize = size;
+        if (this.isOpen) this._render();
+    }
 
-    render() { this._render(); }
+    render() {
+        this._render();
+    }
 }
 
 // Create singleton and export

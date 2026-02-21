@@ -10,7 +10,7 @@ import { showLandingPage } from './views';
 // ============================================
 
 let templatesContent = '';
-let templateSaveTimer: ReturnType<typeof setTimeout> | null = null;
+const templateSaveTimer: ReturnType<typeof setTimeout> | null = null;
 let templateSections: unknown[] = [];
 let assetPromptsJson: Record<string, unknown> = {};
 
