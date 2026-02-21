@@ -10,7 +10,7 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import { UIBinder } from '@core/UIBinder';
-import { SFX } from '@audio/ProceduralSFX';
+import { SFX } from '@audio/SFX_Core';
 
 
 
@@ -112,7 +112,7 @@ class HUDControllerClass {
     }
 
     updateRestButton(data: { isHome: boolean }) {
-        const btn = UIBinder.get('btn-rest');
+        const btn = document.getElementById('btn-rest');
         if (btn) btn.style.display = data.isHome ? 'flex' : 'none';
     }
 

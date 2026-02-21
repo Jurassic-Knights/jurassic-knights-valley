@@ -15,143 +15,9 @@ import { DOMUtils } from './DOMUtils';
 import { AssetManifest } from '@config/AssetManifest';
 import { GameConstants } from '@data/GameConstants';
 import { ParticleOptions } from '../types/vfx';
+import { constructPathFromId } from './AssetLoaderPathPatterns';
 
-// VFXController accessed lazily to avoid circular imports
-
-const ID_PATTERNS = [
-    // Enemies
-    {
-        matches: (id: string) =>
-            id.startsWith('enemy_herbivore_') ||
-            id.startsWith('enemy_dinosaur_') ||
-            id.startsWith('enemy_human_') ||
-            id.startsWith('enemy_mounted_'),
-        build: (id: string) => `images/enemies/${id.replace('enemy_', '')}_original.png`
-    },
-    // Bosses & NPCs
-    { matches: (id: string) => id.startsWith('boss_'), build: (id: string) => `images/bosses/${id}_original.png` },
-    { matches: (id: string) => id.startsWith('npc_'), build: (id: string) => `images/npcs/${id}_original.png` },
-
-    // Weapons (Complex Subtypes)
-    {
-        matches: (id: string) => id.startsWith('weapon_melee_') || id.startsWith('weapon_ranged_'),
-        build: (id: string) => {
-            const parts = id.split('_');
-            const subtype = parts.slice(2, -2).join('_');
-            const imageName = `weapon_${subtype}_${parts.slice(-2).join('_')}`;
-            return `images/equipment/weapons/${subtype}/${imageName}_original.png`;
-        }
-    },
-    {
-        matches: (id: string) => id.startsWith('weapon_shield_'),
-        build: (id: string) => `images/equipment/shield/${id}_original.png`
-    },
-
-    // Signatures
-    {
-        matches: (id: string) =>
-            id.startsWith('signature_melee_') || id.startsWith('signature_ranged_'),
-        build: (id: string) => {
-            const parts = id.split('_');
-            const subtype = parts[2];
-            return `images/equipment/signature/${parts[1]}/${subtype}/${id}_original.png`;
-        }
-    },
-    {
-        matches: (id: string) => id.startsWith('signature_shield_'),
-        build: (id: string) => `images/equipment/signature/shield/${id}_original.png`
-    },
-
-    // Armor
-    {
-        matches: (id: string) => id.startsWith('head_'),
-        build: (id: string) => `images/equipment/armor/head/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('chest_') || id.startsWith('torso_'),
-        build: (id: string) => `images/equipment/armor/chest/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('body_'),
-        build: (id: string) =>
-            `images/equipment/armor/chest/${id.replace('body_', 'chest_')}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('hands_'),
-        build: (id: string) => `images/equipment/armor/hands/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('legs_'),
-        build: (id: string) => `images/equipment/armor/legs/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('feet_'),
-        build: (id: string) => `images/equipment/armor/feet/${id}_original.png`
-    },
-    {
-        matches: (id: string) => id.startsWith('accessory_'),
-        build: (id: string) => `images/equipment/${id}_original.png`
-    },
-
-    // Tools
-    {
-        matches: (id: string) => id.startsWith('tool_'),
-        build: (id: string) => {
-            const type = id.split('_')[1]; // mining, woodcutting, etc
-            return `images/equipment/tools/${type}/${id}_original.png`;
-        }
-    },
-
-    // Items (Materials)
-    {
-        matches: (id: string) =>
-            /^(food|leather|bone|wood|iron|stone|scale|feather|horn)_/.test(id),
-        build: (id: string) => `images/items/${id}_original.png`
-    },
-
-    // Nodes
-    {
-        matches: (id: string) => id.startsWith('node_'),
-        build: (id: string) => `images/nodes/${id}_original.png`
-    },
-
-    // Environment
-    {
-        matches: (id: string) =>
-            /^(arch|flora|prop|furniture|building)_/.test(id),
-        build: (id: string) => {
-            const type = id.split('_')[0];
-            return `images/environment/${type}/${id}_original.png`;
-        }
-    },
-
-    // Ground
-    {
-        matches: (id: string) => id.startsWith('ground_'),
-        build: (id: string) => {
-            const parts = id.split('_');
-            // Standard: ground_[category]_[type]_[biome]_[var]
-
-            // We know biome is always one of [badlands, desert, grasslands, tundra]
-            const biomes = ['badlands', 'desert', 'grasslands', 'tundra'];
-            const biomeIndex = parts.findIndex(p => biomes.includes(p));
-
-            // Fallback for legacy/malformed IDs
-            if (biomeIndex === -1) return `images/ground/${id}_original.png`;
-
-            const biome = parts[biomeIndex];
-            const category = parts[1]; // base, damage, interior, overgrown, vertical
-
-            return `images/ground/${biome}/${category}/${id}_original.png`;
-        }
-    },
-
-    // Backgrounds
-    {
-        matches: (id: string) => id.startsWith('bg_zone_'),
-        build: (id: string) => `images/backgrounds/${id.replace('bg_', '')}_clean.png`
-    }
-];
+const SESSION_CACHE_BUSTER = Date.now();
 
 const AssetLoader = {
     cache: new Map(),
@@ -160,29 +26,41 @@ const AssetLoader = {
     // Threshold for white pixel detection (250-255 catches near-white)
     WHITE_THRESHOLD: GameConstants.Rendering.WHITE_BG_THRESHOLD,
 
+    /** Skip white removal when image exceeds this pixel count to avoid getImageData/toDataURL OOM. */
+    MAX_PIXELS_FOR_WHITE_REMOVAL: 2048 * 2048,
+
     /**
      * Remove white background from an image
      * Used as fallback when _clean.png doesn't exist
+     * Skips processing for very large images and catches getImageData OOM.
      * @param {HTMLImageElement} img - Source image
-     * @returns {HTMLCanvasElement} - Canvas with transparent background
+     * @returns {HTMLCanvasElement} - Canvas with transparent background (or unchanged if skipped)
      */
     _removeWhiteBackground(img: HTMLImageElement): HTMLCanvasElement {
         const canvas = DOMUtils.createCanvas(img.width, img.height);
         const ctx = canvas.getContext('2d')!;
         ctx.drawImage(img, 0, 0);
 
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        const threshold = this.WHITE_THRESHOLD;
-
-        for (let i = 0; i < data.length; i += 4) {
-            // If R, G, B are all >= threshold, make transparent
-            if (data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold) {
-                data[i + 3] = 0; // Set alpha to 0
-            }
+        const pixels = img.width * img.height;
+        if (pixels > this.MAX_PIXELS_FOR_WHITE_REMOVAL) {
+            return canvas;
         }
 
-        ctx.putImageData(imageData, 0, 0);
+        try {
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            const threshold = this.WHITE_THRESHOLD;
+
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] >= threshold && data[i + 1] >= threshold && data[i + 2] >= threshold) {
+                    data[i + 3] = 0;
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+        } catch {
+            // getImageData can throw RangeError (OOM); return canvas with image only
+        }
         return canvas;
     },
 
@@ -201,50 +79,37 @@ const AssetLoader = {
         return true;
     },
 
-    /**
-     * Get image path by ID
-     * Priority: EntityRegistry → static assets → pattern-based fallback → placeholder
-     * @param {string} id - Asset ID
-     * @returns {string} - File path
-     */
     getImagePath(id: string) {
+        let finalPath = '';
+
         // 1. Try static assets first (fastest)
         if (this.staticAssets[id]) {
-            return this.basePath + this.staticAssets[id];
-        }
-
-        // 2. Try EntityRegistry lookup
-        const entityPath = this._getEntityImagePath(id);
-        if (entityPath) {
-            return this.basePath + entityPath;
-        }
-
-        // 3. Pattern-based fallback (construct path from ID conventions)
-        const patternPath = this._constructPathFromId(id);
-        if (patternPath) {
-            return this.basePath + patternPath;
-        }
-
-        // 4. Fallback to placeholder
-        Logger.warn(`[AssetLoader] Unknown asset ID: ${id}`);
-        return this.basePath + 'images/PH.png';
-    },
-
-    /**
-     * Construct image path from entity ID patterns
-     * Handles: enemy_*, enemy_herbivore_*, enemy_dinosaur_*, npc_*, weapon_*, tool_*, etc.
-     * @param {string} id
-     * @returns {string|null}
-     */
-    _constructPathFromId(id: string) {
-        if (!id) return null;
-
-        for (const pattern of ID_PATTERNS) {
-            if (pattern.matches(id)) {
-                return pattern.build(id);
+            finalPath = this.basePath + this.staticAssets[id];
+        } else {
+            // 2. Try EntityRegistry lookup
+            const entityPath = this._getEntityImagePath(id);
+            if (entityPath) {
+                finalPath = this.basePath + entityPath;
+            } else {
+                // 3. Pattern-based fallback (construct path from ID conventions)
+                const patternPath = constructPathFromId(id);
+                if (patternPath) {
+                    finalPath = this.basePath + patternPath;
+                } else {
+                    // 4. Fallback to placeholder
+                    Logger.warn(`[AssetLoader] Unknown asset ID: ${id}`);
+                    finalPath = this.basePath + 'images/PH.png';
+                }
             }
         }
-        return null;
+
+        // In development mode, bust browser cache per session (on page refresh)
+        // so edits to source files always show up immediately when developers refresh
+        if (import.meta.env && import.meta.env.DEV) {
+            return finalPath + `?v=${SESSION_CACHE_BUSTER}`;
+        }
+
+        return finalPath;
     },
 
     /**
@@ -265,7 +130,8 @@ const AssetLoader = {
             'resources',
             'items',
             'npcs',
-            'environment'
+            'environment',
+            'hero'
         ];
 
         for (const cat of categories) {
@@ -362,12 +228,20 @@ const AssetLoader = {
                 if (onLoad) onLoad();
                 return;
             }
+            // Skip processing for large images to avoid getImageData/toDataURL OOM
+            const pixels = img.width * img.height;
+            if (pixels > self.MAX_PIXELS_FOR_WHITE_REMOVAL) {
+                if (onLoad) onLoad();
+                return;
+            }
 
             // Remove white background from ALL images
             const processed = self._removeWhiteBackground(img);
-            // Replace image source with processed canvas data
-            img.src = processed.toDataURL('image/png');
-            // Don't retrigger onload for the data URL (handled by startsWith check above)
+            try {
+                img.src = processed.toDataURL('image/png');
+            } catch {
+                // toDataURL can OOM on large canvases; keep original img
+            }
             if (onLoad) onLoad();
         };
 
@@ -424,7 +298,7 @@ const AssetLoader = {
      * @returns {null}
      */
     getAudio(_id: string): null {
-        // Procedural audio handled by ProceduralSFX.js
+        // Procedural audio handled by SFX_Core
         // This is only for pre-recorded files (BGM, ambient)
         return null;
     },

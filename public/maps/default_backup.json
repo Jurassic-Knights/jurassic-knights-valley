@@ -1,0 +1,59 @@
+{
+  "chunks": [],
+  "heroSpawn": {
+    "x": 93742.41328311563,
+    "y": 85453.39288672118
+  },
+  "mapgen4Param": {
+    "spacing": 5.5,
+    "mountainSpacing": 35,
+    "meshSeed": 12345,
+    "elevation": {
+      "seed": 1,
+      "island": 0.68,
+      "noisy_coastlines": 0.01,
+      "hill_height": 0.1,
+      "mountain_jagged": 0.71,
+      "mountain_sharpness": 10.8,
+      "mountain_folds": 0.05,
+      "ocean_depth": 1
+    },
+    "biomes": {
+      "wind_angle_deg": 0,
+      "raininess": 0.9,
+      "rain_shadow": 0.5,
+      "evaporation": 0.5
+    },
+    "rivers": {
+      "lg_min_flow": 2.7,
+      "lg_river_width": -2.4,
+      "flow": 0.2
+    },
+    "towns": {
+      "enabled": true,
+      "numTowns": 6,
+      "minSpacing": 116,
+      "townRadius": 15,
+      "defaultZoneId": "civ_town",
+      "elevationMin": 0,
+      "elevationMax": 0.3,
+      "rainfallMin": 0.2,
+      "rainfallMax": 1
+    },
+    "roads": {
+      "enabled": false,
+      "baseWidth": 512,
+      "shortcutsPerTown": 5,
+      "riverCrossingCost": 1.2,
+      "coverageGridSize": 8,
+      "slopeWeight": 6,
+      "waypointCurviness": 0.15
+    },
+    "railroads": {
+      "enabled": true
+    }
+  },
+  "manualTowns": [
+    7835
+  ]
+}

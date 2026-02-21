@@ -9,7 +9,6 @@ import { Entity } from '@core/Entity';
 import type { IEntity } from '../types/core';
 import { Logger } from '@core/Logger';
 import { AssetLoader } from '@core/AssetLoader';
-import { IslandUpgrades } from '../gameplay/IslandUpgrades';
 import { GameConstants } from '@data/GameConstants';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
@@ -43,10 +42,6 @@ class Dinosaur extends Entity {
     respawnTimer: number = 0;
     maxRespawnTime: number = 30;
 
-    // Island context (inherited from Entity - use declare to avoid overwrite error)
-    declare islandGridX: number | undefined;
-    declare islandGridY: number | undefined;
-    islandBounds: { x: number; y: number; width: number; height: number } | null = null;
 
     // Combat flags
     isBeingAttacked: boolean = false;
@@ -61,7 +56,7 @@ class Dinosaur extends Entity {
     _spriteLoaded: boolean = false;
     _shadowImg?: HTMLImageElement | HTMLCanvasElement;
 
-    constructor(config: { dinoType?: string; x?: number; y?: number; [key: string]: unknown } = {}) {
+    constructor(config: { dinoType?: string; x?: number; y?: number;[key: string]: unknown } = {}) {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
 
         // Look up entity config from EntityRegistry using dinoType (e.g., 'enemy_herbivore_t1_01')
@@ -124,10 +119,6 @@ class Dinosaur extends Entity {
         this.respawnTimer = 0;
         this.maxRespawnTime = finalConfig.respawnTime ?? GameConstants.Dinosaur.DEFAULT_RESPAWN_TIME;
 
-        // Island context for updates
-        this.islandGridX = config.islandGridX;
-        this.islandGridY = config.islandGridY;
-        this.islandBounds = config.islandBounds; // {x, y, width, height}
 
         // Initialize Respawn Time from Upgrades
         this.recalculateRespawnTimer();
@@ -208,18 +199,8 @@ class Dinosaur extends Entity {
         };
     }
 
-    /**
-     * Update max respawn time based on island upgrades
-     */
     recalculateRespawnTimer() {
-        if (IslandUpgrades && this.islandGridX !== undefined) {
-            // Base 20s for Dinos (faster than resources?)
-            this.maxRespawnTime = IslandUpgrades.getRespawnTime(
-                this.islandGridX,
-                this.islandGridY,
-                20
-            );
-        }
+        this.maxRespawnTime = 20;
     }
 
     /**

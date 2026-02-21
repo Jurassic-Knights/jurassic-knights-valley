@@ -14,23 +14,18 @@
  */
 import { Entity } from '@core/Entity';
 import { Logger } from '@core/Logger';
-import { EntityConfig as EntityConfigValue } from '@config/EntityConfig';
-import { EntityRegistry } from '@entities/EntityLoader';
+import { EnemyConfig } from '@config/EnemyConfig';
 import { GameConstants } from '@data/GameConstants';
-import { BiomeConfig } from '@data/BiomeConfig';
-import { EntityTypes } from '@config/EntityTypes';
-import { SpeciesScaleConfig } from '@config/SpeciesScaleConfig';
 import { HealthComponent } from '../components/HealthComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { CombatComponent } from '../components/CombatComponent';
 import { AIComponent } from '../components/AIComponent';
 import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
-import { Registry } from '@core/Registry';
 import { Component } from '@core/Component';
 import { getConfig } from '@data/GameConstants';
+import { buildEnemyConfig, getPatrolConfig } from './EnemyCoreConfig';
+import { refreshEnemyConfig } from './EnemyCoreRefresh';
 import type { EntityConfig } from '../types/core';
-
-// Unmapped modules - need manual import
 
 class Enemy extends Entity {
     // Identity
@@ -65,8 +60,6 @@ class Enemy extends Entity {
     // Boss Flag
     isBoss?: boolean = false;
 
-    // Render methods (optional implementation)
-    // Render methods (optional implementation)
     renderUI(ctx: CanvasRenderingContext2D): void {
         if (!this.active || this.isDead) return;
         this.renderHealthBar(ctx);
@@ -123,92 +116,11 @@ class Enemy extends Entity {
      * @param {EntityConfig} config - Enemy configuration
      */
     constructor(config: EntityConfig = {}) {
-        // Get config hierarchy: defaults -> entity JSON -> instance config
-        const defaults = EntityConfigValue.defaults || EntityConfigValue.enemy?.defaults || {};
+        const { finalConfig, typeConfig, isElite, entityType, sizeInfo } = buildEnemyConfig(config);
 
-        // Look up type config from EntityRegistry via EnemyConfig.get()
-        let typeConfig: EntityConfig = {};
-        if (config.enemyType) {
-            // Priority 1: EntityRegistry (from entity JSONs via EntityLoader)
-            // Check enemies first (includes bosses), then fallbacks
-            typeConfig =
-                EntityRegistry.enemies?.[config.enemyType] ||
-                EntityConfigValue.get?.(config.enemyType) ||
-                // Fallback: Old EntityConfig paths (deprecated)
-                EntityConfigValue.enemy?.dinosaurs?.[config.enemyType] ||
-                EntityConfigValue.enemy?.soldiers?.[config.enemyType] ||
-                {};
-        }
-
-        // Merge configs (instance overrides type overrides defaults)
-        const finalConfig = { ...defaults, ...typeConfig, ...config };
-
-        // Elite Roll - 5% chance or forced via config
-        const eliteChance =
-            EntityConfigValue.enemy?.eliteSpawnChance || BiomeConfig.Biome?.ELITE_SPAWN_CHANCE || 0.05;
-        const isElite = config.isElite || (!config.forceNormal && Math.random() < eliteChance);
-
-        // Apply elite multipliers if elite
-        if (isElite) {
-            const mult = EntityConfigValue.enemy?.eliteMultipliers || {
-                health: 2.0,
-                damage: 2.0,
-                xpReward: 3.0,
-                lootDrops: 3.0
-            };
-            const eliteFallback = GameConstants.Enemy.ELITE_FALLBACK_HEALTH;
-            finalConfig.health = (Number(finalConfig.health) || eliteFallback) * mult.health;
-            finalConfig.maxHealth =
-                (Number(finalConfig.maxHealth) || finalConfig.health) * mult.health;
-            finalConfig.damage = (Number(finalConfig.damage) || GameConstants.Enemy.DEFAULT_DAMAGE) * mult.damage;
-            finalConfig.xpReward = (Number(finalConfig.xpReward) || GameConstants.Enemy.DEFAULT_XP_REWARD) * mult.xpReward;
-        }
-
-        // Apply biome difficulty multipliers if biome specified
-        if (config.biomeId && (BiomeConfig.types as Record<string, { difficulty?: string; [key: string]: unknown }>)?.[config.biomeId]) {
-            const biome = (BiomeConfig.types as Record<string, { difficulty?: string; [key: string]: unknown }>)[config.biomeId];
-            const diffMult = (BiomeConfig.difficultyMultipliers as Record<string, { damage?: number; [key: string]: unknown }>)?.[biome.difficulty] || {
-                health: 1,
-                damage: 1,
-                xp: 1,
-                loot: 1
-            };
-
-            finalConfig.health = (finalConfig.health || 0) * diffMult.health;
-            finalConfig.maxHealth = finalConfig.health;
-            finalConfig.damage = (finalConfig.damage || 0) * diffMult.damage;
-            finalConfig.xpReward = (finalConfig.xpReward || 0) * diffMult.xp;
-        }
-
-        // Determine entity type based on sourceFile or explicit entityType
-        let entityType = finalConfig.entityType;
-        if (!entityType) {
-            // Infer from sourceFile or enemyType string
-            const sourceFile = (typeConfig.sourceFile || config.enemyType || '').toLowerCase();
-            if (sourceFile.includes('soldier') || sourceFile.includes('human')) {
-                entityType = EntityTypes.ENEMY_SOLDIER;
-            } else if (sourceFile.includes('saurian')) {
-                entityType = EntityTypes.ENEMY_SAURIAN;
-            } else {
-                entityType = EntityTypes.ENEMY_DINOSAUR;
-            }
-        }
-
-        // Call parent constructor
-        // Get size from SpeciesScaleConfig (runtime lookup by species/bodyType)
-        const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';
-        const defaultSize = GameConstants.Enemy.DEFAULT_SIZE;
-        const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss) || {
-            width: defaultSize,
-            height: defaultSize
-        };
-
-        // Debug
         const scaleValue = (sizeInfo as { scale?: number }).scale;
         if (scaleValue && scaleValue !== 1.0) {
-            Logger.info(
-                `[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`
-            );
+            Logger.info(`[Enemy] ${config.enemyType}: species=${typeConfig.species || typeConfig.bodyType}, scale=${scaleValue}, size=${sizeInfo.width}x${sizeInfo.height}`);
         }
 
         super({
@@ -238,25 +150,12 @@ class Enemy extends Entity {
         this.groupId = config.groupId || null; // Links enemies in same group
         this.waveId = config.waveId || null; // For respawn wave tracking
 
-        // Patrol Area (spawn location + wander radius) - read from GameConfig.AI
         this.spawnX = config.x || 0;
         this.spawnY = config.y || 0;
-        const Biome = GameConstants.Biome;
-        this.patrolRadius =
-            finalConfig.patrolRadius ??
-            getConfig().AI?.PATROL_AREA_RADIUS ??
-            BiomeConfig.patrolDefaults?.areaRadius ??
-            Biome.PATROL_AREA_RADIUS;
-        this.leashDistance =
-            finalConfig.leashDistance ??
-            getConfig().Biome?.LEASH_DISTANCE ??
-            BiomeConfig.patrolDefaults?.leashDistance ??
-            Biome.LEASH_DISTANCE;
-        this.aggroRange =
-            finalConfig.aggroRange ??
-            getConfig().Biome?.AGGRO_RANGE ??
-            BiomeConfig.patrolDefaults?.aggroRange ??
-            Biome.AGGRO_RANGE;
+        const patrol = getPatrolConfig(finalConfig, config);
+        this.patrolRadius = patrol.patrolRadius;
+        this.leashDistance = patrol.leashDistance;
+        this.aggroRange = patrol.aggroRange;
 
         const E = GameConstants.Enemy;
         this.health = Number(finalConfig.health) || E.DEFAULT_HEALTH;
@@ -271,7 +170,7 @@ class Enemy extends Entity {
         this.lootTableId = finalConfig.lootTableId || 'common_enemy';
         this.lootTable = finalConfig.lootTable || null;
         this.lootMultiplier = isElite
-            ? EntityConfigValue.enemy?.eliteMultipliers?.lootDrops || 3.0
+            ? (EnemyConfig.eliteMultipliers as { lootDrops?: number })?.lootDrops ?? 3.0
             : 1.0;
 
         // Entity SFX (from entity JSON)
@@ -434,29 +333,11 @@ class Enemy extends Entity {
     renderHealthBar(_ctx: CanvasRenderingContext2D): void { }
     renderThreatIndicator(_ctx: CanvasRenderingContext2D): void { }
 
-    /**
-     * Refresh configuration from EntityRegistry
-     * Called by EntityLoader on live update
-     */
     refreshConfig() {
-        // 1. Re-fetch config
-        // Re-construct logic similar to constructor lookup
-        const typeConfig: EntityConfig = this.enemyType ? EntityRegistry.enemies?.[this.enemyType] || {} : {};
-
-        // 2. Re-calculate size
-        const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';
-        const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss);
-
+        const sizeInfo = refreshEnemyConfig(this.enemyType, this.width, this.height, this.collision);
         if (sizeInfo) {
             this.width = sizeInfo.width;
             this.height = sizeInfo.height;
-            // Logger.info(`[Enemy] Refreshed config for ${this.enemyType}: ${this.width}x${this.height}`);
-        }
-
-        // 3. Sync Collision
-        if (this.collision && this.collision.bounds) {
-            this.collision.bounds.width = this.width;
-            this.collision.bounds.height = this.height;
         }
     }
 }

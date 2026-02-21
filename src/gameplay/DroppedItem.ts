@@ -282,10 +282,7 @@ class DroppedItem extends Entity {
         }
     }
 
-    /**
-     * Check if item should start flying to hero (auto-pickup range)
-     * @param {Hero} hero
-     */
+    /** Check if item should start flying to hero (auto-pickup range) */
     shouldAutoMagnetize(hero: IEntity) {
         if (!this.active || !hero) return false;
         if (this.isMagnetized || this.isFlying) return false;
@@ -298,11 +295,7 @@ class DroppedItem extends Entity {
         return this.distanceTo(hero) < this.pickupRadius;
     }
 
-    /**
-     * Check if hero can finalize pickup (must be strictly close)
-     * @param {Hero} hero
-     * @returns {boolean}
-     */
+    /** Check if hero can finalize pickup (must be strictly close) */
     canBePickedUpBy(hero: IEntity) {
         if (!this.active || !hero) return false;
 
@@ -321,10 +314,7 @@ class DroppedItem extends Entity {
         return this.distanceTo(hero) < 20;
     }
 
-    /**
-     * Render dropped item
-     * @param {CanvasRenderingContext2D} ctx
-     */
+    /** Render dropped item */
     render(ctx: CanvasRenderingContext2D) {
         if (!this.active) return;
 
@@ -342,9 +332,7 @@ class DroppedItem extends Entity {
         }
     }
 
-    /**
-     * Refresh configuration from EntityRegistry
-     */
+    /** Refresh configuration from EntityRegistry */
     refreshConfig() {
         const typeConfig = EntityRegistry.items?.[this.resourceType] || {};
 

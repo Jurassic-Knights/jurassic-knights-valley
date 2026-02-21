@@ -1,6 +1,7 @@
 import { EditorCommand } from './EditorCommand';
 import { ChunkManager } from '../ChunkManager';
 
+/** Command to place an object at a world position. Supports undo by removing at same position. */
 export class PlaceObjectCommand implements EditorCommand {
     public type = 'Place Object';
 

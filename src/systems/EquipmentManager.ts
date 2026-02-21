@@ -100,12 +100,20 @@ class EquipmentManager {
         }
 
         // Validate item type can go in this slot
-        // NOTE: Validation temporarily relaxed due to incorrect type values in equipment data
-        const itemType = equipmentData.slot || equipmentData.sourceFile || equipmentData.type;
+        const itemSlot = equipmentData.slot;
+        const itemTypeRaw = equipmentData.type;
+        const itemSource = equipmentData.sourceFile;
+        let itemType = itemSlot || itemTypeRaw || itemSource || 'unknown';
+
+        // Strip sub-category qualifiers like 'weapon_melee' -> 'weapon' for validation
+        if (typeof itemType === 'string' && itemType.includes('_')) {
+            itemType = itemType.split('_')[0];
+        }
+
         if (EquipmentSlotsConfig && !EquipmentSlotsConfig.canEquip(slotId, itemType)) {
             // Log warning but still allow equip (data issue)
             Logger.warn(
-                `[EquipmentManager] Type mismatch: ${itemType} in ${slotId} - allowing anyway`
+                `[EquipmentManager] Type mismatch (normalized: ${itemType}) in ${slotId} - allowing anyway`
             );
         }
 

@@ -1,4 +1,3 @@
-
 import {
     updateCategoryStatus,
     updateConsumedStatus,
@@ -13,7 +12,7 @@ import {
     markAllSfxForRegeneration,
     saveRegenerationQueueToFile,
     remakeAsset,
-    saveAssetPrompt,
+    saveAssetPrompt
 } from './api';
 import {
     navigateToAsset,
@@ -27,12 +26,11 @@ import {
     remakeCategoryItemById,
     showCategoryView,
     loadManifest,
-    showConfigView,
+    showConfigView
 } from './views';
 import { openModal, toggleComparisonView, closeModal } from './modals';
 import { playSound } from './AudioManager';
 import { showTemplatesView } from './templates';
-import { showMapEditorView, saveMapData } from './mapEditorView';
 import {
     setCategoryStatusFilter,
     setCategoryBiomeFilter,
@@ -43,9 +41,16 @@ import {
     setCategoryNodeSubtypeFilter,
     setCategoryImageSize,
     setCategorySortOrder,
-    resetCategoryFilters,
+    resetCategoryFilters
 } from './filters';
-import { setSelectedAssetId, setCurrentInspectorTab, setImageParam, categoryData, assetPrompts, selectedAssetId } from './state';
+import {
+    setSelectedAssetId,
+    setCurrentInspectorTab,
+    setImageParam,
+    categoryData,
+    assetPrompts,
+    selectedAssetId
+} from './state';
 import { renderCategoryView } from './categoryRenderer';
 import { renderInspector } from './inspectorRenderer';
 
@@ -57,7 +62,7 @@ function switchInspectorTab(tabName: string, target: HTMLElement) {
     // 1. Update Buttons
     const container = target.closest('.inspector-tabs');
     if (container) {
-        container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        container.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
         target.classList.add('active');
     }
 
@@ -69,7 +74,9 @@ function switchInspectorTab(tabName: string, target: HTMLElement) {
     // So we should query inside 'inspectorContent' or just query document.
 
     // Safer to query document for the active content
-    document.querySelectorAll('.tab-content').forEach((el) => ((el as HTMLElement).style.display = 'none'));
+    document
+        .querySelectorAll('.tab-content')
+        .forEach((el) => ((el as HTMLElement).style.display = 'none'));
     const activeContent = document.getElementById(`tab-${tabName}`);
     if (activeContent) activeContent.style.display = 'block';
 }
@@ -85,25 +92,16 @@ const actions: Record<string, ActionHandler> = {
     'toggle-config': () => showConfigView(),
     'toggle-map-editor': () => {
         const container = document.getElementById('map-editor-container');
-        if (container && container.style.display === 'block') {
-            // It's open, so close it (go back to manifest/dashboard)
-            // Just simulate navigating back or loading manifest
-            import('./views').then(({ loadManifest }) => {
-                loadManifest();
-            });
-            import('./mapEditorView').then(({ hideMapEditorView }) => {
-                hideMapEditorView();
-            });
-            // Update URL to remove view=map
-            // loadManifest does this? loadManifest sets view=dashboard implicitly?
-            // loadManifest currently pushes state? Let's check views.ts logic if needed. 
-            // For now, loadManifest is the safe "home" action.
+        const isOpen = container && container.style.display !== 'none';
+        if (isOpen) {
+            import('./views').then(({ loadManifest }) => loadManifest());
+            import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
         } else {
-            showMapEditorView();
+            import('@dashboard/mapEditorView').then((m) => m.showMapEditorView());
         }
     },
     'refresh-manifest': () => loadManifest(),
-    'save-map-data': () => saveMapData(),
+    'save-map-data': () => import('@dashboard/mapEditorView').then((m) => m.saveMapFromPanel()),
 
     // Selection & Inspector
     'select-asset': (d) => {
@@ -154,7 +152,8 @@ const actions: Record<string, ActionHandler> = {
     // 'update-consumed-status' handled globally below to support notes
     'update-tier': (d) => updateItemTier(d.category!, d.file!, d.id!, parseInt(d.value!)),
     'update-weapon': (d) => updateItemWeapon(d.category!, d.file!, d.id!, d.value!),
-    'update-field': (d) => updateItemField(d.category!, d.file!, d.id!, d.field!, parseValue(d.value!)),
+    'update-field': (d) =>
+        updateItemField(d.category!, d.file!, d.id!, d.field!, parseValue(d.value!)),
 
     'update-prompt': async (d) => {
         const prompt = d.value || '';
@@ -180,19 +179,27 @@ const actions: Record<string, ActionHandler> = {
                 if (item.types.includes('image/png') || item.types.includes('image/jpeg')) {
                     // Same logic as uploadImageFile
                     // Read content
-                    await uploadImageFile(await item.getType(item.types.includes('image/png') ? 'image/png' : 'image/jpeg'), path, d.id); // d.id might be undefined if not on a card with ID, but path is key.
+                    await uploadImageFile(
+                        await item.getType(
+                            item.types.includes('image/png') ? 'image/png' : 'image/jpeg'
+                        ),
+                        path,
+                        d.id
+                    ); // d.id might be undefined if not on a card with ID, but path is key.
                     // If d.id is missing, we can try to infer or just pass undefined (grid won't auto-refresh specific card but full render will catch it)
                     return;
                 }
             }
-            alert("No image found on clipboard!");
+            alert('No image found on clipboard!');
         } catch (err) {
             console.error(err);
-            alert("Failed to read clipboard. Ensure you accepted permissions.");
+            alert('Failed to read clipboard. Ensure you accepted permissions.');
         }
     },
-    'update-display': (d) => updateDisplayField(d.category!, d.file!, d.id!, d.field!, parseFloat(d.value!)),
-    'update-display-size': (d) => updateDisplaySize(d.category!, d.file!, d.id!, parseInt(d.value!)),
+    'update-display': (d) =>
+        updateDisplayField(d.category!, d.file!, d.id!, d.field!, parseFloat(d.value!)),
+    'update-display-size': (d) =>
+        updateDisplaySize(d.category!, d.file!, d.id!, parseInt(d.value!)),
 
     // Stats
     'update-stat': (d) => updateItemStat(d.category!, d.file!, d.id!, d.key!, parseValue(d.value!)),
@@ -231,12 +238,15 @@ const actions: Record<string, ActionHandler> = {
     'reset-filters': () => resetCategoryFilters(),
 
     // Advanced Image Actions (Split View)
-    'decline-item-by-id': (d) => declineCategoryItemById(d.category!, d.file!, d.id!, d.noteInputId!),
+    'decline-item-by-id': (d) =>
+        declineCategoryItemById(d.category!, d.file!, d.id!, d.noteInputId!),
     'remake-item-by-id': (d) => remakeCategoryItemById(d.category!, d.file!, d.id!, d.noteInputId!),
 
     // Complex Consumed Status Updates (requires note lookup)
     'update-consumed-status': (d) => {
-        const note = d.noteInputId ? (document.getElementById(d.noteInputId) as HTMLInputElement)?.value : '';
+        const note = d.noteInputId
+            ? (document.getElementById(d.noteInputId) as HTMLInputElement)?.value
+            : '';
         let val = d.value!;
         let finalNote = note;
 
@@ -274,116 +284,140 @@ export function initEventDelegation() {
     abortController = new AbortController();
     const signal = abortController.signal;
 
-    document.body.addEventListener('click', async (e) => {
-        // Log all clicks for debugging
-        // console.log('[Delegator] Click on:', e.target);
+    document.body.addEventListener(
+        'click',
+        async (e) => {
+            // Log all clicks for debugging
+            // console.log('[Delegator] Click on:', e.target);
 
-        const target = (e.target as HTMLElement).closest('[data-action]') as HTMLElement;
-        if (!target) return;
+            const target = (e.target as HTMLElement).closest('[data-action]') as HTMLElement;
+            if (!target) return;
 
-        const actionName = target.dataset.action;
-        console.log('[ActionDelegator] Action triggering:', actionName, target.dataset);
+            const actionName = target.dataset.action;
+            console.log('[ActionDelegator] Action triggering:', actionName, target.dataset);
 
-        if (actionName && actions[actionName]) {
-            e.stopPropagation(); // Prevent bubbling if handled
-            try {
-                await actions[actionName](target.dataset, target);
-            } catch (err) {
-                console.error(`[Delegator] Action '${actionName}' failed:`, err);
+            if (actionName && actions[actionName]) {
+                e.stopPropagation(); // Prevent bubbling if handled
+                try {
+                    await actions[actionName](target.dataset, target);
+                } catch (err) {
+                    console.error(`[Delegator] Action '${actionName}' failed:`, err);
+                }
             }
-        }
-    }, { signal });
-
-
+        },
+        { signal }
+    );
 
     // Handle Input Changes (delegated change events)
-    document.body.addEventListener('input', (e) => {
-        const target = e.target as HTMLElement;
-        if (target && target.matches('textarea.feedback-input')) {
-            target.style.height = 'auto';
-            target.style.height = target.scrollHeight + 'px';
-        }
-    }, { signal });
+    document.body.addEventListener(
+        'input',
+        (e) => {
+            const target = e.target as HTMLElement;
+            if (target && target.matches('textarea.feedback-input')) {
+                target.style.height = 'auto';
+                target.style.height = target.scrollHeight + 'px';
+            }
+        },
+        { signal }
+    );
 
     // Drag & Drop Delegation
-    document.body.addEventListener('dragover', (e) => {
-        const trg = e.target as HTMLElement;
-        const target = trg.closest('[data-action="image-drop-zone"]');
+    document.body.addEventListener(
+        'dragover',
+        (e) => {
+            const trg = e.target as HTMLElement;
+            const target = trg.closest('[data-action="image-drop-zone"]');
 
-        // Debug Log - throttling
-        if (Math.random() < 0.05) {
-            console.log('[DragDebug] Target:', trg.tagName, trg.className, 'Zone:', target);
-        }
-
-        if (target) {
-            e.preventDefault(); // Allow drop
-            e.dataTransfer!.dropEffect = 'copy';
-            (target as HTMLElement).style.borderColor = '#2196f3';
-            (target as HTMLElement).style.background = '#2196f322';
-        }
-    }, { signal });
-
-    document.body.addEventListener('dragleave', (e) => {
-        const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]');
-        if (target) {
-            (target as HTMLElement).style.borderColor = '#444';
-            (target as HTMLElement).style.background = '#1a1a1a';
-        }
-    }, { signal });
-
-    document.body.addEventListener('drop', async (e) => {
-        const trg = e.target as HTMLElement;
-        const target = trg.closest('[data-action="image-drop-zone"]') as HTMLElement;
-
-        console.log('[Delegator] DROP Event on:', trg.tagName, trg.className, 'Zone:', target);
-
-        if (target) {
-            e.preventDefault();
-            e.stopPropagation();
-            target.style.borderColor = '#444';
-            target.style.background = '#1a1a1a';
-
-            // Check for file
-            const path = target.dataset.path;
-            const id = target.dataset.id;
-
-            if (!path) {
-                console.warn('[Delegator] Drop: No original file path set.');
-                return;
+            // Debug Log - throttling
+            if (Math.random() < 0.05) {
+                console.log('[DragDebug] Target:', trg.tagName, trg.className, 'Zone:', target);
             }
 
-            if (e.dataTransfer?.files.length) {
-                const file = e.dataTransfer.files[0];
-                if (!file.type.startsWith('image/')) {
-                    console.warn('[Delegator] Dropped file is not an image.');
+            if (target) {
+                e.preventDefault(); // Allow drop
+                e.dataTransfer!.dropEffect = 'copy';
+                (target as HTMLElement).style.borderColor = '#2196f3';
+                (target as HTMLElement).style.background = '#2196f322';
+            }
+        },
+        { signal }
+    );
+
+    document.body.addEventListener(
+        'dragleave',
+        (e) => {
+            const target = (e.target as HTMLElement).closest('[data-action="image-drop-zone"]');
+            if (target) {
+                (target as HTMLElement).style.borderColor = '#444';
+                (target as HTMLElement).style.background = '#1a1a1a';
+            }
+        },
+        { signal }
+    );
+
+    document.body.addEventListener(
+        'drop',
+        async (e) => {
+            const trg = e.target as HTMLElement;
+            const target = trg.closest('[data-action="image-drop-zone"]') as HTMLElement;
+
+            console.log('[Delegator] DROP Event on:', trg.tagName, trg.className, 'Zone:', target);
+
+            if (target) {
+                e.preventDefault();
+                e.stopPropagation();
+                target.style.borderColor = '#444';
+                target.style.background = '#1a1a1a';
+
+                // Check for file
+                const path = target.dataset.path;
+                const id = target.dataset.id;
+
+                if (!path) {
+                    console.warn('[Delegator] Drop: No original file path set.');
                     return;
                 }
 
-                // Read & Upload
-                await uploadImageFile(file, path, id);
+                if (e.dataTransfer?.files.length) {
+                    const file = e.dataTransfer.files[0];
+                    if (!file.type.startsWith('image/')) {
+                        console.warn('[Delegator] Dropped file is not an image.');
+                        return;
+                    }
+
+                    // Read & Upload
+                    await uploadImageFile(file, path, id);
+                }
             }
-        }
-    }, { signal });
+        },
+        { signal }
+    );
 
-    document.body.addEventListener('change', async (e) => {
-        const target = (e.target as HTMLElement).closest('[data-action]') as HTMLInputElement | HTMLSelectElement;
-        if (!target) return;
+    document.body.addEventListener(
+        'change',
+        async (e) => {
+            const target = (e.target as HTMLElement).closest('[data-action]') as
+                | HTMLInputElement
+                | HTMLSelectElement;
+            if (!target) return;
 
-        const actionName = target.dataset.action;
-        // For inputs, we often want to use the input's current value as the payload
-        // Override dataset.value with actual input value
-        if (target.dataset.captureValue === 'true') {
-            target.dataset.value = target.value;
-        }
-
-        if (actionName && actions[actionName]) {
-            try {
-                await actions[actionName](target.dataset, target);
-            } catch (err) {
-                console.error(`[Delegator] Change Action '${actionName}' failed:`, err);
+            const actionName = target.dataset.action;
+            // For inputs, we often want to use the input's current value as the payload
+            // Override dataset.value with actual input value
+            if (target.dataset.captureValue === 'true') {
+                target.dataset.value = target.value;
             }
-        }
-    }, { signal });
+
+            if (actionName && actions[actionName]) {
+                try {
+                    await actions[actionName](target.dataset, target);
+                } catch (err) {
+                    console.error(`[Delegator] Change Action '${actionName}' failed:`, err);
+                }
+            }
+        },
+        { signal }
+    );
 }
 
 // Utility for Upload
@@ -404,7 +438,9 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                     if (gridImg) gridImg.style.opacity = '0.5';
                 }
             }
-            const inspectorImg = document.querySelector('.inspector-placeholder img, .inspector-content img') as HTMLImageElement;
+            const inspectorImg = document.querySelector(
+                '.inspector-placeholder img, .inspector-content img'
+            ) as HTMLImageElement;
             if (inspectorImg) inspectorImg.style.opacity = '0.5';
 
             // Helper to refresh UI
@@ -412,7 +448,8 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                 // Normalize path for browser request
                 let checkPath = targetPath;
                 if (!checkPath.startsWith('/')) checkPath = '/' + checkPath;
-                checkPath = '/images/' + checkPath.replace(/^(assets\/)?images\//, '').replace(/^\//, '');
+                checkPath =
+                    '/images/' + checkPath.replace(/^(assets\/)?images\//, '').replace(/^\//, '');
 
                 const timestamp = Date.now();
 
@@ -438,7 +475,7 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                         renderInspector();
                         return;
                     }
-                    await new Promise(r => setTimeout(r, 250));
+                    await new Promise((r) => setTimeout(r, 250));
                 }
                 console.warn('[Delegator] Preload failed, forcing render anyway.');
                 renderCategoryView();
@@ -470,7 +507,10 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                         let asset: { id: string; [key: string]: unknown } | null = null;
                         for (const list of Object.values(categoryData.files)) {
                             const found = list.find((i: { id: string }) => i.id === assetId);
-                            if (found) { asset = found; break; }
+                            if (found) {
+                                asset = found;
+                                break;
+                            }
                         }
 
                         if (asset && asset.files) {
@@ -479,7 +519,9 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
 
                             // Check if we just uploaded the Original
                             // Note: cleanPath is relative (images/...), asset.files are relative usually
-                            const isOriginal = cleanPath.endsWith(originalFile) || originalFile.endsWith(cleanPath);
+                            const isOriginal =
+                                cleanPath.endsWith(originalFile) ||
+                                originalFile.endsWith(cleanPath);
 
                             if (isOriginal && cleanFile && cleanFile !== originalFile) {
                                 console.log('[Delegator] Syncing Clean image:', cleanFile);
@@ -491,14 +533,14 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                                         path: cleanFile,
                                         image: base64
                                     })
-                                }).catch(e => console.warn('[Delegator] Clean Sync Failed', e));
+                                }).catch((e) => console.warn('[Delegator] Clean Sync Failed', e));
                             }
                         }
                     }
                     // -----------------------------------------------------------------------
 
                     // Wait for file system to settle
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise((resolve) => setTimeout(resolve, 500));
 
                     await preloadAndRefresh(path, assetId);
                 } else {

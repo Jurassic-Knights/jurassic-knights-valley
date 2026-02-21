@@ -100,7 +100,7 @@ export async function showCategoryView(categoryName: string, pushState: boolean 
     setCurrentCategoryName(categoryName);
 
     // Always try to hide map editor first
-    import('./mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+    import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
 
     // Update URL History
     if (pushState) {
@@ -318,7 +318,7 @@ export function stopAutoRefresh(): void {
 export function showConfigView(pushState: boolean = true): void {
     const mainContent = document.getElementById('mainContent');
     // Ensure map editor is hidden
-    import('./mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+    import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
 
     if (mainContent) {
         // Update URL History

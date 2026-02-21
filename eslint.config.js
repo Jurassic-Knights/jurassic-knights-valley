@@ -12,7 +12,13 @@ export default tseslint.config(
         rules: {
             '@typescript-eslint/no-explicit-any': 'warn',
             '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-            'no-undef': 'off' // Handled by TS
+            'no-undef': 'off', // Handled by TS
+            'max-lines': ['warn', { max: 300, skipBlankLines: true, skipComments: true }],
+            'max-lines-per-function': ['warn', { max: 50 }]
         }
+    },
+    {
+        files: ['**/*.d.ts', '**/asset_manifest*.ts', '**/mapgen4/**'],
+        rules: { 'max-lines': 'off', 'max-lines-per-function': 'off' }
     }
 );

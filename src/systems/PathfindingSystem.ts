@@ -1,15 +1,14 @@
 /**
  * PathfindingSystem - A* pathfinding for grid-based navigation
  *
- * Uses the IslandManager's grid system to find paths around obstacles.
+ * Uses the WorldManager's grid system to find paths around obstacles.
  * Enemies use this to intelligently navigate to destinations.
  *
  * Owner: AI Systems
  */
 
 import { Logger } from '@core/Logger';
-import { GameConstants, getConfig } from '@data/GameConstants';
-import { IslandManager } from '../world/IslandManager';
+import { GameConstants } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import type { ISystem, IGame } from '../types/core';
 
@@ -253,15 +252,15 @@ class PathfindingSystem implements ISystem {
     }
 
     /**
-     * Check if a grid cell is blocked
+     * Check if a grid cell is blocked.
+     * With mapgen4 polygon map: walk everywhere (isWalkable=true, isBlocked=false).
      */
     isGridBlocked(gx: number, gy: number) {
         const worldPos = this.gridToWorld(gx, gy);
-        const im = IslandManager;
+        const im = Registry?.get<{ isWalkable: (x: number, y: number) => boolean; isBlocked: (x: number, y: number) => boolean }>('WorldManager');
 
         if (!im) return false;
 
-        // Check if walkable AND not blocked
         return !im.isWalkable(worldPos.x, worldPos.y) || im.isBlocked(worldPos.x, worldPos.y);
     }
 

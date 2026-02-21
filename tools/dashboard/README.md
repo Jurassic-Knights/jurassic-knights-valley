@@ -8,8 +8,10 @@ The original `asset_dashboard.html` has been refactored into modular components.
 
 ## How to Access
 
-- **Original Dashboard**: `http://localhost:5173/` (default)
-- **Modular Dashboard**: `http://localhost:5173/dashboard/`
+- **Game**: `http://localhost:5173/` (default)
+- **Dashboard**: `http://localhost:5173/dashboard/` or `http://localhost:5173/tools/dashboard/`
+
+Run `npm run dev` then open the dashboard URL.
 
 ## File Structure
 

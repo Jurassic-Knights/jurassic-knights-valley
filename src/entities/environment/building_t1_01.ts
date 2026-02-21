@@ -11,8 +11,8 @@ export default {
     sprite: 'building_t1_01',
     status: 'clean',
     files: {
-        original: 'assets/images/buildings/building_forge_final_original.png',
-        clean: 'assets/images/buildings/building_forge_clean.png'
+        original: 'assets/images/buildings/building_industrial_01_original.png',
+        clean: 'assets/images/buildings/building_industrial_01_clean.png'
     },
     type: 'prop',
     biome: 'grasslands',

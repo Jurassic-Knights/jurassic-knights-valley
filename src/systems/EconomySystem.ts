@@ -9,8 +9,7 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { GameState } from '@core/State';
-import { IslandManager } from '../world/IslandManager';
-import { IslandUpgrades } from '../gameplay/IslandUpgrades';
+import { WorldManager } from '../world/WorldManager';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXTriggerService } from './VFXTriggerService';
 import { Registry } from '@core/Registry';
@@ -32,18 +31,10 @@ class EconomySystem {
     initListeners() {
         if (!EventBus) return;
 
-        // Listen for transaction requests
-        EventBus.on(GameConstants.Events.REQUEST_UNLOCK, (data: { id?: string; [key: string]: unknown }) =>
-            this.handleUnlockRequest(data)
-        );
 
         // Listen for direct gold modification requests (e.g. from debug or cheats)
         EventBus.on(GameConstants.Events.ADD_GOLD, (amount: number) => this.addGold(amount));
 
-        // Listen for upgrade requests
-        EventBus.on(GameConstants.Events.REQUEST_UPGRADE, (data: { id?: string; [key: string]: unknown }) =>
-            this.handleUpgradeRequest(data)
-        );
     }
 
     update(dt: number) {
@@ -54,7 +45,7 @@ class EconomySystem {
      * Get current gold amount
      */
     getGold() {
-        const hero = this.game?.hero;
+        const hero = this.game?.hero as any;
         if (hero && hero.inventory) {
             return hero.inventory.gold || 0;
         }
@@ -72,7 +63,7 @@ class EconomySystem {
         const newGold = currentGold - amount;
 
         // Update Hero
-        const hero = this.game?.hero;
+        const hero = this.game?.hero as any;
         if (hero && hero.inventory) {
             hero.inventory.gold = newGold;
         }
@@ -100,7 +91,7 @@ class EconomySystem {
         const newGold = currentGold + amount;
 
         // Update Hero
-        const hero = this.game?.hero;
+        const hero = this.game?.hero as any;
         if (hero && hero.inventory) {
             hero.inventory.gold = newGold;
         }
@@ -118,81 +109,7 @@ class EconomySystem {
         Logger.info(`[EconomySystem] Added ${amount}. New Balance: ${newGold}`);
     }
 
-    /**
-     * Handle a request to unlock an island
-     * @param {object} data - { gridX, gridY, cost }
-     */
-    handleUnlockRequest(data: { id?: string; [key: string]: unknown }) {
-        const { gridX, gridY, cost } = data;
 
-        if (this.spendGold(cost)) {
-            // Success
-            if (IslandManager) {
-                const success = IslandManager.unlockIsland(gridX, gridY);
-                if (success) {
-                    // Trigger Unlock VFX at center of new zone
-                    // Note: IslandManager already emits 'ISLAND_UNLOCKED' which UIManager listens to
-                    // But triggering VFX via GameInstance logic?
-                    // Let's keep it simple: IslandManager handles the "Logic" of unlocking
-                    if (AudioManager) AudioManager.playSFX('sfx_ui_unlock');
-
-                    // We can emit a specific APPROVED event if needed, but IslandManager action is enough
-                }
-            }
-        } else {
-            // Failed
-            Logger.info('[EconomySystem] Insufficient funds for unlock');
-            if (AudioManager) AudioManager.playSFX('sfx_ui_error');
-            // Optional: Emit TRANSACTION_FAILED for UI feedback
-        }
-    }
-
-    /**
-     * Handle upgrade purchase request
-     * @param {object} data - { gridX, gridY, type, cost }
-     */
-    handleUpgradeRequest(data: { id?: string; [key: string]: unknown }) {
-        const { gridX, gridY, type, cost } = data;
-
-        if (this.spendGold(cost)) {
-            // Apply Upgrade Logic
-            if (IslandUpgrades) {
-                const success = IslandUpgrades.applyUpgrade(gridX, gridY, type);
-
-                if (success) {
-                    if (AudioManager) AudioManager.playSFX('sfx_ui_buy');
-
-                    // Trigger Logic Updates based on upgrade type
-                    // VFX
-                    const hero = this.game.hero;
-                    if (hero && VFXTriggerService) {
-                        VFXTriggerService.triggerPurchaseVFX(hero.x, hero.y);
-                    }
-
-                    // Logic: SpawnManager subscribes to RESPAWN_REFRESH_REQUESTED and refreshes
-                    if (EventBus) {
-                        EventBus.emit(GameConstants.Events.RESPAWN_REFRESH_REQUESTED, {
-                            gridX,
-                            gridY,
-                            type
-                        });
-                    }
-
-                    // Emit Success for UI to re-render
-                    if (EventBus) {
-                        EventBus.emit(GameConstants.Events.UPGRADE_PURCHASED, {
-                            gridX,
-                            gridY,
-                            type
-                        });
-                    }
-                }
-            }
-        } else {
-            if (AudioManager) AudioManager.playSFX('sfx_ui_error');
-            Logger.info('[EconomySystem] Insufficient funds for upgrade');
-        }
-    }
 }
 
 // Create singleton and export

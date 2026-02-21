@@ -9,7 +9,7 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 // import { VFXController } from '@vfx/VFXController';
 // import { VFXConfig } from '@data/VFXConfig';
-import { IslandManager } from '../world/IslandManager';
+import { WorldManager } from '../world/WorldManager';
 import { GameRenderer } from '@core/GameRenderer';
 import { HomeBase } from '../world/HomeBase';
 import { BiomeManager } from '../world/BiomeManager';
@@ -28,7 +28,7 @@ class HeroSystem {
     isAttacking: boolean = false;
     lastHomeState: boolean = false;
     _dustConfig: ParticleOptions;
-    _islandManager: typeof IslandManager | null = null;
+    _islandManager: typeof WorldManager | null = null;
     _homeBase: typeof HomeBase | null = null;
     _gameRenderer: typeof GameRenderer | null = null;
     // _vfxController: any; // Moved to HeroVisualsSystem
@@ -48,7 +48,7 @@ class HeroSystem {
         this.hero = game.hero as Hero;
 
         // GC Optimization: Cache system references via Registry (Service Locator)
-        this._islandManager = Registry.get<typeof IslandManager>('IslandManager');
+        this._islandManager = Registry.get<typeof WorldManager>('WorldManager');
         this._homeBase = Registry.get<typeof HomeBase>('HomeBase');
         this._gameRenderer = Registry.get<typeof GameRenderer>('GameRenderer');
         // this._vfxController = Registry.get('VFXController');

@@ -6,21 +6,22 @@ import GroundWorker from '../../workers/GroundRenderWorker?worker';
 
 export interface BlendAssets {
     base: Uint8ClampedArray;
+    mid: Uint8ClampedArray;
     overlay: Uint8ClampedArray;
     heightMap: Uint8ClampedArray;
     noise: Uint8ClampedArray;
-    // Layer Dimensions (Crucial for mixed resolution assets)
     baseWidth?: number;
+    midWidth?: number;
     overlayWidth?: number;
     heightWidth?: number;
     noiseWidth?: number;
-    width: number;  // Fallback / legacy
+    width: number;
     height: number;
 }
 
 export interface BlendConfig {
     thresholdBias: number; // 0.0 - 1.0
-    noiseScale: number;    // Multiplier
+    noiseScale: number; // Multiplier
     tileX?: number; // For World Space Mapping
     tileY?: number;
 }
@@ -57,17 +58,36 @@ export class GroundBlendRenderer {
         };
     }
 
+    /** Skip extractData when image exceeds this pixel count to avoid getImageData OOM. */
+    private static readonly MAX_PIXELS_FOR_EXTRACT = 4096 * 4096;
+
+    /** 1x1 magenta fallback when extractData would OOM. */
+    private static readonly FALLBACK_1X1 = new Uint8ClampedArray([255, 0, 255, 255]);
+
     /**
-     * Extracts ImageData from an Image Source (Once)
+     * Extracts ImageData from an Image Source (Once).
+     * Returns fallback on oversized images or getImageData OOM.
      */
     public static extractData(img: HTMLImageElement | HTMLCanvasElement): Uint8ClampedArray {
+        const pixels = img.width * img.height;
+        if (pixels > this.MAX_PIXELS_FOR_EXTRACT) {
+            Logger.warn(
+                `[GroundBlendRenderer] extractData skipped: image ${img.width}x${img.height} exceeds ${this.MAX_PIXELS_FOR_EXTRACT} pixels`
+            );
+            return this.FALLBACK_1X1;
+        }
         const canvas = document.createElement('canvas');
         canvas.width = img.width;
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         if (!ctx) throw new Error('Context failure');
         ctx.drawImage(img, 0, 0);
-        return ctx.getImageData(0, 0, img.width, img.height).data;
+        try {
+            return ctx.getImageData(0, 0, img.width, img.height).data;
+        } catch {
+            Logger.warn('[GroundBlendRenderer] getImageData OOM, using fallback');
+            return this.FALLBACK_1X1;
+        }
     }
 
     /**
@@ -86,7 +106,7 @@ export class GroundBlendRenderer {
             // If we transfer, the cache in GroundSystem becomes empty!
             // WE MUST NOT TRANSFER THE ASSET BUFFERS.
             // We only copy them. Structured Clone is automatic for ArrayBuffers in postMessage (copy).
-            // This might still be heavy (4 x 4KB copies per tile). 
+            // This might still be heavy (4 x 4KB copies per tile).
             // 4KB is tiny. Copying is fine.
 
             this.worker.postMessage({
@@ -94,18 +114,16 @@ export class GroundBlendRenderer {
                 width: assets.width,
                 height: assets.height,
                 splatWeights,
-                // Explicitly slice (copy) the buffers to prevent any risk of detachment
-                // This ensures the main thread cache remains valid for other tiles.
                 baseBuffer: assets.base.buffer.slice(0),
+                midBuffer: assets.mid.buffer.slice(0),
                 overlayBuffer: assets.overlay.buffer.slice(0),
                 heightBuffer: assets.heightMap.buffer.slice(0),
                 noiseBuffer: assets.noise.buffer.slice(0),
                 config,
-                // Pass Dimensions
                 baseWidth: assets.baseWidth,
+                midWidth: assets.midWidth,
                 overlayWidth: assets.overlayWidth,
                 heightWidth: assets.heightWidth,
-                noiseWidth: assets.noiseWidth,
                 noiseWidth: assets.noiseWidth,
                 tileX: config.tileX,
                 tileY: config.tileY,
@@ -118,4 +136,3 @@ export class GroundBlendRenderer {
         this.worker.terminate();
     }
 }
-

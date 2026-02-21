@@ -510,10 +510,9 @@ export async function loadGlobalAssetLookup(): Promise<void> {
 
             // Helper to process an item for lookup key and source map
             const processItem = (item: Record<string, unknown>) => {
-                // 1. Build Lookup
-                const imgPath = item.files?.clean || item.files?.original;
-                if (imgPath) {
-                    const displayPath = imgPath.replace(/^(assets\/)?images\//, '');
+                // 1. Build Lookup (same priority as AssetLoader: clean → approved_original → original)
+                const displayPath = selectBestImagePath(item.files as { clean?: string; approved_original?: string; original?: string });
+                if (displayPath) {
                     lookup[item.id] = {
                         id: item.id,
                         path: displayPath,
@@ -600,6 +599,20 @@ export async function loadGlobalAssetLookup(): Promise<void> {
     } catch (err) {
         console.error('[Dashboard] Failed to load asset lookup:', err);
     }
+}
+
+/**
+ * Select best image path from entity files (matches AssetLoader._selectBestPath).
+ * Priority: clean → approved_original → original
+ */
+export function selectBestImagePath(files?: {
+    clean?: string;
+    approved_original?: string;
+    original?: string;
+}): string | undefined {
+    if (!files) return undefined;
+    const raw = files.clean || files.approved_original || files.original;
+    return raw ? raw.replace(/^(assets\/)?images\//, '') : undefined;
 }
 
 export function getAssetImage(nameOrId: string): string {

@@ -1,0 +1,28 @@
+---
+trigger: model_decision
+description: Project tech stack and versions — Vite 7, TypeScript, Canvas 2D (game), Pixi.js (map editor), Vitest, ESLint 9, Node 20+. Apply when adding dependencies, configuring build/lint/test, adding rendering code, or suggesting tech alternatives.
+---
+
+# Tech Stack
+
+Use the versions below for dependencies and patterns. Do not suggest conflicting alternatives unless the user asks.
+
+## Build and Runtime
+
+- Build: Vite 7. Language: TypeScript (ES modules), 5.x. Runtime: Browser, Canvas 2D, Web Audio API. Do not use Node-only APIs in game code without a clear path (e.g. build-time or worker).
+
+## Rendering and UI
+
+- Main game: HTML5 Canvas 2D. Do not switch to WebGL/Three unless the project decides to.
+- Map editor/tools: Use Pixi.js where applicable; do not introduce another renderer for the same scope.
+- Optional: html2canvas for UI capture/debug.
+
+## Testing and Quality
+
+- Use Vitest for new tests. Use ESLint 9 and Prettier; respect existing config; do not add conflicting rules without discussion. Use Husky and lint-staged; keep hooks fast.
+
+## Other
+
+- Node 20+ for dev and CI. npm; use package.json and lockfile as source of truth.
+
+Prefer README and this rule over generic “latest” suggestions.

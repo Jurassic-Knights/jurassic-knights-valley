@@ -8,7 +8,13 @@
 
 import { Logger } from './Logger';
 import { Registry } from './Registry';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { getWorldWidth, getWorldHeight } from './GameRendererWorldSize';
+import { renderGameLayers } from './GameRendererLayers';
+import {
+    updateViewport as updateViewportImpl,
+    updateCamera as updateCameraImpl,
+    resizeCanvas
+} from './GameRendererViewport';
 import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { EntityRenderService } from '../rendering/EntityRenderService';
 import { RenderProfiler, RenderTiming } from '../rendering/RenderProfiler';
@@ -55,36 +61,11 @@ const GameRenderer = {
     _lightingSystem: null as typeof LightingSystem | null,
     _renderTiming: null as RenderTiming | null, // Profiler data container
 
-    // Dynamic world size - uses full biome world if defined, else Ironhaven-only
     get worldWidth() {
-        const gc = GameConstants?.World;
-        // If expanded world is defined, use it
-        if (gc?.TOTAL_WIDTH) {
-            return gc.TOTAL_WIDTH;
-        }
-        // Fallback: Ironhaven-only (old formula)
-        const defaults = { MAP_PADDING: 2048, GRID_COLS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
-        const cfg = gc || defaults;
-        return (
-            cfg.MAP_PADDING * 2 +
-            cfg.GRID_COLS * cfg.ISLAND_SIZE +
-            (cfg.GRID_COLS - 1) * cfg.WATER_GAP
-        );
+        return getWorldWidth();
     },
     get worldHeight() {
-        const gc = GameConstants?.World;
-        // If expanded world is defined, use it
-        if (gc?.TOTAL_HEIGHT) {
-            return gc.TOTAL_HEIGHT;
-        }
-        // Fallback: Ironhaven-only (old formula)
-        const defaults = { MAP_PADDING: 2048, GRID_ROWS: 3, ISLAND_SIZE: 1024, WATER_GAP: 256 };
-        const cfg = gc || defaults;
-        return (
-            cfg.MAP_PADDING * 2 +
-            cfg.GRID_ROWS * cfg.ISLAND_SIZE +
-            (cfg.GRID_ROWS - 1) * cfg.WATER_GAP
-        );
+        return getWorldHeight();
     },
 
     // Viewport (what portion of the world is visible)
@@ -162,59 +143,26 @@ const GameRenderer = {
         }
     },
 
-    /**
-     * Update viewport based on platform mode
-     */
     updateViewport() {
-        const container = this.canvas ? this.canvas.parentElement : null;
-        if (!container) return;
-
-        // Use container dimensions (not window) for accurate aspect ratio
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-        const containerAspect = containerWidth / containerHeight;
-        const isPortrait = containerHeight > containerWidth;
-
-        if (isPortrait) {
-            // Portrait (Mobile): Fixed width, dynamic height
-            // Shows more world vertically on tall screens
-            this.viewport.width = 1100;
-            this.viewport.height = this.viewport.width / containerAspect;
-        } else {
-            // Landscape (PC): Fixed height, dynamic width
-            // Shows more world horizontally on wide screens (same zoom level as mobile)
-            this.viewport.height = 1950;
-            this.viewport.width = this.viewport.height * containerAspect;
-        }
-
-        // Viewport position will be set by updateCamera()
+        updateViewportImpl({
+            canvas: this.canvas!,
+            viewport: this.viewport,
+            worldWidth: this.worldWidth,
+            worldHeight: this.worldHeight,
+            hero: this.hero
+        });
         this.resize();
-        // Force re-render to clear artifacts immediately
         if (this.ctx) this.render();
-        Logger.info(
-            `[GameRenderer] Viewport Updated: ${Math.floor(this.viewport.width)}x${Math.floor(this.viewport.height)} (Container: ${containerWidth}x${containerHeight})`
-        );
     },
 
-    /**
-     * Update camera to center on hero
-     */
     updateCamera() {
-        if (!this.hero) return;
-
-        // Center viewport on hero
-        this.viewport.x = this.hero.x - this.viewport.width / 2;
-        this.viewport.y = this.hero.y - this.viewport.height / 2;
-
-        // Clamp viewport to world bounds
-        this.viewport.x = Math.max(
-            0,
-            Math.min(this.worldWidth - this.viewport.width, this.viewport.x)
-        );
-        this.viewport.y = Math.max(
-            0,
-            Math.min(this.worldHeight - this.viewport.height, this.viewport.y)
-        );
+        updateCameraImpl({
+            canvas: this.canvas!,
+            viewport: this.viewport,
+            worldWidth: this.worldWidth,
+            worldHeight: this.worldHeight,
+            hero: this.hero
+        });
     },
 
     /**
@@ -249,44 +197,9 @@ const GameRenderer = {
         };
     },
 
-    /**
-     * Resize canvas to fit container while maintaining aspect ratio
-     */
     resize() {
-        const container = this.canvas.parentElement;
-        if (!container) return;
-
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
-
-        // Calculate aspect ratio from viewport
-        const viewportAspect = this.viewport.width / this.viewport.height;
-        const containerAspect = containerWidth / containerHeight;
-
-        let canvasWidth, canvasHeight;
-
-        if (containerAspect > viewportAspect) {
-            // Container is wider than viewport - fit to height
-            canvasHeight = containerHeight;
-            canvasWidth = containerHeight * viewportAspect;
-        } else {
-            // Container is taller than viewport - fit to width
-            canvasWidth = containerWidth;
-            canvasHeight = containerWidth / viewportAspect;
-        }
-
-        // Set canvas size (internal rendering resolution)
-        this.canvas.width = this.viewport.width;
-        this.canvas.height = this.viewport.height;
-
-        // Sync shadow buffer
+        resizeCanvas({ canvas: this.canvas!, viewport: this.viewport });
         this.resizeShadowBuffer();
-
-        // Set display size (CSS)
-        // Set display size (CSS) - Force fill container
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
-        this.canvas.style.margin = '0';
     },
 
     /**
@@ -326,193 +239,37 @@ const GameRenderer = {
     render(alpha = 1) {
         if (!this.ctx) return;
 
-        // Detailed profiling when enabled
-        const timing = this._renderTiming;
-        if (timing) timing.frames++;
-        let t0, t1;
-
-        // Update camera to follow hero
         this.updateCamera();
 
-        // --- WORLD LAYER --- (Use cached ref)
-        if (timing) t0 = performance.now();
-        const worldRenderer = this._worldRenderer;
-        if (worldRenderer) {
-            worldRenderer.render(this.ctx, this.viewport);
-        } else {
-            // Safe fallback if not yet registered
-            this.ctx.fillStyle = '#000';
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        }
-        if (timing) {
-            timing.world += performance.now() - t0;
-        }
-
-        // --- ROAD LAYER --- (After world, before entities)
-        if (timing) t0 = performance.now();
-        const roadRenderer = this._roadRenderer;
-        if (roadRenderer) {
-            this.ctx.save();
-            this.ctx.translate(-this.viewport.x, -this.viewport.y);
-            roadRenderer.render(this.ctx, this.viewport);
-            this.ctx.restore();
-        }
-        if (timing) {
-            timing.roads = (timing.roads || 0) + performance.now() - t0;
-        }
-
-        // --- VFX LAYER (Background) --- (Use cached ref)
-        if (timing) t0 = performance.now();
-        const vfxController = this._vfxController;
-
-        if (vfxController && vfxController.bgParticles) {
-            this.ctx.save();
-            this.ctx.translate(-this.viewport.x, -this.viewport.y);
-            vfxController.bgParticles.render(this.ctx);
-            this.ctx.restore();
-        }
-        if (timing) {
-            timing.vfxBg += performance.now() - t0;
-        }
-
-        // Y-SORT: Collect all active world entities via EntityRenderService
-        if (timing) t0 = performance.now();
-        const sortableEntities = EntityRenderService
-            ? EntityRenderService.collectAndSort(this.getVisibleBounds())
-            : [];
-        if (timing) {
-            timing.entitySort += performance.now() - t0;
-        }
-
-        // --- SHADOW PASS ---
-        if (timing) t0 = performance.now();
-        this.renderShadowPass(sortableEntities);
-        if (timing) {
-            timing.shadows += performance.now() - t0;
-        }
-
-        // Render all entities (with viewport offset)
-        if (timing) t0 = performance.now();
-        this.ctx.save();
-        this.ctx.translate(-this.viewport.x, -this.viewport.y);
-
-        // Render HomeBase first (Use cached ref)
-        let tSub;
-        if (timing) tSub = performance.now();
-        const homeBase = this._homeBase;
-        if (homeBase) {
-            homeBase.render(this.ctx);
-        }
-        if (timing) {
-            timing.entHomeBase = (timing.entHomeBase || 0) + performance.now() - tSub;
-        }
-
-        // Delegate entity rendering to EntityRenderService
-        if (EntityRenderService) {
-            const renderers = {
+        renderGameLayers(
+            {
+                ctx: this.ctx,
+                canvas: this.canvas,
+                viewport: this.viewport,
+                worldWidth: this.worldWidth,
+                worldHeight: this.worldHeight,
                 hero: this.hero,
-                heroRenderer: this._heroRenderer,
-                dinosaurRenderer: this._dinosaurRenderer,
-                resourceRenderer: this._resourceRenderer
-            };
-            EntityRenderService.renderAll(this.ctx, sortableEntities, renderers, timing, alpha);
-            EntityRenderService.renderUIOverlays(this.ctx, sortableEntities, timing);
-        }
-
-        this.ctx.restore();
-        if (timing) {
-            timing.entities += performance.now() - t0;
-        }
-
-        // Render Ambient Layer (Sky/Cloud level) - Use cached ref
-        if (timing) t0 = performance.now();
-        const ambientSystem = this._ambientSystem;
-        if (ambientSystem) {
-            this.ctx.save();
-            this.ctx.translate(-this.viewport.x, -this.viewport.y);
-            ambientSystem.render(this.ctx);
-            this.ctx.restore();
-        }
-        if (timing) {
-            timing.ambient += performance.now() - t0;
-        }
-
-        // Render Fog of War - Use cached ref
-        if (timing) t0 = performance.now();
-        const fogSystem = this._fogSystem;
-        if (fogSystem) {
-            fogSystem.render(this.ctx, this.viewport);
-        }
-        if (timing) {
-            timing.fog += performance.now() - t0;
-        }
-
-        // Render Foreground VFX (e.g. Explosions) ON TOP of everything
-        if (timing) t0 = performance.now();
-        if (vfxController) {
-            this.ctx.save();
-            this.ctx.translate(-this.viewport.x, -this.viewport.y);
-
-            // Floating Text (Canvas)
-            if (typeof vfxController.render === 'function') {
-                vfxController.render(this.ctx);
-            }
-
-            this.ctx.restore();
-        }
-        if (timing) {
-            timing.vfxFg += performance.now() - t0;
-        }
-
-        // --- AMBIENT OVERLAY (Day/Night Cycle) --- Use cached ref
-        if (timing) t0 = performance.now();
-        const envRenderer = this._envRenderer;
-        if (envRenderer) {
-            envRenderer.render(this.ctx, this.viewport);
-        }
-        if (timing) {
-            timing.envOverlay += performance.now() - t0;
-        }
-
-        // --- DYNAMIC LIGHTS ---
-        if (timing) t0 = performance.now();
-        const lightingSystem = this._lightingSystem;
-        if (lightingSystem && typeof lightingSystem.render === 'function') {
-            try {
-                this.ctx.save();
-                this.ctx.translate(-this.viewport.x, -this.viewport.y);
-                lightingSystem.render(this.ctx);
-                this.ctx.restore();
-            } catch (e) {
-                this.ctx.restore();
-                Logger.warn('[GameRenderer] LightingSystem render error:', (e as Error).message);
-            }
-        }
-        if (timing) {
-            timing.lighting = (timing.lighting || 0) + performance.now() - t0;
-        }
-
-        // --- DEBUG OVERLAY ---
-        if (this.debugMode) {
-            this.drawWorldBoundary();
-        }
-
-        // --- COLLISION DEBUG ---
-        const collisionSystem = this.game.getSystem<CollisionSystem>('CollisionSystem');
-        if (collisionSystem && typeof collisionSystem.renderDebug === 'function') {
-            this.ctx.save();
-            this.ctx.translate(-this.viewport.x, -this.viewport.y);
-            collisionSystem.renderDebug(this.ctx);
-            this.ctx.restore();
-        }
-
-        // --- GRID OVERLAY (separate toggle) ---
-        if (this.gridMode) {
-            this.ctx.save();
-            this.ctx.translate(-this.viewport.x, -this.viewport.y);
-            this.drawDebugGrid();
-            this.ctx.restore();
-        }
+                game: this.game,
+                debugMode: this.debugMode,
+                gridMode: this.gridMode,
+                simpleShadows: this.simpleShadows,
+                _worldRenderer: this._worldRenderer,
+                _roadRenderer: this._roadRenderer,
+                _vfxController: this._vfxController,
+                _homeBase: this._homeBase,
+                _heroRenderer: this._heroRenderer,
+                _dinosaurRenderer: this._dinosaurRenderer,
+                _resourceRenderer: this._resourceRenderer,
+                _ambientSystem: this._ambientSystem,
+                _fogSystem: this._fogSystem,
+                _envRenderer: this._envRenderer,
+                _lightingSystem: this._lightingSystem,
+                _renderTiming: this._renderTiming,
+                getVisibleBounds: () => this.getVisibleBounds(),
+                renderShadowPass: (e) => this.renderShadowPass(e)
+            },
+            alpha
+        );
     },
 
     /**
@@ -534,64 +291,27 @@ const GameRenderer = {
         this._renderTiming = null;
     },
 
-    /**
-     * Draw islands and bridges (delegates to GridRenderer)
-     */
     drawGrid() {
-        if (GridRenderer) {
-            GridRenderer.drawGrid(this.ctx, this.viewport, this.canvas, this.game);
-        }
+        GridRenderer?.drawGrid(this.ctx, this.viewport, this.canvas, this.game);
     },
-
-    /**
-     * Toggle debug overlays
-     */
     toggleDebug() {
         this.debugMode = !this.debugMode;
         Logger.info(`[GameRenderer] Debug mode: ${this.debugMode}`);
         return this.debugMode;
     },
-
-    /**
-     * Toggle grid overlay (separate from debug)
-     */
     toggleGrid() {
         this.gridMode = !this.gridMode;
         Logger.info(`[GameRenderer] Grid mode: ${this.gridMode}`);
         return this.gridMode;
     },
-
-    /**
-     * Draw world boundary indicator (delegates to DebugOverlays)
-     */
     drawWorldBoundary() {
-        if (DebugOverlays) {
-            DebugOverlays.drawWorldBoundary(
-                this.ctx,
-                this.viewport,
-                this.worldWidth,
-                this.worldHeight,
-                this.game
-            );
-        }
+        DebugOverlays?.drawWorldBoundary(this.ctx, this.viewport, this.worldWidth, this.worldHeight, this.game);
     },
-
-    /**
-     * Draw 128px gameplay grid overlay (delegates to DebugOverlays)
-     */
     drawDebugGrid() {
-        if (DebugOverlays) {
-            DebugOverlays.drawDebugGrid(this.ctx, this.getVisibleBounds());
-        }
+        DebugOverlays?.drawDebugGrid(this.ctx, this.getVisibleBounds());
     },
-
-    /**
-     * Draw home outpost (delegates to HomeOutpostRenderer)
-     */
     drawHomeOutpost() {
-        if (HomeOutpostRenderer) {
-            HomeOutpostRenderer.draw(this.ctx, this.worldWidth, this.worldHeight, this.game);
-        }
+        HomeOutpostRenderer?.draw(this.ctx, this.worldWidth, this.worldHeight, this.game);
     }
 };
 

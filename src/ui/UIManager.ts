@@ -16,7 +16,6 @@ import { AudioManager } from '../audio/AudioManager';
 import { ContextActionUI } from './ContextActionUI';
 import { GameConstants } from '@data/GameConstants';
 import { EventBus } from '@core/EventBus';
-import { GameState } from '@core/State';
 import { VFXController } from '@vfx/VFXController';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
@@ -25,7 +24,6 @@ import { UICapture } from './UICapture';
 import { GameInstance } from '@core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';
 import { HUDController } from './controllers/HUDController';
-import type { Island } from '../types/world';
 import type { IUIPanel, IQuest } from '../types/ui';
 
 interface IFullscreenUI {
@@ -34,9 +32,7 @@ interface IFullscreenUI {
 }
 
 class UIManagerService {
-    // Property declarations
     initialized: boolean = false;
-    currentUnlockTarget: Island | null = null;
     panels: Map<string, IUIPanel> = new Map();
     fullscreenUIs: Set<IFullscreenUI> = new Set();
     currentStrategy: {
@@ -44,6 +40,7 @@ class UIManagerService {
         enter?(): void;
         exit?(): void;
     } | null = null;
+    isFooterOverridden: boolean = false;
 
     constructor() {
         Logger.debug('[UIManager]', 'Constructed');
@@ -56,7 +53,7 @@ class UIManagerService {
 
         // Listen for platform changes
         if (PlatformManager) {
-            PlatformManager.on('modechange', (config: { mode: string }) =>
+            PlatformManager.on('modechange', (config: any) =>
                 this.onPlatformChange(config)
             );
             this.onPlatformChange(PlatformManager.getConfig());
@@ -66,7 +63,6 @@ class UIManagerService {
             );
         }
 
-        this.createUnlockPrompt();
         this.loadIcons();
 
         // Global click sound
@@ -102,7 +98,7 @@ class UIManagerService {
         if (btnMagnet) {
             btnMagnet.addEventListener('click', () => {
                 // Skip if footer is in override mode (equipment/inventory screen has taken over)
-                if ((btnMagnet as HTMLElement).dataset.footerOverride) return;
+                if (this.isFooterOverridden) return;
                 const eventName =
                     GameConstants && GameConstants.Events
                         ? GameConstants.Events.REQUEST_MAGNET
@@ -141,6 +137,19 @@ class UIManagerService {
                     if (data?.source) this.closeOtherFullscreenUIs(data.source);
                 }
             );
+
+            // Track when main UI panels override the footer
+            EventBus.on('UI_PANEL_OPENED', (data: { panelId: string }) => {
+                // Determine if this panel should override the footer (e.g., inventory/equipment)
+                if (data && ['inventory', 'equipment', 'crafting'].includes(data.panelId)) {
+                    this.isFooterOverridden = true;
+                }
+            });
+            EventBus.on('UI_PANEL_CLOSED', (data: { panelId: string }) => {
+                if (data && ['inventory', 'equipment', 'crafting'].includes(data.panelId)) {
+                    this.isFooterOverridden = false;
+                }
+            });
         }
 
         this.initialized = true;
@@ -166,81 +175,14 @@ class UIManagerService {
         });
     }
 
-    // === Unlock Prompt ===
-    createUnlockPrompt() {
-        const prompt = DOMUtils.create('div', {
-            id: 'unlock-prompt',
-            className: 'unlock-prompt hidden',
-            html: `
-                <div class="unlock-prompt-content">
-                    <div class="unlock-island-name"></div>
-                    <div class="unlock-cost"><span class="cost-amount"></span> Gold</div>
-                    <button class="unlock-btn">Unlock</button>
-                </div>
-            `
-        });
-        document.getElementById('app')?.appendChild(prompt);
-
-        prompt.querySelector('.unlock-btn')?.addEventListener('click', () => this.tryUnlock());
-    }
-
-    showUnlockPrompt(island: Island) {
-        if (this.currentUnlockTarget === island) return;
-
-        this.currentUnlockTarget = island;
-        const prompt = document.getElementById('unlock-prompt');
-        if (!prompt) return;
-
-        const nameEl = prompt.querySelector('.unlock-island-name');
-        const costEl = prompt.querySelector('.cost-amount');
-        if (nameEl) nameEl.textContent = island.name;
-        if (costEl) costEl.textContent = String(island.unlockCost);
-
-        const gold = GameState ? GameState.get('gold') || 0 : 0;
-        const btn = prompt.querySelector('.unlock-btn') as HTMLButtonElement | null;
-        if (btn) {
-            if (gold >= island.unlockCost) {
-                btn.disabled = false;
-                btn.textContent = 'Unlock';
-            } else {
-                btn.disabled = true;
-                btn.textContent = `Need ${island.unlockCost - gold} more`;
-            }
-        }
-
-        prompt.classList.remove('hidden');
-    }
-
-    hideUnlockPrompt() {
-        this.currentUnlockTarget = null;
-        document.getElementById('unlock-prompt')?.classList.add('hidden');
-    }
-
-    tryUnlock() {
-        if (!this.currentUnlockTarget) return;
-
-        if (EventBus && GameConstants) {
-            EventBus.emit(GameConstants.Events.REQUEST_UNLOCK, {
-                gridX: this.currentUnlockTarget.gridX,
-                gridY: this.currentUnlockTarget.gridY,
-                cost: this.currentUnlockTarget.unlockCost
-            });
-        }
-    }
 
     // === Platform/Layout ===
     onPlatformChange(_config: unknown) {
-        const format = PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile';
-        Logger.debug(
-            '[UIManager]',
-            `Platform changed: ${PlatformManager.currentMode} -> Layout: ${format}`
-        );
-        this.applyLayout(format);
+        this.applyLayout(PlatformManager.currentMode === 'pc' ? 'desktop' : 'mobile');
     }
 
     onResponsiveChange(data: { format: string; orientation?: string; breakpoint?: string }) {
         if (PlatformManager?.isManualOverride) return;
-        Logger.debug('[UIManager]', `Format changed: ${data.format} (${data.orientation})`);
         this.applyLayout(data.format);
     }
 

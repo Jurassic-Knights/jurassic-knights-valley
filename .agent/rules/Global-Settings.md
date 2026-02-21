@@ -1,0 +1,10 @@
+---
+trigger: always_on
+---
+
+Always think step-by-step before you write any code.
+Explain your reasoning clearly and in detail before proposing any code changes.
+Only after you have fully explained your plan should you output the code.
+Never output code without preceding explanation.
+Fix root causes, not just the symptom.
+Never make fallbacks, throws or skips. If you are making a fallback for edge cases, instead ask the user how they want to handle it.

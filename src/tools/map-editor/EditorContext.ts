@@ -22,9 +22,6 @@ export const EditorContext = {
     // Entity Data for rendering sizes
     registry: {} as EntityRegistry,
 
-    // Visibility Filters
-    visibleZoneIds: new Set<string>(),
-
-    // Rendering State
-    activeZoneCategory: ZoneCategory.BIOME
+    // Visibility Filters — tracks HIDDEN zone IDs. Empty = everything visible.
+    hiddenZoneIds: new Set<string>()
 };

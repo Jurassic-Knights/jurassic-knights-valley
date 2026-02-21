@@ -1,10 +1,6 @@
 /**
  * EnemyBehavior - Enemy AI and combat behavior methods
- * Extends Enemy.prototype with behavior methods
- *
- * Methods: moveAlongPath, moveDirectly, updateWander, updateChase,
- *          updateAttack, performAttack, updateReturning, takeDamage,
- *          triggerPackAggro, die, respawn
+ * Extends Enemy.prototype. Path/UI in EnemyBehaviorPath, EnemyBehaviorUI.
  */
 
 import { Entity } from '@core/Entity';
@@ -17,120 +13,16 @@ import { BiomeConfig } from '@data/BiomeConfig';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
-import { IslandManager } from '../world/IslandManager';
 import { EntityTypes } from '@config/EntityTypes';
-import { spawnManager as SpawnManager } from '@systems/SpawnManager';
-import { pathfindingSystem as PathfindingSystem } from '@systems/PathfindingSystem';
+import { spawnDrop } from './SpawnHelper';
 import { GameInstance } from '@core/Game';
 import type { IEntity } from '../types/core';
-
 import { MathUtils } from '@core/MathUtils';
+import { setupEnemyPathBehavior } from './EnemyBehaviorPath';
+import { setupEnemyUIBehavior } from './EnemyBehaviorUI';
 
-import { Registry } from '@core/Registry';
-
-let _cachedProgressBarRenderer: { draw: (ctx: CanvasRenderingContext2D, opts: unknown) => void } | null = null;
-function getProgressBarRenderer() {
-    if (_cachedProgressBarRenderer == null) _cachedProgressBarRenderer = Registry.get('ProgressBarRenderer');
-    return _cachedProgressBarRenderer;
-}
-
-Enemy.prototype.moveAlongPath = function (this: Enemy, targetX: number, targetY: number, speed: number, dt: number) {
-    const distToTarget = MathUtils.distance(this.x, this.y, targetX, targetY);
-
-    const arrivalDist = GameConstants.AI.PATH_ARRIVAL_DIST;
-    if (distToTarget < arrivalDist) {
-        this.currentPath = [];
-        this.pathIndex = 0;
-        return true;
-    }
-
-    this.pathRecalcTimer += dt;
-    const recalcMs = GameConstants.AI.PATH_RECALC_INTERVAL_MS;
-    const targetThresh = GameConstants.AI.PATH_TARGET_THRESHOLD;
-    const needsNewPath =
-        this.currentPath.length === 0 ||
-        this.pathIndex >= this.currentPath.length ||
-        this.pathRecalcTimer > recalcMs ||
-        (this.pathTarget && Math.abs(this.pathTarget.x - targetX) > targetThresh) ||
-        Math.abs(this.pathTarget.y - targetY) > targetThresh;
-
-    if (needsNewPath && PathfindingSystem) {
-        this.currentPath = PathfindingSystem.findPath(this.x, this.y, targetX, targetY);
-        this.pathIndex = 0;
-        this.pathTarget = { x: targetX, y: targetY };
-        this.pathRecalcTimer = 0;
-
-        if (this.currentPath.length > 1) {
-            const first = this.currentPath[0];
-            const distToFirst = MathUtils.distance(this.x, this.y, first.x, first.y);
-            const leadDist = GameConstants.AI.PATH_LEAD_DIST;
-            if (distToFirst < leadDist) {
-                this.pathIndex = 1;
-            }
-        }
-    }
-
-    if (this.currentPath.length === 0) {
-        return this.moveDirectly(targetX, targetY, speed, dt);
-    }
-
-    if (this.pathIndex >= this.currentPath.length) {
-        this.pathIndex = this.currentPath.length - 1;
-    }
-    const waypoint = this.currentPath[this.pathIndex];
-
-    const dx = waypoint.x - this.x;
-    const dy = waypoint.y - this.y;
-    const dist = MathUtils.distance(this.x, this.y, waypoint.x, waypoint.y);
-
-    const waypointDist = GameConstants.AI.PATH_WAYPOINT_DIST;
-    if (dist < waypointDist) {
-        this.pathIndex++;
-        if (this.pathIndex >= this.currentPath.length) {
-            this.currentPath = [];
-            return true;
-        }
-        return this.moveAlongPath(targetX, targetY, speed, dt);
-    }
-
-    const msPerSec = GameConstants.Timing.MS_PER_SECOND;
-    const moveSpeed = speed * (dt / msPerSec);
-    const moveX = (dx / dist) * moveSpeed;
-    const moveY = (dy / dist) * moveSpeed;
-
-    this.x += moveX;
-    this.y += moveY;
-    this.facingRight = dx > 0;
-
-    return false;
-};
-
-/**
- * Fallback direct movement (when pathfinding unavailable)
- */
-Enemy.prototype.moveDirectly = function (this: Enemy, targetX: number, targetY: number, speed: number, dt: number) {
-    const dx = targetX - this.x;
-    const dy = targetY - this.y;
-    const dist = MathUtils.distance(this.x, this.y, targetX, targetY);
-
-    const directArrival = GameConstants.AI.MOVE_DIRECT_ARRIVAL;
-    if (dist < directArrival) return true;
-
-    const msPerSec = GameConstants.Timing.MS_PER_SECOND;
-    const moveSpeed = speed * (dt / msPerSec);
-    const newX = this.x + (dx / dist) * moveSpeed;
-    const newY = this.y + (dy / dist) * moveSpeed;
-
-    const im = IslandManager;
-    if (!im || (im.isWalkable(newX, this.y) && !im.isBlocked(newX, this.y))) {
-        this.x = newX;
-    }
-    if (!im || (im.isWalkable(this.x, newY) && !im.isBlocked(this.x, newY))) {
-        this.y = newY;
-    }
-    this.facingRight = dx > 0;
-    return false;
-};
+setupEnemyPathBehavior();
+setupEnemyUIBehavior();
 
 /**
  * Basic wander behavior with aggro detection
@@ -363,7 +255,7 @@ Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
     this.health = 0;
     this.respawnTimer = this.respawnTime;
 
-    if (SpawnManager && this.lootTable && Array.isArray(this.lootTable)) {
+    if (this.lootTable && Array.isArray(this.lootTable)) {
         for (const entry of this.lootTable) {
             if (Math.random() > (entry.chance || 1)) continue;
 
@@ -384,7 +276,7 @@ Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
                 amount = Math.ceil(amount * (this.lootMultiplier || 2));
             }
 
-            SpawnManager.spawnDrop(this.x, this.y, entry.item, amount);
+            spawnDrop(this.x, this.y, entry.item, amount);
         }
     }
 
@@ -430,63 +322,6 @@ Enemy.prototype.respawn = function (this: Enemy) {
     }
 
     Logger.info(`[Enemy] ${this.enemyName} respawned`);
-};
-
-/**
- * Render UI Overlays (Health Bar, Threat)
- */
-Enemy.prototype.renderUI = function (ctx) {
-    if (!this.active || this.isDead) return;
-
-    this.renderHealthBar(ctx);
-    this.renderThreatIndicator(ctx);
-};
-
-Enemy.prototype.renderHealthBar = function (ctx) {
-    // Only show if damaged or boss
-    if (this.health >= this.maxHealth && !this.isBoss) return;
-
-    // Boss bars are larger
-    const width = this.isBoss ? 160 : 60;
-    const height = this.isBoss ? 12 : 6;
-    const yOffset = this.isBoss ? 40 : 25;
-
-    const x = this.x - width / 2;
-    const y = this.y - this.height / 2 - yOffset;
-
-    const ProgressBarRenderer = getProgressBarRenderer();
-    if (ProgressBarRenderer) {
-        ProgressBarRenderer.draw(ctx, {
-            x: x,
-            y: y,
-            width: width,
-            height: height,
-            percent: this.health / this.maxHealth,
-            mode: 'health',
-            entityId: this.id,
-            animated: true
-        });
-    } else {
-        // Fallback
-        ctx.fillStyle = 'black';
-        ctx.fillRect(x, y, width, height);
-        ctx.fillStyle = 'red';
-        ctx.fillRect(x + 1, y + 1, (width - 2) * (this.health / this.maxHealth), height - 2);
-    }
-};
-
-Enemy.prototype.renderThreatIndicator = function (ctx) {
-    if (this.isElite) {
-        ctx.save();
-        ctx.fillStyle = '#FFD700';
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(this.x - 10, this.y - this.height / 2 - 35, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-        ctx.restore();
-    }
 };
 
 Logger.info('[EnemyBehavior] Behavior methods added to Enemy prototype');

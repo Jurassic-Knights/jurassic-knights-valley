@@ -20,13 +20,12 @@ declare let AssetLoader: typeof import('../core/AssetLoader').AssetLoader;
 declare let AudioManager: typeof import('../core/AudioManager').AudioManager;
 declare let UIManager: import('../ui/UIManager').UIManagerService;
 declare let EntityManager: import('../core/EntityManager').EntityManagerService;
-declare let IslandManager: import('../world/IslandManager').IslandManager;
+declare let WorldManager: import('../world/WorldManager').WorldManager;
 declare let CraftingManager: import('../gameplay/CraftingManager').CraftingManager;
 declare let BalanceManager: import('../gameplay/BalanceManager').BalanceManager;
 declare let QuestManager: import('../gameplay/QuestManager').QuestManager;
 declare let ProgressionSystem: import('../gameplay/ProgressionSystem').ProgressionSystem;
 declare let BiomeManager: import('../world/BiomeManager').BiomeManager;
-declare let SpawnManager: import('../systems/SpawnManager').SpawnManager;
 declare let PathfindingSystem: import('../systems/PathfindingSystem').PathfindingSystem;
 declare let EconomySystem: import('../systems/EconomySystem').EconomySystem;
 declare let EquipmentSlotManager: import('../ui/EquipmentSlotManager').EquipmentSlotManager;
@@ -51,7 +50,7 @@ declare let TextureAligner: typeof import('../ui/TextureAligner').TextureAligner
 // VFX
 declare let VFXController: import('../vfx/VFXController').VFXSystem;
 declare let VFXConfig: typeof import('../data/VFXConfig').VFXConfig;
-declare let VFX_Categories: typeof import('../data/VFX_Categories').VFX_Categories;
+declare let VFX_Categories: typeof import('../data/VFX_Categories/index').VFX_Categories;
 declare let VFX_Sequences: typeof import('../data/VFX_Sequences').VFX_SEQUENCES;
 declare let VFX_Templates: typeof import('../data/VFX_Templates').VFX_TEMPLATES;
 declare let ParticleSystem: typeof import('../vfx/ParticleSystem').ParticleSystem;

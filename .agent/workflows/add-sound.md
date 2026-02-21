@@ -1,8 +1,8 @@
 ---
-description: How to add new procedural sounds to ProceduralSFX.js
+description: How to add new procedural sounds to SFX_Core
 ---
 
-# Adding New Sounds to ProceduralSFX
+# Adding New Sounds to SFX
 
 ## Rules
 1. **Always use `this.TARGET_VOLUME`** for peak gain values - never hardcode 0.3, 0.5, etc.

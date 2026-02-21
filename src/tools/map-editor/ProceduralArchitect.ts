@@ -3,14 +3,16 @@ import { ChunkData } from './MapEditorTypes';
 import { Logger } from '@core/Logger';
 import { createNoise2D } from 'simplex-noise';
 import { MapEditorConfig } from './MapEditorConfig';
+import {
+    WATER_TERRAIN_IDS,
+    WATER_SPLAT_TERRAIN_IDS
+} from './Mapgen4BiomeConfig';
+import { ProceduralRules } from './data/ProceduralRules';
 
 /**
- * ProceduralArchitect
- * 
- * Handles smart generation of map content.
- * - Biome-based transitions
- * - City grid generation
- * - Organic forest clustering
+ * ProceduralArchitect — Smart generation of map content from zone state.
+ * Handles biome-based transitions, city grid generation, organic forest clustering,
+ * coast sync, and splat evaluation for ground blending.
  */
 export class ProceduralArchitect {
     private noise: (x: number, y: number) => number;
@@ -22,7 +24,12 @@ export class ProceduralArchitect {
     /**
      * Fills a specific chunk with biome-appropriate content
      */
-    public generateChunk(chunkManager: ChunkManager, chunkX: number, chunkY: number, biomeId: string) {
+    public generateChunk(
+        chunkManager: ChunkManager,
+        chunkX: number,
+        chunkY: number,
+        biomeId: string
+    ) {
         Logger.info(`[Architect] Generating ${biomeId} for chunk ${chunkX},${chunkY}`);
 
         switch (biomeId) {
@@ -43,130 +50,156 @@ export class ProceduralArchitect {
     private generateCity(chunkManager: ChunkManager, chunkX: number, chunkY: number) {
         // Example: Grid roads + Buildings
     }
+
     /**
-     * Processes adjacency rules for ground painting
-     * @param updates The paint actions from the user
-     * @param worldData The entire world state (read-only access for neighbors)
+     * Processes adjacency rules for ground painting.
+     * Returns zone updates (pass-through) and splat operations from procedural rules.
+     * Splats are evaluated after zone updates are applied; for now we pass through zones only.
      */
+    public processAdjacency(
+        rawUpdates: { x: number; y: number; category: string; zoneId: string | null }[],
+        worldData: Map<string, ChunkData>
+    ): {
+        zones: typeof rawUpdates;
+        splats: { x: number; y: number; radius: number; intensity: number }[];
+    } {
+        return { zones: rawUpdates, splats: [] };
+    }
+
     /**
-     * Reactively evaluates splats for a set of dirty tiles.
-     * Determines if splats should be ADDED or REMOVED based on current neighborhood.
+     * Compute coast zone updates based on data-driven ProceduralRules.
+     */
+    public computeCoastUpdates(
+        worldData: Map<string, ChunkData>,
+        dirtyChunkKeys: Set<string>
+    ): { x: number; y: number; category: string; zoneId: string | null }[] {
+        const updates: { x: number; y: number; category: string; zoneId: string | null }[] = [];
+        const { CHUNK_SIZE, TILE_SIZE, Procedural } = MapEditorConfig;
+        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
+        const COAST_DEPTH = Procedural.COAST_DEPTH;
+
+        const getNeighborTerrain = (gx: number, gy: number): string | null => {
+            const nCX = Math.floor(gx / chunkSizePx);
+            const nCY = Math.floor(gy / chunkSizePx);
+            const nData = worldData.get(`${nCX},${nCY}`);
+            if (!nData?.zones) return null;
+            const nLX = Math.floor((gx - nCX * chunkSizePx) / TILE_SIZE);
+            const nLY = Math.floor((gy - nCY * chunkSizePx) / TILE_SIZE);
+            return nData.zones[`${nLX},${nLY}`]?.['terrain'] ?? null;
+        };
+
+        const ruleInfo = ProceduralRules.COASTLINE_INTERPOLATION;
+
+        // Coast extends N tiles from water; check all tiles within COAST_DEPTH steps
+        const hasWaterWithin = (tileLeftX: number, tileLeftY: number, steps: number): boolean => {
+            for (let dx = -steps; dx <= steps; dx++) {
+                for (let dy = -steps; dy <= steps; dy++) {
+                    if (dx === 0 && dy === 0) continue;
+                    const nx = tileLeftX + dx * TILE_SIZE;
+                    const ny = tileLeftY + dy * TILE_SIZE;
+                    const n = getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2);
+                    if (n && ruleInfo.requiredAdjacentZoneIds.includes(n)) return true;
+                }
+            }
+            return false;
+        };
+
+        /** Directly adjacent to water (using rule radius). Used for ADD to respect polygon cap. */
+        const hasRuleRequiredNeighbor = (tileLeftX: number, tileLeftY: number): boolean => {
+            const steps = ruleInfo.radiusTiles;
+            for (let dx = -steps; dx <= steps; dx++) {
+                for (let dy = -steps; dy <= steps; dy++) {
+                    if (dx === 0 && dy === 0) continue;
+                    const nx = tileLeftX + dx * TILE_SIZE;
+                    const ny = tileLeftY + dy * TILE_SIZE;
+                    const t = getNeighborTerrain(nx + TILE_SIZE / 2, ny + TILE_SIZE / 2);
+                    if (t && ruleInfo.requiredAdjacentZoneIds.includes(t)) return true;
+                }
+            }
+            return false;
+        };
+
+        for (const chunkKey of dirtyChunkKeys) {
+            const data = worldData.get(chunkKey);
+            if (!data?.zones) continue;
+            const [cx, cy] = chunkKey.split(',').map(Number);
+
+            for (const [tileKey, categories] of Object.entries(data.zones)) {
+                const [lx, ly] = tileKey.split(',').map(Number);
+                const gx = (cx * CHUNK_SIZE + lx) * TILE_SIZE;
+                const gy = (cy * CHUNK_SIZE + ly) * TILE_SIZE;
+                const biome = categories['biome'];
+                const terrain = categories['terrain'];
+                const isTargetBiome = ruleInfo.validBaseBiomes.includes(biome);
+
+                // Using hardcoded COAST_DEPTH here for the fade-out logic
+                const hasWaterNearby = hasWaterWithin(gx, gy, COAST_DEPTH);
+
+                if (terrain === ruleInfo.targetZoneId && !hasWaterNearby) {
+                    // Remove coast if no water nearby
+                    updates.push({
+                        x: gx + TILE_SIZE / 2,
+                        y: gy + TILE_SIZE / 2,
+                        category: ruleInfo.targetZoneCategory,
+                        zoneId: null
+                    });
+                } else if (
+                    isTargetBiome &&
+                    hasRuleRequiredNeighbor(gx, gy) &&
+                    terrain &&
+                    !WATER_TERRAIN_IDS.includes(terrain as (typeof WATER_TERRAIN_IDS)[number])
+                ) {
+                    // Add coast if directly adjacent to water and valid
+                    updates.push({
+                        x: gx + TILE_SIZE / 2,
+                        y: gy + TILE_SIZE / 2,
+                        category: ruleInfo.targetZoneCategory,
+                        zoneId: ruleInfo.targetZoneId
+                    });
+                }
+            }
+        }
+        return updates;
+    }
+
+    /**
+     * Generate splat ops. Only WATER tiles emit splats, with a large radius so
+     * the gradient extends through coast tiles and bleeds into grass tiles.
+     * No clearing ops — they would erase the gradient; stale data is handled by regenerateSplats on load.
      */
     public evaluateSplats(
-        dirtyTiles: { x: number, y: number }[],
+        dirtyTiles: { x: number; y: number }[],
         worldData: Map<string, ChunkData>
-    ): { x: number, y: number, radius: number, intensity: number }[] {
-        const splatResults: { x: number, y: number, radius: number, intensity: number }[] = [];
-        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
+    ): { x: number; y: number; radius: number; intensity: number }[] {
+        const splatResults: { x: number; y: number; radius: number; intensity: number }[] = [];
+        const { CHUNK_SIZE, TILE_SIZE, Procedural } = MapEditorConfig;
         const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
+        const WATER_RADIUS = Procedural.WATER_SPLAT_RADIUS;
+        const WATER_INTENSITY = Procedural.WATER_SPLAT_INTENSITY;
 
-        // Rules defining which splats strictly depend on zones
-        const rules = [
-            // Water (Cause) -> Grass (Target) => Add Coast (Result)
-            {
-                cause: 'terrain_water',
-                target: 'grasslands',
-                requiredSplat: true, // Boolean flag for "this rule enforces blending"
-                splatRadius: 4.5,
-                splatIntensity: 255
-            },
-            // Self-Rule: Water needs Water Splat
-            {
-                cause: 'terrain_water',
-                target: 'SELF',
-                requiredSplat: true,
-                splatRadius: 2.5,
-                splatIntensity: 255
-            }
-        ];
-
-        // For every dirty tile, we check:
-        // 1. Does it match a SELF rule?
-        // 2. Does it match a NEIGHBOR rule (as the Target)?
-
-        dirtyTiles.forEach(tile => {
+        dirtyTiles.forEach((tile) => {
             const chunkX = Math.floor(tile.x / chunkSizePx);
             const chunkY = Math.floor(tile.y / chunkSizePx);
             const key = `${chunkX},${chunkY}`;
 
             const data = worldData.get(key);
-            if (!data || !data.zones) return;
+            if (!data?.zones) return;
 
-            const localX = Math.floor((tile.x - (chunkX * chunkSizePx)) / TILE_SIZE);
-            const localY = Math.floor((tile.y - (chunkY * chunkSizePx)) / TILE_SIZE);
+            const localX = Math.floor((tile.x - chunkX * chunkSizePx) / TILE_SIZE);
+            const localY = Math.floor((tile.y - chunkY * chunkSizePx) / TILE_SIZE);
             const tileKey = `${localX},${localY}`;
-
-            const biome = data.zones[tileKey]?.['biome'];
             const terrain = data.zones[tileKey]?.['terrain'];
-            // Normalize IDs
-            const myIds = [biome, terrain].filter(Boolean) as string[];
+            const centerX = tile.x + TILE_SIZE / 2;
+            const centerY = tile.y + TILE_SIZE / 2;
 
-            // 1. Check SELF Rules
-            let shouldBeSplat = false;
-            // Simplified: We assume we are checking for "Water Splat" logic specifically for now.
-            // In a full system, we'd check ALL managed splat types independenty.
-            // Here we just toggle "Blending" on/off.
-
-            // Check if *I* am Water (Self Rule)
-            if (myIds.includes('terrain_water')) shouldBeSplat = true;
-
-            // 2. Check Neighbor Rules (Am I adjacent to Water?)
-            if (!shouldBeSplat) {
-                // Check 8 neighbors
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        if (dx === 0 && dy === 0) continue;
-                        // Neighbor Coords
-                        const nx = tile.x + (dx * TILE_SIZE);
-                        const ny = tile.y + (dy * TILE_SIZE);
-
-                        // Look up Neighbor
-                        const nCX = Math.floor(nx / chunkSizePx);
-                        const nCY = Math.floor(ny / chunkSizePx);
-                        const nKey = `${nCX},${nCY}`;
-                        const nData = worldData.get(nKey);
-
-                        if (nData && nData.zones) {
-                            const nLX = Math.floor((nx - (nCX * chunkSizePx)) / TILE_SIZE);
-                            const nLY = Math.floor((ny - (nCY * chunkSizePx)) / TILE_SIZE);
-                            const nTKey = `${nLX},${nLY}`;
-
-                            const nBiome = nData.zones[nTKey]?.['biome'];
-                            const nTerrain = nData.zones[nTKey]?.['terrain'];
-                            const nIds = [nBiome, nTerrain].filter(Boolean) as string[];
-
-                            // Does Neighbor have 'terrain_water'?
-                            if (nIds.includes('terrain_water')) {
-                                // Am I 'grasslands'? (Target)
-                                // Or generic "Non-Water"?
-                                // Rule says target: 'grasslands'. 
-                                // Let's simplify: Any non-water adj to water gets blend?
-                                // Strict rule:
-                                if (myIds.some(id => id && (id === 'grasslands' || id === 'biome_grasslands'))) {
-                                    shouldBeSplat = true;
-                                }
-                            }
-                        }
-                    }
-                }
+            if (terrain && WATER_SPLAT_TERRAIN_IDS.includes(terrain as (typeof WATER_SPLAT_TERRAIN_IDS)[number])) {
+                splatResults.push({
+                    x: centerX,
+                    y: centerY,
+                    radius: WATER_RADIUS,
+                    intensity: WATER_INTENSITY
+                });
             }
-
-            // APPLY or REMOVE
-            // We apply to the intersection (Edge) or Center depending on rule?
-            // "Coast" is an overlay. 
-            // If shouldBeSplat, we add. If not, we remove.
-
-            // Note: This applies to the TILE CENTER splat (radius covers edges).
-            // A TILE that needs blending gets a splat at its center.
-            const centerX = tile.x + (TILE_SIZE / 2);
-            const centerY = tile.y + (TILE_SIZE / 2);
-
-            splatResults.push({
-                x: centerX,
-                y: centerY,
-                radius: 36, // ~1.1 Tiles
-                intensity: shouldBeSplat ? 255 : -255 // Add or Erase
-            });
         });
 
         return splatResults;

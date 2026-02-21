@@ -63,10 +63,9 @@ import {
 import { showTemplatesView } from './templates';
 import { showLootView } from './lootRenderer';
 import { buildCategoryFilters, renderAssets } from './legacyAssets';
-import { showMapEditorView } from './mapEditorView';
-
 
 import { initEventDelegation, disposeDelegation } from './ActionDelegator';
+import { initResizeHandle } from './ResizePanels';
 
 // ============================================
 // LIVE POLLING
@@ -149,8 +148,22 @@ window.EquipmentStatsConfig = {
 function initApp() {
     console.log('[Dashboard] Initializing App...');
 
-    // Initialize Event Delegation (Replaces inline onclicks)
-    initEventDelegation();
+    try {
+        // Replace loading message immediately so we never stay stuck
+        loadManifest();
+
+        // Initialize Event Delegation (Replaces inline onclicks)
+        initEventDelegation();
+
+        // Resizable sidebars
+        initResizeHandle('resize-sidebar', 'sidebar', true, {
+            defaultPx: 260,
+            storageKey: 'dashboard-sidebar-width',
+        });
+        initResizeHandle('resize-inspector', 'inspectorPanel', false, {
+            defaultPx: 350,
+            storageKey: 'dashboard-inspector-width',
+        });
 
     // Load Global Asset Lookup (for Drops/Sources)
     loadGlobalAssetLookup().then(() => {
@@ -204,10 +217,10 @@ function initApp() {
     // window.onpopstate is cleaner for replacement than addEventListener
     window.onpopstate = (event) => {
         // Always try to hide map editor first to ensure clean state
-        import('./mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+        import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
 
         if (event.state && event.state.view === 'map') {
-            showMapEditorView(false); // Don't push state again
+            import('@dashboard/mapEditorView').then((m) => m.showMapEditorView(false));
         } else if (event.state && event.state.view === 'config') {
             showConfigView(false);
         } else if (event.state && event.state.category) {
@@ -217,39 +230,53 @@ function initApp() {
         }
     };
 
-    // Check URL for initial view/category (Only on fresh load or if we want to reset view on HMR)
-    // On HMR, we probably want to keep current view.
-    // We can check if we already have a category rendered
-    if (!window.currentViewCategory) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const viewParam = urlParams.get('view');
-        const categoryParam = urlParams.get('category');
+        // Check URL for initial view/category (Only on fresh load or if we want to reset view on HMR)
+        if (!window.currentViewCategory) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewParam = urlParams.get('view');
+            const categoryParam = urlParams.get('category');
 
-        if (viewParam === 'map') {
-            showMapEditorView(false);
-        } else if (viewParam === 'config') {
-            showConfigView(false);
-        } else if (categoryParam) {
-            showCategoryView(categoryParam, false);
+            if (viewParam === 'map') {
+                import('@dashboard/mapEditorView').then((m) => m.showMapEditorView(false));
+            } else if (viewParam === 'config') {
+                showConfigView(false);
+            } else if (categoryParam) {
+                showCategoryView(categoryParam, false);
+            }
+            // else: loadManifest already called above
         } else {
-            loadManifest();
+            if (window.currentViewCategory) {
+                renderCategoryView();
+            }
         }
-    } else {
-        // If we have state, just re-render current view to apply new code
-        if (window.currentViewCategory) {
-            renderCategoryView();
-        }
-    }
 
-    // Start live polling
-    startLivePolling();
+        // Start live polling
+        startLivePolling();
+    } catch (err) {
+        console.error('[Dashboard] Init failed:', err);
+        loadManifest(); // Fallback so user at least sees landing page
+    }
 }
 
-// Boot
+// Boot - ensure we never stay stuck on "Loading..."
+let booted = false;
+function boot(): void {
+    if (booted) return;
+    booted = true;
+    try {
+        initApp();
+    } catch (err) {
+        console.error('[Dashboard] Boot failed:', err);
+        loadManifest();
+    }
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
+    document.addEventListener('DOMContentLoaded', boot);
+    // Fallback: if DOMContentLoaded never fires (e.g. script blocking), run after 2s
+    setTimeout(boot, 2000);
 } else {
-    initApp();
+    boot();
 }
 
 console.log('[Dashboard] TypeScript modules loaded');

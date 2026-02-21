@@ -1,8 +1,8 @@
 /**
  * WorldData - Static configuration for the game world
  *
- * Contains island names, biomes, and resource distribution.
- * Decoupled from IslandManager logic.
+ * Contains region names and resource distribution.
+ * Decoupled from WorldManager logic.
  */
 const WorldData = {
     // 3x3 Grid of Island Names
@@ -12,15 +12,7 @@ const WorldData = {
         ['Mud Flats', 'Bone Valley', 'The Ruins']
     ],
 
-    // Zone categories
-    // 'home': Safe zone, no enemies
-    // 'resource': grid resource spawns, fewer enemies
-    // 'dinosaur': random AI spawns, dangerous
-    Categories: [
-        ['home', 'resource', 'resource'],
-        ['dinosaur', 'resource', 'resource'],
-        ['dinosaur', 'dinosaur', 'dinosaur']
-    ],
+
 
     // Primary Node Types per Zone
     // Uses actual node entity IDs from src/entities/nodes/

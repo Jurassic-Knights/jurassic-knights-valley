@@ -1,6 +1,10 @@
 ---
-description: Testing libraries, coverage requirements, and AAA structure
-alwaysApply: true
+description: Vitest testing standards, AAA structure, and coverage. Use when writing, adding, or debugging tests; adding test coverage; or editing vitest config.
+globs:
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "vitest.config.*"
+alwaysApply: false
 ---
 
 # Testing

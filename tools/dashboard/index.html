@@ -11,12 +11,20 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Courier+Prime:wght@400;700&family=Special+Elite&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
+    <script>
+        (function() {
+            var sw = localStorage.getItem('dashboard-sidebar-width');
+            var iw = localStorage.getItem('dashboard-inspector-width');
+            if (sw) document.documentElement.style.setProperty('--sidebar-width', sw + 'px');
+            if (iw) document.documentElement.style.setProperty('--inspector-width', iw + 'px');
+        })();
+    </script>
 </head>
 
 <body>
     <div class="app-shell">
         <!-- LEFT SIDEBAR: Navigation -->
-        <nav class="sidebar">
+        <nav id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <h2>🦕 COMMAND</h2>
             </div>
@@ -63,6 +71,7 @@
                 </div>
             </div>
         </nav>
+        <div id="resize-sidebar" class="resize-handle" aria-label="Resize sidebar" title="Drag to resize"></div>
 
         <!-- CENTER: Workbench (The Grid) -->
         <main class="workbench">
@@ -85,9 +94,10 @@
             </header>
 
             <div id="mainContent" class="asset-grid-container">
-                <div class="loading">Initializing Command Console...</div>
+                <div class="loading">Loading...</div>
             </div>
         </main>
+        <div id="resize-inspector" class="resize-handle" aria-label="Resize inspector"></div>
 
         <!-- RIGHT: Inspector (Properties) -->
         <aside class="inspector" id="inspectorPanel">
@@ -101,11 +111,10 @@
     </div>
 
     <!-- Map Editor Container (Full Screen Overlay, restricted to logic area) -->
-    <!-- Left 260px matches --sidebar-width in style.css -->
-    <div id="map-editor-container"
-        style="display:none; position:fixed; top:0; left:260px; right:0; bottom:0; background:#1a1a1a; z-index:50;">
-        <div id="map-editor-sidebar"
-            style="position:absolute; top:0; left:0; width:300px; bottom:0; background:#2d2d2d; border-right:1px solid #444; overflow-y:auto; padding:10px; color:#ddd; display:flex; flex-direction:column;">
+    <div id="map-editor-container" class="map-editor-overlay"
+        style="display:none; position:fixed; top:0; right:0; bottom:0; background:#1a1a1a; z-index:50;">
+        <div id="map-editor-sidebar" class="map-editor-sidebar"
+            style="flex:0 0 300px; background:#2d2d2d; border-right:1px solid #444; padding:10px; color:#ddd; display:flex; flex-direction:column;">
 
             <!-- Mode Toggle -->
             <div
@@ -116,6 +125,8 @@
                     style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer; border-left:1px solid #444;">GROUND</button>
                 <button id="mode-zone" data-action="set-editor-mode" data-mode="zone"
                     style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer; border-left:1px solid #444;">ZONES</button>
+                <button id="mode-manipulation" data-action="set-editor-mode" data-mode="manipulation"
+                    style="flex:1; padding:8px; border:none; background:#2d2d2d; color:#888; cursor:pointer; border-left:1px solid #444;">MANIPULATION</button>
             </div>
 
             <!-- Zone Category (Only visible in Zone Mode via JS) -->
@@ -136,33 +147,160 @@
             </div>
 
             <h3>Palette</h3>
-            <div id="palette-content" style="flex:1; overflow-y:auto;"></div>
+            <div id="palette-content" class="palette-content"></div>
         </div>
-        <div id="map-editor-canvas" style="position:absolute; top:0; left:300px; right:0; bottom:0; overflow:hidden;">
+        <div id="resize-map-palette" class="resize-handle" aria-label="Resize palette"></div>
+        <div id="map-editor-canvas" class="map-editor-canvas" style="flex:1 1 0; min-width:0; min-height:0; position:relative; overflow:hidden;">
+            <div id="map-editor-loading-overlay"
+                style="display:none; position:absolute; inset:0; background:rgba(0,0,0,0.6); z-index:100; align-items:center; justify-content:center; color:#fff; font-size:14px;">
+                Loading map…
+            </div>
+            <div id="map-editor-toolbar"
+                style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; display:flex; gap:10px; align-items:center; z-index:10;">
+
+                <div class="map-editor-debug-wrap" style="position:relative;">
+                    <button type="button" id="debug-btn" class="map-editor-debug-btn" title="Debug options">🐛 Debug</button>
+                    <div id="debug-panel" class="map-editor-debug-panel" style="display:none;">
+                        <label class="map-editor-debug-option"><input type="checkbox" id="debug-station-numbers"> Station numbers</label>
+                        <label class="map-editor-debug-option"><input type="checkbox" id="debug-spline-path"> Spline path</label>
+                    </div>
+                </div>
+                <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+                <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
+                    <span style="font-size:12px;">Brush:</span>
+                    <input type="range" id="editor-brush-size" min="1" max="64" value="1" style="width:80px;">
+                    <span id="editor-brush-val" style="font-size:12px; min-width:20px;">1</span>
+                </div>
+
+                <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+
+                <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
+                    <span style="font-size:12px;">Grid:</span>
+                    <input type="range" id="editor-grid-opacity" min="0" max="100" value="50" style="width:60px;">
+                    <span id="editor-grid-val" style="font-size:12px; min-width:25px;">50%</span>
+                </div>
+
+                <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
+
+                <div style="font-family: monospace;">Coords: <span id="cursor-coords"
+                        style="display:inline-block; width:100px; text-align:right;">0, 0</span></div>
+                <button data-action="toggle-map-editor">❌ Close</button>
+            </div>
         </div>
-        <div id="map-editor-toolbar"
-            style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.8); padding:10px; border-radius:8px; color:white; display:flex; gap:10px; align-items:center;">
-
-            <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
-                <span style="font-size:12px;">Brush:</span>
-                <input type="range" id="editor-brush-size" min="1" max="64" value="1" style="width:80px;">
-                <span id="editor-brush-val" style="font-size:12px; min-width:20px;">1</span>
+        <div id="resize-map-panel" class="resize-handle" aria-label="Resize maps panel"></div>
+        <!-- Maps Panel (right-side, collapsible) -->
+        <div id="maps-panel" class="map-editor-maps-panel">
+            <div class="map-editor-panel-tabs">
+                <button type="button" id="tab-maps" class="map-editor-tab active" data-tab="maps">Maps</button>
+                <button type="button" id="tab-outliner" class="map-editor-tab" data-tab="outliner">Outliner</button>
+                <button type="button" id="tab-procedural" class="map-editor-tab" data-tab="procedural">Procedural</button>
             </div>
-
-            <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
-
-            <div style="display:flex; align-items:center; gap:5px; margin-right:10px;">
-                <span style="font-size:12px;">Grid:</span>
-                <input type="range" id="editor-grid-opacity" min="0" max="100" value="50" style="width:60px;">
-                <span id="editor-grid-val" style="font-size:12px; min-width:25px;">50%</span>
+            <button type="button" id="maps-panel-toggle" class="map-editor-panel-header" aria-expanded="true">
+                <span class="map-editor-panel-icon">▼</span>
+                <span id="maps-panel-title">Maps</span>
+            </button>
+            <div id="maps-panel-body" class="map-editor-panel-body">
+                <div id="map-loaded-display" class="map-editor-loaded" style="margin-bottom:6px;font-size:11px;color:#888;"></div>
+                <div style="margin-bottom:8px;">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:#aaa; cursor:pointer;">
+                        <input type="checkbox" id="map-auto-save-toggle" title="When on, saves automatically on every edit (objects, procedural params)">
+                        <span>Auto-save on edit</span>
+                    </label>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <input type="text" id="map-save-filename" placeholder="Map name (save as new)"
+                        class="map-editor-input">
+                    <button type="button" id="map-save-btn" data-action="save-map-data"
+                        class="map-editor-save-btn">💾 Save</button>
+                </div>
+                <div id="map-status" class="map-editor-status"></div>
+                <div class="map-editor-label">Saved maps:</div>
+                <div id="map-list" class="map-editor-list"></div>
             </div>
-
-            <div style="border-left:1px solid #555; height:20px; margin:0 5px;"></div>
-
-            <div style="font-family: monospace;">Coords: <span id="cursor-coords"
-                    style="display:inline-block; width:100px; text-align:right;">0, 0</span></div>
-            <button data-action="save-map-data">💾 Save</button>
-            <button data-action="toggle-map-editor">❌ Close</button>
+            <div id="outliner-panel-body" class="map-editor-panel-body" style="display:none;">
+                <div class="map-editor-label" style="margin-bottom:4px;">Town</div>
+                <div id="outliner-towns" class="map-editor-list" style="margin-bottom:12px;"></div>
+                <div class="map-editor-label" style="margin-bottom:4px;">Railroad</div>
+                <div class="map-editor-label" style="font-size:10px; color:#888; margin-bottom:2px;">Stations (order 1→2→3…)</div>
+                <div id="outliner-stations" class="map-editor-list" style="margin-bottom:12px;"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span class="map-editor-label" style="margin:0;">Objects in world</span>
+                    <button type="button" id="outliner-refresh-btn" style="font-size:10px; padding:2px 6px;">↻</button>
+                </div>
+                <div id="outliner-list" class="map-editor-list"></div>
+                <div id="outliner-selection" style="display:none; margin-top:8px; padding:8px; background:#252525; border-radius:4px;">
+                    <div style="font-size:11px; color:#888;">Selected: <span id="outliner-selected-label"></span></div>
+                    <div style="margin-top:6px; display:flex; gap:6px;">
+                        <button type="button" id="outliner-move-btn" class="map-editor-save-btn" style="font-size:11px;">Move</button>
+                        <button type="button" id="outliner-delete-btn" style="font-size:11px; background:#5a2525; color:#fff; border:none; border-radius:4px; cursor:pointer; padding:4px 8px;">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <div id="procedural-panel-body" class="map-editor-panel-body proc-panel-body" style="display:none;">
+                <div class="proc-section">
+                    <div class="map-editor-label">Mesh</div>
+                    <div class="proc-row"><label>Spacing</label><input type="number" id="proc-spacing" min="2" max="15" step="0.5" value="5.5"><span id="proc-spacing-val">5.5</span></div>
+                    <div class="proc-row"><label>Mountain spacing</label><input type="number" id="proc-mountain-spacing" min="10" max="80" value="35"><span id="proc-mountain-spacing-val">35</span></div>
+                    <div class="proc-row"><label>Mesh seed</label><input type="number" id="proc-mesh-seed" min="1" value="12345"></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Elevation</div>
+                    <div class="proc-row"><label>Seed</label><input type="number" id="proc-elev-seed" value="187"></div>
+                    <div class="proc-row"><label>Island</label><input type="range" id="proc-island" min="0" max="1" step="0.01" value="0.5"><span id="proc-island-val">0.5</span></div>
+                    <div class="proc-row"><label>Noisy coastlines</label><input type="range" id="proc-noisy-coastlines" min="0" max="0.1" step="0.001" value="0.01"><span id="proc-noisy-coastlines-val">0.01</span></div>
+                    <div class="proc-row"><label>Hill height</label><input type="range" id="proc-hill-height" min="0" max="0.1" step="0.001" value="0.02"><span id="proc-hill-height-val">0.02</span></div>
+                    <div class="proc-row"><label>Mountain jagged</label><input type="range" id="proc-mountain-jagged" min="0" max="1" step="0.01" value="0"><span id="proc-mountain-jagged-val">0</span></div>
+                    <div class="proc-row"><label>Mountain sharpness</label><input type="range" id="proc-mountain-sharpness" min="9.1" max="12.5" step="0.1" value="9.8"><span id="proc-mountain-sharpness-val">9.8</span></div>
+                    <div class="proc-row"><label>Mountain folds</label><input type="range" id="proc-mountain-folds" min="0" max="0.5" step="0.01" value="0.05"><span id="proc-mountain-folds-val">0.05</span></div>
+                    <div class="proc-row"><label>Ocean depth</label><input type="range" id="proc-ocean-depth" min="1" max="3" step="0.1" value="1.4"><span id="proc-ocean-depth-val">1.4</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Biomes (rainfall)</div>
+                    <div class="proc-row"><label>Wind angle °</label><input type="range" id="proc-wind-angle" min="0" max="360" value="0"><span id="proc-wind-angle-val">0</span></div>
+                    <div class="proc-row"><label>Raininess</label><input type="range" id="proc-raininess" min="0" max="2" step="0.01" value="0.9"><span id="proc-raininess-val">0.9</span></div>
+                    <div class="proc-row"><label>Rain shadow</label><input type="range" id="proc-rain-shadow" min="0.1" max="2" step="0.01" value="0.5"><span id="proc-rain-shadow-val">0.5</span></div>
+                    <div class="proc-row"><label>Evaporation</label><input type="range" id="proc-evaporation" min="0" max="1" step="0.01" value="0.5"><span id="proc-evaporation-val">0.5</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Rivers</div>
+                    <div class="proc-row"><label>lg_min_flow</label><input type="range" id="proc-lg-min-flow" min="-5" max="5" step="0.1" value="2.7"><span id="proc-lg-min-flow-val">2.7</span></div>
+                    <div class="proc-row"><label>lg_river_width</label><input type="range" id="proc-lg-river-width" min="-5" max="5" step="0.1" value="-2.4"><span id="proc-lg-river-width-val">-2.4</span></div>
+                    <div class="proc-row"><label>Flow</label><input type="range" id="proc-flow" min="0" max="1" step="0.01" value="0.2"><span id="proc-flow-val">0.2</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Towns</div>
+                    <div class="proc-row"><label><input type="checkbox" id="proc-towns-enabled" checked> Enabled</label></div>
+                    <div class="proc-row"><label>Num towns</label><input type="number" id="proc-num-towns" min="1" max="8" value="5" title="Max 2 per biome (8 total)"><span id="proc-num-towns-val">5</span></div>
+                    <div class="proc-row"><label>Min spacing</label><input type="range" id="proc-town-spacing" min="20" max="150" value="60"><span id="proc-town-spacing-val">60</span></div>
+                    <div class="proc-row"><label>Town radius</label><input type="range" id="proc-town-radius" min="10" max="80" value="30"><span id="proc-town-radius-val">30</span></div>
+                    <div class="proc-row"><label>Elev min</label><input type="range" id="proc-town-elev-min" min="-0.5" max="0.5" step="0.05" value="0"><span id="proc-town-elev-min-val">0</span></div>
+                    <div class="proc-row"><label>Elev max</label><input type="range" id="proc-town-elev-max" min="-0.5" max="0.5" step="0.05" value="0.3"><span id="proc-town-elev-max-val">0.3</span></div>
+                    <div class="proc-row"><label>Rain min</label><input type="range" id="proc-town-rain-min" min="0" max="1" step="0.05" value="0.2"><span id="proc-town-rain-min-val">0.2</span></div>
+                    <div class="proc-row"><label>Rain max</label><input type="range" id="proc-town-rain-max" min="0" max="1" step="0.05" value="1"><span id="proc-town-rain-max-val">1</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Roads</div>
+                    <div class="proc-row"><label><input type="checkbox" id="proc-roads-enabled" checked> Enabled</label></div>
+                    <div class="proc-row"><label>Width (px)</label><input type="number" id="proc-road-width" min="20" max="300" value="80" title="Road width in world pixels; stays constant when zooming"><span id="proc-road-width-val">80</span> px</div>
+                    <div class="proc-row"><label>Shortcuts/town</label><input type="number" id="proc-road-shortcuts" min="0" max="5" value="1"><span id="proc-road-shortcuts-val">1</span></div>
+                    <div class="proc-row"><label>River cost</label><input type="range" id="proc-road-river-cost" min="1" max="3" step="0.1" value="1.2"><span id="proc-road-river-cost-val">1.2</span></div>
+                    <div class="proc-row"><label>Coverage grid</label><input type="number" id="proc-road-coverage" min="0" max="25" value="0" title="0 = towns only; 6–15 = general road coverage across terrain"><span id="proc-road-coverage-val">0</span></div>
+                    <div class="proc-row"><label>Slope weight</label><input type="range" id="proc-road-slope-weight" min="1" max="10" step="0.5" value="3" title="Higher = roads prefer flatter terrain"><span id="proc-road-slope-weight-val">3</span></div>
+                    <div class="proc-row"><label>Waypoint curviness</label><input type="range" id="proc-road-waypoint-curviness" min="0" max="0.3" step="0.05" value="0.15" title="How much waypoint roads curve (0=straight). Town-to-town stays straight."><span id="proc-road-waypoint-curviness-val">0.15</span></div>
+                </div>
+                <div class="proc-section">
+                    <div class="map-editor-label">Railroads</div>
+                    <div class="proc-row"><label><input type="checkbox" id="proc-railroads-enabled" checked> Enabled</label></div>
+                    <div class="proc-row">
+                        <button type="button" id="proc-railroad-rebuild" title="Recompute path between stations and waypoints">Rebuild path</button>
+                    </div>
+                </div>
+                <div class="proc-preview-wrap" id="proc-preview-wrap" title="Click to go to location">
+                    <canvas id="proc-preview-canvas" width="380" height="380" class="proc-preview-canvas"></canvas>
+                    <canvas id="proc-preview-overlay" width="380" height="380" class="proc-preview-overlay"></canvas>
+                </div>
+                <div id="proc-status" class="map-editor-status" style="margin-top:8px;"></div>
+            </div>
         </div>
     </div>
 

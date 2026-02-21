@@ -3,10 +3,8 @@ import * as PIXI from 'pixi.js';
 import { MapEditorConfig } from './MapEditorConfig';
 
 /**
- * MapRenderer
- * 
- * Handles reading the Map Data and rendering it via PixiJS.
- * Contains the actual "Paint" logic (creating sprites, etc).
+ * MapRenderer — Placeholder for future map data rendering via PixiJS.
+ * Map editor currently uses ChunkManager + GroundSystem + ObjectSystem directly.
  */
 export class MapRenderer {
     private stage: PIXI.Container;

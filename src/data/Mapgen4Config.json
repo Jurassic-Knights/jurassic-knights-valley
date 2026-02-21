@@ -1,0 +1,100 @@
+{
+    "MAPGEN4_MAP_SIZE": 1000,
+    "MAPGEN4_CENTER_X": 500,
+    "MAPGEN4_CENTER_Y": 500,
+    "MAPGEN4_INNER_RADIUS": 282,
+    "MAPGEN4_BIOME_RADIUS_NOISE": 65,
+    "MAPGEN4_BIOME_ANGLE_NOISE": 0.35,
+    "MAPGEN4_BIOME_ELEVATION_INFLUENCE": 0.12,
+    "RAINFALL_THRESHOLDS": {
+        "desertMax": 0.25,
+        "badlandsMax": 0.5,
+        "tundraMax": 0.75
+    },
+    "WATER_ELEVATION_THRESHOLDS": {
+        "deepWaterMax": -0.2,
+        "waterMax": -0.1,
+        "coastMax": 0
+    },
+    "ELEVATION_THRESHOLDS": {
+        "dirtbankMax": 0.1,
+        "lowlandMax": 0.2,
+        "landMax": 0.35,
+        "highlandMax": 0.5,
+        "hillMax": 0.65,
+        "midmountainMax": 0.8
+    },
+    "WATER_TERRAIN_IDS": [
+        "terrain_deep_water",
+        "terrain_water",
+        "terrain_coast",
+        "terrain_river"
+    ],
+    "WATER_SPLAT_TERRAIN_IDS": [
+        "terrain_deep_water",
+        "terrain_water"
+    ],
+    "LAND_TERRAIN_IDS": [
+        "terrain_dirtbank",
+        "terrain_lowland",
+        "terrain_land",
+        "terrain_highland",
+        "terrain_hill",
+        "terrain_midmountain",
+        "terrain_mountain"
+    ],
+    "BIOME_PREVIEW_PALETTE": {
+        "grasslands": {
+            "terrain_deep_water": "#1a4a6a",
+            "terrain_water": "#2a6080",
+            "terrain_coast": "#6b8050",
+            "terrain_river": "#2a6080",
+            "terrain_dirtbank": "#6b5520",
+            "terrain_lowland": "#4a7c3f",
+            "terrain_land": "#529055",
+            "terrain_highland": "#3d6d42",
+            "terrain_hill": "#5c6458",
+            "terrain_midmountain": "#647068",
+            "terrain_mountain": "#788078"
+        },
+        "tundra": {
+            "terrain_deep_water": "#2a4a58",
+            "terrain_water": "#487088",
+            "terrain_coast": "#708898",
+            "terrain_river": "#487088",
+            "terrain_dirtbank": "#4a5260",
+            "terrain_lowland": "#608090",
+            "terrain_land": "#7098a8",
+            "terrain_highland": "#88b0c0",
+            "terrain_hill": "#4e5e70",
+            "terrain_midmountain": "#364658",
+            "terrain_mountain": "#5a6a78"
+        },
+        "desert": {
+            "terrain_deep_water": "#1a4050",
+            "terrain_water": "#2a5868",
+            "terrain_coast": "#b89870",
+            "terrain_river": "#2a5868",
+            "terrain_dirtbank": "#6e5840",
+            "terrain_lowland": "#b09068",
+            "terrain_land": "#c4a070",
+            "terrain_highland": "#8a6848",
+            "terrain_hill": "#706858",
+            "terrain_midmountain": "#585048",
+            "terrain_mountain": "#787068"
+        },
+        "badlands": {
+            "terrain_deep_water": "#202830",
+            "terrain_water": "#303840",
+            "terrain_coast": "#504848",
+            "terrain_river": "#303840",
+            "terrain_dirtbank": "#4a4242",
+            "terrain_lowland": "#5c2828",
+            "terrain_land": "#6e3232",
+            "terrain_highland": "#481c1c",
+            "terrain_hill": "#3a3a3a",
+            "terrain_midmountain": "#2a2a2a",
+            "terrain_mountain": "#4a4a4a"
+        }
+    }
+}

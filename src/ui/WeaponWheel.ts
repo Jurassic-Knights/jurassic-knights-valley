@@ -8,6 +8,7 @@
 import { AssetLoader } from '@core/AssetLoader';
 import { DOMUtils } from '@core/DOMUtils';
 import { GameConstants } from '@data/GameConstants';
+import { WEAPON_WHEEL_CSS } from './WeaponWheelStyles';
 
 export interface WheelItem {
     id: string;
@@ -34,121 +35,7 @@ export class WeaponWheel {
 
     private injectStyles() {
         if (document.getElementById('weapon-wheel-styles')) return;
-        const style = DOMUtils.create('style', {
-            id: 'weapon-wheel-styles',
-            text: `
-            .weapon-wheel-overlay {
-                position: fixed;
-                top: 0; left: 0; width: 100vw; height: 100vh;
-                z-index: 2000;
-                display: none;
-                touch-action: none; /* Prevent scroll */
-            }
-            .weapon-wheel-overlay.open {
-                display: block;
-            }
-            .wheel-backdrop {
-                position: absolute;
-                top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.1); 
-            }
-            .wheel-tree-container {
-                position: absolute;
-                display: flex;
-                flex-direction: column-reverse; /* Bottom-up stacking */
-                align-items: center;
-                gap: 4px; /* Reduced from 12px */
-                z-index: 2001;
-                pointer-events: none; /* Let pointer pass through to detect elements via JS */
-                transform: translateX(-50%);
-                padding-bottom: 4px; /* Reduced from 20px */
-                width: auto;
-                min-width: 100px;
-            }
-            .tree-row {
-                display: flex;
-                gap: 8px;
-                background: rgba(20, 18, 10, 0.95);
-                padding: 6px;
-                border: 2px solid #5a4d33;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.6);
-                animation: slideUp 0.1s ease-out;
-                pointer-events: auto; /* Re-enable pointer events for buttons */
-                justify-content: center;
-                position: relative; /* Ensure ::after is relative to this row */
-            }
-            /* Connecting line (pseudo-element) */
-            .tree-row::after {
-                content: '';
-                position: absolute;
-                top: 100%; /* Start at bottom of row */
-                margin-top: 2px; /* Skip border (2px) */
-                left: 50%;
-                width: 2px;
-                height: 4px; /* Match gap size exactly */
-                background: #ffd700;
-                transform: translateX(-50%);
-                opacity: 0.6;
-            }
-            /* No connector for the bottom-most row */
-            .tree-row:first-child::after { 
-                display: none; 
-            }
-
-            .tree-btn {
-                width: 68px; height: 68px;
-                background: #2a251b;
-                border: 2px solid #5a4d33;
-                border-radius: 6px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: transform 0.1s, background 0.1s;
-                position: relative;
-            }
-            .tree-btn[data-hover="true"], .tree-btn.active {
-                background: #4e4430;
-                border-color: #ffd700;
-                transform: scale(1.05);
-                box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-                z-index: 10;
-            }
-            .tree-btn-icon {
-                position: absolute;
-                top: 0; left: 0;
-                width: 100%; height: 100%;
-                background-size: cover; /* Fill the frame */
-                background-position: center;
-                background-repeat: no-repeat;
-                margin: 0;
-                pointer-events: none;
-                z-index: 1;
-            }
-            .tree-btn-label {
-                position: absolute;
-                bottom: 2px;
-                left: 0;
-                width: 100%;
-                font-size: 14px; /* Specific to this component sizing */
-                text-align: center;
-                z-index: 2;
-                pointer-events: none;
-                white-space: nowrap;
-                overflow: hidden;
-            }
-            .tree-btn.active .tree-btn-label {
-                color: #ffd700;
-            }
-
-            @keyframes slideUp {
-                from { opacity: 0; transform: translateY(8px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-        `
-        });
+        const style = DOMUtils.create('style', { id: 'weapon-wheel-styles', text: WEAPON_WHEEL_CSS });
         document.head.appendChild(style);
     }
 

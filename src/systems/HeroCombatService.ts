@@ -7,7 +7,6 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { entityManager } from '@core/EntityManager';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
@@ -18,6 +17,7 @@ import { inputSystem } from '../input/InputSystem';
 import { EntityTypes } from '@config/EntityTypes';
 import { getWeaponStats } from '@data/GameConfig';
 import { MathUtils } from '@core/MathUtils';
+import { findTarget as findTargetFn } from './HeroCombatTargeting';
 
 // Unmapped modules - need manual import
 import type { Hero } from '../gameplay/Hero';
@@ -57,8 +57,7 @@ const HeroCombatService = {
             }
         }
 
-        // Find nearest valid target
-        const target = this.findTarget(hero);
+        const target = findTargetFn(hero);
 
         // Auto-Attack
         if (target) {
@@ -79,83 +78,6 @@ const HeroCombatService = {
         ) {
             // Placeholder for interaction intent handling
         }
-    },
-
-    /**
-     * Find nearest valid target for auto-attacking
-     * Priority: Enemies > Dinosaurs > Resources
-     * @param {Hero} hero
-     * @returns {IEntity|null}
-     */
-    findTarget(hero: Hero): IEntity | null {
-        if (!entityManager) return null;
-
-        let target: IEntity | null = null;
-        let minDistSq = Infinity;
-
-        // Compute scan range as max of equipped weapon ranges using getWeaponStats
-        const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
-        const hand1Range = activeWeapons.mainHand
-            ? getWeaponStats(activeWeapons.mainHand).range
-            : 0;
-        const hand2Range = activeWeapons.offHand ? getWeaponStats(activeWeapons.offHand).range : 0;
-        const scanRange = Math.max(
-            hand1Range,
-            hand2Range,
-            getConfig().Combat.DEFAULT_MINING_RANGE || 125
-        );
-
-        // Check Enemies (HIGHEST Priority)
-        const enemyTypes = ['Enemy', 'Boss'];
-        for (const enemyType of enemyTypes) {
-            const candidates = entityManager.getByType(enemyType);
-            for (const candidate of candidates) {
-                if (!candidate.active || (candidate as unknown as { isDead: boolean }).isDead) continue; // Cast for isDead if not on base Entity
-
-                const distSq = MathUtils.distanceSq(hero.x, hero.y, candidate.x, candidate.y);
-                const rangeSq = scanRange * scanRange;
-
-                if (distSq <= rangeSq && distSq < minDistSq) {
-                    minDistSq = distSq;
-                    target = candidate;
-                }
-            }
-        }
-
-        // Check Dinosaurs (Second Priority)
-        if (!target) {
-            const candidates = entityManager.getInRadius(hero.x, hero.y, scanRange, 'Dinosaur');
-            for (const candidate of candidates) {
-                if (!candidate.active || (candidate as unknown as { state: string }).state === 'dead') continue;
-
-                const dx = candidate.x - hero.x;
-                const dy = candidate.y - hero.y;
-                const distSq = dx * dx + dy * dy;
-                if (distSq < minDistSq) {
-                    minDistSq = distSq;
-                    target = candidate;
-                }
-            }
-        }
-
-        // Check Resources (Lowest Priority, mining)
-        if (!target) {
-            const miningRange = hero.miningRange || getConfig().Combat.DEFAULT_MINING_RANGE;
-            const candidates = entityManager.getInRadius(hero.x, hero.y, miningRange, 'Resource');
-            for (const candidate of candidates) {
-                if (!candidate.active || (candidate as unknown as { state: string }).state === 'depleted') continue;
-
-                const dx = candidate.x - hero.x;
-                const dy = candidate.y - hero.y;
-                const distSq = dx * dx + dy * dy;
-                if (distSq < minDistSq) {
-                    minDistSq = distSq;
-                    target = candidate;
-                }
-            }
-        }
-
-        return target;
     },
 
     /**

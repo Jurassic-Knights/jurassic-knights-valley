@@ -16,7 +16,8 @@
         "test:coverage": "vitest run --coverage",
         "typecheck": "tsc --noEmit",
         "prepare": "husky",
-        "dashboard:build": "node tools/dashboard/scripts/build.mjs"
+        "dashboard:build": "node tools/dashboard/scripts/build.mjs",
+        "sync:agent": "node scripts/sync-cursor-to-agent.mjs"
     },
     "lint-staged": {
         "*.{js,ts}": [
@@ -47,6 +48,9 @@
         "vitest": "^4.0.17"
     },
     "dependencies": {
+        "delaunator": "^5.0.0",
+        "fast-2d-poisson-disk-sampling": "github:kchapelier/fast-2d-poisson-disk-sampling",
+        "flatqueue": "^2.0.0",
         "html2canvas": "^1.4.1",
         "pixi.js": "^8.15.0",
         "simplex-noise": "^4.0.3"

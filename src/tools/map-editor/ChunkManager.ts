@@ -1,39 +1,60 @@
 import * as PIXI from 'pixi.js';
 import { MapEditorConfig } from './MapEditorConfig';
-import { ZoneConfig, ZoneCategory } from '@data/ZoneConfig';
 import { GroundSystem } from './GroundSystem';
 import { ObjectSystem } from './ObjectSystem';
 import { ZoneSystem } from './ZoneSystem';
-import { ChunkData } from './MapEditorTypes';
+import { ChunkData, MapObject, HeroSpawnPosition } from './MapEditorTypes';
+import { serialize, deserializeInto } from './ChunkManagerSerialization';
+import { updateChunkViewport } from './ChunkManagerViewport';
+import {
+    loadChunk as loadChunkFn,
+    loadChunkSync as loadChunkSyncFn,
+    unloadChunk as unloadChunkFn,
+    renderPlaceholderGround,
+    getDebugGraphics,
+    type ChunkLoaderContext
+} from './ChunkManagerLoader';
+import { createHeroSpawnMarker, updateHeroSpawnMarker, updateHeroSpawnMarkerScale } from './ChunkManagerHeroSpawn';
+import { getAllObjects, getObjectAt, addObject, removeObjectAt, type AddObjectContext, type RemoveObjectContext } from './ChunkManagerObjects';
+import {
+    paintSplat as paintSplatFn,
+    updateGroundTile as updateGroundTileFn,
+    restoreSplatData as restoreSplatDataFn,
+    setZone as setZoneFn,
+    setZones as setZonesFn,
+    getZone as getZoneFn,
+    refreshZones as refreshZonesFn,
+    type GroundContext,
+    type ZoneContext
+} from './ChunkManagerDelegation';
 
-/**
- * ChunkManager
- * 
- * Manages the lifecycle of Map Chunks.
- * Handles Dynamic Loading/Unloading based on Viewport visibility.
- */
+/** Manages map chunk lifecycle; dynamic load/unload based on viewport visibility. */
 export class ChunkManager {
     private container: PIXI.Container;
     private loadedChunks: Map<string, PIXI.Container>;
-    private pool: PIXI.Container[]; // Object pool for performance
-
-    // Persistent World Data
+    private loadingChunks: Set<string>;
+    private pool: PIXI.Container[];
     private worldData: Map<string, ChunkData>;
+    private heroSpawn: HeroSpawnPosition | null = null;
 
     // Sub-Systems
     private groundSystem: GroundSystem;
     private objectSystem: ObjectSystem;
     private zoneSystem: ZoneSystem;
 
+    private heroSpawnMarker: PIXI.Container | null = null;
+
     constructor(parentContainer: PIXI.Container) {
         this.container = new PIXI.Container();
         parentContainer.addChild(this.container);
 
+        this.heroSpawnMarker = createHeroSpawnMarker();
+        this.container.addChild(this.heroSpawnMarker);
+
         this.loadedChunks = new Map();
+        this.loadingChunks = new Set<string>();
         this.pool = [];
         this.worldData = new Map();
-
-        // Initialize Systems
         this.groundSystem = new GroundSystem();
         this.objectSystem = new ObjectSystem();
         this.zoneSystem = new ZoneSystem(this.groundSystem);
@@ -41,276 +62,235 @@ export class ChunkManager {
 
     private gridOpacity: number = 0.5;
 
+    private onMapEdit: ((type: string, payload: unknown) => void) | null = null;
+    private _skipEditCallback = false;
+
+    /** Set callback for real-time sync to game (MAP_OBJECT_ADD, REMOVE, MOVE). */
+    public setOnMapEdit(fn: ((type: string, payload: unknown) => void) | null): void {
+        this.onMapEdit = fn;
+    }
+
+    private updateHeroSpawnMarker(): void {
+        updateHeroSpawnMarker(this.heroSpawnMarker, this.heroSpawn);
+    }
+
+    public getHeroSpawn(): HeroSpawnPosition | null {
+        return this.heroSpawn;
+    }
+
+    public setHeroSpawn(x: number, y: number): void {
+        this.heroSpawn = { x, y };
+        this.updateHeroSpawnMarker();
+        this.onMapEdit?.('MAP_HERO_SPAWN', { x, y });
+    }
+
     public setGridOpacity(opacity: number) {
         this.gridOpacity = opacity;
-        // Apply immediately to all loaded chunks
-        this.loadedChunks.forEach(chunk => {
-            const g = this.getDebugGraphics(chunk);
-            if (g) {
-                g.alpha = opacity;
-            }
+        this.loadedChunks.forEach((chunk) => {
+            const g = getDebugGraphics(chunk);
+            if (g) g.alpha = opacity;
         });
     }
 
-    // --- Ground System Delegation ---
+    private getGroundContext(): GroundContext {
+        return { groundSystem: this.groundSystem, worldData: this.worldData, loadedChunks: this.loadedChunks };
+    }
+
+    private getZoneContext(): ZoneContext {
+        return { zoneSystem: this.zoneSystem, worldData: this.worldData, loadedChunks: this.loadedChunks };
+    }
+
+    private getLoaderContext(): ChunkLoaderContext {
+        return {
+            worldData: this.worldData,
+            loadedChunks: this.loadedChunks,
+            pool: this.pool,
+            container: this.container,
+            groundSystem: this.groundSystem,
+            objectSystem: this.objectSystem,
+            zoneSystem: this.zoneSystem,
+            gridOpacity: this.gridOpacity
+        };
+    }
 
     public async renderProceduralGround(chunk: PIXI.Container, chunkX: number, chunkY: number) {
+        if (MapEditorConfig.USE_PLACEHOLDER_GROUND) {
+            renderPlaceholderGround(chunk, chunkX, chunkY, this.worldData);
+            return;
+        }
         const chunkKey = `${chunkX},${chunkY}`;
         const data = this.worldData.get(chunkKey);
         if (data) {
-            await this.groundSystem.renderChunk(chunk, data, chunkX, chunkY);
+            await this.groundSystem.renderChunk(chunk, data, chunkX, chunkY, this.worldData);
         }
     }
 
-    public async paintSplat(worldX: number, worldY: number, radius: number, intensity: number, soft: boolean = true) {
-        return await this.groundSystem.paintSplat(worldX, worldY, radius, intensity, soft, this.worldData, this.loadedChunks);
+    public async paintSplat(worldX: number, worldY: number, radius: number, intensity: number, soft = true) {
+        return paintSplatFn(this.getGroundContext(), worldX, worldY, radius, intensity, soft);
     }
 
-    /**
-     * Update a specific ground tile (Delegated)
-     */
     public async updateGroundTile(chunkKey: string, lx: number, ly: number) {
-        const chunk = this.loadedChunks.get(chunkKey);
-        const data = this.worldData.get(chunkKey);
-        if (chunk && data) {
-            let groundLayer = chunk.getChildByLabel('ground_layer') as PIXI.Container;
-            if (!groundLayer) {
-                groundLayer = new PIXI.Container();
-                (groundLayer as { label?: string }).label = 'ground_layer';
-                chunk.addChildAt(groundLayer, 0);
-            }
-            await this.groundSystem.updateTile(chunkKey, lx, ly, data, groundLayer);
-        }
+        return updateGroundTileFn(this.getGroundContext(), chunkKey, lx, ly);
     }
 
-    public async restoreSplatData(changes: Map<string, { idx: number, oldVal: number, newVal: number }[]>, undo: boolean) {
-        await this.groundSystem.restoreSplatData(changes, undo, this.worldData, this.loadedChunks);
+    public async restoreSplatData(
+        changes: Map<string, { idx: number; oldVal: number; newVal: number }[]>,
+        undo: boolean
+    ) {
+        return restoreSplatDataFn(this.getGroundContext(), changes, undo);
     }
 
-    /**
-     * Adds an object to the world at specific coordinates
-     */
+    /** Adds an object to the world at specific coordinates. */
     public addObject(x: number, y: number, assetId: string): void {
-        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
-        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-        const chunkX = Math.floor(x / chunkSizePx);
-        const chunkY = Math.floor(y / chunkSizePx);
-        const chunkKey = `${chunkX},${chunkY}`;
-
-        // 1. Update Persistent Data
-        let data = this.worldData.get(chunkKey);
-        if (!data) {
-            data = { id: chunkKey, objects: [], zones: {} };
-            this.worldData.set(chunkKey, data);
-        }
-
-        // Delegate to ObjectSystem
-        this.objectSystem.addObject(data, assetId, x, y);
-
-        // 2. If chunk is visible, add Sprite immediately
-        const chunkContainer = this.loadedChunks.get(chunkKey);
-        if (chunkContainer) {
-            this.objectSystem.renderObject(chunkContainer, assetId, x, y, chunkX, chunkY);
-        }
+        const ctx: AddObjectContext = {
+            worldData: this.worldData,
+            loadedChunks: this.loadedChunks,
+            loadingChunks: this.loadingChunks,
+            container: this.container,
+            objectSystem: this.objectSystem,
+            loadChunkSync: (k, ax, ay) => this.loadChunkSync(k, ax, ay),
+            loadChunk: (k, ax, ay) => this.loadChunk(k, ax, ay),
+            onMapEdit: this.onMapEdit,
+            skipEditCallback: this._skipEditCallback
+        };
+        addObject(ctx, x, y, assetId);
     }
-    /**
-     * Removes an object at specific world coordinates
-     */
+
+    /** Removes an object at specific world coordinates. */
     public removeObjectAt(x: number, y: number): void {
-        const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
-        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-        const chunkX = Math.floor(x / chunkSizePx);
-        const chunkY = Math.floor(y / chunkSizePx);
-        const chunkKey = `${chunkX},${chunkY}`;
-
-        const data = this.worldData.get(chunkKey);
-        const chunkContainer = this.loadedChunks.get(chunkKey);
-
-        if (data && chunkContainer) {
-            this.objectSystem.removeObject(chunkContainer, data, x, y, chunkX, chunkY);
-        }
+        const ctx: RemoveObjectContext = {
+            worldData: this.worldData,
+            loadedChunks: this.loadedChunks,
+            objectSystem: this.objectSystem,
+            getObjectAt: (ax, ay) => getObjectAt(this.worldData, ax, ay),
+            onMapEdit: this.onMapEdit,
+            skipEditCallback: this._skipEditCallback
+        };
+        removeObjectAt(ctx, x, y);
     }
 
-    /**
-     * Sets a zone for a specific tile.
-     * @param x World Tile X
-     * @param y World Tile Y
-     * @param category Zone Category
-     * @param zoneId Zone ID
-     */
     public setZone(x: number, y: number, category: string, zoneId: string | null): void {
-        this.zoneSystem.setZone(x, y, category, zoneId, this.worldData, this.loadedChunks);
+        setZoneFn(this.getZoneContext(), x, y, category, zoneId);
     }
 
-    public async setZones(updates: { x: number, y: number, category: string, zoneId: string | null }[]) {
-        await this.zoneSystem.setZones(updates, this.worldData, this.loadedChunks);
+    public async setZones(updates: { x: number; y: number; category: string; zoneId: string | null }[]) {
+        return setZonesFn(this.getZoneContext(), updates);
     }
 
     public getZone(x: number, y: number, category: string): string | null {
-        return this.zoneSystem.getZone(x, y, category, this.worldData);
+        return getZoneFn(this.getZoneContext(), x, y, category);
+    }
+
+    /** Read-only access to world chunk data (e.g. for minimap). */
+    public getWorldData(): Map<string, ChunkData> {
+        return this.worldData;
+    }
+
+    /** Re-render object sprites in all loaded chunks (e.g. when entity display size changes via dashboard) */
+    public refreshObjectSprites(): void {
+        for (const [key, chunk] of this.loadedChunks) {
+            const data = this.worldData.get(key);
+            if (!data?.objects?.length) continue;
+
+            const [chunkX, chunkY] = key.split(',').map(Number);
+            this.objectSystem.refreshChunkObjects(chunk, data, chunkX, chunkY);
+        }
+    }
+
+    /** Returns all objects from all chunks. */
+    public getAllObjects(): MapObject[] {
+        return getAllObjects(this.worldData);
+    }
+
+    /** Returns the object at the given world position, or null if none. */
+    public getObjectAt(x: number, y: number): MapObject | null {
+        return getObjectAt(this.worldData, x, y);
     }
 
     /**
-     * Update observable chunks based on viewport
+     * Moves an object from old position to new position.
+     * Returns true if the move succeeded.
+     */
+    public moveObject(oldX: number, oldY: number, newX: number, newY: number): boolean {
+        const obj = this.getObjectAt(oldX, oldY);
+        if (!obj) return false;
+        this._skipEditCallback = true;
+        this.removeObjectAt(oldX, oldY);
+        this.addObject(newX, newY, obj.id);
+        this._skipEditCallback = false;
+        this.onMapEdit?.('MAP_OBJECT_MOVE', {
+            id: obj.id,
+            oldX,
+            oldY,
+            newX,
+            newY
+        });
+        return true;
+    }
+
+    /**
+     * Update observable chunks based on viewport.
      * @param viewRect The visible area in WORLD coordinates
      */
-    public update(viewRect: { x: number, y: number, width: number, height: number }, zoom: number): void {
-        const { TILE_SIZE, CHUNK_SIZE } = MapEditorConfig;
-        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-        // Calculate chunk indices covering the viewport
-        const startX = Math.floor(viewRect.x / chunkSizePx);
-        const startY = Math.floor(viewRect.y / chunkSizePx);
-        const endX = Math.ceil((viewRect.x + viewRect.width) / chunkSizePx);
-        const endY = Math.ceil((viewRect.y + viewRect.height) / chunkSizePx);
-
-        // Add Buffer (1 chunk extra on all sides)
-        const minX = startX - 1;
-        const minY = startY - 1;
-        const maxX = endX + 1;
-        const maxY = endY + 1;
-
-        const visibleKeys = new Set<string>();
-
-        // 1. Identify chunks that SHOULD be visible
-        for (let x = minX; x <= maxX; x++) {
-            for (let y = minY; y <= maxY; y++) {
-                // Check bounds of the 1250x1250 world
-                if (x < 0 || y < 0 || x >= MapEditorConfig.WORLD_WIDTH_TILES / CHUNK_SIZE || y >= MapEditorConfig.WORLD_HEIGHT_TILES / CHUNK_SIZE) {
-                    continue;
-                }
-                const key = `${x},${y}`;
-                visibleKeys.add(key);
-
-                if (!this.loadedChunks.has(key)) {
-                    // Logger.info(`[ChunkManager] ViewRect: ${viewRect.x.toFixed(0)},${viewRect.y.toFixed(0)} loading ${key}`);
-                    this.loadChunk(key, x, y);
-                }
-            }
+    public update(
+        viewRect: { x: number; y: number; width: number; height: number },
+        zoom: number
+    ): void {
+        if (this.worldData.size === 0 && !MapEditorConfig.USE_POLYGON_MAP_AS_GROUND) {
+            const keysToUnload = Array.from(this.loadedChunks.keys());
+            keysToUnload.forEach((k) => unloadChunkFn(this.getLoaderContext(), k));
+            this.loadingChunks.clear();
+            this.container.visible = false;
+            return;
         }
+        this.container.visible = true;
+        updateHeroSpawnMarkerScale(this.heroSpawnMarker, zoom);
 
-        // 2. Unload chunks that are NO LONGER visible
-        for (const [key, chunk] of this.loadedChunks) {
-            if (!visibleKeys.has(key)) {
-                this.unloadChunk(key);
-            } else {
-                // 3. Update Debug Grid Visibility (LOD) & Scale
-                const g = this.getDebugGraphics(chunk);
-
-                // Hide if extremely far out (< 0.5%)
-                const isVisible = zoom > 0.005;
-                g.visible = isVisible;
-
-                if (isVisible) {
-                    // Dynamic Line Width: Ensure at least 1-2 screen pixels
-                    // standard = 32 world units. 
-                    // At 0.01 zoom -> 0.32px (invisible/glitchy)
-                    // Target: 2 screen pixels -> 2 / zoom
-                    const lineWidth = Math.max(32, 2 / zoom);
-
-                    // Redraw
-                    const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
-                    const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-                    g.clear();
-                    // Use solid color, non-scaling stroke alignment
-                    g.rect(0, 0, chunkSizePx, chunkSizePx);
-                    g.stroke({ width: lineWidth, color: MapEditorConfig.Colors.CHUNK_BORDER, alpha: this.gridOpacity });
-                }
-            }
-        }
+        const ctx = this.getLoaderContext();
+        updateChunkViewport(
+            {
+                ...ctx,
+                loadingChunks: this.loadingChunks,
+                loadChunk: (key, x, y) => loadChunkFn(ctx, key, x, y),
+                unloadChunk: (key) => unloadChunkFn(ctx, key),
+                getDebugGraphics
+            },
+            viewRect,
+            zoom
+        );
     }
 
-    private loadChunk(key: string, x: number, y: number): void {
-        const { TILE_SIZE, CHUNK_SIZE } = MapEditorConfig;
-        const chunkSizePx = CHUNK_SIZE * TILE_SIZE;
-
-        // Get container from pool or create new
-        let chunk = this.pool.pop();
-        if (!chunk) {
-            chunk = new PIXI.Container();
-        }
-
-        chunk.x = x * chunkSizePx;
-        chunk.y = y * chunkSizePx;
-        chunk.visible = true;
-
-        // --- Debug Visualization ---
-        const debugGraphics = this.getDebugGraphics(chunk);
-        debugGraphics.clear();
-        debugGraphics.strokeStyle = { width: 32, color: MapEditorConfig.Colors.CHUNK_BORDER, alpha: 1 }; // Draw solid
-        debugGraphics.rect(0, 0, chunkSizePx, chunkSizePx);
-        debugGraphics.stroke();
-        debugGraphics.alpha = this.gridOpacity; // Apply current opacity
-
-        // Add coordinates text
-        const text = new PIXI.Text({
-            text: key,
-            style: { fill: 0xFFFFFF, fontSize: 32 }
-        });
-        text.x = 10;
-        text.y = 10;
-        chunk.addChild(text);
-
-        // NEW: Render Ground PRIOR to objects
-        this.renderProceduralGround(chunk, x, y);
-
-        // --- Render Stored Objects ---
-        const data = this.worldData.get(key);
-        if (data) {
-            // Delegate object rendering
-            this.objectSystem.renderChunkObjects(chunk, data, x, y);
-
-            if (data.zones) {
-                this.zoneSystem.renderZoneOverlay(chunk, data.zones);
-            }
-        }
-
-        this.container.addChild(chunk);
-        this.loadedChunks.set(key, chunk);
+    private loadChunkSync(key: string, x: number, y: number): void {
+        loadChunkSyncFn(this.getLoaderContext(), key, x, y);
     }
 
-    private unloadChunk(key: string): void {
-        const chunk = this.loadedChunks.get(key);
-        if (chunk) {
-            chunk.removeChildren(); // Clear contents (text, graphics, sprites)
-            chunk.parent?.removeChild(chunk);
-            this.pool.push(chunk); // Return to pool
-            this.loadedChunks.delete(key);
-        }
+    private async loadChunk(key: string, x: number, y: number): Promise<void> {
+        await loadChunkFn(this.getLoaderContext(), key, x, y);
     }
-
-    private getDebugGraphics(container: PIXI.Container): PIXI.Graphics {
-        // Reuse existing graphics object if it exists
-        let g = container.children.find(c => c instanceof PIXI.Graphics) as PIXI.Graphics;
-        if (!g) {
-            g = new PIXI.Graphics();
-            container.addChild(g);
-        }
-        return g;
-    }
-
-
 
     public refreshZones(): void {
-        this.loadedChunks.forEach((chunk, key) => {
-            const data = this.worldData.get(key);
-            if (data && data.zones) {
-                this.zoneSystem.renderZoneOverlay(chunk, data.zones);
-            }
-        });
+        refreshZonesFn(this.getZoneContext());
     }
 
-    public serialize(): { version: number; chunks: ChunkData[] } {
-        const exportData: ChunkData[] = [];
-        this.worldData.forEach((chunk) => {
-            exportData.push(chunk);
+    public serialize(): { version: number; chunks: ChunkData[]; heroSpawn?: HeroSpawnPosition } {
+        return serialize(this.worldData, this.heroSpawn);
+    }
+
+    /** Load map data from a serialized payload. Clears current world and repopulates. */
+    public deserialize(data: { version?: number; chunks?: ChunkData[]; heroSpawn?: HeroSpawnPosition }): void {
+        deserializeInto(data, {
+            worldData: this.worldData,
+            loadingChunks: this.loadingChunks,
+            groundSystem: this.groundSystem,
+            zoneSystem: this.zoneSystem,
+            setHeroSpawn: (hs) => {
+                this.heroSpawn = hs;
+                this.updateHeroSpawnMarker();
+            },
+            unloadAll: () => {
+                const loaderCtx = this.getLoaderContext();
+                Array.from(this.loadedChunks.keys()).forEach((k) => unloadChunkFn(loaderCtx, k));
+            }
         });
-        return {
-            version: 1,
-            chunks: exportData
-        };
     }
 }

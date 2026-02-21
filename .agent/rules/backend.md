@@ -1,0 +1,30 @@
+---
+trigger: model_decision
+description: Backend API standards — REST design, error handling, validation, data layer, security. Apply when working on server routes, API endpoints, validation, database queries, or auth.
+---
+
+# Backend / API
+
+## API Design
+
+- Use RESTful resource naming and HTTP verbs (GET idempotent, POST create, PUT/PATCH update, DELETE remove).
+- Return consistent shapes: `{ data }` success, `{ error: { code, message } }` errors.
+- Use 200, 201, 400, 401, 404, 500; do not use 200 for validation or auth failures.
+
+## Errors and Validation
+
+- Validate input at the boundary. Return clear, safe errors to clients; log full details server-side.
+- Use typed error classes or codes for programmatic handling.
+- Do not expose stack traces or internal paths in production.
+
+## Data Layer
+
+- Keep queries in a dedicated data/repository layer; do not put raw SQL or ORM in route handlers.
+- Use parameterized queries or ORM; prefer transactions for multi-step writes.
+- Use migrations for schema changes; do not change schema ad hoc in code.
+
+## Security and Performance
+
+- Do not log or store sensitive data in plain text. Hash and salt passwords; use secure comparison.
+- Apply rate limiting and auth at the API boundary; authorize per resource.
+- Avoid N+1; use batching, joins, or eager loading.

@@ -52,7 +52,7 @@ Reference `.agent/workflows/` (README.md for list). When a task matches, @ file 
 - Make the user use the console to debug, you must fix problems yourself.
 - Add magic visuals.
 - Call other systems directly (use EventBus).
-- Put magic numbers in code (use GameConstants/config).
+- Put magic numbers in code (use config files).
 
 ---
 

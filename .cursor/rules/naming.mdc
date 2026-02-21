@@ -1,6 +1,10 @@
 ---
-description: Strict naming conventions for files, variables, and identifiers
-alwaysApply: true
+description: Naming conventions for files, code, entities, and assets. Apply when creating or renaming files, adding entities, adding assets, or writing identifiers (classes, variables, functions, constants).
+globs:
+  - "src/**/*.ts"
+  - "assets/**/*"
+  - "documents/design/asset_id_conventions.md"
+alwaysApply: false
 ---
 
 # Naming Conventions

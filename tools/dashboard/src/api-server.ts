@@ -1,9 +1,9 @@
 /**
  * Dashboard API - TypeScript/Node.js Implementation
- * 
+ *
  * Replaces the Python serve_dashboard.py with pure TypeScript.
  * Runs as Vite middleware for a single unified dev server.
- * 
+ *
  * Reads entity data directly from src/entities/{category}/*.ts files.
  */
 
@@ -19,6 +19,7 @@ const TOOLS_DIR = path.resolve(BASE_DIR, 'tools');
 const IMAGES_DIR = path.resolve(BASE_DIR, 'assets/images');
 const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
 const MAPS_DIR = path.resolve(BASE_DIR, 'src/data/maps');
+const PUBLIC_MAPS_DIR = path.resolve(BASE_DIR, 'public/maps');
 const GAME_CONSTANTS_PATH = path.resolve(BASE_DIR, 'src/data/GameConstants.ts');
 const GAME_CONFIG_PATH = path.resolve(BASE_DIR, 'src/data/GameConfig.ts');
 const BODY_TYPE_CONFIG_PATH = path.resolve(BASE_DIR, 'src/config/BodyTypeConfig.ts');
@@ -51,7 +52,10 @@ function writeJsonFile(filepath: string, data: unknown): void {
     fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
 }
 
-function saveImage(relPath: string, base64Data: string): { success: boolean; message?: string; error?: string } {
+function saveImage(
+    relPath: string,
+    base64Data: string
+): { success: boolean; message?: string; error?: string } {
     try {
         // Validation
         if (!relPath || relPath.includes('..')) return { success: false, error: 'Invalid path' };
@@ -88,17 +92,87 @@ function saveImage(relPath: string, base64Data: string): { success: boolean; mes
     }
 }
 
-function saveMap(filename: string, data: unknown): { success: boolean; message?: string; error?: string } {
+function saveMap(
+    filename: string,
+    data: unknown
+): { success: boolean; message?: string; error?: string } {
     try {
         // Sanitize filename
         const safeName = filename.replace(/[^a-zA-Z0-9_\-.]/g, '_');
-        const filepath = path.join(MAPS_DIR, safeName.endsWith('.json') ? safeName : `${safeName}.json`);
+        const filepath = path.join(
+            MAPS_DIR,
+            safeName.endsWith('.json') ? safeName : `${safeName}.json`
+        );
 
         writeJsonFile(filepath, data);
+        if (safeName === 'default' || safeName === 'default.json') {
+            if (!fs.existsSync(PUBLIC_MAPS_DIR)) fs.mkdirSync(PUBLIC_MAPS_DIR, { recursive: true });
+            const publicPath = path.join(PUBLIC_MAPS_DIR, 'default.json');
+            fs.copyFileSync(filepath, publicPath);
+            console.log(`[API] Synced default map to ${publicPath}`);
+
+            // Auto-save backup
+            const backupPath = path.join(MAPS_DIR, 'default_backup.json');
+            writeJsonFile(backupPath, data);
+            const publicBackupPath = path.join(PUBLIC_MAPS_DIR, 'default_backup.json');
+            fs.copyFileSync(backupPath, publicBackupPath);
+            console.log(`[API] Synced backup map to ${publicBackupPath}`);
+        }
         console.log(`[API] Saved map: ${safeName}`);
         return { success: true, message: `Map saved to ${safeName}` };
     } catch (e) {
         console.error(`[API] Failed to save map:`, e);
+        return { success: false, error: String(e) };
+    }
+}
+
+function listMaps(): { success: boolean; maps?: string[]; error?: string } {
+    try {
+        if (!fs.existsSync(MAPS_DIR)) return { success: true, maps: [] };
+        const files = fs.readdirSync(MAPS_DIR);
+        const maps = files.filter((f) => f.endsWith('.json')).map((f) => f.replace(/\.json$/, ''));
+        return { success: true, maps };
+    } catch (e) {
+        console.error(`[API] Failed to list maps:`, e);
+        return { success: false, error: String(e) };
+    }
+}
+
+function loadMap(filename: string): { success: boolean; data?: unknown; error?: string } {
+    try {
+        const safeName = filename.replace(/[^a-zA-Z0-9_\-.]/g, '_');
+        const filepath = path.join(
+            MAPS_DIR,
+            safeName.endsWith('.json') ? safeName : `${safeName}.json`
+        );
+
+        if (!fs.existsSync(filepath)) {
+            return { success: false, error: 'Map not found' };
+        }
+        const data = readJsonFile(filepath);
+        return { success: true, data };
+    } catch (e) {
+        console.error(`[API] Failed to load map:`, e);
+        return { success: false, error: String(e) };
+    }
+}
+
+function deleteMap(filename: string): { success: boolean; error?: string } {
+    try {
+        const safeName = filename.replace(/[^a-zA-Z0-9_\-.]/g, '_');
+        const filepath = path.join(
+            MAPS_DIR,
+            safeName.endsWith('.json') ? safeName : `${safeName}.json`
+        );
+
+        if (!fs.existsSync(filepath)) {
+            return { success: false, error: 'Map not found' };
+        }
+        fs.unlinkSync(filepath);
+        console.log(`[API] Deleted map: ${safeName}`);
+        return { success: true };
+    } catch (e) {
+        console.error(`[API] Failed to delete map:`, e);
         return { success: false, error: String(e) };
     }
 }
@@ -132,7 +206,9 @@ function readTsEntity(filepath: string): EntityData | null {
         if (!match) {
             // Try variable definition pattern: const entity: Type = { ... }; export default entity;
             // We capture the object literal assigned to the variable
-            match = content.match(/const\s+\w+\s*(?::\s*[^=]+)?\s*=\s*(\{[\s\S]*?\})\s*;?[\s\n]*export\s+default/);
+            match = content.match(
+                /const\s+\w+\s*(?::\s*[^=]+)?\s*=\s*(\{[\s\S]*?\})\s*;?[\s\n]*export\s+default/
+            );
         }
 
         if (!match) return null;
@@ -171,7 +247,7 @@ function writeTsEntity(filepath: string, entity: EntityData): void {
         environment: 'EnvironmentEntity',
         npcs: 'NPCEntity',
         hero: 'HeroEntity',
-        ui: 'UIEntity',
+        ui: 'UIEntity'
     };
     const entityType = typeMap[category] || 'BaseEntity';
 
@@ -227,7 +303,19 @@ function findEntityFile(category: string, itemId: string): string | null {
 // CATEGORY HANDLERS
 // ============================================
 
-const CATEGORIES = ['enemies', 'bosses', 'npcs', 'equipment', 'items', 'resources', 'environment', 'ground', 'nodes', 'ui', 'hero'];
+const CATEGORIES = [
+    'enemies',
+    'bosses',
+    'npcs',
+    'equipment',
+    'items',
+    'resources',
+    'environment',
+    'ground',
+    'nodes',
+    'ui',
+    'hero'
+];
 
 function getManifest(): { categories: Record<string, { name: string; count: number }> } {
     const categories: Record<string, { name: string; count: number }> = {};
@@ -261,7 +349,11 @@ function getManifest(): { categories: Record<string, { name: string; count: numb
     return { categories };
 }
 
-function getCategoryData(category: string): { files: Record<string, EntityData[]>; category: string; entities: EntityData[] } {
+function getCategoryData(category: string): {
+    files: Record<string, EntityData[]>;
+    category: string;
+    entities: EntityData[];
+} {
     if (!category) {
         return { files: {}, category: category || 'unknown', entities: [] };
     }
@@ -290,7 +382,10 @@ function getCategoryData(category: string): { files: Record<string, EntityData[]
                     const originalPath = filesDict.original || filesDict.clean || '';
                     if (originalPath) {
                         let absPath = originalPath;
-                        if (originalPath.startsWith('assets/') || originalPath.startsWith('images/')) {
+                        if (
+                            originalPath.startsWith('assets/') ||
+                            originalPath.startsWith('images/')
+                        ) {
                             absPath = path.join(BASE_DIR, originalPath);
                         } else {
                             absPath = path.join(BASE_DIR, 'assets', originalPath);
@@ -306,7 +401,8 @@ function getCategoryData(category: string): { files: Record<string, EntityData[]
 
                     // Fallback for sourceDescription
                     if (!entity.sourceDescription) {
-                        entity.sourceDescription = (entity.description as string) || (entity.name as string) || '';
+                        entity.sourceDescription =
+                            (entity.description as string) || (entity.name as string) || '';
                     }
 
                     entities.push(entity);
@@ -353,7 +449,8 @@ function injectImplicitData(entity: EntityData, category: string) {
 
     // Equipment: equip, use
     if (category === 'equipment') {
-        const isWeapon = entity.slot === 'weapon' || (entity.id && (entity.id as string).includes('tool'));
+        const isWeapon =
+            entity.slot === 'weapon' || (entity.id && (entity.id as string).includes('tool'));
         if (!sfx.equip) sfx.equip = isWeapon ? 'sfx_equip_weapon' : 'sfx_equip_armor';
 
         if (isWeapon && !sfx.use) {
@@ -450,7 +547,7 @@ function saveSfxQueue(queue: unknown[]): { success: boolean; message: string } {
     const data = {
         queue,
         lastUpdated: new Date().toISOString(),
-        note: 'SFX marked for regeneration',
+        note: 'SFX marked for regeneration'
     };
     writeJsonFile(queueFile, data);
     return { success: true, message: `Saved ${queue.length} items` };
@@ -501,7 +598,8 @@ function extractSectionContent(content: string, section: string): string | null 
     if (sectionStart === -1) return null;
     const openBrace = content.indexOf('{', sectionStart);
     if (openBrace === -1) return null;
-    let depth = 1, pos = openBrace + 1;
+    let depth = 1,
+        pos = openBrace + 1;
     while (depth > 0 && pos < content.length) {
         if (content[pos] === '{') depth++;
         else if (content[pos] === '}') depth--;
@@ -523,7 +621,7 @@ function parseGameConfig(): Partial<GameConfig> {
     // 2. Discover sections by looking for "Key: {" pattern inside DEFAULTS
     // We assume standard formatting (Key: {) with 4 spaces indentation for top-level
     const sections: string[] = [];
-    const sectionRegex = /^    (\w+):\s*\{/gm;
+    const sectionRegex = /^ {4}(\w+):\s*\{/gm;
 
     // Limit search to the DEFAULTS block to avoid false positives
     // Extract block roughly
@@ -604,7 +702,9 @@ function updateConfigValue(
     key: string,
     value: unknown
 ): { success: boolean; message?: string; error?: string } {
-    console.log(`[Config] updateConfigValue called: section='${section}', key='${key}', value='${value}'`);
+    console.log(
+        `[Config] updateConfigValue called: section='${section}', key='${key}', value='${value}'`
+    );
     try {
         if (section === 'BodyTypes') {
             // Update BodyTypeConfig.ts
@@ -639,13 +739,19 @@ function updateConfigValue(
     }
 }
 
-function resetConfigSection(section: string): { success: boolean; message?: string; error?: string } {
+function resetConfigSection(section: string): {
+    success: boolean;
+    message?: string;
+    error?: string;
+} {
     console.log(`[Config] Resetting section: ${section}`);
     try {
         let content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
 
         // Find the section in DEFAULTS and copy values to the live config
-        const defaultsMatch = content.match(new RegExp(`DEFAULTS\\s*=\\s*\\{[\\s\\S]*?${section}:\\s*\\{([^}]+)\\}`));
+        const defaultsMatch = content.match(
+            new RegExp(`DEFAULTS\\s*=\\s*\\{[\\s\\S]*?${section}:\\s*\\{([^}]+)\\}`)
+        );
         if (!defaultsMatch) {
             return { success: false, error: `Section ${section} not found in DEFAULTS` };
         }
@@ -669,7 +775,11 @@ function resetConfigSection(section: string): { success: boolean; message?: stri
     }
 }
 
-function saveConfigDefaults(section: string): { success: boolean; message?: string; error?: string } {
+function saveConfigDefaults(section: string): {
+    success: boolean;
+    message?: string;
+    error?: string;
+} {
     console.log(`[Config] Saving ${section} as new defaults`);
     try {
         let content = fs.readFileSync(GAME_CONFIG_PATH, 'utf-8');
@@ -687,7 +797,10 @@ function saveConfigDefaults(section: string): { success: boolean; message?: stri
             const key = match[1];
             const currentValue = match[2].trim();
             // Update DEFAULTS section with current value
-            const defaultKeyRegex = new RegExp(`(DEFAULTS\\s*=[\\s\\S]*?${section}:[\\s\\S]*?${key}:\\s*)([^,\\n}]+)`, 'g');
+            const defaultKeyRegex = new RegExp(
+                `(DEFAULTS\\s*=[\\s\\S]*?${section}:[\\s\\S]*?${key}:\\s*)([^,\\n}]+)`,
+                'g'
+            );
             content = content.replace(defaultKeyRegex, `$1${currentValue}`);
         }
 
@@ -729,6 +842,30 @@ export function dashboardApiPlugin() {
     return {
         name: 'dashboard-api',
         configureServer(server: ViteDevServer) {
+            // Redirect /tools/dashboard -> /dashboard so the browser uses /dashboard/ as base.
+            // All module requests become /dashboard/src/... and get rewritten to /tools/dashboard/src/...
+            const rewrite = (req: { url?: string }, res: ServerResponse, next: () => void) => {
+                const url = (req.url || '').split('?')[0];
+                const query = (req.url || '').includes('?') ? (req.url || '').slice((req.url || '').indexOf('?')) : '';
+                if (url === '/tools/dashboard' || url === '/tools/dashboard/' || url.startsWith('/tools/dashboard/')) {
+                    const target = '/dashboard' + url.slice('/tools/dashboard'.length) + query;
+                    res.statusCode = 302;
+                    res.setHeader('Location', target);
+                    res.end();
+                    return;
+                }
+                if (url === '/dashboard' || url === '/dashboard/' || url.startsWith('/dashboard/')) {
+                    req.url = req.url!.replace(/^\/dashboard/, '/tools/dashboard');
+                }
+                next();
+            };
+            const stack = (server.middlewares as { stack?: unknown[] }).stack;
+            if (Array.isArray(stack)) {
+                stack.unshift({ route: '', handle: rewrite });
+            } else {
+                server.middlewares.use(rewrite);
+            }
+
             // Handle API routes
             server.middlewares.use(async (req, res, next) => {
                 const url = req.url || '';
@@ -758,6 +895,17 @@ export function dashboardApiPlugin() {
                         if (url === '/api/config') {
                             return sendJson(res, getConfig());
                         }
+                        if (url === '/api/list_maps') {
+                            return sendJson(res, listMaps());
+                        }
+                        if (url.startsWith('/api/load_map')) {
+                            const parsed = new URL(
+                                url,
+                                `http://${req.headers.host || 'localhost'}`
+                            );
+                            const filename = parsed.searchParams.get('filename') || '';
+                            return sendJson(res, loadMap(filename));
+                        }
                     }
 
                     // POST endpoints
@@ -769,27 +917,36 @@ export function dashboardApiPlugin() {
                             return sendJson(res, getCategoryData(data.category as string));
                         }
                         if (apiPath === '/api/update_category_status') {
-                            return sendJson(res, updateCategoryStatus(
-                                data.category as string,
-                                data.file as string,
-                                data.id as string,
-                                data.status as string,
-                                data.note as string | undefined
-                            ));
+                            return sendJson(
+                                res,
+                                updateCategoryStatus(
+                                    data.category as string,
+                                    data.file as string,
+                                    data.id as string,
+                                    data.status as string,
+                                    data.note as string | undefined
+                                )
+                            );
                         }
                         if (apiPath === '/api/update_entity') {
-                            return sendJson(res, updateEntity(
-                                data.category as string,
-                                data.file as string,
-                                data.id as string,
-                                data.updates as Record<string, unknown>
-                            ));
+                            return sendJson(
+                                res,
+                                updateEntity(
+                                    data.category as string,
+                                    data.file as string,
+                                    data.id as string,
+                                    data.updates as Record<string, unknown>
+                                )
+                            );
                         }
                         if (apiPath === '/api/save_sfx_regen_queue') {
                             return sendJson(res, saveSfxQueue(data.queue as unknown[]));
                         }
                         if (apiPath === '/api/save_notes') {
-                            return sendJson(res, saveNotes(data.assetName as string, data.notes as string));
+                            return sendJson(
+                                res,
+                                saveNotes(data.assetName as string, data.notes as string)
+                            );
                         }
                         if (apiPath === '/api/save_prompts') {
                             return sendJson(res, savePrompts(data));
@@ -805,11 +962,14 @@ export function dashboardApiPlugin() {
                             return sendJson(res, result);
                         }
                         if (apiPath === '/api/update_config') {
-                            return sendJson(res, updateConfigValue(
-                                data.section as string,
-                                data.key as string,
-                                data.value
-                            ));
+                            return sendJson(
+                                res,
+                                updateConfigValue(
+                                    data.section as string,
+                                    data.key as string,
+                                    data.value
+                                )
+                            );
                         }
                         if (apiPath === '/api/reset_config_section') {
                             return sendJson(res, resetConfigSection(data.section as string));
@@ -820,8 +980,14 @@ export function dashboardApiPlugin() {
                         if (apiPath === '/api/save_map') {
                             return sendJson(res, saveMap(data.filename as string, data.mapData));
                         }
+                        if (apiPath === '/api/delete_map') {
+                            return sendJson(res, deleteMap(data.filename as string));
+                        }
                         if (apiPath === '/api/upload_image') {
-                            return sendJson(res, saveImage(data.path as string, data.image as string));
+                            return sendJson(
+                                res,
+                                saveImage(data.path as string, data.image as string)
+                            );
                         }
                     }
 
@@ -837,7 +1003,6 @@ export function dashboardApiPlugin() {
                     // Not found
                     res.statusCode = 404;
                     return sendJson(res, { error: 'Not found' });
-
                 } catch (error) {
                     console.error('[API] Error:', error);
                     res.statusCode = 500;
@@ -847,7 +1012,7 @@ export function dashboardApiPlugin() {
 
             // Serve images from assets/images
             server.middlewares.use('/images', (req, res, next) => {
-                const urlPath = (req.url || '').split('?')[0]; // Strip query params
+                const urlPath = (req.url || '').split('?')[0].replace(/^\//, ''); // Strip query + leading slash
                 const imagePath = path.join(IMAGES_DIR, urlPath);
                 if (fs.existsSync(imagePath)) {
                     const ext = path.extname(imagePath).toLowerCase();
@@ -856,7 +1021,7 @@ export function dashboardApiPlugin() {
                         '.jpg': 'image/jpeg',
                         '.jpeg': 'image/jpeg',
                         '.gif': 'image/gif',
-                        '.webp': 'image/webp',
+                        '.webp': 'image/webp'
                     };
                     res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
                     fs.createReadStream(imagePath).pipe(res);
@@ -864,6 +1029,6 @@ export function dashboardApiPlugin() {
                     next();
                 }
             });
-        },
+        }
     };
 }

@@ -14,8 +14,8 @@ import { EventBus } from '@core/EventBus';
 import { GameState } from '@core/State';
 import { GameInstance } from '@core/Game';
 import { UIManager } from '@ui/UIManager';
-import { spawnManager as SpawnManager } from '@systems/SpawnManager';
-import { IslandManager } from '../world/IslandManager';
+import { spawnCraftedItem } from './SpawnHelper';
+import { WorldManager } from '../world/WorldManager';
 
 import { GameConstants } from '@data/GameConstants';
 import { economySystem as EconomySystem } from '@systems/EconomySystem';
@@ -126,7 +126,7 @@ const CraftingManager = {
         const cost = GameConstants.Crafting.FORGE_SLOT_UNLOCK_COST;
 
         if (!GameState) return false;
-        const gold = GameState.get('gold') || 0;
+        const gold = (GameState.get('gold') as number) || 0;
 
         if (gold < cost) return false;
 
@@ -230,37 +230,21 @@ const CraftingManager = {
 
         Logger.info(`[Crafting] Crafted 1x ${recipe.name}, Remaining: ${slot.quantity - 1}`);
 
-        // 2. Visuals: Spawn via SpawnManager
-        if (SpawnManager) {
-            let spawnX = 0,
-                spawnY = 0;
-
-            // Calculate Forge Building Position (Matched to HomeBase.js)
-            if (IslandManager) {
-                const home = IslandManager.getHomeIsland();
-                if (home) {
-                    const bounds = IslandManager.getPlayableBounds(home);
-                    if (bounds) {
-                        const forgeSize = 250;
-                        // Bottom-Left of Safe Area
-                        spawnX = bounds.x + forgeSize / 2 + 30;
-                        spawnY = bounds.y + bounds.height - forgeSize / 2 - 30;
-                    }
-                }
-            }
-
-            if (spawnX === 0) {
-                // Fallback
-                const home = IslandManager ? IslandManager.getHomeIsland() : null;
-                spawnX = home ? home.worldX + home.width / 2 : 0;
-                spawnY = home ? home.worldY + home.height / 2 : 0;
-            }
-
-            SpawnManager.spawnCraftedItem(spawnX, spawnY, recipe.id, {
-                amount: 1,
-                icon: recipe.outputIcon
-            });
+        // 2. Visuals: Spawn via SpawnHelper
+        let spawnX = 0;
+        let spawnY = 0;
+        if (WorldManager) {
+            const spawn = WorldManager.getHeroSpawnPosition();
+            spawnX = spawn ? spawn.x + 100 : 80000;
+            spawnY = spawn ? spawn.y + 100 : 80000;
+        } else {
+            spawnX = 80000;
+            spawnY = 80000;
         }
+        spawnCraftedItem(spawnX, spawnY, recipe.id, {
+            amount: 1,
+            icon: recipe.outputIcon
+        });
 
         // 3. Queue Logic
         slot.quantity--;

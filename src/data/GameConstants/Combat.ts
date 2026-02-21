@@ -1,0 +1,30 @@
+/** Core, hero, combat, and damage constants. */
+export const Core = {
+    TICK_RATE_MS: 50,
+    INITIAL_GOLD: 100000
+};
+
+export const Hero = {
+    SPEED: 1400,
+    MAX_HEALTH: 1000,
+    RESPAWN_DELAY_MS: 2000,
+    STAMINA_EMIT_THROTTLE: 100
+};
+
+export const Combat = {
+    DEFAULT_GUN_RANGE: 1000,
+    DEFAULT_MINING_RANGE: 125,
+    DEFAULT_DAMAGE: 10,
+    DEFAULT_ATTACK_RATE: 1,
+    DEFAULT_ATTACK_RANGE: 100,
+    ATTACK_COOLDOWN: 0.5,
+    DEFAULT_PATROL_RADIUS: 150,
+    ARMOR_FORMULA_DIVISOR: 100,
+    DEFAULT_MAX_HEALTH_NPC: 100,
+    XP_REWARD_FALLBACK: 10,
+    DAMAGE_VFX_THRESHOLD: 10
+};
+
+export const Damage = {
+    FLOATING_TEXT_Y_OFFSET: 20
+};

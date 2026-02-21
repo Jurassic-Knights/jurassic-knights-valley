@@ -45,10 +45,6 @@ class ContextActionService {
         if (EventBus && GameConstants) {
             const E = GameConstants.Events;
 
-            // Unlock
-            EventBus.on(E.UI_UNLOCK_PROMPT, (data: ContextData) => this.show('unlock', data));
-            EventBus.on(E.UI_HIDE_UNLOCK_PROMPT, () => this.hide('unlock'));
-            EventBus.on(E.ISLAND_UNLOCKED, () => this.hide('unlock'));
 
             // Rest/Home
             EventBus.on(E.HOME_BASE_ENTERED, () => this.show('rest'));
@@ -124,15 +120,7 @@ class ContextActionService {
             case 'forge':
                 if (E && EventBus) EventBus.emit(E.OPEN_FORGE, { view: 'dashboard' });
                 break;
-            case 'unlock':
-                if (this.contextData?.gridX !== undefined && E && EventBus) {
-                    EventBus.emit(E.REQUEST_UNLOCK, {
-                        gridX: this.contextData.gridX,
-                        gridY: this.contextData.gridY,
-                        cost: this.contextData.unlockCost
-                    });
-                }
-                break;
+
             case 'merchant':
                 if (E && EventBus) EventBus.emit(E.OPEN_MERCHANT);
                 break;
@@ -145,10 +133,6 @@ class ContextActionService {
         const configMap: Record<string, { iconId: string; label: string }> = {
             rest: { iconId: 'ui_icon_rest', label: 'REST' },
             forge: { iconId: 'ui_icon_forge', label: 'FORGE' },
-            unlock: {
-                iconId: 'ui_icon_lock',
-                label: data?.unlockCost ? `${data.unlockCost}G` : 'UNLOCK'
-            },
             merchant: { iconId: 'ui_icon_shop', label: 'SHOP' }
         };
         const config = configMap[type] || { iconId: '', label: '' };
