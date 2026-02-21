@@ -1,6 +1,6 @@
 ---
+trigger: model_decision
 description: Vitest testing standards, AAA structure, and coverage. Use when writing, adding, or debugging tests; adding test coverage; or editing vitest config.
-glob: **/*.test.ts, **/*.spec.ts, vitest.config.*
 ---
 
 # Testing

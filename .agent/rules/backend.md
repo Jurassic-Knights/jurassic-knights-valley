@@ -1,6 +1,6 @@
 ---
+trigger: model_decision
 description: Backend API standards — REST design, error handling, validation, data layer, security. Apply when working on server routes, API endpoints, validation, database queries, or auth.
-glob: tools/dashboard/src/api-server.ts, tools/dashboard/**/*server*.ts
 ---
 
 # Backend / API

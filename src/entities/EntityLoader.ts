@@ -60,18 +60,18 @@ const EntityRegistry: EntityRegistryStrict =
     typeof window !== 'undefined' && window.__ENTITY_REGISTRY__
         ? window.__ENTITY_REGISTRY__
         : {
-              enemies: {},
-              bosses: {},
-              nodes: {},
-              resources: {},
-              items: {},
-              equipment: {},
-              npcs: {},
-              environment: {},
-              ground: {},
-              hero: {},
-              defaults: {}
-          };
+            enemies: {},
+            bosses: {},
+            nodes: {},
+            resources: {},
+            items: {},
+            equipment: {},
+            npcs: {},
+            environment: {},
+            ground: {},
+            hero: {},
+            defaults: {}
+        };
 
 if (typeof window !== 'undefined') {
     window.__ENTITY_REGISTRY__ = EntityRegistry;
@@ -179,11 +179,14 @@ const EntityLoader = {
 
             const module = entityModules[modulePath];
             if (!module) {
-                if (category === 'equipment') {
-                    const fallback = entityModules[`./${category}/${id}.ts`];
-                    if (fallback) return this.storeEntity(category, id, fallback.default);
+                // If it's not a root-level file, scan the pre-compiled glob keys for the matching filename
+                const suffix = `/${id}.ts`;
+                const matchedKey = Object.keys(entityModules).find((k) => k.endsWith(suffix));
+                if (matchedKey) {
+                    return this.storeEntity(category, id, entityModules[matchedKey].default);
                 }
-                Logger.warn(`[EntityLoader] Module not found: ${modulePath}`);
+
+                Logger.warn(`[EntityLoader] Module not found: ${id}`);
                 return null;
             }
             return this.storeEntity(category, id, module.default);

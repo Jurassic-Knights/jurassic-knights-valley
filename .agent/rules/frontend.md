@@ -1,6 +1,6 @@
 ---
+trigger: model_decision
 description: React/TSX component standards — functional components, hooks, Tailwind styling, accessibility. Apply when creating or editing React components, TSX files, Tailwind config, or dashboard/UI that uses React.
-glob: **/*.tsx, **/*.jsx, **/tailwind.config.*, **/postcss.config.*
 ---
 
 # Frontend (React / TSX)

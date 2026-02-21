@@ -4,7 +4,9 @@
 import { Registry } from '@core/Registry';
 import { entityManager } from '@core/EntityManager';
 import { GameConstants } from '@data/GameConstants';
-import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4Generator';
+import { generateMapgen4 } from '../tools/map-editor/Mapgen4Generator';
+import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4PreviewRenderer';
+import type { Mapgen4Param } from '../tools/map-editor/Mapgen4Param';
 
 const WORLD_SIZE = 160000;
 const MESH_SIZE = 1000;

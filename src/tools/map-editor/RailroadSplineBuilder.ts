@@ -4,13 +4,9 @@
  */
 
 import type { Mesh } from './mapgen4/types';
-import {
-    simplifyPathForSpline,
-    insertArcWaypointsAtCorners,
-    buildSplineFineSamplesClosed,
-    buildSplineFineSamples,
-    smoothPath
-} from './Mapgen4SplineUtils';
+import { simplifyPathForSpline } from './Mapgen4MathUtils';
+import { insertArcWaypointsAtCorners, smoothPath } from './Mapgen4CurveUtils';
+import { buildSplineFineSamplesClosed, buildSplineFineSamples } from './Mapgen4SegmentUtils';
 
 /** Railroad tile size in world pixels — fixed in world space. */
 export const RAILROAD_TILE_WORLD_PX = 1024;

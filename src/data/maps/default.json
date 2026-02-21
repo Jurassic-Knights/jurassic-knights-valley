@@ -52,5 +52,8 @@
     "railroads": {
       "enabled": true
     }
-  }
+  },
+  "manualTowns": [
+    7835
+  ]
 }

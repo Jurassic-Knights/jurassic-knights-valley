@@ -110,6 +110,13 @@ function saveMap(
             const publicPath = path.join(PUBLIC_MAPS_DIR, 'default.json');
             fs.copyFileSync(filepath, publicPath);
             console.log(`[API] Synced default map to ${publicPath}`);
+
+            // Auto-save backup
+            const backupPath = path.join(MAPS_DIR, 'default_backup.json');
+            writeJsonFile(backupPath, data);
+            const publicBackupPath = path.join(PUBLIC_MAPS_DIR, 'default_backup.json');
+            fs.copyFileSync(backupPath, publicBackupPath);
+            console.log(`[API] Synced backup map to ${publicBackupPath}`);
         }
         console.log(`[API] Saved map: ${safeName}`);
         return { success: true, message: `Map saved to ${safeName}` };

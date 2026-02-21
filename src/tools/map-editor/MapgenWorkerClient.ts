@@ -8,15 +8,15 @@ import Mapgen4Map from './mapgen4/map';
 import type { Mapgen4Param } from './Mapgen4Param';
 import type { ManualTownsAndRailroads } from './Mapgen4Generator';
 
+import MapgenWorker from '../../workers/MapgenWorker?worker';
+
 let worker: Worker | null = null;
 let lastJobId = 0;
 const pendingJobs = new Map<number, { resolve: (val: any) => void; reject: (err: Error) => void }>();
 
 function getWorker(): Worker {
     if (!worker) {
-        worker = new Worker(new URL('../../workers/MapgenWorker.ts', import.meta.url), {
-            type: 'module'
-        });
+        worker = new MapgenWorker();
         worker.onmessage = (e) => {
             const { jobId, success, error, ...data } = e.data;
             const job = pendingJobs.get(jobId);

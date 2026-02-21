@@ -1,6 +1,6 @@
 ---
+trigger: model_decision
 description: Naming conventions for files, code, entities, and assets. Apply when creating or renaming files, adding entities, adding assets, or writing identifiers (classes, variables, functions, constants).
-glob: src/**/*.ts, assets/**/*, documents/design/asset_id_conventions.md
 ---
 
 # Naming Conventions

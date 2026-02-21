@@ -30,7 +30,7 @@ class AmbientCreature {
     shadowOffset: number = 160;
 
     constructor(config: AmbientCreatureConfig) {
-        this.type = config.type || 'dino_pteranodon_base';
+        this.type = config.type || 'boss_saurian_t4_01';
         this.x = config.x || 0;
         this.y = config.y || 0;
         this.vx = config.vx || 0;
@@ -193,7 +193,7 @@ const AmbientSystem = {
         const vx = fromLeft ? speed : -speed;
 
         const creature = new AmbientCreature({
-            type: 'dino_pteranodon_base',
+            type: 'boss_saurian_t4_01',
             x: startX,
             y: startY,
             vx: vx,

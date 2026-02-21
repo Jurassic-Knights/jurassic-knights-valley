@@ -17,7 +17,28 @@ import type { Mesh } from './mapgen4/types';
 import type Mapgen4Map from './mapgen4/map';
 import type { Mapgen4Param, TownSite, RoadSegment, RailroadCrossing } from './Mapgen4Param';
 import { runRoadGenerator } from './RoadGenerator';
+import { buildMeshAndMap } from './Mapgen4Generator';
 
+const PREVIEW_MAP_SIZE = 1000;
+
+/** Run mesh + map only and draw to canvas for instant preview. */
+export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param): void {
+    const { mesh, map } = buildMeshAndMap(param);
+    drawCachedMeshToCanvas(canvas, mesh, map, param, 0, 0, PREVIEW_MAP_SIZE, PREVIEW_MAP_SIZE);
+}
+
+/** Draw procedural preview with a viewport in mesh coords (0..1000). */
+export function runAndDrawPreviewWithViewport(
+    canvas: HTMLCanvasElement,
+    param: Mapgen4Param,
+    vpX: number,
+    vpY: number,
+    vpW: number,
+    vpH: number
+): void {
+    const { mesh, map } = buildMeshAndMap(param);
+    drawCachedMeshToCanvas(canvas, mesh, map, param, vpX, vpY, vpW, vpH);
+}
 /** Fill color for polygons used as railroad stations (distinct from zone/terrain). */
 const STATION_POLYGON_FILL = '#8B6914';
 
@@ -72,19 +93,19 @@ export function drawCachedMeshToCanvas(
         cachedRoadSegments ??
         (roadsOk
             ? runRoadGenerator(
-                  mesh,
-                  map,
-                  towns.map((t) => t.regionId),
-                  {
-                      shortcutsPerTown: roadsParam.shortcutsPerTown ?? 1,
-                      riverCrossingCost: roadsParam.riverCrossingCost ?? 1.2,
-                      seed: roadsParam.seed ?? param.meshSeed,
-                      coverageGridSize: roadsParam.coverageGridSize ?? 0,
-                      slopeWeight: roadsParam.slopeWeight ?? 3,
-                      waypointCurviness: roadsParam.waypointCurviness ?? 0.15
-                  },
-                  param.rivers
-              )
+                mesh,
+                map,
+                towns.map((t) => t.regionId),
+                {
+                    shortcutsPerTown: roadsParam.shortcutsPerTown ?? 1,
+                    riverCrossingCost: roadsParam.riverCrossingCost ?? 1.2,
+                    seed: roadsParam.seed ?? param.meshSeed,
+                    coverageGridSize: roadsParam.coverageGridSize ?? 0,
+                    slopeWeight: roadsParam.slopeWeight ?? 3,
+                    waypointCurviness: roadsParam.waypointCurviness ?? 0.15
+                },
+                param.rivers
+            )
             : []);
 
     let railroadPath: number[] = [];

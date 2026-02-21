@@ -25,5 +25,5 @@ export interface MapEditorDataPayload {
     mapgen4Param?: unknown; // Defined fully in Mapgen4Generator, but kept generic here to avoid circular dependencies if needed
     manualTowns?: number[];
     manualStations?: Array<{ regionId: number; name?: string; order: number }>;
-    railroadWaypoints?: Array<{ legIndex: number; regionId: number; isStation: boolean; }>;
+    railroadWaypoints?: Array<{ legIndex: number; regionId: number }>;
 }

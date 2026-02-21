@@ -1,6 +1,6 @@
 ---
+trigger: model_decision
 description: Project tech stack and versions — Vite 7, TypeScript, Canvas 2D (game), Pixi.js (map editor), Vitest, ESLint 9, Node 20+. Apply when adding dependencies, configuring build/lint/test, adding rendering code, or suggesting tech alternatives.
-glob: package.json, package-lock.json, vite.config.*, eslint.config.*, vitest.config.*, .prettierrc*
 ---
 
 # Tech Stack

@@ -636,13 +636,13 @@ async function runPreviewCanvas(opts?: { skipRebuildIfLoaded?: boolean }): Promi
             if (canvasSidebar && !editorInstance.drawCachedToCanvas(canvasSidebar)) {
                 if (shouldRebuild) {
                     const { runAndDrawPreview } =
-                        await import('../../../src/tools/map-editor/Mapgen4Generator');
+                        await import('../../../src/tools/map-editor/Mapgen4PreviewRenderer');
                     runAndDrawPreview(canvasSidebar, mapgenParam);
                 }
             }
         } else if (canvasSidebar) {
             const { runAndDrawPreview } =
-                await import('../../../src/tools/map-editor/Mapgen4Generator');
+                await import('../../../src/tools/map-editor/Mapgen4PreviewRenderer');
             runAndDrawPreview(canvasSidebar, mapgenParam);
         }
     } catch (e) {
@@ -751,7 +751,8 @@ function buildMapPayload(): MapEditorDataPayload | null {
         heroSpawn: serialized.heroSpawn,
         mapgen4Param,
         manualTowns: serialized.manualTowns,
-        manualStations: serialized.manualStations
+        manualStations: serialized.manualStations,
+        railroadWaypoints: serialized.railroadWaypoints
     };
 
     return payload;

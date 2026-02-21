@@ -54,6 +54,8 @@ import {
 import { MapEditorDebugOverlay } from './MapEditorDebugOverlay';
 import { MapEditorWaypointManager } from './MapEditorWaypointManager';
 import { MapEditorManipulationHandles } from './MapEditorManipulationHandles';
+import { getDebugOverlayHost, getWaypointManagerHost, getManipulationHandlesHost } from './MapEditorHosts';
+import { setupInputListeners, type InputState } from './MapEditorInput';
 
 /**
  * MapEditorCore
@@ -88,16 +90,14 @@ export class MapEditorCore {
 
     // Viewport State
     private zoom: number = 1.0; // Default to 100% (Gameplay parity)
-    private isDragging: boolean = false;
-    private isPainting: boolean = false;
-    private isSpacePressed: boolean = false;
-    private lastMousePosition: { x: number; y: number } = { x: 0, y: 0 };
-    private currentObjectActions: {
-        type: 'add' | 'remove';
-        x: number;
-        y: number;
-        assetId: string;
-    }[] = [];
+    private inputState: InputState = {
+        isDragging: false,
+        isPainting: false,
+        isSpacePressed: false,
+        lastMousePosition: { x: 0, y: 0 },
+        currentObjectActions: []
+    };
+    private inputCleanup: (() => void) | null = null;
 
     private selectedObject: MapObject | null = null;
     private onNextClickAction: ((x: number, y: number) => void) | null = null;
@@ -248,6 +248,8 @@ export class MapEditorCore {
         this.debugOverlay.destroy();
         this.waypointManager.destroy();
         this.manipulationHandles.destroy();
+        this.inputCleanup?.();
+        this.inputCleanup = null;
         this.app.destroy(true, { children: true });
         this.app = this.container = this.worldContainer = this.chunkManager = null;
         this.proceduralCanvas = null;
@@ -276,166 +278,6 @@ export class MapEditorCore {
         this.manipulationHandles.update(this.getManipulationHandlesHost());
     }
 
-    private getDebugOverlayHost() {
-        return {
-            procCache: this.procCache,
-            worldContainer: this.worldContainer,
-            app: this.app,
-            zoom: this.zoom,
-            debugShowStationNumbers: this.debugShowStationNumbers,
-            debugShowSplinePath: this.debugShowSplinePath
-        };
-    }
-
-    private getWaypointManagerHost() {
-        return {
-            procCache: this.procCache,
-            worldContainer: this.worldContainer,
-            app: this.app,
-            zoom: this.zoom,
-            manualStations: this.manualStations,
-            railroadWaypoints: this.railroadWaypoints,
-            editingMode: this.editingMode,
-            debugShowStationNumbers: this.debugShowStationNumbers,
-            debugShowSplinePath: this.debugShowSplinePath,
-            onRemoveWaypoint: (leg: number, idx: number) => this.executeCommand(new RemoveWaypointCommand(this, leg, idx)),
-            onUpdateWaypointRegion: (leg: number, idx: number, regionId: number) => this.executeCommand(new UpdateWaypointRegionCommand(this, leg, idx, regionId)),
-            getRegionAtWorld: (wx: number, wy: number) => this.getRegionAtWorld(wx, wy)
-        };
-    }
-
-    private getManipulationHandlesHost() {
-        return {
-            procCache: this.procCache,
-            worldContainer: this.worldContainer,
-            app: this.app,
-            zoom: this.zoom,
-            manualTowns: this.manualTowns,
-            manualStations: this.manualStations,
-            editingMode: this.editingMode,
-            onSetTownAt: (idx: number, regionId: number) => {
-                this.executeCommand(new SetManualTownAtCommand(this, idx, regionId));
-                const param = this.getMapgen4Param();
-                if (param) void this.setProceduralPreview(param);
-            },
-            onSetStationRegion: (idx: number, regionId: number) => {
-                this.executeCommand(new SetManualStationRegionCommand(this, idx, regionId));
-                const param = this.getMapgen4Param();
-                if (param) void this.setProceduralPreview(param);
-            },
-            getRegionAtWorld: (wx: number, wy: number) => this.getRegionAtWorld(wx, wy)
-        };
-    }
-
-    private setupInputListeners(): void {
-        if (!this.app?.canvas) return;
-        const canvas = this.app.canvas;
-        canvas.addEventListener('wheel', (e) => this.handleZoom(e), { passive: false });
-        canvas.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-        canvas.addEventListener('contextmenu', (e) => this.handleContextMenu(e));
-        window.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        window.addEventListener('mouseup', (e) => this.handleMouseUp(e));
-        window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') this.isSpacePressed = true;
-            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') {
-                e.preventDefault();
-                e.shiftKey ? this.commandManager.redo() : this.commandManager.undo();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.code === 'KeyY') {
-                e.preventDefault();
-                this.commandManager.redo();
-            }
-        });
-        window.addEventListener('keyup', (e) => {
-            if (e.code === 'Space') this.isSpacePressed = false;
-        });
-    }
-
-    private handleZoom(e: WheelEvent): void {
-        handleZoomViewport(e, {
-            app: this.app,
-            worldContainer: this.worldContainer,
-            zoom: this.zoom,
-            onZoomChange: (v) => {
-                this.zoom = v;
-                this.worldContainer?.scale.set(v);
-            },
-            onWorldContainerMove: (x, y) => {
-                if (this.worldContainer) {
-                    this.worldContainer.x = x;
-                    this.worldContainer.y = y;
-                }
-            },
-            onZoomUIUpdate: () => this.updateZoomUI()
-        });
-    }
-
-    private handleMouseDown(e: MouseEvent): void {
-        // Middle click or Space+LeftClick = Pan
-        if (e.button === 1 || (e.button === 0 && this.isSpacePressed) && this.app) {
-            this.isDragging = true;
-            const { x, y } = toCanvasCoords(e.clientX, e.clientY, this.app.canvas);
-            this.lastMousePosition = { x, y };
-        }
-        // Left click = Tool Action or pending click action (e.g. move)
-        else if (e.button === 0) {
-            if (this.onNextClickAction && this.app && this.worldContainer) {
-                const { worldX, worldY } = screenToWorld(e, this.app, this.worldContainer, this.zoom);
-                const fn = this.onNextClickAction;
-                this.onNextClickAction = null;
-                fn(worldX, worldY);
-                return;
-            }
-            if (this.editingMode !== 'manipulation') this.isPainting = true;
-            this.useTool(e);
-        }
-    }
-
-    private handleMouseMove(e: MouseEvent): void {
-        if (this.isDragging && this.worldContainer && this.app) {
-            const { x, y } = toCanvasCoords(e.clientX, e.clientY, this.app.canvas);
-            const dx = x - this.lastMousePosition.x;
-            const dy = y - this.lastMousePosition.y;
-
-            this.worldContainer.x += dx;
-            this.worldContainer.y += dy;
-
-            this.lastMousePosition = { x, y };
-        }
-
-        // Drag Painting
-        if (this.isPainting) {
-            this.useTool(e);
-        }
-
-        if (this.worldContainer && this.app) {
-            const { worldX, worldY } = screenToWorld(e, this.app, this.worldContainer, this.zoom);
-            updateCursorCoords(worldX, worldY);
-            if (this.brushCursor) {
-                updateBrushCursor({
-                    brushCursor: this.brushCursor,
-                    worldX,
-                    worldY,
-                    editingMode: this.editingMode,
-                    currentTool: this.currentTool,
-                    brushSize: 1, // Default to 1
-                    zoom: this.zoom,
-                    shiftKey: e.shiftKey
-                });
-            }
-        }
-    }
-
-    private handleMouseUp(_e: MouseEvent): void {
-        this.isDragging = false;
-        this.isPainting = false;
-        if (this.currentObjectActions.length > 0) {
-            this.commandManager.record(new BatchObjectCommand(this.chunkManager!, [...this.currentObjectActions]));
-            this.currentObjectActions = [];
-            Logger.info('[MapEditor] Object Batch Recorded');
-        }
-    }
-
     /** Resolve world coords to mesh region ID. Returns null if no procedural cache. */
     public getRegionAtWorld(worldX: number, worldY: number): number | null {
         if (!this.procCache) return null;
@@ -448,130 +290,46 @@ export class MapEditorCore {
         return findRegionAt(mesh, meshX, meshY, cellRegions);
     }
 
-    private handleContextMenu(e: MouseEvent): void {
-        e.preventDefault();
-        if (!this.app || !this.worldContainer) return;
-        const { worldX, worldY } = screenToWorld(e, this.app, this.worldContainer, this.zoom);
-
-        const waypointAt = this.waypointManager.getWaypointHandleAtWorldCoords(
-            { procCache: this.procCache, railroadWaypoints: this.railroadWaypoints },
-            worldX,
-            worldY
-        );
-        if (waypointAt !== null) {
-            const menu = document.createElement('div');
-            menu.style.cssText = 'position:fixed;background:#2d2d2d;border:1px solid #555;border-radius:6px;padding:4px 0;min-width:160px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.4);';
-            menu.style.left = `${e.clientX}px`;
-            menu.style.top = `${e.clientY}px`;
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.textContent = 'Remove spline waypoint';
-            item.style.cssText = 'display:block;width:100%;padding:8px 14px;border:none;background:transparent;color:#eee;text-align:left;cursor:pointer;font-size:13px;';
-            item.addEventListener('mouseenter', () => { item.style.background = '#3d3d3d'; });
-            item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
-            item.addEventListener('click', () => {
-                this.executeCommand(new RemoveWaypointCommand(this, waypointAt.legIndex, waypointAt.waypointIndex));
-                Logger.info('[MapEditor] Removed spline waypoint for leg', waypointAt.legIndex);
-                menu.remove();
-                document.removeEventListener('click', close);
-            });
-            menu.appendChild(item);
-            document.body.appendChild(menu);
-            const close = () => {
-                menu.remove();
-                document.removeEventListener('click', close);
-            };
-            requestAnimationFrame(() => document.addEventListener('click', close));
-            return;
-        }
-
-        const regionId = this.getRegionAtWorld(worldX, worldY);
-        if (regionId == null) return;
-        const menu = document.createElement('div');
-        menu.style.cssText = 'position:fixed;background:#2d2d2d;border:1px solid #555;border-radius:6px;padding:4px 0;min-width:140px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.4);';
-        menu.style.left = `${e.clientX}px`;
-        menu.style.top = `${e.clientY}px`;
-        const addItem = (label: string, onClick: () => void) => {
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.textContent = label;
-            item.style.cssText = 'display:block;width:100%;padding:8px 14px;border:none;background:transparent;color:#eee;text-align:left;cursor:pointer;font-size:13px;';
-            item.addEventListener('mouseenter', () => { item.style.background = '#3d3d3d'; });
-            item.addEventListener('mouseleave', () => { item.style.background = 'transparent'; });
-            item.addEventListener('click', () => {
-                onClick();
-                menu.remove();
-            });
-            menu.appendChild(item);
-        };
-        addItem('Place town', () => {
-            this.executeCommand(new AddManualTownCommand(this, regionId));
-            Logger.info('[MapEditor] Placed town at region', regionId);
+    private getDebugOverlayHost() {
+        return getDebugOverlayHost(this, {
+            procCache: this.procCache,
+            worldContainer: this.worldContainer,
+            app: this.app,
+            zoom: this.zoom,
+            debugShowStationNumbers: this.debugShowStationNumbers,
+            debugShowSplinePath: this.debugShowSplinePath
         });
-        addItem('Place station', () => {
-            const nextOrder = this.manualStations.reduce((m, s) => Math.max(m, s.order), 0) + 1;
-            this.executeCommand(new AddManualStationCommand(this, regionId, nextOrder));
-            Logger.info('[MapEditor] Placed station', nextOrder, 'at region', regionId);
-        });
-        if (
-            isWorldPointOnSplinePath(
-                this.procCache,
-                worldX,
-                worldY,
-                SPLINE_HIT_THRESHOLD_WORLD
-            )
-        ) {
-            const leg = getNearestLegIndexForWorldPoint(
-                this.procCache,
-                (wx, wy) => this.getRegionAtWorld(wx, wy),
-                worldX,
-                worldY
-            );
-            if (leg !== null) {
-                addItem('Add spline point', () => {
-                    const insertIndex = getWaypointInsertionIndex(
-                        this.procCache,
-                        leg,
-                        this.railroadWaypoints,
-                        worldX,
-                        worldY
-                    );
-                    this.executeCommand(new AddWaypointCommand(this, leg, regionId, insertIndex));
-                    Logger.info('[MapEditor] Added spline point (waypoint) for leg', leg);
-                });
-            }
-        }
-        document.body.appendChild(menu);
-        const close = () => {
-            menu.remove();
-            document.removeEventListener('click', close);
-        };
-        requestAnimationFrame(() => document.addEventListener('click', close));
     }
 
-    private useTool(e: MouseEvent): void {
-        if (!this.chunkManager || !this.worldContainer || !this.app) return;
-        if (this.editingMode === 'manipulation') return;
+    private getWaypointManagerHost() {
+        return getWaypointManagerHost(this, {
+            procCache: this.procCache,
+            worldContainer: this.worldContainer,
+            app: this.app,
+            zoom: this.zoom,
+            manualStations: this.manualStations,
+            railroadWaypoints: this.railroadWaypoints,
+            editingMode: this.editingMode,
+            debugShowStationNumbers: this.debugShowStationNumbers,
+            debugShowSplinePath: this.debugShowSplinePath
+        });
+    }
 
-        const { worldX, worldY } = screenToWorld(e, this.app, this.worldContainer, this.zoom);
+    private getManipulationHandlesHost() {
+        return getManipulationHandlesHost(this, {
+            procCache: this.procCache,
+            worldContainer: this.worldContainer,
+            app: this.app,
+            zoom: this.zoom,
+            manualTowns: this.manualTowns,
+            manualStations: this.manualStations,
+            editingMode: this.editingMode
+        });
+    }
 
-        executeTool(
-            worldX,
-            worldY,
-            e,
-            {
-                currentTool: this.currentTool,
-                editingMode: this.editingMode,
-                brushSize: 1, // Defaulting as brush size is no longer tracked
-                selectedAsset: this.selectedAsset
-            },
-            this.chunkManager,
-            this.commandManager,
-            this.currentObjectActions,
-            {
-                onObjectAction: (action) => this.currentObjectActions.push(action)
-            }
-        );
+    private setupInputListeners(): void {
+        const { cleanup } = setupInputListeners(this, this.inputState);
+        this.inputCleanup = cleanup;
     }
 
     /** Trigger canvas resize (e.g. when sidebars change layout). Responds to ResizeObserver. */
@@ -605,9 +363,25 @@ export class MapEditorCore {
     public setSelectedObject(obj: MapObject | null): void { this.selectedObject = obj; }
     public getSelectedObject(): MapObject | null { return this.selectedObject; }
 
+    public clearOnNextClickAction(): void { this.onNextClickAction = null; }
+    public getOnNextClickAction(): ((x: number, y: number) => void) | null { return this.onNextClickAction; }
     public setOnNextClickAction(fn: ((x: number, y: number) => void) | null): void {
         this.onNextClickAction = fn;
     }
+
+    // --- Accessors for UI/Input ---
+    public getApp() { return this.app; }
+    public getWorldContainer() { return this.worldContainer; }
+    public getProcCache() { return this.procCache; }
+    public getZoom() { return this.zoom; }
+    public setZoom(z: number) { this.zoom = z; }
+    public triggerZoomUIUpdate() { this.updateZoomUI(); }
+    public getEditingMode() { return this.editingMode; }
+    public getCurrentTool() { return this.currentTool; }
+    public getSelectedAsset() { return this.selectedAsset; }
+    public getBrushCursor() { return this.brushCursor; }
+    public getCommandManager() { return this.commandManager; }
+    public getWaypointManager() { return this.waypointManager; }
 
     public enterHeroSpawnPlacementMode(): void {
         if (!this.chunkManager || !this.app || !this.worldContainer) return;

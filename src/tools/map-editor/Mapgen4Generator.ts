@@ -20,14 +20,12 @@ import {
 } from './Mapgen4RegionUtils';
 import { mapgen4ToZones, COAST_MAX_POLYGON_STEPS } from './Mapgen4ZoneMapping';
 import { isTileOnRiver } from './Mapgen4RiverUtils';
-import { drawCachedMeshToCanvas } from './Mapgen4PreviewRenderer';
 import { buildRailroadSplineMeshData } from './RailroadSplineBuilder';
 
 import type { Mapgen4Param } from './Mapgen4Param';
 export type { TownSite, RoadSegment, RailroadCrossing, Mapgen4Param } from './Mapgen4Param';
 export type { TownsParam, RoadsParam, RailroadsParam } from './Mapgen4Param';
 
-export { drawCachedMeshToCanvas } from './Mapgen4PreviewRenderer';
 export { buildRailroadSplineMeshData } from './RailroadSplineBuilder';
 export { mapgen4ToZones } from './Mapgen4ZoneMapping';
 
@@ -86,19 +84,19 @@ export function computeTownsAndRoads(
         (towns.length >= 2 || (param.roads.coverageGridSize ?? 0) >= 2);
     const roadSegments = roadsOk
         ? runRoadGenerator(
-              mesh,
-              map,
-              towns.map((t) => t.regionId),
-              {
-                  shortcutsPerTown: param.roads.shortcutsPerTown ?? 1,
-                  riverCrossingCost: param.roads.riverCrossingCost ?? 1.2,
-                  seed: param.roads.seed ?? param.meshSeed,
-                  coverageGridSize: param.roads.coverageGridSize ?? 0,
-                  slopeWeight: param.roads.slopeWeight ?? 3,
-                  waypointCurviness: param.roads.waypointCurviness ?? 0.15
-              },
-              param.rivers
-          )
+            mesh,
+            map,
+            towns.map((t) => t.regionId),
+            {
+                shortcutsPerTown: param.roads.shortcutsPerTown ?? 1,
+                riverCrossingCost: param.roads.riverCrossingCost ?? 1.2,
+                seed: param.roads.seed ?? param.meshSeed,
+                coverageGridSize: param.roads.coverageGridSize ?? 0,
+                slopeWeight: param.roads.slopeWeight ?? 3,
+                waypointCurviness: param.roads.waypointCurviness ?? 0.15
+            },
+            param.rivers
+        )
         : [];
 
     const railroadsOk =
@@ -143,25 +141,6 @@ export function computeTownsAndRoads(
     }
 
     return { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds };
-}
-
-/** Run mesh + map only and draw to canvas for instant preview. */
-export function runAndDrawPreview(canvas: HTMLCanvasElement, param: Mapgen4Param): void {
-    const { mesh, map } = buildMeshAndMap(param);
-    drawCachedMeshToCanvas(canvas, mesh, map, param, 0, 0, PREVIEW_MAP_SIZE, PREVIEW_MAP_SIZE);
-}
-
-/** Draw procedural preview with a viewport in mesh coords (0..1000). */
-export function runAndDrawPreviewWithViewport(
-    canvas: HTMLCanvasElement,
-    param: Mapgen4Param,
-    vpX: number,
-    vpY: number,
-    vpW: number,
-    vpH: number
-): void {
-    const { mesh, map } = buildMeshAndMap(param);
-    drawCachedMeshToCanvas(canvas, mesh, map, param, vpX, vpY, vpW, vpH);
 }
 
 /** Generate world data from mapgen4 params and rasterize to ChunkData map. */

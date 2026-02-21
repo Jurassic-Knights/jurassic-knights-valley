@@ -112,7 +112,7 @@ class HUDControllerClass {
     }
 
     updateRestButton(data: { isHome: boolean }) {
-        const btn = UIBinder.get('btn-rest');
+        const btn = document.getElementById('btn-rest');
         if (btn) btn.style.display = data.isHome ? 'flex' : 'none';
     }
 
