@@ -13,8 +13,6 @@ import { Registry } from '@core/Registry';
 import { AssetLoader } from '@core/AssetLoader';
 import { getPrefetchedMapData } from './MapDataService';
 import { buildMeshAndMap, computeTownsAndRoads, DEFAULT_MAPGEN4_PARAM } from '../tools/map-editor/Mapgen4Generator';
-import { findRegionAt, buildCellRegions, MAPGEN4_MAP_SIZE } from '../tools/map-editor/Mapgen4RegionUtils';
-import { MAPGEN4_WATER_ELEVATION_THRESHOLDS, MAPGEN4_ELEVATION_THRESHOLDS } from '../tools/map-editor/Mapgen4BiomeConfig';
 import type {
     MeshAndMap,
     Mapgen4Param,
@@ -60,7 +58,6 @@ class WorldManagerService {
     private _cachedRailroadCrossings: RailroadCrossing[] = [];
     private _cachedRailroadStationIds: number[] = [];
     private _manualData?: ManualTownsAndRailroads;
-    private _cellRegions: number[][] = [];
 
     constructor() {
         Logger.info('[WorldManager] Constructed');
@@ -68,8 +65,6 @@ class WorldManagerService {
 
     private buildMeshAndCacheTownsRoads(): void {
         this.meshAndMap = buildMeshAndMap(this.param);
-        this._cellRegions = buildCellRegions(this.meshAndMap.mesh);
-
         const { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds } =
             computeTownsAndRoads(
                 this.meshAndMap!.mesh,
@@ -192,30 +187,13 @@ class WorldManagerService {
         return { x: (mx / MESH_SIZE) * WORLD_SIZE, y: (my / MESH_SIZE) * WORLD_SIZE };
     }
 
-    // --- Walkability via mapgen4 elevation ---
-    /** 
-     * Convert game world X/Y [0, 160000] to mapgen4 coords [0, 1000] 
-     * where center of mapgenic map is (500,500). Wait, MAPGEN4_MAP_SIZE = 1000. 
-     */
-    private _getElevationAtWorldPos(x: number, y: number): number {
-        if (!this.meshAndMap || this._cellRegions.length === 0) return 0;
-
-        // World coords to map coords [0..1000]
-        const mapX = (x / WORLD_SIZE) * MAPGEN4_MAP_SIZE;
-        const mapY = (y / WORLD_SIZE) * MAPGEN4_MAP_SIZE;
-
-        const r = findRegionAt(this.meshAndMap.mesh, mapX, mapY, this._cellRegions);
-        return this.meshAndMap.map.elevation_r[r] ?? 0;
+    // --- Stub: walk everywhere ---
+    isWalkable(_x: number, _y: number): boolean {
+        return true;
     }
 
-    isWalkable(x: number, y: number): boolean {
-        // Must be on land (not in deep water) and not on a completely impassable mountain peak
-        const elev = this._getElevationAtWorldPos(x, y);
-        return elev > MAPGEN4_WATER_ELEVATION_THRESHOLDS.coastMax && elev < MAPGEN4_ELEVATION_THRESHOLDS.midmountainMax;
-    }
-
-    isBlocked(x: number, y: number): boolean {
-        return !this.isWalkable(x, y);
+    isBlocked(_x: number, _y: number): boolean {
+        return false;
     }
 }
 

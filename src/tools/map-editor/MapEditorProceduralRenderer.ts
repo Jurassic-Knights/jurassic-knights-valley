@@ -18,6 +18,7 @@ import type { Mapgen4Param } from './Mapgen4Param';
 import type { MeshAndMap } from './Mapgen4Generator';
 import { buildCellRegions, computeRegionDistanceFromWater } from './Mapgen4RegionUtils';
 import { COAST_MAX_POLYGON_STEPS } from './Mapgen4ZoneMapping';
+import { runMapgenWorker } from './MapgenWorkerClient';
 
 export interface ProceduralCache {
     meshAndMap: MeshAndMap;
@@ -112,9 +113,11 @@ export async function buildProceduralCache(
     param: Mapgen4Param,
     manual?: ManualTownsAndRailroads
 ): Promise<ProceduralCache> {
-    const meshAndMap = buildMeshAndMap(param);
-    const { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds } =
-        computeTownsAndRoads(meshAndMap.mesh, meshAndMap.map, param, manual);
+    const workerResult = await runMapgenWorker(param, manual);
+    const { mesh, map, townsAndRoads, cellRegions, distanceFromWater } = workerResult;
+    const meshAndMap = { mesh, map };
+    const { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds } = townsAndRoads;
+
     if (param.railroads?.enabled && railroadPath.length >= 2) {
         const preloads: Promise<unknown>[] = [];
         for (const biome of ['grasslands', 'tundra', 'desert', 'badlands']) {
@@ -126,12 +129,7 @@ export async function buildProceduralCache(
         }
         await Promise.all(preloads);
     }
-    const cellRegions = buildCellRegions(meshAndMap.mesh);
-    const distanceFromWater = computeRegionDistanceFromWater(
-        meshAndMap.mesh,
-        meshAndMap.map,
-        COAST_MAX_POLYGON_STEPS
-    );
+
     return {
         meshAndMap,
         param,
