@@ -7,29 +7,29 @@ import { EntityScaling } from '../utils/EntityScaling';
 import type { EntityConfig } from '../types/core';
 
 class Prop extends Entity {
-    scale: number;
+    declare scale: number;
     _img: HTMLImageElement | null = null;
     registryId: string | null = null;
 
     constructor(config: EntityConfig = {}) {
         // 1. Identify Registry ID
         // Priority: Explicit config.registryId > config.id (if matched) > config.sprite
-        let registryId = config.registryId || null;
+        let registryId: string | null = config.registryId ?? null;
 
         if (!registryId) {
             // Check if config.id is a valid registry key (e.g. "prop_barrel_01")
-            if (EntityRegistry.environment?.[config.id]) {
+            if (config.id && EntityRegistry.environment?.[config.id]) {
                 registryId = config.id;
-            } else if (EntityRegistry.environment?.[config.sprite]) {
+            } else if (config.sprite && EntityRegistry.environment?.[config.sprite]) {
                 // Check if sprite matches (e.g. "props/barrel")
                 registryId = config.sprite;
             } else {
                 // Fallback: Use sprite as key (Legacy behavior)
-                registryId = config.sprite;
+                registryId = config.sprite ?? null;
             }
         }
 
-        const registryConfig = EntityRegistry.environment?.[registryId] || {};
+        const registryConfig = (registryId && EntityRegistry.environment?.[registryId]) || {};
 
         // Calculate size using standard utility
         const size = EntityScaling.calculateSize(config, registryConfig, { width: 80, height: 80 });

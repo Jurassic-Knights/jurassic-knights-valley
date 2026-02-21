@@ -16,7 +16,7 @@ export function createHeroSpawnMarker(): PIXI.Container {
             fontFamily: 'system-ui, sans-serif'
         }
     });
-    text.anchor.set(0.5, 1);
+    text.anchor.set(0.5, 0.5);
     marker.addChild(text);
     return marker;
 }
@@ -34,9 +34,15 @@ export function updateHeroSpawnMarker(
     marker.position.set(heroSpawn.x, heroSpawn.y);
 }
 
-/** Scale marker so it stays readable when zoomed out (inverse of zoom, capped). */
+/**
+ * Scale the text so it stays readable at all zoom levels.
+ * The marker itself scales via worldContainer, so we apply the inverse zoom
+ * to the text child directly to maintain a constant screen size without drifting.
+ */
 export function updateHeroSpawnMarkerScale(marker: PIXI.Container | null, zoom: number): void {
-    if (!marker) return;
+    if (!marker || marker.children.length === 0) return;
     const scale = Math.min(100, Math.max(0.5, 1 / zoom));
-    marker.scale.set(scale);
+    const text = marker.children[0] as PIXI.Text;
+    text.scale.set(scale);
 }
+

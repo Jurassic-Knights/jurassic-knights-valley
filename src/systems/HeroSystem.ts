@@ -235,11 +235,9 @@ class HeroSystem {
         }
     }
 
-    updateCombat(dt: number, hero: Hero) {
-        // Delegate to HeroCombatService for auto-targeting and attack execution
-        if (HeroCombatService) {
-            HeroCombatService.update(dt, hero);
-        }
+    updateCombat(_dt: number, _hero: Hero) {
+        // Combat logic delegated to HeroCombatService (registered in SystemConfig)
+        // HeroCombatService now fetches hero from this.game.hero and has its own update cycle.
     }
 
     // updateVFX moved to HeroVisualsSystem

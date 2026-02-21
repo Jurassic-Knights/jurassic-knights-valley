@@ -73,7 +73,8 @@ const SystemConfig: SystemConfigEntry[] = [
 
     // --- 6. Entities ---
     { global: 'HeroSystem', priority: 50, init: true },
-    { global: 'HeroVisualsSystem', priority: 51, init: true },
+    { global: 'HeroCombatService', priority: 51, init: true },
+    { global: 'HeroVisualsSystem', priority: 52, init: true },
 
     // --- 7. Debug Utilities ---
     { global: 'DebugUI', priority: 90, init: true }

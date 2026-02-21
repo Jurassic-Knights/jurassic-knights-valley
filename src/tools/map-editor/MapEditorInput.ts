@@ -18,13 +18,15 @@ import { AddWaypointCommand } from './commands/AddWaypointCommand';
 import { RemoveWaypointCommand } from './commands/RemoveWaypointCommand';
 import { BatchObjectCommand } from './commands/BatchObjectCommand';
 import type { MapEditorCore } from './MapEditorCore';
+import type { ObjectAction } from './MapEditorState';
+import type { ManualStation } from '../../world/MapDataService';
 
 export interface InputState {
     isDragging: boolean;
     isPainting: boolean;
     isSpacePressed: boolean;
     lastMousePosition: { x: number; y: number };
-    currentObjectActions: any[];
+    currentObjectActions: ObjectAction[];
 }
 
 export function setupInputListeners(core: MapEditorCore, state: InputState): { cleanup: () => void } {
@@ -209,7 +211,7 @@ function handleContextMenu(e: MouseEvent, core: MapEditorCore): void {
         {
             label: 'Place station', action: () => {
                 const manualStations = core.getManualStations();
-                const nextOrder = manualStations.reduce((m: number, s: any) => Math.max(m, s.order), 0) + 1;
+                const nextOrder = manualStations.reduce((m: number, s: ManualStation) => Math.max(m, s.order), 0) + 1;
                 core.executeCommand(new AddManualStationCommand(core, regionId, nextOrder));
                 Logger.info('[MapEditor] Placed station', nextOrder, 'at region', regionId);
             }

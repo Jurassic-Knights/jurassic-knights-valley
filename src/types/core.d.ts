@@ -107,6 +107,7 @@ export interface EntityConfig {
     loot?: LootTableEntry[];
     display?: EntityDisplayConfig;
     sourceFile?: string; // For tracing origin (e.g. tracking items vs resources)
+    registryId?: string; // Registry key for entity lookup
     [key: string]: unknown; // Changed from any to unknown for safer type narrowing
 }
 

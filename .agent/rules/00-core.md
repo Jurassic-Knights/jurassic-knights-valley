@@ -25,6 +25,7 @@ Adhere to **coding-guide** (`.agent/skills/coding-guide/SKILL.md`).
 - **Spatial:** Use Quadtrees for collision/rendering queries.
 - **SRP:** Keep each file to one responsibility.
 - **Immutability:** Prefer immutable state except in hot loops.
+- **Strict typing:** Never use `any`, `as any`, or `unknown` as a workaround. Every value must have a proper typed interface. If the type doesn't exist yet, create one. Existing `any` must be remediated with real types, not replaced with `unknown`.
 
 ---
 

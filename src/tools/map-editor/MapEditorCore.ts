@@ -120,6 +120,8 @@ export class MapEditorCore {
     private railroadWaypoints: RailroadWaypointEntry[] = [];
     /** Callback when manual data changes (e.g. dashboard refresh, save). */
     private onManualDataChange: (() => void) | null = null;
+    /** Callback when any command is executed (object placed/moved/deleted, etc). */
+    private onCommandExecuted: (() => void) | null = null;
 
     // Commands
     private commandManager: CommandManager;
@@ -131,6 +133,7 @@ export class MapEditorCore {
 
     public executeCommand(cmd: EditorCommand): void {
         this.commandManager.execute(cmd);
+        this.onCommandExecuted?.();
     }
 
     public selectAsset(id: string, category: string) {
@@ -374,7 +377,12 @@ export class MapEditorCore {
     public getWorldContainer() { return this.worldContainer; }
     public getProcCache() { return this.procCache; }
     public getZoom() { return this.zoom; }
-    public setZoom(z: number) { this.zoom = z; }
+    public setZoom(z: number) {
+        this.zoom = z;
+        if (this.worldContainer) {
+            this.worldContainer.scale.set(z);
+        }
+    }
     public triggerZoomUIUpdate() { this.updateZoomUI(); }
     public getEditingMode() { return this.editingMode; }
     public getCurrentTool() { return this.currentTool; }
@@ -398,6 +406,7 @@ export class MapEditorCore {
         const { x, y, id } = this.selectedObject;
         this.commandManager.execute(new MoveObjectCommand(this.chunkManager, x, y, newX, newY, id));
         this.selectedObject = { id, x: newX, y: newY };
+        this.onCommandExecuted?.();
         return true;
     }
 
@@ -408,6 +417,7 @@ export class MapEditorCore {
             new BatchObjectCommand(this.chunkManager, [{ type: 'remove', x, y, assetId: id }])
         );
         this.selectedObject = null;
+        this.onCommandExecuted?.();
         return true;
     }
 
@@ -549,7 +559,7 @@ export class MapEditorCore {
     } | null {
         const base = this.chunkManager?.serialize() ?? null;
         if (!base) return null;
-        const out: any = { ...base };
+        const out: NonNullable<ReturnType<MapEditorCore['serialize']>> = { ...base };
         if (this.manualTowns.length > 0) out.manualTowns = [...this.manualTowns];
         if (this.manualStations.length > 0) out.manualStations = this.manualStations.map((s) => ({ ...s }));
         if (this.railroadWaypoints.length > 0) out.railroadWaypoints = this.railroadWaypoints.map((w) => ({ ...w }));
@@ -577,6 +587,9 @@ export class MapEditorCore {
 
     public setOnManualDataChange(fn: (() => void) | null): void {
         this.onManualDataChange = fn;
+    }
+    public setOnCommandExecuted(fn: (() => void) | null): void {
+        this.onCommandExecuted = fn;
     }
     public getManualTowns(): number[] {
         return [...this.manualTowns];

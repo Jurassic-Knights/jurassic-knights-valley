@@ -38,9 +38,10 @@ const HeroCombatService = {
     /**
      * Update combat logic: auto-targeting and attack execution
      * @param {number} dt - Delta time in ms
-     * @param {Hero} hero
      */
-    update(dt: number, hero: Hero) {
+    update(dt: number) {
+        const hero = this.game?.hero as Hero | null;
+        if (!hero) return;
         // Update attack timer
         if (hero.attackTimer > 0) {
             hero.attackTimer -= dt / 1000;

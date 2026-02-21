@@ -54,6 +54,10 @@ This skill is the **single source of truth** for architecture. A short pointer d
 *   **Single Responsibility:** Classes/Systems should do one thing perfectly.
 *   **Immutability:** Prefer immutable operations for math/state where performance allows.
 *   **Documentation:** Every System/Component must have a top-level JSDoc explaining its responsibility.
+*   **Strict Typing:** Never use `any`, `as any`, or `unknown` as a workaround. Every value must have a proper typed interface.
+    *   If a type doesn't exist, create one (interface, type alias, or generic).
+    *   If data crosses a boundary (worker, JSON), define the exact shape as an interface.
+    *   Existing `any` must be remediated with real types on contact, not swapped for `unknown`.
 
 ## Audit Rubric
 Each system will be graded on:

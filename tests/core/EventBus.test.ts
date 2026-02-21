@@ -1,113 +1,107 @@
 /**
  * EventBus Unit Tests
- *
- * Tests for the pub/sub EventBus system
+ * Tests subscribe, emit, unsubscribe, and error isolation.
  */
-import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Type definitions
-type EventCallback<T = unknown> = (data: T) => void;
+// Mock Logger to suppress console output
+vi.mock('@core/Logger', () => ({
+    Logger: {
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+    },
+}));
 
-// Create a fresh EventBus for testing
-class TestEventBus {
-    listeners: Record<string, EventCallback[]>;
-
-    constructor() {
-        this.listeners = {};
-    }
-
-    on<T = unknown>(eventName: string, callback: EventCallback<T>): void {
-        if (!this.listeners[eventName]) {
-            this.listeners[eventName] = [];
-        }
-        this.listeners[eventName].push(callback as EventCallback);
-    }
-
-    off<T = unknown>(eventName: string, callback: EventCallback<T>): void {
-        if (!this.listeners[eventName]) return;
-        this.listeners[eventName] = this.listeners[eventName].filter((cb) => cb !== callback);
-    }
-
-    emit<T = unknown>(eventName: string, data: T): void {
-        if (!this.listeners[eventName]) return;
-        this.listeners[eventName].forEach((callback) => {
-            callback(data);
-        });
-    }
-}
+// Import after mocks
+const { EventBus } = await import('@core/EventBus');
 
 describe('EventBus', () => {
-    let eventBus: TestEventBus;
-
     beforeEach(() => {
-        eventBus = new TestEventBus();
+        // Clear all listeners between tests
+        EventBus.listeners = {};
     });
 
-    describe('on', () => {
-        it('should register event listeners', () => {
-            const callback = vi.fn();
-            eventBus.on('TEST_EVENT', callback);
-            expect(eventBus.listeners['TEST_EVENT']).toContain(callback);
+    describe('on / emit', () => {
+        it('should call listener when event is emitted', () => {
+            const listener = vi.fn();
+            EventBus.on('TEST_EVENT', listener);
+            EventBus.emit('TEST_EVENT', { value: 42 });
+
+            expect(listener).toHaveBeenCalledOnce();
+            expect(listener).toHaveBeenCalledWith({ value: 42 });
         });
 
-        it('should allow multiple listeners for same event', () => {
-            const callback1 = vi.fn();
-            const callback2 = vi.fn();
-            eventBus.on('TEST_EVENT', callback1);
-            eventBus.on('TEST_EVENT', callback2);
-            expect(eventBus.listeners['TEST_EVENT']).toHaveLength(2);
-        });
-    });
+        it('should support multiple listeners on the same event', () => {
+            const listener1 = vi.fn();
+            const listener2 = vi.fn();
+            EventBus.on('MULTI', listener1);
+            EventBus.on('MULTI', listener2);
+            EventBus.emit('MULTI', 'data');
 
-    describe('emit', () => {
-        it('should call registered listeners with data', () => {
-            const callback = vi.fn();
-            const testData = { value: 42 };
-
-            eventBus.on('TEST_EVENT', callback);
-            eventBus.emit('TEST_EVENT', testData);
-
-            expect(callback).toHaveBeenCalledWith(testData);
+            expect(listener1).toHaveBeenCalledWith('data');
+            expect(listener2).toHaveBeenCalledWith('data');
         });
 
-        it('should call all listeners for an event', () => {
-            const callback1 = vi.fn();
-            const callback2 = vi.fn();
+        it('should not call listener for different events', () => {
+            const listener = vi.fn();
+            EventBus.on('EVENT_A', listener);
+            EventBus.emit('EVENT_B', 'data');
 
-            eventBus.on('TEST_EVENT', callback1);
-            eventBus.on('TEST_EVENT', callback2);
-            eventBus.emit('TEST_EVENT', {});
-
-            expect(callback1).toHaveBeenCalled();
-            expect(callback2).toHaveBeenCalled();
+            expect(listener).not.toHaveBeenCalled();
         });
 
-        it('should not throw for unregistered events', () => {
-            expect(() => eventBus.emit('UNKNOWN_EVENT', {})).not.toThrow();
+        it('should handle emit with no data', () => {
+            const listener = vi.fn();
+            EventBus.on('NO_DATA', listener);
+            EventBus.emit('NO_DATA');
+
+            expect(listener).toHaveBeenCalledWith(undefined);
+        });
+
+        it('should handle emit with no listeners (no-op)', () => {
+            expect(() => EventBus.emit('UNREGISTERED_EVENT')).not.toThrow();
         });
     });
 
     describe('off', () => {
-        it('should remove specific listener', () => {
-            const callback = vi.fn();
-            eventBus.on('TEST_EVENT', callback);
-            eventBus.off('TEST_EVENT', callback);
-            eventBus.emit('TEST_EVENT', {});
+        it('should unsubscribe a specific listener', () => {
+            const listener = vi.fn();
+            EventBus.on('UNSUB', listener);
+            EventBus.off('UNSUB', listener);
+            EventBus.emit('UNSUB', 'data');
 
-            expect(callback).not.toHaveBeenCalled();
+            expect(listener).not.toHaveBeenCalled();
         });
 
-        it('should only remove specified callback', () => {
-            const callback1 = vi.fn();
-            const callback2 = vi.fn();
+        it('should not affect other listeners when unsubscribing', () => {
+            const keep = vi.fn();
+            const remove = vi.fn();
+            EventBus.on('PARTIAL', keep);
+            EventBus.on('PARTIAL', remove);
+            EventBus.off('PARTIAL', remove);
+            EventBus.emit('PARTIAL', 'data');
 
-            eventBus.on('TEST_EVENT', callback1);
-            eventBus.on('TEST_EVENT', callback2);
-            eventBus.off('TEST_EVENT', callback1);
-            eventBus.emit('TEST_EVENT', {});
+            expect(keep).toHaveBeenCalledOnce();
+            expect(remove).not.toHaveBeenCalled();
+        });
 
-            expect(callback1).not.toHaveBeenCalled();
-            expect(callback2).toHaveBeenCalled();
+        it('should handle off for non-existent event (no-op)', () => {
+            expect(() => EventBus.off('NONEXISTENT', vi.fn())).not.toThrow();
+        });
+    });
+
+    describe('error isolation', () => {
+        it('should not propagate listener errors to other listeners', () => {
+            const badListener = vi.fn(() => { throw new Error('boom'); });
+            const goodListener = vi.fn();
+            EventBus.on('ERROR_TEST', badListener);
+            EventBus.on('ERROR_TEST', goodListener);
+
+            expect(() => EventBus.emit('ERROR_TEST', 'data')).not.toThrow();
+
+            expect(badListener).toHaveBeenCalledOnce();
+            expect(goodListener).toHaveBeenCalledOnce();
         });
     });
 });

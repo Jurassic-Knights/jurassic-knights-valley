@@ -20,6 +20,7 @@ Use the versions below for dependencies and patterns. Do not suggest conflicting
 ## Testing and Quality
 
 - Use Vitest for new tests. Use ESLint 9 and Prettier; respect existing config; do not add conflicting rules without discussion. Use Husky and lint-staged; keep hooks fast.
+- Strict TypeScript: never use `any`, `as any`, or `unknown` as a workaround. Define proper typed interfaces for every value. Remediate existing `any` with real types on contact.
 
 ## Other
 

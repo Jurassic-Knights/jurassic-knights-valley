@@ -5,6 +5,7 @@ import { AssetPaletteView } from './AssetPaletteView';
 import { initResizeHandle } from './ResizePanels';
 import { loadDefaultMap, saveDefaultMap } from './MapStorage';
 import type { MapEditorDataPayload } from '../../../src/tools/map-editor/MapEditorTypes';
+import { OutlinerPanel } from './OutlinerPanel';
 
 /** Mapgen4 param shape (loaded only when user generates). */
 interface ProcParam {
@@ -89,8 +90,12 @@ export async function showMapEditorView(pushState = true): Promise<void> {
             initMapPanel();
             if (editorInstance) {
                 editorInstance.setOnManualDataChange(() => {
-                    refreshOutliner();
+                    OutlinerPanel.refresh();
                     runPreviewCanvas().catch(() => { });
+                    if (getAutoSaveEnabled()) scheduleAutoSave();
+                });
+                editorInstance.setOnCommandExecuted(() => {
+                    OutlinerPanel.refresh();
                     if (getAutoSaveEnabled()) scheduleAutoSave();
                 });
             }
@@ -185,14 +190,6 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
             );
             const result = await res.json();
             if (result.success && result.data) {
-                // If the backend returns an array of chunks, we need to convert it to a record
-                if (Array.isArray(result.data.chunks)) {
-                    const chunksRecord: Record<string, import('../../../src/tools/map-editor/MapEditorTypes').ChunkData> = {};
-                    result.data.chunks.forEach((chunk: any) => {
-                        chunksRecord[chunk.id] = chunk;
-                    });
-                    result.data.chunks = chunksRecord;
-                }
                 data = result.data as MapEditorDataPayload;
                 loadSource = 'API';
             }
@@ -207,11 +204,6 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
             const res = await fetch(`/maps/default.json?_=${Date.now()}`, { cache: 'no-store' });
             if (res.ok) {
                 const json = await res.json();
-                if (Array.isArray(json.chunks)) {
-                    const chunksRecord: Record<string, import('../../../src/tools/map-editor/MapEditorTypes').ChunkData> = {};
-                    json.chunks.forEach((chunk: any) => chunksRecord[chunk.id] = chunk);
-                    json.chunks = chunksRecord;
-                }
                 data = json as MapEditorDataPayload;
                 loadSource = 'static';
             }
@@ -230,7 +222,7 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
         }
         currentLoadedMap = DEFAULT_MAP_FILENAME;
         updateLoadedDisplay();
-        refreshOutliner();
+        OutlinerPanel.refresh();
         broadcastMapFull();
         Logger.info(`[MapEditor] Load default map: source=${loadSource ?? 'none'} success=true`);
         try {
@@ -432,7 +424,7 @@ function initPanelTabs(): void {
             panelTitle.textContent = tab === 'maps' ? 'Maps' : tab === 'outliner' ? 'Outliner' : 'Procedural';
         }
         if (tab === 'outliner') {
-            refreshOutliner();
+            OutlinerPanel.refresh();
         }
         if (tab === 'procedural' && !isInitialRestore) {
             runPreviewCanvas({ skipRebuildIfLoaded: true });
@@ -450,152 +442,16 @@ function initPanelTabs(): void {
 }
 
 function initOutlinerPanel(): void {
-    const refreshBtn = document.getElementById('outliner-refresh-btn');
-    const moveBtn = document.getElementById('outliner-move-btn');
-    const deleteBtn = document.getElementById('outliner-delete-btn');
-
-    refreshBtn?.addEventListener('click', () => refreshOutliner());
-
-    moveBtn?.addEventListener('click', () => {
-        if (!editorInstance) return;
-        const sel = editorInstance.getSelectedObject();
-        if (!sel) return;
-        editorInstance.setOnNextClickAction((x, y) => {
-            editorInstance?.moveSelectedObjectTo(x, y);
-            refreshOutliner();
-            setMapStatus('');
-        });
-        setMapStatus('Click on map to place object');
-    });
-
-    deleteBtn?.addEventListener('click', () => {
-        if (!editorInstance) return;
-        if (editorInstance.removeSelectedObject()) {
-            refreshOutliner();
-        }
-    });
+    if (!editorInstance) return;
+    OutlinerPanel.init(
+        editorInstance,
+        () => { /* onRefresh callback — currently unused */ },
+        () => runPreviewCanvas()
+    );
 }
 
 export function refreshOutliner(): void {
-    const listEl = document.getElementById('outliner-list');
-    const selectionEl = document.getElementById('outliner-selection');
-    const selectedLabel = document.getElementById('outliner-selected-label');
-    const moveBtn = document.getElementById('outliner-move-btn');
-    const deleteBtn = document.getElementById('outliner-delete-btn');
-    const townsEl = document.getElementById('outliner-towns');
-    const stationsEl = document.getElementById('outliner-stations');
-
-    if (!listEl || !editorInstance) return;
-
-    if (townsEl) {
-        const towns = editorInstance.getManualTowns();
-        townsEl.innerHTML = '';
-        if (towns.length === 0) {
-            townsEl.innerHTML = '<div style="color:#666; padding:6px; font-size:11px;">None. Right-click map → Place town.</div>';
-        } else {
-            towns.forEach((regionId, i) => {
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:6px 8px; background:#252525; border-radius:4px; margin-bottom:4px;';
-                const label = document.createElement('span');
-                label.textContent = `Town ${i + 1} (region ${regionId})`;
-                label.style.cssText = 'flex:1; font-size:12px; color:#ccc;';
-                row.appendChild(label);
-                const del = document.createElement('button');
-                del.type = 'button';
-                del.textContent = 'Delete';
-                del.style.cssText = 'font-size:10px; padding:2px 6px; background:#5a2525; color:#fff; border:none; border-radius:4px; cursor:pointer;';
-                del.addEventListener('click', () => {
-                    editorInstance?.removeManualTown(regionId);
-                    refreshOutliner();
-                    runPreviewCanvas().catch(() => { });
-                });
-                row.appendChild(del);
-                townsEl.appendChild(row);
-            });
-        }
-    }
-
-    if (stationsEl) {
-        const stations = editorInstance.getManualStations();
-        const sorted = [...stations].sort((a, b) => a.order - b.order);
-        stationsEl.innerHTML = '';
-        if (sorted.length === 0) {
-            stationsEl.innerHTML = '<div style="color:#666; padding:6px; font-size:11px;">None. Right-click polygon → Place station.</div>';
-        } else {
-            const manualStations = editorInstance.getManualStations();
-            sorted.forEach((s) => {
-                const idx = manualStations.findIndex((m) => m.regionId === s.regionId && m.order === s.order);
-                if (idx < 0) return;
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex; align-items:center; gap:6px; padding:6px 8px; background:#252525; border-radius:4px; margin-bottom:4px;';
-                const orderInput = document.createElement('input');
-                orderInput.type = 'number';
-                orderInput.min = '1';
-                orderInput.value = String(s.order);
-                orderInput.style.cssText = 'width:36px; padding:2px 4px; background:#111; color:#fff; border:1px solid #444; border-radius:4px; font-size:11px;';
-                orderInput.addEventListener('change', () => {
-                    const v = parseInt(orderInput.value, 10);
-                    if (!Number.isNaN(v)) editorInstance?.setStationOrder(idx, v);
-                    refreshOutliner();
-                    runPreviewCanvas().catch(() => { });
-                });
-                row.appendChild(orderInput);
-                const label = document.createElement('span');
-                label.textContent = `Station (region ${s.regionId})`;
-                label.style.cssText = 'flex:1; font-size:12px; color:#ccc;';
-                row.appendChild(label);
-                const del = document.createElement('button');
-                del.type = 'button';
-                del.textContent = 'Delete';
-                del.style.cssText = 'font-size:10px; padding:2px 6px; background:#5a2525; color:#fff; border:none; border-radius:4px; cursor:pointer;';
-                del.addEventListener('click', () => {
-                    editorInstance?.removeManualStation(s.regionId);
-                    refreshOutliner();
-                    runPreviewCanvas().catch(() => { });
-                });
-                row.appendChild(del);
-                stationsEl.appendChild(row);
-            });
-        }
-    }
-
-    const cm = editorInstance.getChunkManager();
-    const objects = cm?.getAllObjects() ?? [];
-    const sel = editorInstance.getSelectedObject();
-
-    listEl.innerHTML = '';
-    if (objects.length === 0) {
-        listEl.innerHTML = '<div style="color:#666; padding:8px; font-size:11px;">No objects. Load a map and place objects from the palette.</div>';
-    } else {
-        for (const obj of objects) {
-            const row = document.createElement('div');
-            const isSelected = sel && Math.abs(sel.x - obj.x) < 1 && Math.abs(sel.y - obj.y) < 1 && sel.id === obj.id;
-            row.style.cssText =
-                'display:flex; align-items:center; gap:6px; padding:6px 8px; background:' +
-                (isSelected ? '#2a3a2a' : '#252525') +
-                '; border-radius:4px; margin-bottom:4px; cursor:pointer;';
-            const label = document.createElement('span');
-            label.textContent = `${obj.id} @ ${Math.round(obj.x)}, ${Math.round(obj.y)}`;
-            label.style.cssText = 'flex:1; font-size:12px; color:#66fcf1;';
-            row.appendChild(label);
-            row.title = 'Click to go to and select';
-            row.addEventListener('click', () => {
-                editorInstance?.setSelectedObject(obj);
-                editorInstance?.centerViewOn(obj.x, obj.y);
-                refreshOutliner();
-            });
-            listEl.appendChild(row);
-        }
-    }
-
-    if (selectionEl && selectedLabel && moveBtn && deleteBtn) {
-        if (sel) {
-            selectionEl.style.display = '';
-            selectedLabel.textContent = `${sel.id} @ ${Math.round(sel.x)}, ${Math.round(sel.y)}`;
-        } else {
-            selectionEl.style.display = 'none';
-        }
-    }
+    OutlinerPanel.refresh();
 }
 
 function setProcStatus(message: string, isError = false): void {
@@ -1045,7 +901,7 @@ async function loadMapByName(filename: string): Promise<void> {
             }
             currentLoadedMap = filename;
             updateLoadedDisplay();
-            refreshOutliner();
+            OutlinerPanel.refresh();
             broadcastMapFull();
             setMapStatus('Loaded: ' + filename);
             Logger.info(`[MapEditor] Load map: ${filename} (API)`);
@@ -1084,35 +940,25 @@ async function deleteMapByName(filename: string): Promise<void> {
 }
 
 function initModeAndTools(): void {
-    const btnObj = document.getElementById('mode-object');
-    const btnManipulation = document.getElementById('mode-manipulation');
+    const modes = ['object', 'ground', 'zone', 'manipulation'] as const;
+    type EditorMode = typeof modes[number];
 
-    const updateModeUI = (mode: 'object' | 'manipulation') => {
-        const resetBtn = (btn: HTMLElement | null) => {
+    const updateModeUI = (mode: EditorMode) => {
+        modes.forEach(m => {
+            const btn = document.getElementById(`mode-${m}`);
             if (btn) {
-                btn.style.setProperty('background', '#2d2d2d');
-                btn.style.setProperty('color', '#888');
+                btn.classList.toggle('active', m === mode);
             }
-        };
-        const activeBtn = (btn: HTMLElement | null) => {
-            if (btn) {
-                btn.style.setProperty('background', '#444');
-                btn.style.setProperty('color', 'white');
-            }
-        };
+        });
 
-        resetBtn(btnObj);
-        resetBtn(btnManipulation);
-
-        if (mode === 'object') activeBtn(btnObj);
-        else if (mode === 'manipulation') activeBtn(btnManipulation);
-
-        if (editorInstance) editorInstance.setMode(mode);
-        if (paletteInstance) paletteInstance.setMode(mode);
+        if (editorInstance) editorInstance.setMode(mode as any);
+        if (paletteInstance) paletteInstance.setMode(mode as any);
     };
 
-    btnObj?.addEventListener('click', () => updateModeUI('object'));
-    btnManipulation?.addEventListener('click', () => updateModeUI('manipulation'));
+    modes.forEach(mode => {
+        const btn = document.getElementById(`mode-${mode}`);
+        btn?.addEventListener('click', () => updateModeUI(mode));
+    });
 
     const gridInput = document.getElementById('editor-grid-opacity') as HTMLInputElement;
     const gridVal = document.getElementById('editor-grid-val');
