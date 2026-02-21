@@ -11,7 +11,7 @@
 import { Logger } from '@core/Logger';
 import { Registry } from '@core/Registry';
 import * as PIXI from 'pixi.js';
-import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4Generator';
+import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4PreviewRenderer';
 import { createRailroadMeshes } from '../tools/map-editor/RailroadMeshRenderer';
 import { MapEditorConfig } from '../tools/map-editor/MapEditorConfig';
 import type { Mesh } from '../tools/map-editor/mapgen4/types';
