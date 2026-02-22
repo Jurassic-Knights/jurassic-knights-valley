@@ -11,6 +11,7 @@ import { GameConstants } from '@data/GameConstants';
 import { ZoneConfig } from '@data/ZoneConfig';
 import { UIBinder } from '@core/UIBinder';
 import { SFX } from '@audio/SFX_Core';
+import { Registry } from '@core/Registry';
 
 class HUDControllerClass {
     private lastPipCount: number = -1;
