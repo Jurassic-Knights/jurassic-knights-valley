@@ -127,6 +127,39 @@ export function drawCachedMeshToCanvas(
         cachedDistanceFromWater ?? computeRegionDistanceFromWater(mesh, map, COAST_MAX_POLYGON_STEPS);
     const stationRegionSet = new Set(railroadStationIds);
     const tOut: number[] = [];
+    const scale = Math.min(scaleX, scaleY);
+
+    _drawPolygons(ctx, mesh, map, param, towns, hidden, stationRegionSet, distanceFromWater, townRadiusSq, tOut, scaleX, scaleY, vpX, vpY, vpMinX, vpMaxX, vpMinY, vpMaxY);
+    _drawRivers(ctx, mesh, map, param, scaleX, scaleY, scale, vpX, vpY, vpMinX, vpMaxX, vpMinY, vpMaxY);
+    _drawRoads(ctx, mesh, roadSegments, param, scaleX, scaleY, scale, vpX, vpY, vpMinX, vpMaxX, vpMinY, vpMaxY);
+
+    if (!skipRailroad && railroadPath.length >= 2) {
+        const WORLD_WIDTH_PX_RAIL = MapEditorConfig.WORLD_WIDTH_TILES * MapEditorConfig.TILE_SIZE;
+        const tileWidthCanvas = RAILROAD_TILE_WORLD_PX * scale * (1000 / WORLD_WIDTH_PX_RAIL);
+        drawRailroadSpline(
+            ctx,
+            mesh,
+            map,
+            railroadPath,
+            railroadCrossings,
+            param.meshSeed,
+            toCanvas,
+            scale,
+            tileWidthCanvas,
+            vpMinX,
+            vpMaxX,
+            vpMinY,
+            vpMaxY,
+            railroadStationIds
+        );
+    }
+}
+
+function _drawPolygons(
+    ctx: CanvasRenderingContext2D, mesh: Mesh, map: Mapgen4Map, param: Mapgen4Param, towns: TownSite[], hidden: Set<string>,
+    stationRegionSet: Set<number>, distanceFromWater: Map<number, number>, townRadiusSq: number, tOut: number[],
+    scaleX: number, scaleY: number, vpX: number, vpY: number, vpMinX: number, vpMaxX: number, vpMinY: number, vpMaxY: number
+) {
     for (let r = 0; r < mesh.numSolidRegions; r++) {
         if (mesh.is_ghost_r(r)) continue;
         const rx = mesh.x_of_r(r);
@@ -153,26 +186,22 @@ export function drawCachedMeshToCanvas(
             if (v && !hidden.has(v)) filteredZones[k] = v;
         }
         ctx.beginPath();
-        ctx.moveTo(
-            (mesh.x_of_t(tOut[0]) - vpX) * scaleX,
-            (mesh.y_of_t(tOut[0]) - vpY) * scaleY
-        );
+        ctx.moveTo((mesh.x_of_t(tOut[0]!) - vpX) * scaleX, (mesh.y_of_t(tOut[0]!) - vpY) * scaleY);
         for (let i = 1; i < tOut.length; i++) {
-            ctx.lineTo(
-                (mesh.x_of_t(tOut[i]) - vpX) * scaleX,
-                (mesh.y_of_t(tOut[i]) - vpY) * scaleY
-            );
+            ctx.lineTo((mesh.x_of_t(tOut[i]!) - vpX) * scaleX, (mesh.y_of_t(tOut[i]!) - vpY) * scaleY);
         }
         ctx.closePath();
-        ctx.fillStyle = stationRegionSet.has(r)
-            ? STATION_POLYGON_FILL
-            : polygonPreviewColor(elev, filteredZones);
+        ctx.fillStyle = stationRegionSet.has(r) ? STATION_POLYGON_FILL : polygonPreviewColor(elev, filteredZones);
         ctx.fill();
     }
+}
 
+function _drawRivers(
+    ctx: CanvasRenderingContext2D, mesh: Mesh, map: Mapgen4Map, param: Mapgen4Param,
+    scaleX: number, scaleY: number, scale: number, vpX: number, vpY: number, vpMinX: number, vpMaxX: number, vpMinY: number, vpMaxY: number
+) {
     const MIN_FLOW = Math.exp(param.rivers.lg_min_flow);
     const RIVER_WIDTH = Math.exp(param.rivers.lg_river_width);
-    const scale = Math.min(scaleX, scaleY);
     ctx.strokeStyle = '#2a5a8a';
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -189,13 +218,7 @@ export function drawCachedMeshToCanvas(
         const ay = mesh.y_of_t(tInner);
         const bx = mesh.x_of_t(tOuter);
         const by = mesh.y_of_t(tOuter);
-        if (
-            (ax < vpMinX && bx < vpMinX) ||
-            (ax > vpMaxX && bx > vpMaxX) ||
-            (ay < vpMinY && by < vpMinY) ||
-            (ay > vpMaxY && by > vpMaxY)
-        )
-            continue;
+        if ((ax < vpMinX && bx < vpMinX) || (ax > vpMaxX && bx > vpMaxX) || (ay < vpMinY && by < vpMinY) || (ay > vpMaxY && by > vpMaxY)) continue;
         const widthMesh = Math.sqrt(flow - MIN_FLOW) * param.spacing * RIVER_WIDTH;
         ctx.lineWidth = Math.max(1, widthMesh * scale);
         ctx.beginPath();
@@ -203,8 +226,13 @@ export function drawCachedMeshToCanvas(
         ctx.lineTo((bx - vpX) * scaleX, (by - vpY) * scaleY);
         ctx.stroke();
     }
+}
 
-    const baseWidthWorld = roadsParam?.baseWidth ?? 80;
+function _drawRoads(
+    ctx: CanvasRenderingContext2D, mesh: Mesh, roadSegments: RoadSegment[], param: Mapgen4Param,
+    scaleX: number, scaleY: number, scale: number, vpX: number, vpY: number, vpMinX: number, vpMaxX: number, vpMinY: number, vpMaxY: number
+) {
+    const baseWidthWorld = param.roads?.baseWidth ?? 80;
     const WORLD_WIDTH_PX = MapEditorConfig.WORLD_WIDTH_TILES * MapEditorConfig.TILE_SIZE;
     const roadWidthPx = baseWidthWorld * scale * (1000 / WORLD_WIDTH_PX);
     ctx.lineCap = 'round';
@@ -214,39 +242,12 @@ export function drawCachedMeshToCanvas(
         const ay = mesh.y_of_r(seg.r1);
         const bx = mesh.x_of_r(seg.r2);
         const by = mesh.y_of_r(seg.r2);
-        if (
-            (ax < vpMinX && bx < vpMinX) ||
-            (ax > vpMaxX && bx > vpMaxX) ||
-            (ay < vpMinY && by < vpMinY) ||
-            (ay > vpMaxY && by > vpMaxY)
-        )
-            continue;
+        if ((ax < vpMinX && bx < vpMinX) || (ax > vpMaxX && bx > vpMaxX) || (ay < vpMinY && by < vpMinY) || (ay > vpMaxY && by > vpMaxY)) continue;
         ctx.strokeStyle = seg.crossesRiver ? '#5a5a5a' : '#c4a574';
         ctx.lineWidth = Math.max(2, roadWidthPx);
         ctx.beginPath();
         ctx.moveTo((ax - vpX) * scaleX, (ay - vpY) * scaleY);
         ctx.lineTo((bx - vpX) * scaleX, (by - vpY) * scaleY);
         ctx.stroke();
-    }
-
-    if (!skipRailroad && railroadPath.length >= 2) {
-        const WORLD_WIDTH_PX_RAIL = MapEditorConfig.WORLD_WIDTH_TILES * MapEditorConfig.TILE_SIZE;
-        const tileWidthCanvas = RAILROAD_TILE_WORLD_PX * scale * (1000 / WORLD_WIDTH_PX_RAIL);
-        drawRailroadSpline(
-            ctx,
-            mesh,
-            map,
-            railroadPath,
-            railroadCrossings,
-            param.meshSeed,
-            toCanvas,
-            scale,
-            tileWidthCanvas,
-            vpMinX,
-            vpMaxX,
-            vpMinY,
-            vpMaxY,
-            railroadStationIds
-        );
     }
 }

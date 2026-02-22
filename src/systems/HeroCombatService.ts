@@ -9,7 +9,6 @@ import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
-import { VFXController } from '@vfx/VFXController';
 import { ProjectileVFX } from '@vfx/ProjectileVFX';
 import { VFXConfig } from '@data/VFXConfig';
 import { Registry } from '@core/Registry';
@@ -161,54 +160,13 @@ const HeroCombatService = {
             hero.attackTimer = GameConstants.Combat.ATTACK_COOLDOWN;
         }
 
-        // Calculate total damage from weapons in range
-        let totalDmg = 0;
-
-        // Hand1 Attack
-        if (hand1InRange && hand1Item) {
-            const weaponStats = getWeaponStats(hand1Item);
-            const weaponDmg = weaponStats.damage;
-            totalDmg += weaponDmg;
-
-            // VFX: Per-weapon muzzle flash
-            if (hand1Item.weaponType === 'ranged') {
-                this.playMuzzleFlashForSlot(hero, target, activeSlots.mainHand);
-            }
-
-            // SFX based on weapon type
-            if (AudioManager) {
-                AudioManager.playSFX(
-                    hand1Item.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing'
-                );
-            }
-        }
-
-        // Hand2 Attack
-        if (hand2InRange && hand2Item) {
-            const weaponStats = getWeaponStats(hand2Item);
-            const weaponDmg = weaponStats.damage;
-            totalDmg += weaponDmg;
-
-            // VFX: Per-weapon muzzle flash
-            if (hand2Item.weaponType === 'ranged') {
-                this.playMuzzleFlashForSlot(hero, target, activeSlots.offHand);
-            }
-
-            // SFX based on weapon type (only if different from hand1)
-            if (AudioManager && !hand1InRange) {
-                AudioManager.playSFX(
-                    hand2Item.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing'
-                );
-            }
-        }
-
-        // Fallback for non-ranged targets (mining)
-        if (!isRangedTarget) {
-            totalDmg = combat ? combat.damage : getConfig().Combat.DEFAULT_DAMAGE;
-            if (AudioManager) {
-                AudioManager.playSFX('sfx_hero_swing');
-            }
-        }
+        // Calculate total damage and play SFX/VFX
+        const totalDmg = this._calculateTotalDamage(
+            hero, target,
+            hand1InRange, hand1Item, activeSlots.mainHand,
+            hand2InRange, hand2Item, activeSlots.offHand,
+            isRangedTarget, combat
+        );
 
         // Legacy muzzle flash for ranged targets if neither weapon has ranged type
         if (isRangedTarget && !hand1InRange && !hand2InRange) {
@@ -278,16 +236,55 @@ const HeroCombatService = {
         }
 
         if (!VFXConfig) return;
-        const cfg = VFXConfig.HERO.MUZZLE_FLASH;
+        const cfg = (VFXConfig as unknown as { HERO: { MUZZLE_FLASH: { DISTANCE: number } } }).HERO.MUZZLE_FLASH;
         const dx = target.x - hero.x;
         const dy = target.y - hero.y;
         const angle = Math.atan2(dy, dx);
         const tipX = hero.x + Math.cos(angle) * cfg.DISTANCE;
         const tipY = hero.y + Math.sin(angle) * cfg.DISTANCE;
-        if (VFXConfig.TEMPLATES.MUZZLE_FLASH_FX && EventBus) {
-            const fx = { ...VFXConfig.TEMPLATES.MUZZLE_FLASH_FX, angle, spread: 1.0 };
+        const tvfx = (VFXConfig as unknown as { TEMPLATES: { MUZZLE_FLASH_FX: Record<string, unknown> } }).TEMPLATES;
+        if (tvfx && tvfx.MUZZLE_FLASH_FX && EventBus) {
+            const fx = { ...tvfx.MUZZLE_FLASH_FX, angle, spread: 1.0 };
             EventBus.emit(GameConstants.Events.VFX_PLAY_FOREGROUND, { x: tipX, y: tipY, options: fx });
         }
+    },
+
+    /**
+     * Helper to compute total damage and trigger attack FX
+     */
+    _calculateTotalDamage(
+        hero: Hero, target: IEntity,
+        hand1InRange: boolean, hand1Item: unknown, hand1Slot: string,
+        hand2InRange: boolean, hand2Item: unknown, hand2Slot: string,
+        isRangedTarget: boolean, combat: unknown
+    ): number {
+        let totalDmg = 0;
+
+        if (hand1InRange && hand1Item) {
+            const h1 = hand1Item as { weaponType?: string };
+            totalDmg += getWeaponStats(hand1Item).damage || 0;
+            if (h1.weaponType === 'ranged') {
+                this.playMuzzleFlashForSlot(hero, target, hand1Slot);
+            }
+            if (AudioManager) AudioManager.playSFX(h1.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing');
+        }
+
+        if (hand2InRange && hand2Item) {
+            const h2 = hand2Item as { weaponType?: string };
+            totalDmg += getWeaponStats(hand2Item).damage || 0;
+            if (h2.weaponType === 'ranged') {
+                this.playMuzzleFlashForSlot(hero, target, hand2Slot);
+            }
+            if (AudioManager && !hand1InRange) AudioManager.playSFX(h2.weaponType === 'ranged' ? 'sfx_hero_shoot' : 'sfx_hero_swing');
+        }
+
+        if (!isRangedTarget) {
+            const combatComponent = combat as { damage: number } | undefined;
+            totalDmg = combatComponent ? combatComponent.damage : getConfig().Combat.DEFAULT_DAMAGE;
+            if (AudioManager) AudioManager.playSFX('sfx_hero_swing');
+        }
+
+        return totalDmg;
     }
 };
 
