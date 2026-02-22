@@ -126,7 +126,7 @@ class VFXSystem {
     /**
      * Execute a single cue from a sequence
      */
-    executeCue(cue: VFXCue, x: number, y: number, contextOptions: ParticleOptions = {}) {
+    executeCue(cue: VFXCue, x: number, y: number, _contextOptions: ParticleOptions = {}) {
         // Resolve Template if present
         let config: ParticleOptions = {};
 

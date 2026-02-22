@@ -124,7 +124,7 @@ export function multiSourceDijkstraNearest(
 /** Build grid of regions for spatial lookup. */
 export function buildCoverageGrid(mesh: Mesh, map: Mapgen4Map, gridN: number): number[][] {
     const cellSize = MAP_SIZE / gridN;
-    const grid: number[][] = Array.from<number[]>({ length: gridN * gridN }, () => []);
+    const grid: number[][] = Array.from({ length: gridN * gridN }, () => [] as number[]);
     for (let r = 0; r < mesh.numSolidRegions; r++) {
         if (mesh.is_ghost_r(r)) continue;
         const elev = map.elevation_r[r] ?? 0;

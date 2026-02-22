@@ -199,7 +199,7 @@ const CraftingManager = {
      * Update loop (called by Game.js)
      * Handles timer completion
      */
-    update(dt: number) {
+    update(_dt: number) {
         const now = Date.now();
 
         for (const slot of this.slots) {

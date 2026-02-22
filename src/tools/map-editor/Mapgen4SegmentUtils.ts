@@ -70,7 +70,7 @@ function stepsForSegment(
 }
 
 /** Tangent at junction p(0) for closed loop: (p(1) - p(n-1)) / 2 from Catmull-Rom. */
-function junctionTangent(p: (i: number) => { x: number; y: number }, n: number): number {
+function junctionTangent(p: (i: number) => { x: number; y: number }, _n: number): number {
     const dx = p(1).x - p(-1).x;
     const dy = p(1).y - p(-1).y;
     return Math.atan2(dy, dx);
@@ -139,7 +139,7 @@ export function buildSplineFineSamplesClosed(
 /** Dense spline samples for OPEN curve. Always uses Catmull-Rom (no linear fallback). */
 export function buildSplineFineSamples(
     points: { x: number; y: number }[],
-    stepsPerSegment: number
+    _stepsPerSegment: number
 ): { x: number; y: number; angle: number; cumLen: number }[] {
     const n = points.length;
     if (n < 2) return [];

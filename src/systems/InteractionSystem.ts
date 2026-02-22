@@ -37,7 +37,7 @@ class InteractionSystem {
         }
     }
 
-    update(dt: number) {
+    update(_dt: number) {
         if (!entityManager || !this.game.hero) return;
 
         const hero = this.game.hero;
@@ -65,7 +65,7 @@ class InteractionSystem {
      * Check for spatial triggers (Merchant, Bridge)
      * Replaces Game.updateUITriggers
      */
-    updateSpatialTriggers(hero: IEntity) {
+    updateSpatialTriggers(_hero: IEntity) {
         // Merchant Button (merchants removed; placeholder for future map-placed merchants)
         if (EventBus) {
             EventBus.emit(GameConstants.Events.INTERACTION_OPPORTUNITY, {

@@ -195,14 +195,6 @@ const AssetLoader = {
         return this.cache.get(path) || null;
     },
 
-    /**
-     * Create an image element with fallback chain
-     * Automatically removes white backgrounds from all images
-     * @param {string} src - Primary image source path
-     * @param {function} onLoad - Optional callback when loaded
-     * @param {function} onError - Optional callback on failure (prevents fallback)
-     * @returns {HTMLImageElement}
-     */
     createImage(src: string, onLoad?: () => void, onError?: () => void): HTMLImageElement {
         const img = new Image();
         const fallback = this.getOriginalPath(src);

@@ -23,7 +23,7 @@ RPGUI.set_cursor = function(element, cursor)
 };
 
 // prevent element dragging
-RPGUI.prevent_drag = function(element)
+RPGUI.prevent_drag = function(_element)
 {
     /*
     // this code was removed because I found a cross-browser way to cover it all via css.

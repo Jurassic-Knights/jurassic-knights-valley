@@ -89,11 +89,11 @@ function create_slider(elem)
 		var track_width = track.offsetWidth - edges_width;
 
 		// set state if moving slider or not
-		slider_container.addEventListener('mouseup', function(e)
+		slider_container.addEventListener('mouseup', function(_e)
 		{
 			state.mouse_down = false;
 		});
-		window.addEventListener('mouseup', function(e)
+		window.addEventListener('mouseup', function(_e)
 		{
 			state.mouse_down = false;
 		});
@@ -102,25 +102,25 @@ function create_slider(elem)
 			state.mouse_down = true;
 			slide(e.offsetX || e.layerX);
 		});
-		slider_container.addEventListener('mousedown', function(e)
+		slider_container.addEventListener('mousedown', function(_e)
 		{
 			state.mouse_down = true;
 		});
 
 		// handle clicking on edges (set to min / max)
-		left_edge.addEventListener('mousedown', function(e)
+		left_edge.addEventListener('mousedown', function(_e)
 		{
 			set_value(min);
 		});
-		right_edge.addEventListener('mousedown', function(e)
+		right_edge.addEventListener('mousedown', function(_e)
 		{
 			set_value(max);
 		});
-		left_edge.addEventListener('mousemove', function(e)
+		left_edge.addEventListener('mousemove', function(_e)
 		{
 			if (state.mouse_down) set_value(min);
 		});
-		right_edge.addEventListener('mousemove', function(e)
+		right_edge.addEventListener('mousemove', function(_e)
 		{
 			if (state.mouse_down) set_value(max);
 		});
@@ -156,7 +156,7 @@ function create_slider(elem)
 
 
 		// when original slider value change update thumb position
-		elem.addEventListener("change", function(e)
+		elem.addEventListener("change", function(_e)
 		{
 			_onchange();
 		});

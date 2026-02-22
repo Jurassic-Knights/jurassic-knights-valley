@@ -130,7 +130,7 @@ const HomeBase = {
         // Forge Button binding removed - CraftingUI not implemented
     },
 
-    update(dt: number) {
+    update(_dt: number) {
         if (!GameRenderer || !GameRenderer.hero) return;
 
         const hero = GameRenderer.hero;

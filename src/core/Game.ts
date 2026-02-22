@@ -282,7 +282,7 @@ class Game {
      * Render updates (variable timestep)
      * @param {number} [alpha] - Interpolation factor (0-1)
      */
-    render(alpha = 1) {
+    render(_alpha = 1) {
         const profile = this._profile;
 
         // 3. Render Game World (includes BG VFX)

@@ -41,7 +41,7 @@ export type RailroadSplineSample = { x: number; y: number; angle: number; cumLen
 function thinSamplesByMinSpacing(
     samples: RailroadSplineSample[],
     minSpacing: number,
-    isClosed: boolean
+    _isClosed: boolean
 ): RailroadSplineSample[] {
     if (samples.length < 2) return samples;
     const kept: RailroadSplineSample[] = [{ ...samples[0] }];

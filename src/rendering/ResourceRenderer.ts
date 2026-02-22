@@ -22,7 +22,7 @@ class ResourceRendererService implements ISystem {
         Logger.info('[ResourceRenderer] Initialized');
     }
 
-    init(game: IGame): void { }
+    init(_game: IGame): void { }
 
     render(ctx: CanvasRenderingContext2D, res: Resource, includeShadow = true) {
         if (!res.active) return;

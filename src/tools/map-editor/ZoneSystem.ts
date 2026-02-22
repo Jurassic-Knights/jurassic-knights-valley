@@ -228,7 +228,7 @@ export class ZoneSystem {
         for (const [tileKey, categories] of Object.entries(zones)) {
             const [lx, ly] = tileKey.split(',').map(Number);
 
-            Object.entries(categories).forEach(([cat, zoneId]) => {
+            Object.entries(categories).forEach(([_cat, zoneId]) => {
                 const def = ZoneConfig[zoneId];
                 const isVisible = !EditorContext.hiddenZoneIds.has(zoneId);
 

@@ -116,7 +116,7 @@ const EnemyAI = {
     /**
      * Attack behavior
      */
-    updateAttack(enemy: IEntity, dt: number) {
+    updateAttack(enemy: IEntity, _dt: number) {
         if (!enemy.target) {
             enemy.state = 'wander';
             return;

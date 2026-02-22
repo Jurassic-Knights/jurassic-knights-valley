@@ -39,7 +39,7 @@ class CombatController {
      * Update combat logic
      * @param {number} dt - Delta time
      */
-    update(dt: number) {
+    update(_dt: number) {
         if (!this.game || !this.game.hero) return;
 
         // Debug Throttle (every ~60 frames)
@@ -153,7 +153,7 @@ class CombatController {
      * @param {Entity} target
      * @param {string} type - 'resource' or 'dinosaur'
      */
-    handleTargetDestruction(target: IEntity, type: string) {
+    handleTargetDestruction(_target: IEntity, _type: string) {
         // Drops are handled by the entity's own takeDamage method
         // This method is now only used for any additional destruction effects
         // (Currently none - preserved for future extension like VFX, audio, etc.)

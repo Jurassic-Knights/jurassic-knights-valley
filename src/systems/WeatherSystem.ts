@@ -86,7 +86,7 @@ class WeatherSystem {
      * Attempt to change weather
      * @param {boolean} force - If true, guarantees a roll happens (though result might be same)
      */
-    tryChangeWeather(force = false) {
+    tryChangeWeather(_force = false) {
         // RNG roll could simply be weighted based on season
         this.rollWeather();
     }

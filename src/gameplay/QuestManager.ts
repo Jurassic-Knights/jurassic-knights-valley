@@ -72,7 +72,7 @@ class QuestManagerService {
     /**
      * Update loop (required for System registration)
      */
-    update(dt: number) {
+    update(_dt: number) {
         // Quest update logic if needed
     }
 

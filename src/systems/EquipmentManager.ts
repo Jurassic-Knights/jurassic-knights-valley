@@ -84,7 +84,7 @@ class EquipmentManager {
 
         return Object.entries(this.slots)
             .filter(([slotId, item]) => item !== null && !excludedSlots.includes(slotId))
-            .map(([slotId, item]) => item);
+            .map(([_slotId, item]) => item);
     }
 
     /**

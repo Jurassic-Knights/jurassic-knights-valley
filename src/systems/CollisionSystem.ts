@@ -29,7 +29,7 @@ export class CollisionSystem implements ISystem {
         this.activeCollisions = new Map();
     }
 
-    init(game: IGame): void {
+    init(_game: IGame): void {
         this.cellSize = GameConstants.Grid.CELL_SIZE;
         Logger.info('[CollisionSystem] Initialized');
 
@@ -100,7 +100,7 @@ export class CollisionSystem implements ISystem {
      * Main update loop - Rebuilds spatial hash for dynamic entities.
      * Reuses bucket arrays to avoid per-frame allocation (object pooling).
      */
-    update(dt: number): void {
+    update(_dt: number): void {
         // Clear bucket contents but reuse arrays (no new allocation)
         for (const bucket of this.spatialHash.values()) {
             bucket.length = 0;

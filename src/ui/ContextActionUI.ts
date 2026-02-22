@@ -127,7 +127,7 @@ class ContextActionService {
         }
     }
 
-    private _updateDOM(type: string, data: ContextData) {
+    private _updateDOM(type: string, _data: ContextData) {
         if (!this.btn) return;
 
         const configMap: Record<string, { iconId: string; label: string }> = {

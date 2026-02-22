@@ -286,7 +286,7 @@ export function smoothPath(
     let current = points.map((p) => ({ x: p.x, y: p.y }));
 
     for (let iter = 0; iter < iterations; iter++) {
-        const next = current.map((p, i) => ({ x: p.x, y: p.y }));
+        const next = current.map((p, _i) => ({ x: p.x, y: p.y }));
         const prev = (i: number) => current[(i - 1 + n) % n]!;
         const succ = (i: number) => current[(i + 1) % n]!;
 

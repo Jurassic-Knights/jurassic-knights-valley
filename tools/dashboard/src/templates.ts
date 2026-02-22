@@ -69,16 +69,16 @@ export function renderTemplatesView(): void {
 // STUB FUNCTIONS
 // ============================================
 
-function parseAllTemplateSections(content: string): unknown[] {
+function parseAllTemplateSections(_content: string): unknown[] {
     // Stub - full implementation in asset_dashboard.html
     return [];
 }
 
-export function onSectionEdit(idx: number): void {
+export function onSectionEdit(_idx: number): void {
     // Stub
 }
 
-export function onPromptEdit(key: string): void {
+export function onPromptEdit(_key: string): void {
     // Stub
 }
 

@@ -43,11 +43,11 @@ export class ProceduralArchitect {
         }
     }
 
-    private generateForest(chunkManager: ChunkManager, chunkX: number, chunkY: number) {
+    private generateForest(_chunkManager: ChunkManager, _chunkX: number, _chunkY: number) {
         // Example: Use noise to place trees
     }
 
-    private generateCity(chunkManager: ChunkManager, chunkX: number, chunkY: number) {
+    private generateCity(_chunkManager: ChunkManager, _chunkX: number, _chunkY: number) {
         // Example: Grid roads + Buildings
     }
 
@@ -58,7 +58,7 @@ export class ProceduralArchitect {
      */
     public processAdjacency(
         rawUpdates: { x: number; y: number; category: string; zoneId: string | null }[],
-        worldData: Map<string, ChunkData>
+        _worldData: Map<string, ChunkData>
     ): {
         zones: typeof rawUpdates;
         splats: { x: number; y: number; radius: number; intensity: number }[];

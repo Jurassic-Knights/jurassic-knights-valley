@@ -96,7 +96,7 @@ Enemy.prototype.updateChase = function (this: Enemy, dt: number) {
 /**
  * Attack behavior
  */
-Enemy.prototype.updateAttack = function (this: Enemy, dt: number) {
+Enemy.prototype.updateAttack = function (this: Enemy, _dt: number) {
     if (!this.target) {
         this.state = 'wander';
         return;

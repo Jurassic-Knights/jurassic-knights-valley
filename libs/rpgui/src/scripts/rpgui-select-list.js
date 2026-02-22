@@ -66,7 +66,7 @@ function create_list(elem)
 		RPGUI.copy_event_listeners(option, item);
 
 		// set option callback (note: wrapped inside namespace to preserve vars)
-		(function(elem, option, item, list, all_items)
+		(function(elem, option, item, _list, _all_items)
 		{
 			// when clicking the customized option
 			item.addEventListener('click', function()

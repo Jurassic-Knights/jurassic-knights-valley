@@ -313,7 +313,7 @@ class UIManagerService {
     }
 
     // === Update Loop ===
-    update(dt: number) {
+    update(_dt: number) {
         // UI mostly event-driven
     }
 

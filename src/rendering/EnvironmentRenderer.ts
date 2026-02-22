@@ -188,7 +188,7 @@ class EnvironmentRenderer {
      * @param {CanvasRenderingContext2D} ctx - The game canvas context
      * @param {Object} viewport - Current camera viewport
      */
-    render(ctx: CanvasRenderingContext2D, viewport: IViewport) {
+    render(ctx: CanvasRenderingContext2D, _viewport: IViewport) {
         // Cache context for update loop usage
         if (!this.ctx) this.ctx = ctx;
 

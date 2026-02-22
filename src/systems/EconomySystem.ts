@@ -37,7 +37,7 @@ class EconomySystem {
 
     }
 
-    update(dt: number) {
+    update(_dt: number) {
         // No per-frame logic needed currently
     }
 

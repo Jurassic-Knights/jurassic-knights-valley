@@ -74,7 +74,7 @@ const MeleeTrailVFX = {
     /**
      * Render all trails
      */
-    render(ctx: CanvasRenderingContext2D, viewport: { x: number; y: number }) {
+    render(ctx: CanvasRenderingContext2D, _viewport: { x: number; y: number }) {
         for (const slot of ['hand1', 'hand2'] as const) {
             const trail = this.trails[slot];
             if (!trail || trail.length < 2) continue;

@@ -64,7 +64,7 @@ class ForgePanel extends UIPanel {
     /**
      * Override Update Loop
      */
-    update(dt: number) {
+    update(_dt: number) {
         if (this.isOpen && this.currentView && this.currentView.view === 'dashboard') {
             this.updateActiveSlots();
         }

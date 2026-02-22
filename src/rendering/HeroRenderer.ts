@@ -34,7 +34,7 @@ class HeroRendererSystem implements ISystem {
     }
 
     /** System initialization */
-    init(game: IGame): void {
+    init(_game: IGame): void {
         // No specific init logic needed yet
     }
 

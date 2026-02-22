@@ -64,7 +64,7 @@ const SFX = {
         return buffer;
     },
 
-    playNoise(duration: number, attack: number, decay: number, volume = 0.3, filterFreq = 2000) {
+    playNoise(duration: number, attack: number, decay: number, _volume = 0.3, filterFreq = 2000) {
         if (!this.ctx) return { noise: null, gain: null, filter: null };
 
         const noise = this.ctx.createBufferSource();
@@ -92,7 +92,7 @@ const SFX = {
         freq: number,
         duration: number,
         type: OscillatorType = 'sine',
-        volume = 0.3,
+        _volume = 0.3,
         attack = 0.01,
         decay: number | null = null
     ) {

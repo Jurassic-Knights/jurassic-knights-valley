@@ -141,11 +141,11 @@ class MerchantPanel extends UIPanel {
         // Island logic removed
     }
 
-    renderUpgradeRow(type: string, data: any, label: string, unit: string, customDisplay: string | null = null) {
+    renderUpgradeRow(type: string, data: any, label: string, unit: string, _customDisplay: string | null = null) {
         // Obsolete
     }
 
-    purchaseUpgrade(type: string) {
+    purchaseUpgrade(_type: string) {
         // Obsolete
     }
 }

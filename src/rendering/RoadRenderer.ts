@@ -160,7 +160,7 @@ class RoadRenderer {
     /**
      * Update (placeholder for animations)
      */
-    update(dt: number) {
+    update(_dt: number) {
         // Could add animated road effects here
     }
 }

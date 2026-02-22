@@ -130,7 +130,7 @@ const actions: Record<string, ActionHandler> = {
     'remake-asset': (d) => remakeAsset(d.path!, d.name!, d.safeId!),
 
     // Quick Actions (Category Cards)
-    'quick-approve': async (d, t) => {
+    'quick-approve': async (d, _t) => {
         // Prevent selecting the card when clicking the button
         // (Handled by stopPropagation in delegator, but good to note)
         await approveCategoryItem(d.category!, d.file!, d.id!);

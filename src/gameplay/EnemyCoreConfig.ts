@@ -76,7 +76,7 @@ export function buildEnemyConfig(config: EntityConfig): EnemyConfigResult {
 
 export function getPatrolConfig(
     finalConfig: EntityConfig,
-    config: EntityConfig
+    _config: EntityConfig
 ): { patrolRadius: number; leashDistance: number; aggroRange: number } {
     const Biome = GameConstants.Biome;
     return {

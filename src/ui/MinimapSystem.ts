@@ -253,7 +253,7 @@ class MinimapSystem {
     /**
      * Update called each frame (for live minimap)
      */
-    update(dt: number) {
+    update(_dt: number) {
         // Re-render if open to show hero movement
         if (this.isOpen) {
             this.render();

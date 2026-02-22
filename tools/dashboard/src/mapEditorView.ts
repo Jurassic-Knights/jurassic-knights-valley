@@ -1012,29 +1012,12 @@ export function hideMapEditorView(): void {
     });
 }
 
-// HMR: when any of these map-editor modules change, refresh procedural preview instead of full page reload.
-// Vite requires string literals here (no variables).
+// HMR: self-accept so edits to this file (and its direct imports like MapEditorCore)
+// trigger a preview refresh instead of a full page reload.
 if (import.meta.hot) {
-    import.meta.hot.accept(
-        [
-            '../../../src/tools/map-editor/Mapgen4SplineUtils.ts',
-            '../../../src/tools/map-editor/RailroadSplineBuilder.ts',
-            '../../../src/tools/map-editor/MapEditorCore.ts',
-            '../../../src/tools/map-editor/MapEditorProceduralRenderer.ts',
-            '../../../src/tools/map-editor/Mapgen4Generator.ts',
-            '../../../src/tools/map-editor/RailroadGenerator.ts',
-            '../../../src/tools/map-editor/RailroadDijkstra.ts',
-            '../../../src/tools/map-editor/RailroadPathfinder.ts',
-            '../../../src/tools/map-editor/Mapgen4Param.ts',
-            '../../../src/tools/map-editor/Mapgen4PreviewRenderer.ts',
-            '../../../src/tools/map-editor/Mapgen4RailroadPreview.ts',
-            '../../../src/tools/map-editor/RailroadGeneratorTypes.ts',
-            '../../../src/tools/map-editor/RailroadMeshRenderer.ts',
-        ],
-        () => {
-            if (editorInstance) {
-                runPreviewCanvas().catch(() => { });
-            }
+    import.meta.hot.accept(() => {
+        if (editorInstance) {
+            runPreviewCanvas().catch(() => { });
         }
-    );
+    });
 }

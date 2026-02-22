@@ -36,7 +36,7 @@ const NPCAI = {
     /**
      * Idle behavior - check for player proximity
      */
-    updateIdle(npc: IEntity, hero: IEntity | null, dt: number) {
+    updateIdle(npc: IEntity, hero: IEntity | null, _dt: number) {
         if (!hero) return;
 
         const dist = npc.distanceTo
@@ -94,7 +94,7 @@ const NPCAI = {
     /**
      * Dialogue state (player is interacting)
      */
-    updateDialogue(npc: IEntity, hero: IEntity | null, dt: number) {
+    updateDialogue(npc: IEntity, hero: IEntity | null, _dt: number) {
         // Face the player during dialogue
         if (hero) {
             npc.facingRight = hero.x > npc.x;

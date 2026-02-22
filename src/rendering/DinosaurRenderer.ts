@@ -16,7 +16,7 @@ class DinosaurRendererService implements ISystem {
         Logger.info('[DinosaurRenderer] Initialized');
     }
 
-    init(game: IGame): void { }
+    init(_game: IGame): void { }
 
     render(ctx: CanvasRenderingContext2D, dino: Dinosaur, includeShadow = true, alpha = 1) {
         if (!dino.active) return;

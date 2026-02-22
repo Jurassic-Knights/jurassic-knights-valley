@@ -39,7 +39,7 @@ RPGUI.on_load(function()
 });
 
 // stop drag
-function mouseUp(e)
+function mouseUp(_e)
 {
 	_curr_dragged = null;
 	window.removeEventListener('mousemove', divMove);

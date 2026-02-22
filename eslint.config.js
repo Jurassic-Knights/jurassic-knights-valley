@@ -20,5 +20,9 @@ export default tseslint.config(
     {
         files: ['**/*.d.ts', '**/asset_manifest*.ts', '**/mapgen4/**'],
         rules: { 'max-lines': 'off', 'max-lines-per-function': 'off' }
+    },
+    {
+        files: ['**/*.cjs', '**/*.js'],
+        rules: { '@typescript-eslint/no-require-imports': 'off' }
     }
 );
