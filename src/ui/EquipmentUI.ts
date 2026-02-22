@@ -16,12 +16,13 @@ import { EquipmentUIRenderer } from './EquipmentUIRenderer';
 import { Registry } from '@core/Registry';
 import { DOMUtils } from '@core/DOMUtils';
 import { GameInstance } from '@core/Game';
-import { HeroSkinSelector } from './HeroSkinSelector';
+// import removed
 import { MODE_CATEGORIES } from './EquipmentUIFilterConfig';
 import { getFilterHierarchy } from './EquipmentUIFilterConfig';
 import { WeaponWheelInstance } from './WeaponWheel';
 import { swapFooterToEquipmentMode, restoreFooterButtons } from './EquipmentUIFooter';
 import { handleEquipmentUIClick } from './EquipmentUIClickHandler';
+import { renderItemStats } from './EquipmentUIRendererStats';
 import type { EquipmentItem, IFooterConfig } from '../types/ui';
 
 export interface FilterCategory {
@@ -63,8 +64,8 @@ class EquipmentUI {
         this.originalFooterConfigs = null;
 
         const equipCfg = GameConstants?.Equipment || {
-            ALL_SLOTS: undefined,
-            TOOL_SLOTS: undefined
+            ALL_SLOTS: [] as string[],
+            TOOL_SLOTS: [] as string[]
         };
         this.slots = equipCfg.ALL_SLOTS || [
             'head',
@@ -102,7 +103,7 @@ class EquipmentUI {
 
         this._createContainer();
 
-        const uiMgr = Registry.get('UIManager');
+        const uiMgr = Registry.get('UIManager') as any;
         if (uiMgr && uiMgr.registerFullscreenUI) {
             uiMgr.registerFullscreenUI(this);
             Logger.info('[EquipmentUI] Registered with UIManager');
@@ -143,7 +144,7 @@ class EquipmentUI {
     open() {
         WeaponWheelInstance.close();
 
-        const uiMgr = Registry.get('UIManager');
+        const uiMgr = Registry.get('UIManager') as any;
         if (uiMgr && uiMgr.closeOtherFullscreenUIs) {
             uiMgr.closeOtherFullscreenUIs(this);
         }
@@ -182,7 +183,8 @@ class EquipmentUI {
     }
 
     _loadEquipment() {
-        const allEquipment = EntityLoader?.getAllEquipment?.() || [];
+        const allEquipment =
+            (EntityLoader?.getAllEquipment?.() as unknown as EquipmentItem[]) || [];
         const filterParts = this.selectedCategory?.split(':') || ['all'];
         const grip = filterParts[0];
         const weaponType = filterParts[1];
@@ -237,7 +239,7 @@ class EquipmentUI {
         const statsRow = this.container!.querySelector('.item-stats-row');
         if (item && nameEl) {
             nameEl.textContent = item.name;
-            if (statsRow) statsRow.innerHTML = EquipmentUIRenderer.renderItemStats(item);
+            if (statsRow) statsRow.innerHTML = renderItemStats(item);
             this.container!.querySelector('.equip-summary-bar')?.classList.add('has-item');
             this.container!.querySelector('.equip-summary-bar')?.classList.remove('empty');
         }
@@ -251,7 +253,7 @@ class EquipmentUI {
 
     _selectEquippedSlot(slotId: string) {
         const hero = GameInstance?.hero;
-        const equippedItem = hero?.equipment?.getSlot(slotId);
+        const equippedItem = hero?.equipment?.getSlot(slotId) as EquipmentItem | undefined;
 
         if (equippedItem) {
             this.selectedItem = equippedItem;
@@ -268,8 +270,7 @@ class EquipmentUI {
             const statsRow = this.container!.querySelector('.item-stats-row');
             if (nameEl) {
                 nameEl.textContent = equippedItem.name;
-                if (statsRow)
-                    statsRow.innerHTML = EquipmentUIRenderer.renderItemStats(equippedItem);
+                if (statsRow) statsRow.innerHTML = renderItemStats(equippedItem);
                 this.container!.querySelector('.equip-summary-bar')?.classList.add('has-item');
                 this.container!.querySelector('.equip-summary-bar')?.classList.remove('empty');
             }

@@ -8,7 +8,7 @@
 import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
-import { IEntity, IViewport } from '@app-types/core';
+import type { IEntity } from '@app-types/core';
 import { RenderTiming } from './RenderProfiler';
 import { RendererCollection } from '../types/rendering';
 import { isRenderable } from '../utils/typeGuards';
@@ -92,7 +92,13 @@ const EntityRenderService = {
      * @param {object} timing - Optional timing object for profiling
      * @param {number} alpha - Interpolation factor
      */
-    renderEntity(ctx: CanvasRenderingContext2D, entity: IEntity, renderers: RendererCollection, timing: RenderTiming | null = null, alpha = 1) {
+    renderEntity(
+        ctx: CanvasRenderingContext2D,
+        entity: IEntity,
+        renderers: RendererCollection,
+        timing: RenderTiming | null = null,
+        alpha = 1
+    ) {
         const tSub = timing ? performance.now() : 0;
         const type = entity.entityType;
 
@@ -126,7 +132,7 @@ const EntityRenderService = {
             if (isRenderable(entity)) entity.render(ctx);
             if (timing) {
                 timing.entOtherTime = (timing.entOtherTime || 0) + performance.now() - tSub;
-                const typeName = type || (entity.constructor?.name) || 'unknown';
+                const typeName = type || entity.constructor?.name || 'unknown';
                 timing.entOtherTypes = timing.entOtherTypes || {};
                 timing.entOtherTypes[typeName] = (timing.entOtherTypes[typeName] || 0) + 1;
             }
@@ -143,7 +149,13 @@ const EntityRenderService = {
      * @param {object} timing - Optional profiling object
      * @param {number} alpha - Interpolation factor (0-1)
      */
-    renderAll(ctx: CanvasRenderingContext2D, entities: IEntity[], renderers: RendererCollection, timing: RenderTiming | null = null, alpha = 1) {
+    renderAll(
+        ctx: CanvasRenderingContext2D,
+        entities: IEntity[],
+        renderers: RendererCollection,
+        timing: RenderTiming | null = null,
+        alpha = 1
+    ) {
         // Initialize timing counters
         if (timing) {
             timing.entHeroTime = timing.entHeroTime || 0;
@@ -164,7 +176,11 @@ const EntityRenderService = {
      * @param {array} entities
      * @param {object} timing
      */
-    renderUIOverlays(ctx: CanvasRenderingContext2D, entities: IEntity[], timing: RenderTiming | null = null) {
+    renderUIOverlays(
+        ctx: CanvasRenderingContext2D,
+        entities: IEntity[],
+        timing: RenderTiming | null = null
+    ) {
         const tSub = timing ? performance.now() : 0;
 
         for (const entity of entities) {

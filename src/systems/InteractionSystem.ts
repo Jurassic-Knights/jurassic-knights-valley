@@ -6,9 +6,9 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
-import { WorldManager } from '../world/WorldManager';
+// import removed
 import { DroppedItem } from '../gameplay/DroppedItem';
 import { AudioManager } from '../audio/AudioManager';
 import { QuestManager } from '../gameplay/QuestManager';

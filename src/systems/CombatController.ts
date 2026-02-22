@@ -73,7 +73,6 @@ class CombatController {
         // Check resources (Mining Range)
         const miningDist =
             hero.miningRange || (combat ? combat.range : GameConstants.Combat.DEFAULT_MINING_RANGE);
-        let i = 0;
         for (const resource of resources) {
             // Must be active AND ready (not depleted)
             if (resource.active && resource.state === 'ready') {
@@ -85,7 +84,6 @@ class CombatController {
                     targetType = 'resource';
                 }
             }
-            i++;
         }
 
         // Check dinosaurs (Gun Range) - use stats component for equipped weapon range

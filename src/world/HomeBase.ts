@@ -79,10 +79,12 @@ const HomeBase = {
         // Query and cache
         const bounds = this._cachedBounds;
         this._cachedTrees = EntityManager.getByType('Resource').filter(
-            (r) =>
+            (r: any) =>
                 r.resourceType.startsWith('node_woodcutting_') &&
-                r.x >= bounds.x && r.x <= bounds.x + bounds.width &&
-                r.y >= bounds.y && r.y <= bounds.y + bounds.height
+                r.x >= bounds.x &&
+                r.x <= bounds.x + bounds.width &&
+                r.y >= bounds.y &&
+                r.y <= bounds.y + bounds.height
         );
         this._treeCacheFrame = frame;
 
@@ -151,7 +153,11 @@ const HomeBase = {
             isAtHome = dist < restRadius;
         }
         if (!isAtHome && EntityManager) {
-            const props = EntityManager.getByType('Prop') as Array<{ x: number; y: number; registryId?: string | null }>;
+            const props = EntityManager.getByType('Prop') as Array<{
+                x: number;
+                y: number;
+                registryId?: string | null;
+            }>;
             for (const prop of props) {
                 if (prop.registryId && REST_ZONE_IDS.has(prop.registryId)) {
                     const dx = hero.x - prop.x;
@@ -215,7 +221,9 @@ const HomeBase = {
                     this._outpostPath = AssetLoader.getImagePath('building_residential_01');
                     this._forgePath = AssetLoader.getImagePath('building_industrial_01');
                     this._treePath = AssetLoader.getImagePath('node_woodcutting_t1_01');
-                    this._treeConsumedPath = AssetLoader.getImagePath('node_woodcutting_t1_01_consumed');
+                    this._treeConsumedPath = AssetLoader.getImagePath(
+                        'node_woodcutting_t1_01_consumed'
+                    );
                 }
             }
         }

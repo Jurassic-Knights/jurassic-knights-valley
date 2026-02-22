@@ -6,19 +6,17 @@
  */
 
 import { Logger } from '@core/Logger';
-import { RenderConfig } from '@config/RenderConfig';
 import { MaterialLibrary } from '@vfx/MaterialLibrary';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { DOMUtils } from '@core/DOMUtils';
-import { environmentRenderer } from './EnvironmentRenderer';
 import { drawStatusBars } from './HeroRendererStatusBars';
 import { drawRangeCircles } from './HeroRendererRangeCircles';
 import { drawShadow } from './HeroRendererShadow';
 import { drawWeapon } from './HeroRendererWeapon';
 import { Hero } from '../gameplay/Hero';
-import type { IEntity, IGame, ISystem } from '../types/core';
+import type { IGame, ISystem } from '../types/core';
 
 class HeroRendererSystem implements ISystem {
     // Cached image properties
@@ -83,8 +81,8 @@ class HeroRendererSystem implements ISystem {
         if (!hero || !hero.active) return;
 
         // Interpolation
-        const prevX = (hero.prevX !== undefined) ? hero.prevX : hero.x;
-        const prevY = (hero.prevY !== undefined) ? hero.prevY : hero.y;
+        const prevX = hero.prevX !== undefined ? hero.prevX : hero.x;
+        const prevY = hero.prevY !== undefined ? hero.prevY : hero.y;
 
         const renderX = prevX + (hero.x - prevX) * alpha;
         const renderY = prevY + (hero.y - prevY) * alpha;

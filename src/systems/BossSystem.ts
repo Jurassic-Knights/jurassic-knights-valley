@@ -12,13 +12,11 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { BiomeConfig } from '@data/BiomeConfig';
-import { EntityTypes } from '@config/EntityTypes';
-import { Boss } from '../gameplay/Boss';
 import type { IGame, IEntity } from '../types/core';
 
 class BossSystem {
@@ -65,7 +63,17 @@ class BossSystem {
         }
 
         // Get biome config
-        const biome = (BiomeConfig?.types as Record<string, { bossId?: string; bossSpawn?: { x: number; y: number }; bounds?: { x: number; y: number; width: number; height: number }; [key: string]: unknown }>)?.[biomeId];
+        const biome = (
+            BiomeConfig?.types as Record<
+                string,
+                {
+                    bossId?: string;
+                    bossSpawn?: { x: number; y: number };
+                    bounds?: { x: number; y: number; width: number; height: number };
+                    [key: string]: unknown;
+                }
+            >
+        )?.[biomeId];
         if (!biome?.bossId) {
             Logger.info(`[BossSystem] No boss configured for biome: ${biomeId}`);
             return null;
@@ -118,7 +126,16 @@ class BossSystem {
      */
     getBossSpawnPosition(biomeId: string) {
         // Try to get from biome config
-        const biome = (BiomeConfig?.types as Record<string, { bossSpawn?: { x: number; y: number }; bounds?: { x: number; y: number; width: number; height: number }; [key: string]: unknown }>)?.[biomeId];
+        const biome = (
+            BiomeConfig?.types as Record<
+                string,
+                {
+                    bossSpawn?: { x: number; y: number };
+                    bounds?: { x: number; y: number; width: number; height: number };
+                    [key: string]: unknown;
+                }
+            >
+        )?.[biomeId];
         if (biome?.bossSpawn) {
             return biome.bossSpawn;
         }
@@ -151,7 +168,15 @@ class BossSystem {
     /**
      * Handle enemy death - track boss deaths
      */
-    onEnemyDied(data: { entity: IEntity; enemy?: IEntity & { isBoss?: boolean; biomeId?: string; respawnTime?: number; bossName?: string } }) {
+    onEnemyDied(data: {
+        entity: IEntity;
+        enemy?: IEntity & {
+            isBoss?: boolean;
+            biomeId?: string;
+            respawnTime?: number;
+            bossName?: string;
+        };
+    }) {
         const enemy = data.enemy || data.entity;
         if (!enemy?.isBoss) return;
 
@@ -237,7 +262,10 @@ class BossSystem {
         if (!biomes) return;
 
         for (const biomeId of Object.keys(biomes)) {
-            if ((biomes as Record<string, { bossId?: string; [key: string]: unknown }>)[biomeId]?.bossId) {
+            if (
+                (biomes as Record<string, { bossId?: string; [key: string]: unknown }>)[biomeId]
+                    ?.bossId
+            ) {
                 this.spawnBoss(biomeId);
             }
         }

@@ -19,7 +19,6 @@ import { EventBus } from '@core/EventBus';
 import { VFXController } from '@vfx/VFXController';
 import { AssetLoader } from '@core/AssetLoader';
 import { Registry } from '@core/Registry';
-import { DOMUtils } from '@core/DOMUtils';
 import { UICapture } from './UICapture';
 import { GameInstance } from '@core/Game';
 import { LayoutStrategies } from './responsive/LayoutStrategies';

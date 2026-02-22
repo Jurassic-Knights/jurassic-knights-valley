@@ -2,7 +2,6 @@
  * GameRendererLayers - Render pass execution for GameRenderer
  */
 import { Logger } from './Logger';
-import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { EntityRenderService } from '../rendering/EntityRenderService';
 import { DebugOverlays } from '../rendering/DebugOverlays';
 import { CollisionSystem } from '../systems/CollisionSystem';
@@ -28,7 +27,10 @@ export interface GameRendererState {
     simpleShadows: boolean;
     _worldRenderer: WorldRenderer | null;
     _roadRenderer: RoadRenderer | null;
-    _vfxController: { bgParticles?: { render: (ctx: CanvasRenderingContext2D) => void }; render?: (ctx: CanvasRenderingContext2D) => void } | null;
+    _vfxController: {
+        bgParticles?: { render: (ctx: CanvasRenderingContext2D) => void };
+        render?: (ctx: CanvasRenderingContext2D) => void;
+    } | null;
     _homeBase: { render: (ctx: CanvasRenderingContext2D) => void } | null;
     _heroRenderer: HeroRenderer | null;
     _dinosaurRenderer: DinosaurRenderer | null;

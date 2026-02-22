@@ -8,7 +8,7 @@ import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { IGame, IEntity } from '@app-types/core';
 
 // Helper to access Events from GameConstants
@@ -25,12 +25,16 @@ const ProgressionSystem = {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(Events.ENEMY_DIED, (data: { entity?: IEntity; xpReward?: number; [key: string]: unknown }) => this.onEnemyKilled(data));
+            EventBus.on(
+                Events.ENEMY_DIED,
+                (data: { entity?: IEntity; xpReward?: number; [key: string]: unknown }) =>
+                    this.onEnemyKilled(data)
+            );
         }
     },
 
     onEnemyKilled(data: { enemy: IEntity; xpReward: number }) {
-        const { enemy, xpReward } = data;
+        const { xpReward } = data;
         if (!xpReward || !this.game?.hero) return;
 
         this.grantXP(this.game.hero, xpReward);
@@ -43,7 +47,6 @@ const ProgressionSystem = {
         const stats = hero.components?.stats;
         if (!stats) return;
 
-        const oldLevel = stats.level;
         stats.xp += amount;
 
         // Emit XP gain event
@@ -62,7 +65,9 @@ const ProgressionSystem = {
         const getXP = (lvl: number) => {
             const base = prog.XP_BASE;
             const scaling = prog.XP_SCALING;
-            return stats.getXPForLevel ? stats.getXPForLevel(lvl) : base * Math.pow(scaling, lvl - 1);
+            return stats.getXPForLevel
+                ? stats.getXPForLevel(lvl)
+                : base * Math.pow(scaling, lvl - 1);
         };
 
         let nextLevelXP = getXP(stats.level);
@@ -104,7 +109,12 @@ const ProgressionSystem = {
         }
 
         if (EventBus) {
-            EventBus.emit(Events.HERO_LEVEL_UP, { hero, oldLevel: newLevel - 1, newLevel, levelsGained: 1 });
+            EventBus.emit(Events.HERO_LEVEL_UP, {
+                hero,
+                oldLevel: newLevel - 1,
+                newLevel,
+                levelsGained: 1
+            });
         }
         Logger.info(`[ProgressionSystem] Hero leveled up to ${newLevel}!`);
     },
@@ -131,7 +141,9 @@ const ProgressionSystem = {
         // Let's use internal calculator if component doesn't have it, to be safe.
         // But logic above used stats.getXPForLevel...
         // Let's assume stats component matches the logic or we use ours.
-        const required = stats.getXPForLevel ? stats.getXPForLevel(stats.level) : this.getXPForLevel(stats.level);
+        const required = stats.getXPForLevel
+            ? stats.getXPForLevel(stats.level)
+            : this.getXPForLevel(stats.level);
         return stats.xp / required;
     },
 

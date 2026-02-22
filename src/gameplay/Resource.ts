@@ -16,7 +16,7 @@ import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { GameConstants, getConfig } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
 
-import { Registry } from '@core/Registry';
+// import removed
 import { EntityRegistry } from '@entities/EntityLoader';
 import { EntityScaling } from '../utils/EntityScaling';
 import { RESOURCE_COLORS, RESOURCE_RARITY, RESOURCE_RARITY_COLORS } from './ResourceConstants';
@@ -39,7 +39,6 @@ class Resource extends Entity {
     respawnTimer: number = 0;
     maxRespawnTime: number = 30;
 
-
     // Respawn tracking
     currentRespawnDuration: number = 30;
 
@@ -47,7 +46,9 @@ class Resource extends Entity {
      * Create a resource
      * @param {object} config
      */
-    constructor(config: { resourceType?: string; x?: number; y?: number;[key: string]: unknown } = {}) {
+    constructor(
+        config: { resourceType?: string; x?: number; y?: number; [key: string]: unknown } = {}
+    ) {
         // 1. Load Config from EntityRegistry (nodes or resources)
         const nodeConfig = EntityRegistry.nodes?.[config.resourceType];
         const resConfig = EntityRegistry.resources?.[config.resourceType];
@@ -109,7 +110,7 @@ class Resource extends Entity {
         if (!isMapPlaced) {
             let onHome = false;
             if (WorldManager) {
-                const mapGenParams = WorldManager.getMapgen4Param();
+                // mapGenParams usage removed
                 // To maintain parity, we can assume town index 0 is "home" conceptually,
                 // or just allow all nodes. We'll simply let all map nodes spawn.
                 onHome = true;
@@ -203,7 +204,9 @@ class Resource extends Entity {
                 this.maxRespawnTime = GameConstants.Resource.T1_FAST_RESPAWN;
             } else {
                 const defaultBase = GameConstants.Resource.DEFAULT_BASE_RESPAWN;
-                this.maxRespawnTime = (Resource.TYPES[this.resourceType] as { baseRespawnTime?: number } | undefined)?.baseRespawnTime ?? defaultBase;
+                this.maxRespawnTime =
+                    (Resource.TYPES[this.resourceType] as { baseRespawnTime?: number } | undefined)
+                        ?.baseRespawnTime ?? defaultBase;
             }
             this.respawnTimer = this.maxRespawnTime;
 
@@ -320,7 +323,7 @@ class Resource extends Entity {
     static COLORS = RESOURCE_COLORS;
     static RARITY = RESOURCE_RARITY;
     static RARITY_COLORS = RESOURCE_RARITY_COLORS;
-    static TYPES: Record<string, { baseRespawnTime?: number;[key: string]: unknown }> = {};
+    static TYPES: Record<string, { baseRespawnTime?: number; [key: string]: unknown }> = {};
 }
 
 // ES6 Module Export

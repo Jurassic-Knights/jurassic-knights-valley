@@ -34,8 +34,15 @@ export class MapEditorManipulationHandles {
 
     update(host: ManipulationHandlesHost): void {
         this.host = host;
-        const { procCache, worldContainer, app, zoom, manualTowns, manualStations, editingMode } =
-            host;
+        const {
+            procCache,
+            worldContainer,
+            app,
+            zoom: _zoom,
+            manualTowns,
+            manualStations,
+            editingMode
+        } = host;
 
         if (!worldContainer || !app) return;
         if (editingMode !== 'manipulation') {
@@ -85,7 +92,8 @@ export class MapEditorManipulationHandles {
             (g as unknown as { manipulationIndex: number }).manipulationIndex = index;
             g.on('pointerdown', (e: PIXI.FederatedPointerEvent) => {
                 e.stopPropagation();
-                this.dragging = type === 'town' ? { type: 'town', index } : { type: 'station', index };
+                this.dragging =
+                    type === 'town' ? { type: 'town', index } : { type: 'station', index };
                 window.addEventListener('pointermove', this.boundPointerMove);
                 window.addEventListener('pointerup', this.boundPointerUp);
             });
@@ -117,7 +125,8 @@ export class MapEditorManipulationHandles {
             host.zoom
         );
         const child = this.container.children.find((c) => {
-            const type = (c as unknown as { manipulationType: 'town' | 'station' }).manipulationType;
+            const type = (c as unknown as { manipulationType: 'town' | 'station' })
+                .manipulationType;
             const index = (c as unknown as { manipulationIndex: number }).manipulationIndex;
             return (
                 type === this.dragging!.type &&
@@ -134,7 +143,8 @@ export class MapEditorManipulationHandles {
         window.removeEventListener('pointermove', this.boundPointerMove);
         window.removeEventListener('pointerup', this.boundPointerUp);
         const child = this.container.children.find((c) => {
-            const type = (c as unknown as { manipulationType: 'town' | 'station' }).manipulationType;
+            const type = (c as unknown as { manipulationType: 'town' | 'station' })
+                .manipulationType;
             const index = (c as unknown as { manipulationIndex: number }).manipulationIndex;
             return (
                 type === this.dragging!.type &&

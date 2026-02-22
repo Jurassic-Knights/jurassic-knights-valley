@@ -7,7 +7,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { AssetLoader } from '@core/AssetLoader';
 import { AudioManager } from '../audio/AudioManager';
 
@@ -44,7 +44,6 @@ class ContextActionService {
         // EventBus Listeners
         if (EventBus && GameConstants) {
             const E = GameConstants.Events;
-
 
             // Rest/Home
             EventBus.on(E.HOME_BASE_ENTERED, () => this.show('rest'));

@@ -16,7 +16,6 @@ import { GameConstants, getConfig } from '../../../data/GameConstants';
 import { BiomeConfig } from '../../../data/BiomeConfig';
 import { EntityTypes } from '../../../config/EntityTypes';
 import { GameInstance } from '../../../core/Game';
-import { Registry } from '../../../core/Registry';
 import { MathUtils } from '../../../core/MathUtils';
 import type { IEntity } from '../../../types/core';
 
@@ -73,7 +72,9 @@ const EnemyAI = {
             };
             enemy.wanderTimer = 0;
             // Read wander timers from config for live tuning
-            const cfg = getConfig() as { AI?: { WANDER_TIMER_MIN?: number; WANDER_TIMER_MAX?: number } };
+            const cfg = getConfig() as {
+                AI?: { WANDER_TIMER_MIN?: number; WANDER_TIMER_MAX?: number };
+            };
             const wanderMin = cfg.AI?.WANDER_TIMER_MIN || 2000;
             const wanderMax = cfg.AI?.WANDER_TIMER_MAX || 5000;
             enemy.wanderInterval = wanderMin + Math.random() * (wanderMax - wanderMin);

@@ -10,8 +10,8 @@ import { entityManager } from './EntityManager';
 import { VFXController } from '@vfx/VFXController';
 import { WorldManager } from '../world/WorldManager';
 import { GameInstance } from './Game';
-import { Registry } from './Registry';
 import { DOMUtils } from './DOMUtils';
+import type { IGame } from '../types/core';
 
 // Chrome/Edge Helper for memory stats
 interface PerformanceMemory {
@@ -140,7 +140,7 @@ const Profiler = {
             // Get current zone
             if (WorldManager && GameInstance?.hero) {
                 const hero = GameInstance.hero;
-                const island = WorldManager.getIslandAt?.(hero.x, hero.y);
+                const island = (WorldManager as any).getIslandAt?.(hero.x, hero.y);
                 this.currentZone = island?.name || 'Unknown';
             }
 

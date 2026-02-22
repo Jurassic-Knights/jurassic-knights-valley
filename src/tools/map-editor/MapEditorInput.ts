@@ -1,4 +1,3 @@
-import type * as PIXI from 'pixi.js';
 import { Logger } from '@core/Logger';
 import { screenToWorld, toCanvasCoords } from './MapEditorInputHandlers';
 import { handleZoom as handleZoomViewport } from './MapEditorViewport';

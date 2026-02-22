@@ -7,12 +7,10 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
-import { Registry } from '@core/Registry';
+import { GameConstants } from '@data/GameConstants';
+import { ZoneConfig } from '@data/ZoneConfig';
 import { UIBinder } from '@core/UIBinder';
 import { SFX } from '@audio/SFX_Core';
-
-
 
 class HUDControllerClass {
     private lastPipCount: number = -1;
@@ -34,10 +32,8 @@ class HUDControllerClass {
             GameConstants.Events.HERO_HEALTH_CHANGE,
             (data: { current: number; max: number }) => this.updateHealth(data)
         );
-        EventBus.on(
-            GameConstants.Events.INVENTORY_UPDATED,
-            (data: Record<string, number>) =>
-                this.updateResources(data)
+        EventBus.on(GameConstants.Events.INVENTORY_UPDATED, (data: Record<string, number>) =>
+            this.updateResources(data)
         );
         EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: { isHome: boolean }) =>
             this.updateRestButton(data)
@@ -49,10 +45,7 @@ class HUDControllerClass {
         if (!barContainer) return;
 
         // Ensure container exists
-        const pipsContainer = UIBinder.ensureContainer(
-            'resolve-pips-container',
-            'ui-resolve-bar'
-        );
+        const pipsContainer = UIBinder.ensureContainer('resolve-pips-container', 'ui-resolve-bar');
         if (!pipsContainer) return;
 
         // 1. Calculate Target Pip Count (Dynamic Scaling)

@@ -5,15 +5,12 @@
  */
 import { Logger } from './Logger';
 import { Registry } from './Registry';
-import { GameConstants, getConfig } from '@data/GameConstants';
-import { EntityLoader } from '@entities/EntityLoader';
+import { GameConstants } from '@data/GameConstants';
 import { entityManager } from './EntityManager';
 import { GameState } from './State';
 import { Hero } from '../gameplay/Hero';
 import { GameRenderer } from './GameRenderer';
 
-// Modules that don't exist yet - use ambient declarations
-import { EventBus } from './EventBus';
 import { SystemConfig } from '@config/SystemConfig';
 import { Tween } from '../animation/Tween';
 

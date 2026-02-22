@@ -8,14 +8,13 @@
  */
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
 import { BiomeConfig } from '@data/BiomeConfig';
 import { EnemyAI } from '../ai/behaviors/enemies/EnemyAI';
 import type { HealthComponent } from '../types/core';
 
 import { Enemy } from './EnemyCore';
-import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import type { IEntity } from '../types/core';
 
@@ -32,7 +31,9 @@ class Boss extends Enemy {
      * Create a boss entity
      * @param {object} config - Boss configuration
      */
-    constructor(config: { bossType?: string; x?: number; y?: number; [key: string]: unknown } = {}) {
+    constructor(
+        config: { bossType?: string; x?: number; y?: number; [key: string]: unknown } = {}
+    ) {
         // Get boss config hierarchy: defaults -> type config -> instance config
         // Get boss config from EntityRegistry
         const defaults = EntityRegistry.defaults?.boss || {};

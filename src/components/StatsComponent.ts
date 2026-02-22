@@ -13,7 +13,7 @@
 import { Component } from '@core/Component';
 import { Logger } from '@core/Logger';
 
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { getConfig } from '@data/GameConstants';
 import { getWeaponStats } from '@data/GameConfig';
 import type { IEntity, CombatComponent } from '../types/core';
 
@@ -47,8 +47,12 @@ class StatsComponent extends Component {
     level: number = 1;
     xp: number = 0;
     xpToNextLevel: number = 100;
-    get nextLevelXp(): number { return this.xpToNextLevel; }
-    set nextLevelXp(val: number) { this.xpToNextLevel = val; }
+    get nextLevelXp(): number {
+        return this.xpToNextLevel;
+    }
+    set nextLevelXp(val: number) {
+        this.xpToNextLevel = val;
+    }
     strength: number = 10;
     dexterity: number = 10;
     constitution: number = 10;

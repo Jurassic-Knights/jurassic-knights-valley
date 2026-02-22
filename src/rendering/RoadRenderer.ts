@@ -110,7 +110,11 @@ class RoadRenderer {
     /**
      * Render a single spline road with tiled texture
      */
-    renderSplineRoad(ctx: CanvasRenderingContext2D, road: { points: Array<{ x: number; y: number }>; width?: number }, viewport: IViewport) {
+    renderSplineRoad(
+        ctx: CanvasRenderingContext2D,
+        road: { points: Array<{ x: number; y: number }>; width?: number },
+        viewport: IViewport
+    ) {
         if (!road.points || road.points.length < 4) return;
 
         // Get the approximate length of the spline
@@ -123,8 +127,6 @@ class RoadRenderer {
 
         for (let i = 0; i < totalSegments; i++) {
             const t = i / totalSegments;
-            const tNext = (i + 1) / totalSegments;
-
             // Get position and tangent at this point
             const pos = BiomeManager.evaluateBezier(t, road.points);
             const tangent = BiomeManager.evaluateBezierTangent(t, road.points);

@@ -13,10 +13,14 @@ import { Registry } from '@core/Registry';
 import * as PIXI from 'pixi.js';
 import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4PreviewRenderer';
 import { createRailroadMeshes } from '../tools/map-editor/RailroadMeshRenderer';
-import { MapEditorConfig } from '../tools/map-editor/MapEditorConfig';
 import type { Mesh } from '../tools/map-editor/mapgen4/types';
 import type Mapgen4Map from '../tools/map-editor/mapgen4/map';
-import type { Mapgen4Param, RailroadCrossing, TownSite, RoadSegment } from '../tools/map-editor/Mapgen4Param';
+import type {
+    Mapgen4Param,
+    RailroadCrossing,
+    TownSite,
+    RoadSegment
+} from '../tools/map-editor/Mapgen4Param';
 import type { IGame, IViewport } from '../types/core';
 
 const MESH_SIZE = 1000;
@@ -74,24 +78,38 @@ class WorldRendererMapgen4 {
 
         if (!ctx?.canvas) return;
 
-        const { towns, roadSegments, railroadPath, railroadCrossings, railroadStationIds = [] } =
-            this._worldManager.getCachedTownsAndRoads?.() ?? {
-                towns: [],
-                roadSegments: [],
-                railroadPath: [],
-                railroadCrossings: [],
-                railroadStationIds: []
-            };
+        const {
+            towns,
+            roadSegments,
+            railroadPath,
+            railroadCrossings,
+            railroadStationIds = []
+        } = this._worldManager.getCachedTownsAndRoads?.() ?? {
+            towns: [],
+            roadSegments: [],
+            railroadPath: [],
+            railroadCrossings: [],
+            railroadStationIds: []
+        };
 
         // One-time diagnostic log to confirm railroad data is present
         if (!this._loggedOnce) {
             Logger.info(
                 '[WorldRendererMapgen4] First render — railroadPath:',
                 railroadPath.length,
-                'towns:', towns.length,
-                'roads:', roadSegments.length,
-                'canvas:', ctx.canvas.width, 'x', ctx.canvas.height,
-                'meshVP:', vpX.toFixed(1), vpY.toFixed(1), vpW.toFixed(3), vpH.toFixed(3)
+                'towns:',
+                towns.length,
+                'roads:',
+                roadSegments.length,
+                'canvas:',
+                ctx.canvas.width,
+                'x',
+                ctx.canvas.height,
+                'meshVP:',
+                vpX.toFixed(1),
+                vpY.toFixed(1),
+                vpW.toFixed(3),
+                vpH.toFixed(3)
             );
             this._loggedOnce = true;
         }
@@ -118,8 +136,17 @@ class WorldRendererMapgen4 {
         // 2. Railroad — separate pass, directly on game canvas
         if (railroadPath.length >= 2) {
             this.renderRailroad(
-                ctx, mesh, map, param, railroadPath, railroadCrossings, railroadStationIds,
-                vpX, vpY, vpW, vpH
+                ctx,
+                mesh,
+                map,
+                param,
+                railroadPath,
+                railroadCrossings,
+                railroadStationIds,
+                vpX,
+                vpY,
+                vpW,
+                vpH
             );
         }
     }
@@ -148,7 +175,6 @@ class WorldRendererMapgen4 {
 
         const scaleX = w / vpW;
         const scaleY = h / vpH;
-        const scale = Math.min(scaleX, scaleY);
 
         const toCanvas = (x: number, y: number) => ({
             x: (x - vpX) * scaleX,
@@ -160,18 +186,21 @@ class WorldRendererMapgen4 {
             this._pixiApp = new PIXI.Application();
 
             // PIXI v8 requires async initialization. Catch errors to prevent silent fails.
-            this._pixiAppInitPromise = this._pixiApp.init({
-                width: w,
-                height: h,
-                backgroundAlpha: 0,
-                autoStart: false,
-                preserveDrawingBuffer: true
-            }).then(() => {
-                this._railroadContainer = new PIXI.Container();
-                this._pixiApp!.stage.addChild(this._railroadContainer);
-            }).catch(err => {
-                Logger.error('[WorldRendererMapgen4] PIXI Railroad Renderer init failed:', err);
-            });
+            this._pixiAppInitPromise = this._pixiApp
+                .init({
+                    width: w,
+                    height: h,
+                    backgroundAlpha: 0,
+                    autoStart: false,
+                    preserveDrawingBuffer: true
+                })
+                .then(() => {
+                    this._railroadContainer = new PIXI.Container();
+                    this._pixiApp!.stage.addChild(this._railroadContainer);
+                })
+                .catch((err) => {
+                    Logger.error('[WorldRendererMapgen4] PIXI Railroad Renderer init failed:', err);
+                });
         }
 
         // The game render loop is synchronous. Fall back to simple lines while PIXI mounts in the background
@@ -248,10 +277,7 @@ class WorldRendererMapgen4 {
         ctx.moveTo(first.x, first.y);
 
         for (let i = 1; i < railroadPath.length; i++) {
-            const p = toCanvas(
-                mesh.x_of_r(railroadPath[i]),
-                mesh.y_of_r(railroadPath[i])
-            );
+            const p = toCanvas(mesh.x_of_r(railroadPath[i]), mesh.y_of_r(railroadPath[i]));
             ctx.lineTo(p.x, p.y);
         }
         ctx.stroke();

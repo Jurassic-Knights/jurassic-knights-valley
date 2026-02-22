@@ -3,7 +3,7 @@
  */
 import { GroundPalette } from '@data/ZonePalette';
 import { ChunkData } from './MapEditorTypes';
-import { ZoneCategory } from '@data/ZoneConfig';
+import { ZoneConfig } from '@data/ZoneConfig';
 
 export interface ResolvePaletteCtx {
     chunkKey: string;

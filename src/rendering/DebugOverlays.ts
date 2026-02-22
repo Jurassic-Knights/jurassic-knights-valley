@@ -7,14 +7,20 @@
  * Owner: Development Tools
  */
 
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { IGame, IViewport } from '@app-types/core';
 
 const DebugOverlays = {
     /**
      * Draw world boundary indicator
      */
-    drawWorldBoundary(ctx: CanvasRenderingContext2D, viewport: IViewport, worldWidth: number, worldHeight: number, game: IGame) {
+    drawWorldBoundary(
+        ctx: CanvasRenderingContext2D,
+        viewport: IViewport,
+        worldWidth: number,
+        worldHeight: number,
+        game: IGame
+    ) {
         ctx.save();
         ctx.translate(-viewport.x, -viewport.y);
 
@@ -24,7 +30,11 @@ const DebugOverlays = {
         ctx.strokeRect(0, 0, worldWidth, worldHeight);
 
         // DEBUG: Show Collision Blocks (Red)
-        const islandManager = game ? game.getSystem('WorldManager') as typeof import('../world/WorldManager').WorldManager : null;
+        const islandManager = game
+            ? (game.getSystem(
+                  'WorldManager'
+              ) as typeof import('../world/WorldManager').WorldManager)
+            : null;
         if (islandManager && islandManager.collisionBlocks) {
             ctx.strokeStyle = '#FF0000';
             ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
@@ -53,7 +63,10 @@ const DebugOverlays = {
     /**
      * Draw 128px gameplay grid overlay (debug only)
      */
-    drawDebugGrid(ctx: CanvasRenderingContext2D, bounds: { left: number; top: number; right: number; bottom: number }) {
+    drawDebugGrid(
+        ctx: CanvasRenderingContext2D,
+        bounds: { left: number; top: number; right: number; bottom: number }
+    ) {
         const cellSize = GameConstants ? GameConstants.Grid.CELL_SIZE : 128;
 
         const startGx = Math.floor(bounds.left / cellSize);

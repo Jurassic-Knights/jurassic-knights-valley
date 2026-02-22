@@ -7,8 +7,8 @@
 
 import { AssetLoader } from '@core/AssetLoader';
 import { GameInstance } from '@core/Game';
-import { EntityRegistry } from '@entities/EntityLoader';
-import { Registry } from '@core/Registry';
+// import removed
+// import removed
 import { RenderConfig } from '@config/RenderConfig';
 
 import type { EquipmentItem } from '../types/ui';
@@ -40,7 +40,6 @@ class EquipmentUIRenderer {
 
         // Selected item stats
         const item = ui.selectedItem as EquipmentItem | null;
-        const itemStats = item?.stats || {};
         const itemName = item?.name || 'Select Equipment';
 
         return `
@@ -52,7 +51,9 @@ class EquipmentUIRenderer {
                     </div>
                     <div class="equip-stats-panel">
                         <div class="equip-item-name">Knight</div>
-                        ${hasHero ? `
+                        ${
+                            hasHero
+                                ? `
                         <div class="stat-row"><span class="stat-icon">🛡️</span> HP <span class="stat-bar health"></span><span class="stat-value">${health}/${maxHealth}</span></div>
                         <div class="stat-row"><span class="stat-icon">⚔️</span> Armor <span class="stat-bar armor"></span><span class="stat-value">${defense}</span></div>
                         <div class="stat-row"><span class="stat-icon">🗡️</span> Attack <span class="stat-bar attack"></span><span class="stat-value">${attack}</span></div>
@@ -62,7 +63,9 @@ class EquipmentUIRenderer {
                             <div class="mini-stat"><span class="stat-icon">💥</span> CRIT <span>${critChance}%</span></div>
                             <div class="mini-stat"><span class="stat-icon">🏹</span> RNG <span>${hand1Range}/${hand2Range}</span></div>
                         </div>
-                        ` : '<div class="stat-row" style="color:#666;">No knight</div>'}
+                        `
+                                : '<div class="stat-row" style="color:#666;">No knight</div>'
+                        }
                     </div>
                 </div>
 
@@ -184,11 +187,11 @@ class EquipmentUIRenderer {
      * @returns {string} HTML string
      */
     static renderSlot(ui: EquipmentUI, slotId: string, label: string, equipment: EquipmentManager) {
-        const item = equipment?.getSlot?.(slotId);
+        const item = equipment?.getSlot?.(slotId) as EquipmentItem | undefined;
         const imgPath = item ? EquipmentUIRenderer.getItemIcon(item.id) : '';
 
         // Check if this is hand2 and hand1 has a 2-hand weapon (disable hand2)
-        const hand1Item = equipment?.getSlot?.('hand1');
+        const hand1Item = equipment?.getSlot?.('hand1') as EquipmentItem | undefined;
         const isDisabledByTwoHand = slotId === 'hand2' && hand1Item?.gripType === '2-hand';
 
         // Add slot-selectable class for weapon slots during selection mode
@@ -242,14 +245,14 @@ class EquipmentUIRenderer {
         return `
             <div class="inventory-grid">
                 ${filtered
-                .map(
-                    (item: EquipmentItem) => `
+                    .map(
+                        (item: EquipmentItem) => `
                     <div class="inventory-item ${ui.selectedItem?.id === item.id ? 'selected' : ''}" data-id="${item.id}">
                         <div class="item-icon" style="background-image: url('${EquipmentUIRenderer.getItemIcon(item.id)}')"></div>
                     </div>
                 `
-                )
-                .join('')}
+                    )
+                    .join('')}
             </div>
         `;
     }
@@ -309,7 +312,6 @@ class EquipmentUIRenderer {
             }
         }
     }
-
 }
 
 // Export

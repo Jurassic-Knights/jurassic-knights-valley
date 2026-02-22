@@ -15,19 +15,15 @@ import {
     updateCamera as updateCameraImpl,
     resizeCanvas
 } from './GameRendererViewport';
-import { ShadowRenderer } from '../rendering/ShadowRenderer';
-import { EntityRenderService } from '../rendering/EntityRenderService';
 import { RenderProfiler, RenderTiming } from '../rendering/RenderProfiler';
-import { GridRenderer } from '../rendering/GridRenderer';
-import { DebugOverlays } from '../rendering/DebugOverlays';
-import { HomeOutpostRenderer } from '../rendering/HomeOutpostRenderer';
+import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { DOMUtils } from './DOMUtils';
-import { IGame, IEntity, ISystem } from '../types/core';
+import { IGame, IEntity } from '../types/core';
+import type { IRenderer } from '../types/core';
 
 // Import specific system types
 import { PlatformManager } from './PlatformManager';
 import { VFXController } from '../vfx/VFXController';
-import { CollisionSystem } from '../systems/CollisionSystem';
 import { WorldRenderer } from '../rendering/WorldRenderer';
 import { RoadRenderer } from '../rendering/RoadRenderer';
 import { HeroRenderer } from '../rendering/HeroRenderer';
@@ -99,7 +95,9 @@ const GameRenderer = {
         this.resizeShadowBuffer();
 
         // Listen for platform changes
-        const platformManager = this.game ? this.game.getSystem<typeof PlatformManager>('PlatformManager') : null;
+        const platformManager = this.game
+            ? this.game.getSystem<typeof PlatformManager>('PlatformManager')
+            : null;
         if (platformManager) {
             platformManager.on('modechange', () => this.updateViewport());
             this.updateViewport();
@@ -216,8 +214,8 @@ const GameRenderer = {
                 this.viewport,
                 {
                     heroRenderer: this._heroRenderer,
-                    dinosaurRenderer: this._dinosaurRenderer,
-                    resourceRenderer: this._resourceRenderer
+                    dinosaurRenderer: this._dinosaurRenderer as any,
+                    resourceRenderer: this._resourceRenderer as any
                 },
                 this._renderTiming
             );
@@ -305,7 +303,13 @@ const GameRenderer = {
         return this.gridMode;
     },
     drawWorldBoundary() {
-        DebugOverlays?.drawWorldBoundary(this.ctx, this.viewport, this.worldWidth, this.worldHeight, this.game);
+        DebugOverlays?.drawWorldBoundary(
+            this.ctx,
+            this.viewport,
+            this.worldWidth,
+            this.worldHeight,
+            this.game
+        );
     },
     drawDebugGrid() {
         DebugOverlays?.drawDebugGrid(this.ctx, this.getVisibleBounds());

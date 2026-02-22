@@ -15,9 +15,6 @@ import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
 import type { IGame, IEntity } from '../types/core.d';
 
-// Bounds padding constant (was from BaseCreature)
-const BOUNDS_PADDING = 30;
-
 // Event data interfaces
 interface EntityDamageEvent {
     entity: IEntity;
@@ -43,12 +40,19 @@ class DinosaurSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data: EntityDamageEvent) => this.onEntityDamaged(data));
-            EventBus.on(GameConstants.Events.ENTITY_DIED, (data: EntityDeathEvent) => this.onEntityDied(data));
+            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data: EntityDamageEvent) =>
+                this.onEntityDamaged(data)
+            );
+            EventBus.on(GameConstants.Events.ENTITY_DIED, (data: EntityDeathEvent) =>
+                this.onEntityDied(data)
+            );
             EventBus.on(
                 GameConstants.Events.MOVEMENT_UPDATE_RESULT,
                 (data: { entity: IEntity; actualDx: number; actualDy: number }) => {
-                    const d = data.entity as IEntity & { _moveRequested?: { dx: number; dy: number }; _moveResult?: { actualDx: number; actualDy: number } };
+                    const d = data.entity as IEntity & {
+                        _moveRequested?: { dx: number; dy: number };
+                        _moveResult?: { actualDx: number; actualDy: number };
+                    };
                     if (d) d._moveResult = { actualDx: data.actualDx, actualDy: data.actualDy };
                 }
             );
@@ -125,7 +129,7 @@ class DinosaurSystem {
                         if (Array.isArray(entry.amount)) {
                             amount = Math.floor(
                                 entry.amount[0] +
-                                Math.random() * (entry.amount[1] - entry.amount[0] + 1)
+                                    Math.random() * (entry.amount[1] - entry.amount[0] + 1)
                             );
                         } else if (entry.amount) {
                             amount = entry.amount;
@@ -173,10 +177,13 @@ class DinosaurSystem {
         const cfg = GameConstants.Dinosaur;
         const speedPxPerSec = (dino.moveSpeed ?? cfg.DEFAULT_MOVE_SPEED) * cfg.SPEED_SCALE;
         const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
-        const dx = dino.wanderDirection.x * (speedPxPerSec * dt / msPerSecond);
-        const dy = dino.wanderDirection.y * (speedPxPerSec * dt / msPerSecond);
+        const dx = dino.wanderDirection.x * ((speedPxPerSec * dt) / msPerSecond);
+        const dy = dino.wanderDirection.y * ((speedPxPerSec * dt) / msPerSecond);
 
-        const d = dino as IEntity & { _moveRequested?: { dx: number; dy: number }; _moveResult?: { actualDx: number; actualDy: number } };
+        const d = dino as IEntity & {
+            _moveRequested?: { dx: number; dy: number };
+            _moveResult?: { actualDx: number; actualDy: number };
+        };
         d._moveRequested = { dx, dy };
         d._moveResult = undefined;
         EventBus.emit(GameConstants.Events.ENTITY_MOVE_REQUEST, { entity: dino, dx, dy });
@@ -189,7 +196,6 @@ class DinosaurSystem {
         if (res && res.actualDx === 0 && res.actualDy === 0 && dt > 0) {
             this.changeDirection(dino);
         }
-
 
         // 4. Animation Frame Cycling
         dino.frameTimer += dt;
@@ -216,7 +222,7 @@ class DinosaurSystem {
             dino.wanderTimer =
                 GameConstants.AI.WANDER_TIMER_MIN +
                 Math.random() *
-                (GameConstants.AI.WANDER_TIMER_MAX - GameConstants.AI.WANDER_TIMER_MIN);
+                    (GameConstants.AI.WANDER_TIMER_MAX - GameConstants.AI.WANDER_TIMER_MIN);
         }
     }
 }

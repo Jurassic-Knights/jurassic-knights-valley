@@ -12,7 +12,6 @@ import { environmentRenderer } from './EnvironmentRenderer';
 import { Resource } from '../gameplay/Resource';
 import { DroppedItem } from '../gameplay/DroppedItem';
 import { renderDroppedItem } from './ResourceRendererDropped';
-import { ColorPalette } from '@config/ColorPalette';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { GameConstants } from '@data/GameConstants';
 import type { IGame, ISystem } from '../types/core';
@@ -22,7 +21,7 @@ class ResourceRendererService implements ISystem {
         Logger.info('[ResourceRenderer] Initialized');
     }
 
-    init(_game: IGame): void { }
+    init(_game: IGame): void {}
 
     render(ctx: CanvasRenderingContext2D, res: Resource, includeShadow = true) {
         if (!res.active) return;
@@ -35,7 +34,9 @@ class ResourceRendererService implements ISystem {
         // Shake logic (if damaged) - skipped for simplification or handled by Tween?
         // Check if this resource type uses custom rendering (e.g., trees handled elsewhere)
         const typeConfig =
-            EntityRegistry?.nodes?.[res.resourceType] || EntityRegistry?.resources?.[res.resourceType] || {};
+            EntityRegistry?.nodes?.[res.resourceType] ||
+            EntityRegistry?.resources?.[res.resourceType] ||
+            {};
         if (typeConfig.skipDefaultRender) return;
 
         if (res.state === 'depleted') {

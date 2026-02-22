@@ -82,7 +82,9 @@ class Entity implements IEntity {
     refreshConfig() {
         // Resolve latest config from Registry
         // Use type assertion to avoid circular dependency - EntityLoader is registered as ISystem
-        const EntityLoader = Registry.get('EntityLoader') as { getConfig?: (id: string) => Record<string, unknown> } | null;
+        const EntityLoader = Registry.get('EntityLoader') as {
+            getConfig?: (id: string) => Record<string, unknown>;
+        } | null;
 
         if (EntityLoader?.getConfig) {
             // use id or sprite (many props use sprite as ID)
@@ -96,9 +98,19 @@ class Entity implements IEntity {
 
             // 2. Update Gameplay Stats (Safe subset)
             const SAFE_KEYS = [
-                'speed', 'damage', 'defense', 'attackRange', 'attackRate',
-                'aggroRange', 'leashDistance', 'respawnTime', 'xpReward',
-                'lootTable', 'tier', 'groupSize', 'spawnWeight'
+                'speed',
+                'damage',
+                'defense',
+                'attackRange',
+                'attackRate',
+                'aggroRange',
+                'leashDistance',
+                'respawnTime',
+                'xpReward',
+                'lootTable',
+                'tier',
+                'groupSize',
+                'spawnWeight'
             ] as const;
 
             const entityRecord = this as Record<string, unknown>;
@@ -112,7 +124,11 @@ class Entity implements IEntity {
             }
 
             // 3. Update 'stats' object deeply if it exists
-            if (registryConfig.stats && typeof registryConfig.stats === 'object' && registryConfig.stats !== null) {
+            if (
+                registryConfig.stats &&
+                typeof registryConfig.stats === 'object' &&
+                registryConfig.stats !== null
+            ) {
                 if (!entityRecord.stats || typeof entityRecord.stats !== 'object') {
                     entityRecord.stats = {};
                 }
@@ -121,20 +137,23 @@ class Entity implements IEntity {
 
             // 4. Handle Health/MaxHealth specially
             // Update Max Health
-            const healthValue = registryConfig.maxHealth || registryConfig.health || 
-                (registryConfig.stats && typeof registryConfig.stats === 'object' && 'health' in registryConfig.stats 
-                    ? (registryConfig.stats as Record<string, unknown>).health : undefined);
+            const healthValue =
+                registryConfig.maxHealth ||
+                registryConfig.health ||
+                (registryConfig.stats &&
+                typeof registryConfig.stats === 'object' &&
+                'health' in registryConfig.stats
+                    ? (registryConfig.stats as Record<string, unknown>).health
+                    : undefined);
             if (typeof healthValue === 'number' && healthValue > 0) {
-                const oldMax = (typeof entityRecord.maxHealth === 'number' ? entityRecord.maxHealth : 
-                    (typeof entityRecord.health === 'number' ? entityRecord.health : 100));
                 entityRecord.maxHealth = healthValue;
 
-                    // If health was full, keep it full. If not, maybe scale it? 
-                    // Simple rule: If current health > new max, clamp it.
-                    // If max increased, maybe heal? For now, just clamp.
-                    if (typeof entityRecord.health === 'number' && entityRecord.health > healthValue) {
-                        entityRecord.health = healthValue;
-                    }
+                // If health was full, keep it full. If not, maybe scale it?
+                // Simple rule: If current health > new max, clamp it.
+                // If max increased, maybe heal? For now, just clamp.
+                if (typeof entityRecord.health === 'number' && entityRecord.health > healthValue) {
+                    entityRecord.health = healthValue;
+                }
             }
         }
     }
@@ -307,7 +326,9 @@ class Entity implements IEntity {
      * @param {Entity} other
      * @returns {boolean}
      */
-    collidesWith(other: IEntity & { getBounds(): { x: number; y: number; width: number; height: number } }) {
+    collidesWith(
+        other: IEntity & { getBounds(): { x: number; y: number; width: number; height: number } }
+    ) {
         const a = this.getBounds();
         const b = other.getBounds();
 

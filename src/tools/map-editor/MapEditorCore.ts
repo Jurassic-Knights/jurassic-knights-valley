@@ -3,23 +3,11 @@ import { Logger } from '@core/Logger';
 import { MapEditorConfig } from './MapEditorConfig';
 import { ChunkManager } from './ChunkManager';
 import { ChunkData, MapObject } from './MapEditorTypes';
-import { ZoneConfig, ZoneCategory } from '@data/ZoneConfig';
 import { EditorContext } from './EditorContext';
 import { CommandManager } from './commands/CommandManager';
 
 import { BatchObjectCommand } from './commands/BatchObjectCommand';
 import { MoveObjectCommand } from './commands/MoveObjectCommand';
-import { PlaceObjectCommand } from './commands/PlaceObjectCommand';
-import { RemoveObjectCommand } from './commands/RemoveObjectCommand';
-import { AddWaypointCommand } from './commands/AddWaypointCommand';
-import { RemoveWaypointCommand } from './commands/RemoveWaypointCommand';
-import { UpdateWaypointRegionCommand } from './commands/UpdateWaypointRegionCommand';
-import { AddManualTownCommand } from './commands/AddManualTownCommand';
-import { AddManualStationCommand } from './commands/AddManualStationCommand';
-import { RemoveManualTownCommand } from './commands/RemoveManualTownCommand';
-import { RemoveManualStationCommand } from './commands/RemoveManualStationCommand';
-import { SetManualTownAtCommand } from './commands/SetManualTownAtCommand';
-import { SetManualStationRegionCommand } from './commands/SetManualStationRegionCommand';
 import { SetHeroSpawnCommand } from './commands/SetHeroSpawnCommand';
 import { EditorCommand } from './commands/EditorCommand';
 import type { Mapgen4Param } from './Mapgen4Generator';
@@ -32,25 +20,16 @@ import {
     type ProceduralCache,
     type RailroadMeshState
 } from './MapEditorProceduralRenderer';
-import { createZoomUI, updateZoomUI, updateCursorCoords } from './MapEditorUIOverlays';
+import { createZoomUI, updateZoomUI } from './MapEditorUIOverlays';
 import { createScaleReferenceOverlay, type ScaleReferenceOverlay } from './MapEditorScaleReference';
-import { updateBrushCursor } from './MapEditorBrushCursor';
-import { screenToWorld, toCanvasCoords } from './MapEditorInputHandlers';
-import { handleZoom as handleZoomViewport, resetZoomToGame } from './MapEditorViewport';
+import { resetZoomToGame } from './MapEditorViewport';
 import { createHistoryUI } from './MapEditorHistoryOverlay';
 import { findRegionAt } from './Mapgen4RegionUtils';
-import { executeTool } from './MapEditorToolUse';
 import { preloadRegistry } from './MapEditorRegistry';
 import { AssetLoader } from '@core/AssetLoader';
 import { createPixiApp } from './MapEditorMount';
 import { runMapEditorUpdate } from './MapEditorUpdate';
 import { EntityLoader } from '@entities/EntityLoader';
-import {
-    SPLINE_HIT_THRESHOLD_WORLD,
-    isWorldPointOnSplinePath,
-    getNearestLegIndexForWorldPoint,
-    getWaypointInsertionIndex
-} from './MapEditorRailroadUtils';
 import { MapEditorDebugOverlay } from './MapEditorDebugOverlay';
 import { MapEditorWaypointManager } from './MapEditorWaypointManager';
 import { MapEditorManipulationHandles } from './MapEditorManipulationHandles';
@@ -715,14 +694,14 @@ export class MapEditorCore {
         this.manualStations = this.manualStations.filter((s) => s.regionId !== regionId);
         this.onManualDataChange?.();
     }
-    public addWaypoint(legIndex: number, regionId: number, insertIndex?: number): void {
-        const waypoint = { legIndex, regionId };
-        if (insertIndex !== undefined) {
+    public addWaypoint(_legIndex: number, _regionId: number, _insertIndex?: number): void {
+        const waypoint = { legIndex: _legIndex, regionId: _regionId };
+        if (_insertIndex !== undefined) {
             let legCount = 0;
             let inserted = false;
             for (let i = 0; i < this.railroadWaypoints.length; i++) {
-                if (this.railroadWaypoints[i]!.legIndex === legIndex) {
-                    if (legCount === insertIndex) {
+                if (this.railroadWaypoints[i]!.legIndex === _legIndex) {
+                    if (legCount === _insertIndex) {
                         this.railroadWaypoints.splice(i, 0, waypoint);
                         inserted = true;
                         break;
@@ -738,19 +717,24 @@ export class MapEditorCore {
         }
         this.onManualDataChange?.();
     }
-    public updateWaypointRegion(legIndex: number, waypointIndex: number, regionId: number): void {
-        const entries = this.railroadWaypoints.filter((w) => w.legIndex === legIndex);
-        if (waypointIndex < 0 || waypointIndex >= entries.length) return;
-        const globalIdx = this.railroadWaypoints.indexOf(entries[waypointIndex]!);
-        if (globalIdx >= 0) this.railroadWaypoints[globalIdx] = { legIndex, regionId };
+    public updateWaypointRegion(
+        _legIndex: number,
+        _waypointIndex: number,
+        _regionId: number
+    ): void {
+        const entries = this.railroadWaypoints.filter((w) => w.legIndex === _legIndex);
+        if (_waypointIndex < 0 || _waypointIndex >= entries.length) return;
+        const globalIdx = this.railroadWaypoints.indexOf(entries[_waypointIndex]!);
+        if (globalIdx >= 0)
+            this.railroadWaypoints[globalIdx] = { legIndex: _legIndex, regionId: _regionId };
         this.onManualDataChange?.();
     }
-    public removeWaypoint(legIndex: number, waypointIndex: number): void {
+    public removeWaypoint(_legIndex: number, _waypointIndex: number): void {
         const entries = this.railroadWaypoints
             .map((w, i) => ({ w, i }))
-            .filter(({ w }) => w.legIndex === legIndex);
-        if (waypointIndex < 0 || waypointIndex >= entries.length) return;
-        const globalIdx = entries[waypointIndex]!.i;
+            .filter(({ w }) => w.legIndex === _legIndex);
+        if (_waypointIndex < 0 || _waypointIndex >= entries.length) return;
+        const globalIdx = entries[_waypointIndex]!.i;
         this.railroadWaypoints.splice(globalIdx, 1);
         this.onManualDataChange?.();
     }

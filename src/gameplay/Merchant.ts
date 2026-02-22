@@ -11,7 +11,7 @@ import { AssetLoader } from '@core/AssetLoader';
 import { environmentRenderer } from '../rendering/EnvironmentRenderer';
 import { EntityTypes } from '@config/EntityTypes';
 import { EntityRegistry } from '@entities/EntityLoader';
-import { Registry } from '@core/Registry';
+// import removed
 import { getConfig } from '@data/GameConstants';
 import { EntityScaling } from '../utils/EntityScaling';
 
@@ -33,7 +33,7 @@ class Merchant extends Entity {
     _cachedSpriteId: string | null = null;
     _iconImg: HTMLImageElement | null = null;
 
-    constructor(config: { x?: number; y?: number;[key: string]: unknown } = {}) {
+    constructor(config: { x?: number; y?: number; [key: string]: unknown } = {}) {
         // 1. Load Config
         const defaults = {
             gridSize: 1.5,
@@ -62,12 +62,17 @@ class Merchant extends Entity {
         }
 
         // Lookup with correct ID
-        const typeConfig = EntityRegistry.npcs?.[registryId] || EntityRegistry.environment?.[registryId] || {};
+        const typeConfig =
+            EntityRegistry.npcs?.[registryId] || EntityRegistry.environment?.[registryId] || {};
 
         if (!EntityRegistry.npcs?.[registryId]) {
-            Logger.warn(`[Merchant] Registry Lookup FAILED for '${registryId}'. Falling back to defaults.`);
+            Logger.warn(
+                `[Merchant] Registry Lookup FAILED for '${registryId}'. Falling back to defaults.`
+            );
         } else {
-            Logger.info(`[Merchant] Registry Lookup SUCCESS for '${registryId}'. Scale: ${typeConfig.scale}`);
+            Logger.info(
+                `[Merchant] Registry Lookup SUCCESS for '${registryId}'. Scale: ${typeConfig.scale}`
+            );
         }
 
         // Calculate size using standard utility
@@ -244,7 +249,13 @@ class Merchant extends Entity {
 
                 // Sprite (centered)
                 // Use height for Y centering to support non-square types
-                ctx.drawImage(this._img, this.x - width / 2, this.y - height / 2 + bob, width, height);
+                ctx.drawImage(
+                    this._img,
+                    this.x - width / 2,
+                    this.y - height / 2 + bob,
+                    width,
+                    height
+                );
 
                 ctx.restore();
 
@@ -276,7 +287,8 @@ class Merchant extends Entity {
         // Find config (Merchants might use island-based logic, or generic NPC logic)
         // For now, look up by generic 'npc_merchant' key or fallback to defaults
         const registryId = this.registryId || 'npc_merchant';
-        const typeConfig = EntityRegistry.npcs?.[registryId] || EntityRegistry.environment?.[registryId] || {};
+        const typeConfig =
+            EntityRegistry.npcs?.[registryId] || EntityRegistry.environment?.[registryId] || {};
 
         Logger.info(`[Merchant] Refreshing config for ${registryId}`);
 

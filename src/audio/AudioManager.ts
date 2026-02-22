@@ -7,7 +7,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { SFX } from './SFX_Core';
 import { weatherSystem } from '@systems/WeatherSystem';
 import { AssetLoader } from '@core/AssetLoader';
@@ -44,7 +44,10 @@ const AudioManager = {
         if (this.initialized) return;
 
         try {
-            const AudioCtor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+            const AudioCtor =
+                window.AudioContext ||
+                (window as unknown as { webkitAudioContext: typeof AudioContext })
+                    .webkitAudioContext;
             this.context = new AudioCtor();
 
             // Create gain nodes
@@ -118,10 +121,10 @@ const AudioManager = {
             category === 'master'
                 ? this.masterGain
                 : category === 'sfx'
-                    ? this.sfxGain
-                    : category === 'music'
-                        ? this.musicGain
-                        : null;
+                  ? this.sfxGain
+                  : category === 'music'
+                    ? this.musicGain
+                    : null;
 
         if (gain) {
             gain.gain.value = Math.max(0, Math.min(1, value));

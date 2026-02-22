@@ -1,6 +1,5 @@
-
 import * as PIXI from 'pixi.js';
-import { MapEditorConfig } from './MapEditorConfig';
+import { EditorContext } from './EditorContext';
 
 /**
  * MapRenderer — Placeholder for future map data rendering via PixiJS.

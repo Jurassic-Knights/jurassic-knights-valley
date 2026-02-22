@@ -4,9 +4,11 @@
  * Viewport and zoom state. Handles pan, zoom, screen-to-world conversion.
  * No PIXI rendering; operates on container coordinates.
  */
-import type * as PIXI from 'pixi.js';
-import { MapEditorConfig } from './MapEditorConfig';
-import { handleZoom as handleZoomImpl, screenToWorld, toCanvasCoords } from './MapEditorInputHandlers';
+import {
+    handleZoom as handleZoomImpl,
+    screenToWorld,
+    toCanvasCoords
+} from './MapEditorInputHandlers';
 import { computeZoomReset } from './MapEditorZoomReset';
 
 export interface ViewportHost {

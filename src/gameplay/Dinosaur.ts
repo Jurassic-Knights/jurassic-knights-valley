@@ -17,7 +17,7 @@ import { SpeciesScaleConfig } from '@config/SpeciesScaleConfig';
 import { HealthComponent } from '../components/HealthComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { AIComponent } from '../components/AIComponent';
-import { Registry } from '@core/Registry';
+// import removed
 
 class Dinosaur extends Entity {
     // Entity type and identity
@@ -42,7 +42,6 @@ class Dinosaur extends Entity {
     respawnTimer: number = 0;
     maxRespawnTime: number = 30;
 
-
     // Combat flags
     isBeingAttacked: boolean = false;
 
@@ -56,7 +55,9 @@ class Dinosaur extends Entity {
     _spriteLoaded: boolean = false;
     _shadowImg?: HTMLImageElement | HTMLCanvasElement;
 
-    constructor(config: { dinoType?: string; x?: number; y?: number;[key: string]: unknown } = {}) {
+    constructor(
+        config: { dinoType?: string; x?: number; y?: number; [key: string]: unknown } = {}
+    ) {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
 
         // Look up entity config from EntityRegistry using dinoType (e.g., 'enemy_herbivore_t1_01')
@@ -117,8 +118,8 @@ class Dinosaur extends Entity {
 
         this.state = 'alive'; // alive, dead
         this.respawnTimer = 0;
-        this.maxRespawnTime = finalConfig.respawnTime ?? GameConstants.Dinosaur.DEFAULT_RESPAWN_TIME;
-
+        this.maxRespawnTime =
+            finalConfig.respawnTime ?? GameConstants.Dinosaur.DEFAULT_RESPAWN_TIME;
 
         // Initialize Respawn Time from Upgrades
         this.recalculateRespawnTimer();
@@ -285,7 +286,7 @@ class Dinosaur extends Entity {
             this.width = sizeInfo.width;
             this.height = sizeInfo.height;
             // Note: Dinosaur doesn't use this.scale for rendering key, but we can set it if needed
-            // this.scale = sizeInfo.scale; 
+            // this.scale = sizeInfo.scale;
         }
 
         // Sync Collision

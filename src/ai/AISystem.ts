@@ -8,14 +8,12 @@
  */
 
 import { Logger } from '@core/Logger';
-import { entityManager } from '@core/EntityManager';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { EntityTypes } from '@config/EntityTypes';
 import { EnemyAI } from './behaviors/enemies/EnemyAI';
 import { BossAI } from './behaviors/bosses/BossAI';
 import { NPCAI } from './behaviors/npcs/NPCAI';
-import { Registry } from '@core/Registry';
 import type { IGame, IEntity } from '../types/core';
 
 /** Behavior module with updateState (and optionally triggerPackAggro) */
@@ -89,7 +87,12 @@ class AISystem {
     /**
      * Update a single entity's AI
      */
-    updateEntity(entity: IEntity, hero: IEntity | null, dt: number, forceType: string | null = null) {
+    updateEntity(
+        entity: IEntity,
+        hero: IEntity | null,
+        dt: number,
+        forceType: string | null = null
+    ) {
         // Determine AI type: explicit > entityType-based > default
         const aiType = forceType || entity.aiType || this.getDefaultAIType(entity);
         const behavior = this.behaviors[aiType];
@@ -97,7 +100,9 @@ class AISystem {
         if (behavior && typeof behavior.updateState === 'function') {
             // Some behaviors expect (entity, hero, dt), others just (entity, dt)
             if (behavior.updateState.length >= 3) {
-                (behavior as { updateState(e: IEntity, h: IEntity | null, d: number): void }).updateState(entity, hero, dt);
+                (
+                    behavior as { updateState(e: IEntity, h: IEntity | null, d: number): void }
+                ).updateState(entity, hero, dt);
             } else {
                 behavior.updateState(entity, dt);
             }
@@ -127,7 +132,15 @@ class AISystem {
         }
     }
 
-    onEntityDamaged(data: { entity: IEntity & { state?: string; target?: IEntity | null; packAggro?: boolean; groupId?: string | null }; source?: IEntity }) {
+    onEntityDamaged(data: {
+        entity: IEntity & {
+            state?: string;
+            target?: IEntity | null;
+            packAggro?: boolean;
+            groupId?: string | null;
+        };
+        source?: IEntity;
+    }) {
         const { entity, source } = data;
         if (!entity) return;
 

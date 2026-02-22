@@ -11,8 +11,8 @@ import { Logger } from '@core/Logger';
 import { RoadsData } from '@data/RoadsData';
 import { Registry } from '@core/Registry';
 import { MathUtils } from '@core/MathUtils';
-import { BiomeDef, RoadDef } from '../types/world';
 import { BIOME_POLYGONS } from './BiomePolygons';
+import { RoadDef } from '../types/world'; // Re-added RoadDef as it's used
 
 const BiomeManager = {
     BIOME_IDS: {
@@ -99,7 +99,12 @@ const BiomeManager = {
         return this.isOnRoad(x, y) ? this.ROAD_SPEED_MULTIPLIER : 1.0;
     },
 
-    pointToLineDistance(px: number, py: number, from: { x: number; y: number }, to: { x: number; y: number }) {
+    pointToLineDistance(
+        px: number,
+        py: number,
+        from: { x: number; y: number },
+        to: { x: number; y: number }
+    ) {
         const dx = to.x - from.x;
         const dy = to.y - from.y;
         const lengthSq = dx * dx + dy * dy;

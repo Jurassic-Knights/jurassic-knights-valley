@@ -7,7 +7,7 @@
 
 import { Logger } from './Logger';
 import { EventBus } from './EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { Registry } from './Registry';
 
 interface IGameStateData {

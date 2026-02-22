@@ -78,7 +78,6 @@ class EquipmentManager {
      * @returns {Object[]}
      */
     getEquippedItemsForStats() {
-        const activeSlots = this.getActiveWeaponSlots();
         const excludedSlots =
             this.activeWeaponSet === 1 ? ['hand1_alt', 'hand2_alt'] : ['hand1', 'hand2'];
 

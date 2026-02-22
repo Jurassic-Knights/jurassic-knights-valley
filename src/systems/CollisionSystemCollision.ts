@@ -5,7 +5,7 @@ import { Entity } from '../core/Entity';
 import { WorldManager } from '../world/WorldManager';
 import { GameConstants } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
-import { getCollisionBounds, isHardCollision, isTriggerCollision } from './CollisionSystemUtils';
+import { isHardCollision, isTriggerCollision } from './CollisionSystemUtils';
 
 export function checkCollision(
     entity: Entity,
@@ -16,10 +16,12 @@ export function checkCollision(
     const col = entity.collision;
     const bounds = getBounds(entity);
 
-    if (WorldManager.isBlocked(bounds.x, bounds.y) ||
+    if (
+        WorldManager.isBlocked(bounds.x, bounds.y) ||
         WorldManager.isBlocked(bounds.x + bounds.width, bounds.y) ||
         WorldManager.isBlocked(bounds.x, bounds.y + bounds.height) ||
-        WorldManager.isBlocked(bounds.x + bounds.width, bounds.y + bounds.height)) {
+        WorldManager.isBlocked(bounds.x + bounds.width, bounds.y + bounds.height)
+    ) {
         return true;
     }
 

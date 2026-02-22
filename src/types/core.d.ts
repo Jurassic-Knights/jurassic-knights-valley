@@ -343,6 +343,7 @@ export interface IComponent {
 export interface HealthComponent extends IComponent {
     health: number;
     maxHealth: number;
+    getMaxHealth?(): number;
     damage(amount: number): void;
     heal(amount: number): void;
     isDead: boolean;
@@ -362,6 +363,10 @@ export interface StatsComponent extends IComponent {
     stamina: number;
     getXPForLevel?(level: number): number;
     getStat(name: string): number;
+    getDefense?(): number;
+    getAttack?(): number;
+    getCritChance?(): number;
+    getWeaponRange?(slotId: string): number;
 }
 
 export interface InventoryComponent extends IComponent {

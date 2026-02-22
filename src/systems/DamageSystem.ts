@@ -21,14 +21,19 @@ import { AudioManager } from '@audio/AudioManager';
 import { Registry } from '@core/Registry';
 import { EntityTypes } from '@config/EntityTypes';
 import type { IGame, IEntity } from '../types/core.d';
-import { isDamageable, isMortal, DamageableEntity } from '../utils/typeGuards';
+import { isDamageable, isMortal } from '../utils/typeGuards';
 
 const Events = GameConstants.Events;
 
 class DamageSystem {
     game: IGame | null = null;
 
-    private _onDamageBound: (data: { entity: IEntity; amount: number; source?: IEntity; type?: string }) => void;
+    private _onDamageBound: (data: {
+        entity: IEntity;
+        amount: number;
+        source?: IEntity;
+        type?: string;
+    }) => void;
     private _onDeathBound: (data: { entity: IEntity }) => void;
 
     constructor() {
@@ -91,9 +96,16 @@ class DamageSystem {
             tookDamage = true;
             const maxH = healthComponent.maxHealth ?? entity.maxHealth;
             if (entity.entityType === EntityTypes.HERO) {
-                EventBus.emit(Events.HERO_HEALTH_CHANGE, { current: healthComponent.health, max: maxH });
+                EventBus.emit(Events.HERO_HEALTH_CHANGE, {
+                    current: healthComponent.health,
+                    max: maxH
+                });
             } else {
-                EventBus.emit(Events.ENTITY_HEALTH_CHANGE, { entity, current: healthComponent.health, max: maxH });
+                EventBus.emit(Events.ENTITY_HEALTH_CHANGE, {
+                    entity,
+                    current: healthComponent.health,
+                    max: maxH
+                });
             }
         } else if (isDamageable(entity)) {
             // Entity handles its own damage (e.g. Resource)
@@ -183,7 +195,7 @@ class DamageSystem {
      * Handle entity death
      */
     handleDeath(data: { entity: IEntity; killer?: IEntity }) {
-        const { entity, killer } = data;
+        const { entity } = data;
 
         Logger.info(`[DamageSystem] Entity died: ${entity.entityType} (ID: ${entity.id})`);
 

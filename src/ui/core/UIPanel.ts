@@ -9,10 +9,10 @@
 
 import { UIManager } from '../../ui/UIManager';
 import { Logger } from '@core/Logger';
-import { Registry } from '@core/Registry';
+import { GameState } from '@core/State';
 import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
-import { UIPanelConfig, UIPanelOptions } from '../../types/ui';
+import { UIPanelOptions } from '../../types/ui';
 
 class UIPanel {
     // Property declarations
@@ -107,8 +107,8 @@ class UIPanel {
     /**
      * Lifecycle hooks
      */
-    onOpen() { }
-    onClose() { }
+    onOpen() {}
+    onClose() {}
 
     /**
      * Apply a layout mode (called by LayoutStrategies)

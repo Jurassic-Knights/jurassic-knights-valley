@@ -12,10 +12,15 @@ import { Resource } from '../gameplay/Resource';
 import { Enemy } from '../gameplay/EnemyCore';
 import { Boss } from '../gameplay/Boss';
 import { Registry } from '@core/Registry';
-import { fetchMapData, getObjectsFromMapData, getPrefetchedMapData, clearPrefetchedMapData } from './MapDataService';
+import {
+    fetchMapData,
+    getObjectsFromMapData,
+    getPrefetchedMapData,
+    clearPrefetchedMapData
+} from './MapDataService';
 import type { MapData } from './MapDataService';
 import type { Mapgen4Param, ManualTownsAndRailroads } from '../tools/map-editor/Mapgen4Generator';
-import type { MapObject, HeroSpawnPosition } from '../tools/map-editor/MapEditorTypes';
+import type { MapObject } from '../tools/map-editor/MapEditorTypes';
 import type { IEntity } from '../types/core';
 
 const CHANNEL_NAME = 'game-map-updates';
@@ -36,7 +41,11 @@ function findEntityAt(
     for (const [key, entity] of map) {
         const [kx, ky] = key.split(',').map(Number);
         if (Math.abs(kx - roundX) <= POS_TOLERANCE && Math.abs(ky - roundY) <= POS_TOLERANCE) {
-            if (!id || (entity as { resourceType?: string; registryId?: string }).resourceType === id || (entity as { registryId?: string }).registryId === id) {
+            if (
+                !id ||
+                (entity as { resourceType?: string; registryId?: string }).resourceType === id ||
+                (entity as { registryId?: string }).registryId === id
+            ) {
                 return { entity, key };
             }
         }
@@ -108,7 +117,9 @@ const MapObjectSpawner = {
                     break;
                 case 'MAP_HERO_SPAWN':
                     if (typeof x === 'number' && typeof y === 'number') {
-                        const wm = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void }>('WorldManager');
+                        const wm = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void }>(
+                            'WorldManager'
+                        );
                         wm?.setHeroSpawn(x, y);
                     }
                     break;
@@ -123,7 +134,13 @@ const MapObjectSpawner = {
                     }
                     break;
                 case 'MAP_OBJECT_MOVE':
-                    if (id != null && oldX != null && oldY != null && newX != null && newY != null) {
+                    if (
+                        id != null &&
+                        oldX != null &&
+                        oldY != null &&
+                        newX != null &&
+                        newY != null
+                    ) {
                         this._moveOne(id, oldX, oldY, newX, newY);
                     }
                     break;
@@ -142,15 +159,24 @@ const MapObjectSpawner = {
 
     _applyFullMap(data: MapData | null): void {
         if (data?.mapgen4Param) {
-            const worldManager = Registry?.get<{ setMapgen4ParamAndRebuild: (p: Mapgen4Param, m?: ManualTownsAndRailroads) => void }>('WorldManager');
+            const worldManager = Registry?.get<{
+                setMapgen4ParamAndRebuild: (p: Mapgen4Param, m?: ManualTownsAndRailroads) => void;
+            }>('WorldManager');
             worldManager?.setMapgen4ParamAndRebuild(data.mapgen4Param, {
                 manualTowns: data.manualTowns,
                 manualStations: data.manualStations,
                 railroadWaypoints: data.railroadWaypoints
             });
         }
-        const worldManager = Registry?.get<{ setHeroSpawn: (x: number, y: number) => void; clearHeroSpawn: () => void }>('WorldManager');
-        if (data?.heroSpawn && typeof data.heroSpawn.x === 'number' && typeof data.heroSpawn.y === 'number') {
+        const worldManager = Registry?.get<{
+            setHeroSpawn: (x: number, y: number) => void;
+            clearHeroSpawn: () => void;
+        }>('WorldManager');
+        if (
+            data?.heroSpawn &&
+            typeof data.heroSpawn.x === 'number' &&
+            typeof data.heroSpawn.y === 'number'
+        ) {
             worldManager?.setHeroSpawn(data.heroSpawn.x, data.heroSpawn.y);
         } else {
             worldManager?.clearHeroSpawn();
@@ -196,7 +222,8 @@ const MapObjectSpawner = {
 };
 
 if (typeof window !== 'undefined') {
-    (window as unknown as { MapObjectSpawner: typeof MapObjectSpawner }).MapObjectSpawner = MapObjectSpawner;
+    (window as unknown as { MapObjectSpawner: typeof MapObjectSpawner }).MapObjectSpawner =
+        MapObjectSpawner;
 }
 
 export { MapObjectSpawner };

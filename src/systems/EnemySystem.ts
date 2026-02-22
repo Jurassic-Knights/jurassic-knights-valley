@@ -8,7 +8,7 @@
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { entityManager } from '@core/EntityManager';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';

@@ -7,11 +7,8 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 import { GameState } from '@core/State';
-import { WorldManager } from '../world/WorldManager';
-import { AudioManager } from '../audio/AudioManager';
-import { VFXTriggerService } from './VFXTriggerService';
 import { Registry } from '@core/Registry';
 import type { IGame } from '../types/core';
 

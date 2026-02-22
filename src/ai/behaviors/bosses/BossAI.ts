@@ -14,7 +14,6 @@ import { EventBus } from '../../../core/EventBus';
 import { AudioManager } from '../../../audio/AudioManager';
 import { BaseAI } from '../BaseAI';
 import { EnemyAI } from '../enemies/EnemyAI';
-import { Registry } from '../../../core/Registry';
 import { MathUtils } from '../../../core/MathUtils';
 import type { IEntity } from '../../../types/core';
 

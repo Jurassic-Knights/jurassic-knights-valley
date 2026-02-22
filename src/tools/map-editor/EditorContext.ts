@@ -1,4 +1,4 @@
-import { ZoneCategory } from '@data/ZoneConfig';
+import { ZoneConfig } from '@data/ZoneConfig';
 
 export interface RegistryDict {
     [id: string]: { width?: number; height?: number } | undefined;
@@ -14,7 +14,7 @@ export interface EntityRegistry {
 
 /**
  * EditorContext
- * 
+ *
  * Shared state for Map Editor sub-systems.
  * Replaces legacy 'window' global storage.
  */

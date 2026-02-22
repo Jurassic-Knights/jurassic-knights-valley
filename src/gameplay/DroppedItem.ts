@@ -12,7 +12,7 @@ import { ResourceRenderer } from '../rendering/ResourceRenderer';
 import { Resource } from './Resource';
 import { EntityTypes } from '@config/EntityTypes';
 import { GameConstants, getConfig } from '@data/GameConstants';
-import { Registry } from '@core/Registry';
+// import removed
 import { EntityRegistry } from '@entities/EntityLoader';
 import { Logger } from '@core/Logger';
 import { EntityScaling } from '../utils/EntityScaling';
@@ -53,7 +53,15 @@ class DroppedItem extends Entity {
     postLandDelay: number = 0.5;
     minPickupTime: number = 0.8;
 
-    constructor(config: { itemId?: string; amount?: number; x?: number; y?: number; [key: string]: unknown } = {}) {
+    constructor(
+        config: {
+            itemId?: string;
+            amount?: number;
+            x?: number;
+            y?: number;
+            [key: string]: unknown;
+        } = {}
+    ) {
         // 1. Load Config
         const typeConfig = EntityRegistry.items?.[config.resourceType] || {};
 
@@ -106,7 +114,8 @@ class DroppedItem extends Entity {
 
         // REWRITE: Gentle pull (visual collect)
         this.magnetSpeed = finalConfig.magnetSpeed ?? GameConstants.DroppedItem.MAGNET_SPEED;
-        this.magnetAcceleration = finalConfig.magnetAcceleration ?? GameConstants.DroppedItem.MAGNET_ACCELERATION;
+        this.magnetAcceleration =
+            finalConfig.magnetAcceleration ?? GameConstants.DroppedItem.MAGNET_ACCELERATION;
 
         this.trailHistory = []; // [ {x, y, z} ]
         this.maxTrailLength = 15;
@@ -116,7 +125,10 @@ class DroppedItem extends Entity {
         this.landedTime = null; // Set when flight finishes
         this.postLandDelay = GameConstants.DroppedItem.POST_LAND_DELAY;
         // Use config (SpawnManager) or default
-        this.minPickupTime = config.minPickupTime !== undefined ? config.minPickupTime : GameConstants.DroppedItem.MIN_PICKUP_TIME;
+        this.minPickupTime =
+            config.minPickupTime !== undefined
+                ? config.minPickupTime
+                : GameConstants.DroppedItem.MIN_PICKUP_TIME;
     }
 
     /**
@@ -221,7 +233,8 @@ class DroppedItem extends Entity {
         // REWRITE: Robust dt handling (data-driven from GameConstants)
         let safeDt = dt;
         if (!safeDt || isNaN(safeDt) || safeDt <= 0) safeDt = GameConstants.Timing.DT_FALLBACK_MS;
-        if (safeDt > GameConstants.Timing.DT_LAG_CAP_MS) safeDt = GameConstants.Timing.DT_LAG_CAP_MS;
+        if (safeDt > GameConstants.Timing.DT_LAG_CAP_MS)
+            safeDt = GameConstants.Timing.DT_LAG_CAP_MS;
 
         const dtSec = safeDt / GameConstants.Timing.MS_PER_SECOND;
 

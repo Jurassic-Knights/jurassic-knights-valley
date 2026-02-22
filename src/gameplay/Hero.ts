@@ -17,10 +17,10 @@ import { StatsComponent } from '../components/StatsComponent';
 import { HeroDefaults } from '@config/HeroDefaults';
 import { EventBus } from '@core/EventBus';
 import { Logger } from '@core/Logger';
-import { Registry } from '@core/Registry';
+// import removed
 import { EquipmentManager } from '@systems/EquipmentManager';
 import type { IComponents, IEntity } from '../types/core';
-import type { EquipmentItem } from '../types/ui';
+// import removed
 
 // Unmapped modules - need manual import
 
@@ -200,7 +200,9 @@ class Hero extends Entity {
     }
 
     get maxHealth() {
-        return this.components.health ? this.components.health.maxHealth : GameConstants.HeroDefaults.MAX_HEALTH_FALLBACK;
+        return this.components.health
+            ? this.components.health.maxHealth
+            : GameConstants.HeroDefaults.MAX_HEALTH_FALLBACK;
     }
     set maxHealth(val) {
         if (this.components.health) this.components.health.maxHealth = val;
@@ -222,9 +224,7 @@ class Hero extends Entity {
     }
     set speed(val) {
         // Speed is now controlled by GameConstants, this setter is for backwards compatibility
-        Logger.warn(
-            '[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED'
-        );
+        Logger.warn('[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED');
     }
 
     get stamina() {
@@ -235,7 +235,9 @@ class Hero extends Entity {
     }
 
     get maxStamina() {
-        return this.components.stats ? this.components.stats.maxStamina : GameConstants.HeroDefaults.MAX_STAMINA_FALLBACK;
+        return this.components.stats
+            ? this.components.stats.maxStamina
+            : GameConstants.HeroDefaults.MAX_STAMINA_FALLBACK;
     }
     set maxStamina(val) {
         if (this.components.stats) this.components.stats.maxStamina = val;
@@ -283,7 +285,10 @@ class Hero extends Entity {
      */
     restStamina() {
         if (this.components.stats && EventBus) {
-            EventBus.emit(GameConstants.Events.REQUEST_STAMINA_RESTORE, { hero: this, amount: this.maxStamina });
+            EventBus.emit(GameConstants.Events.REQUEST_STAMINA_RESTORE, {
+                hero: this,
+                amount: this.maxStamina
+            });
         }
     }
 }

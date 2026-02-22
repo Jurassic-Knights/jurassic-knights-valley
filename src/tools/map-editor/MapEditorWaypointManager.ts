@@ -20,9 +20,9 @@ export interface WaypointManagerHost {
     editingMode: string;
     debugShowStationNumbers: boolean;
     debugShowSplinePath: boolean;
-    onRemoveWaypoint: (legIndex: number, waypointIndex: number) => void;
-    onUpdateWaypointRegion: (legIndex: number, waypointIndex: number, regionId: number) => void;
-    getRegionAtWorld: (worldX: number, worldY: number) => number | null;
+    _onRemoveWaypoint: (legIndex: number, waypointIndex: number) => void;
+    _onUpdateWaypointRegion: (legIndex: number, waypointIndex: number, regionId: number) => void;
+    _getRegionAtWorld: (wx: number, wy: number) => number | null;
 }
 
 export class MapEditorWaypointManager {
@@ -33,7 +33,10 @@ export class MapEditorWaypointManager {
     private readonly boundPointerMove = (e: PointerEvent) => this.handlePointerMove(e);
     private readonly boundPointerUp = () => this.handlePointerUp();
     /** Reused to avoid per-frame allocation. */
-    private readonly waypointsByLeg = new Map<number, { regionId: number; waypointIndex: number }[]>();
+    private readonly waypointsByLeg = new Map<
+        number,
+        { regionId: number; waypointIndex: number }[]
+    >();
 
     update(host: WaypointManagerHost): void {
         this.host = host;
@@ -48,9 +51,9 @@ export class MapEditorWaypointManager {
             editingMode,
             debugShowStationNumbers,
             debugShowSplinePath,
-            onRemoveWaypoint,
-            onUpdateWaypointRegion,
-            getRegionAtWorld
+            _onRemoveWaypoint,
+            _onUpdateWaypointRegion,
+            _getRegionAtWorld
         } = host;
 
         if (!worldContainer || !app) return;
@@ -66,7 +69,7 @@ export class MapEditorWaypointManager {
             return;
         }
 
-        const key = `${editingMode}|${debugShowStationNumbers}|${debugShowSplinePath}|${procCache!.railroadStationIds.join(',')}|${railroadWaypoints.map(w => w.regionId).join(',')}`;
+        const key = `${editingMode}|${debugShowStationNumbers}|${debugShowSplinePath}|${procCache!.railroadStationIds.join(',')}|${railroadWaypoints.map((w) => w.regionId).join(',')}`;
         if (this.lastKey === key && this.container?.visible) return;
         this.lastKey = key;
 
@@ -194,9 +197,9 @@ export class MapEditorWaypointManager {
                 d.waypointIndex === this.dragging!.waypointIndex
             );
         });
-        const regionId = child ? host.getRegionAtWorld(child.position.x, child.position.y) : null;
+        const regionId = child ? host._getRegionAtWorld(child.position.x, child.position.y) : null;
         if (regionId != null) {
-            host.onUpdateWaypointRegion(
+            host._onUpdateWaypointRegion(
                 this.dragging.legIndex,
                 this.dragging.waypointIndex,
                 regionId

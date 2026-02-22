@@ -6,10 +6,8 @@
  * Pure data container; no PIXI or DOM.
  */
 import type { MapObject } from './MapEditorTypes';
-import { ZoneCategory } from '@data/ZoneConfig';
+export type EditingMode = 'object' | 'manipulation' | 'ground' | 'zone';
 import type { ManualStation, RailroadWaypointEntry } from '../../world/MapDataService';
-
-export type EditingMode = 'object' | 'manipulation';
 export type CurrentTool = 'brush' | 'eraser' | 'select';
 export type ObjectAction = { type: 'add' | 'remove'; x: number; y: number; assetId: string };
 

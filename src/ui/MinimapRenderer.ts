@@ -4,7 +4,6 @@
 import { Registry } from '@core/Registry';
 import { entityManager } from '@core/EntityManager';
 import { GameConstants } from '@data/GameConstants';
-import { generateMapgen4 } from '../tools/map-editor/Mapgen4Generator';
 import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4PreviewRenderer';
 import type { Mapgen4Param } from '../tools/map-editor/Mapgen4Param';
 
@@ -42,8 +41,13 @@ export function renderMinimap(
     if (meshAndMap) {
         const param = worldManager.getMapgen4Param();
         const { mesh, map } = meshAndMap;
-        const { towns = [], roadSegments = [], railroadPath = [], railroadCrossings = [], railroadStationIds = [] } =
-            worldManager.getCachedTownsAndRoads?.() ?? {};
+        const {
+            towns = [],
+            roadSegments = [],
+            railroadPath = [],
+            railroadCrossings = [],
+            railroadStationIds = []
+        } = (worldManager.getCachedTownsAndRoads as any)?.() ?? {};
         const vpX = (viewLeft / WORLD_SIZE) * MESH_SIZE;
         const vpY = (viewTop / WORLD_SIZE) * MESH_SIZE;
         const vpW = (viewWidth / WORLD_SIZE) * MESH_SIZE;
@@ -52,9 +56,9 @@ export function renderMinimap(
         if (canvas) {
             drawCachedMeshToCanvas(
                 canvas,
-                mesh,
-                map,
-                param,
+                mesh as any,
+                map as any,
+                param as any,
                 vpX,
                 vpY,
                 vpW,

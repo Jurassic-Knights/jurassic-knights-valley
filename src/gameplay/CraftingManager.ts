@@ -13,7 +13,7 @@ import { Registry } from '@core/Registry';
 import { EventBus } from '@core/EventBus';
 import { GameState } from '@core/State';
 import { GameInstance } from '@core/Game';
-import { UIManager } from '@ui/UIManager';
+// import removed
 import { spawnCraftedItem } from './SpawnHelper';
 import { WorldManager } from '../world/WorldManager';
 

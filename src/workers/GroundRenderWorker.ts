@@ -12,7 +12,7 @@ self.onmessage = async (e: MessageEvent) => {
         overlayBuffer,
         heightBuffer,
         noiseBuffer,
-        config,
+        _config, // Renamed from config
         baseWidth,
         midWidth,
         overlayWidth,
@@ -42,8 +42,8 @@ self.onmessage = async (e: MessageEvent) => {
         const bw = calcDim(base32, baseWidth || width);
         const mw = calcDim(mid32, midWidth || width);
         const ow = calcDim(overlay32, overlayWidth || width);
-        const hw = calcDim(h32, heightWidth || width);
-        const nw = calcDim(n32, noiseWidth || width);
+        const _hw = calcDim(h32, heightWidth || width); // Renamed from hw
+        const _nw = calcDim(n32, noiseWidth || width); // Renamed from nw
 
         const mh = mw;
         const oh = ow;
@@ -163,6 +163,7 @@ function upscaleWeights(
     return out;
 }
 
-function clamp(value: number, min: number, max: number): number {
+function _clamp(value: number, min: number, max: number): number {
+    // Renamed from clamp
     return Math.max(min, Math.min(max, value));
 }

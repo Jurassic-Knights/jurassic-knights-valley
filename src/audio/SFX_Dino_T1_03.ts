@@ -62,7 +62,6 @@ import { SFX } from './SFX_Core';
             SFX.playTone(500, 0.2, 'square', SFX.TARGET_VOLUME * 0.4, 0.03, 0.15);
         },
         sfx_flee_dinosaur_t1_03: function () {
-            const t = SFX.ctx.currentTime;
             for (let i = 0; i < 4; i++) {
                 setTimeout(() => {
                     SFX.playTone(

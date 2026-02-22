@@ -46,8 +46,8 @@ const Analytics = {
             );
             this.initialized = true;
             Logger.info('[Analytics] Initialized');
-        } catch (e) {
-            Logger.error('[Analytics] Failed to initialize:', e);
+        } catch {
+            Logger.warn('[Analytics] Failed to send progression event');
         }
     },
 
@@ -72,7 +72,7 @@ const Analytics = {
                     area
                 );
             }
-        } catch (e) {
+        } catch {
             /* ignore */
         }
     },
@@ -80,7 +80,13 @@ const Analytics = {
     /**
      * Track resource/economy events (gold earned, items crafted)
      */
-    trackResource(flowType: string, currency: string, amount: number, itemType: string, itemId: string) {
+    trackResource(
+        flowType: string,
+        currency: string,
+        amount: number,
+        itemType: string,
+        itemId: string
+    ) {
         if (!this.initialized) return;
 
         // flowType: 'Source' (earned) or 'Sink' (spent)
@@ -93,7 +99,7 @@ const Analytics = {
                 itemType,
                 itemId
             );
-        } catch (e) {
+        } catch {
             /* ignore */
         }
     },
@@ -110,7 +116,7 @@ const Analytics = {
             } else {
                 gameanalytics.GameAnalytics.addDesignEvent(eventId);
             }
-        } catch (e) {
+        } catch {
             /* ignore */
         }
     },
@@ -127,7 +133,7 @@ const Analytics = {
                 gameanalytics.EGAErrorSeverity[severity],
                 message
             );
-        } catch (e) {
+        } catch {
             /* ignore */
         }
     }

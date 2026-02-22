@@ -6,7 +6,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants, getConfig } from '@data/GameConstants';
+import { GameConstants } from '@data/GameConstants';
 // import { VFXController } from '@vfx/VFXController';
 // import { VFXConfig } from '@data/VFXConfig';
 import { WorldManager } from '../world/WorldManager';
@@ -65,9 +65,13 @@ class HeroSystem {
             EventBus.on(GameConstants.Events.HERO_DIED, (data: { hero: IEntity }) =>
                 this.onHeroDied({ hero: data.hero as Hero })
             );
-            EventBus.on(GameConstants.Events.REQUEST_STAMINA_RESTORE, (data: { hero: Hero; amount: number }) => {
-                if (data?.hero && typeof data.amount === 'number') this.restoreStamina(data.hero, data.amount);
-            });
+            EventBus.on(
+                GameConstants.Events.REQUEST_STAMINA_RESTORE,
+                (data: { hero: Hero; amount: number }) => {
+                    if (data?.hero && typeof data.amount === 'number')
+                        this.restoreStamina(data.hero, data.amount);
+                }
+            );
         }
     }
 
@@ -110,7 +114,10 @@ class HeroSystem {
         // Stats Emission - Throttle to every 100ms (6 events/sec instead of 60)
         if (EventBus) {
             const now = performance.now();
-            if (!this._lastStaminaEmit || now - this._lastStaminaEmit > GameConstants.Hero.STAMINA_EMIT_THROTTLE) {
+            if (
+                !this._lastStaminaEmit ||
+                now - this._lastStaminaEmit > GameConstants.Hero.STAMINA_EMIT_THROTTLE
+            ) {
                 this._lastStaminaEmit = now;
                 EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
                     current: hero.stamina,
@@ -177,7 +184,10 @@ class HeroSystem {
                 h.isDead = false;
                 h.health = h.getMaxHealth();
                 if (EventBus) {
-                    EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, { current: h.health, max: h.getMaxHealth() });
+                    EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
+                        current: h.health,
+                        max: h.getMaxHealth()
+                    });
                 }
             }
             hero.locked = false;
