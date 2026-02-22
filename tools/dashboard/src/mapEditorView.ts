@@ -15,8 +15,28 @@ interface ProcParam {
     elevation: Record<string, number>;
     biomes: Record<string, number>;
     rivers: Record<string, number>;
-    towns?: { enabled: boolean; numTowns: number; minSpacing: number; townRadius: number; defaultZoneId: string; elevationMin: number; elevationMax: number; rainfallMin: number; rainfallMax: number; seed?: number };
-    roads?: { enabled: boolean; baseWidth: number; shortcutsPerTown: number; riverCrossingCost: number; coverageGridSize?: number; slopeWeight?: number; waypointCurviness?: number; seed?: number };
+    towns?: {
+        enabled: boolean;
+        numTowns: number;
+        minSpacing: number;
+        townRadius: number;
+        defaultZoneId: string;
+        elevationMin: number;
+        elevationMax: number;
+        rainfallMin: number;
+        rainfallMax: number;
+        seed?: number;
+    };
+    roads?: {
+        enabled: boolean;
+        baseWidth: number;
+        shortcutsPerTown: number;
+        riverCrossingCost: number;
+        coverageGridSize?: number;
+        slopeWeight?: number;
+        waypointCurviness?: number;
+        seed?: number;
+    };
     railroads?: { enabled: boolean };
 }
 
@@ -74,12 +94,16 @@ export async function showMapEditorView(pushState = true): Promise<void> {
 
         try {
             // Wait for layout so map-editor-canvas has non-zero dimensions before mount
-            await new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+            await new Promise<void>((r) =>
+                requestAnimationFrame(() => requestAnimationFrame(() => r()))
+            );
 
             editorInstance = new MapEditorCore();
             await editorInstance.mount('map-editor-canvas', async (cat) => {
                 const { fetchCategory } = await import('./api');
-                return fetchCategory(cat) as any;
+                return fetchCategory(cat) as Promise<{
+                    entities: { [key: string]: unknown; id: string }[];
+                }>;
             });
 
             paletteInstance = new AssetPaletteView('palette-content', (id, cat) => {
@@ -91,7 +115,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
             if (editorInstance) {
                 editorInstance.setOnManualDataChange(() => {
                     OutlinerPanel.refresh();
-                    runPreviewCanvas().catch(() => { });
+                    runPreviewCanvas().catch(() => {});
                     if (getAutoSaveEnabled()) scheduleAutoSave();
                 });
                 editorInstance.setOnCommandExecuted(() => {
@@ -154,9 +178,17 @@ function drawViewportRectOnProceduralOverlay(): void {
     const wrapSidebar = document.getElementById('proc-preview-wrap');
     const container = document.getElementById('map-editor-container');
     const inMapView = container && container.style.display !== 'none';
-    if (wrapSidebar) wrapSidebar.classList.toggle('has-viewport', inMapView && (document.getElementById('procedural-panel-body')?.style.display !== 'none'));
+    if (wrapSidebar)
+        wrapSidebar.classList.toggle(
+            'has-viewport',
+            inMapView && document.getElementById('procedural-panel-body')?.style.display !== 'none'
+        );
     if (!editorInstance || !inMapView) return;
-    if (overlaySidebar && document.getElementById('procedural-panel-body')?.style.display !== 'none') drawViewportRectOnOverlay(overlaySidebar);
+    if (
+        overlaySidebar &&
+        document.getElementById('procedural-panel-body')?.style.display !== 'none'
+    )
+        drawViewportRectOnOverlay(overlaySidebar);
 }
 
 let mapEditChannel: BroadcastChannel | null = null;
@@ -218,7 +250,9 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
         lastLoadedMapgen4Param = param ?? null;
         setProcParamFromData(param);
         if (param) {
-            await editorInstance.setProceduralPreview(param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
+            await editorInstance.setProceduralPreview(
+                param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param
+            );
         }
         currentLoadedMap = DEFAULT_MAP_FILENAME;
         updateLoadedDisplay();
@@ -231,7 +265,9 @@ async function loadDefaultMapOnFirstOpen(): Promise<void> {
             // Keep storage in sync when possible
         }
     } else {
-        Logger.info('[MapEditor] Load default map: no data from any source (localStorage/indexedDB/API/static)');
+        Logger.info(
+            '[MapEditor] Load default map: no data from any source (localStorage/indexedDB/API/static)'
+        );
     }
 }
 
@@ -257,7 +293,9 @@ async function saveMapToDefault(): Promise<void> {
             broadcastMapFull();
             try {
                 const { source } = await saveDefaultMap(mapData);
-                Logger.info(`[MapEditor] Save default map: API success, local persistence=${source}`);
+                Logger.info(
+                    `[MapEditor] Save default map: API success, local persistence=${source}`
+                );
             } catch {
                 // local persistence failed
             }
@@ -288,9 +326,9 @@ function initMapEditorBeforeUnload(): void {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filename, mapData }),
                     keepalive: true
-                }).catch(() => { });
+                }).catch(() => {});
                 if (filename === DEFAULT_MAP_FILENAME || filename === 'default') {
-                    saveDefaultMap(mapData).catch(() => { });
+                    saveDefaultMap(mapData).catch(() => {});
                 }
             }
         }
@@ -352,13 +390,13 @@ function initMapEditorResize(): void {
         defaultPx: 300,
         minPx: 180,
         storageKey: 'map-editor-palette-width',
-        onResize: triggerMapCanvasResize,
+        onResize: triggerMapCanvasResize
     });
     initResizeHandle('resize-map-panel', 'maps-panel', false, {
         defaultPx: 280,
         minPx: 200,
         storageKey: 'map-editor-maps-panel-width',
-        onResize: triggerMapCanvasResize,
+        onResize: triggerMapCanvasResize
     });
 }
 
@@ -421,7 +459,8 @@ function initPanelTabs(): void {
         if (bodyOutliner) bodyOutliner.style.display = tab === 'outliner' ? '' : 'none';
         if (bodyProcedural) bodyProcedural.style.display = tab === 'procedural' ? '' : 'none';
         if (panelTitle) {
-            panelTitle.textContent = tab === 'maps' ? 'Maps' : tab === 'outliner' ? 'Outliner' : 'Procedural';
+            panelTitle.textContent =
+                tab === 'maps' ? 'Maps' : tab === 'outliner' ? 'Outliner' : 'Procedural';
         }
         if (tab === 'outliner') {
             OutlinerPanel.refresh();
@@ -434,8 +473,15 @@ function initPanelTabs(): void {
     tabOutliner?.addEventListener('click', () => switchTo('outliner'));
     tabProcedural?.addEventListener('click', () => switchTo('procedural'));
 
-    const storedTab = localStorage.getItem(MAP_PANEL_TAB_KEY) as 'maps' | 'outliner' | 'procedural' | null;
-    if (storedTab && (storedTab === 'maps' || storedTab === 'outliner' || storedTab === 'procedural')) {
+    const storedTab = localStorage.getItem(MAP_PANEL_TAB_KEY) as
+        | 'maps'
+        | 'outliner'
+        | 'procedural'
+        | null;
+    if (
+        storedTab &&
+        (storedTab === 'maps' || storedTab === 'outliner' || storedTab === 'procedural')
+    ) {
         switchTo(storedTab);
     }
     isInitialRestore = false;
@@ -445,7 +491,9 @@ function initOutlinerPanel(): void {
     if (!editorInstance) return;
     OutlinerPanel.init(
         editorInstance,
-        () => { /* onRefresh callback — currently unused */ },
+        () => {
+            /* onRefresh callback — currently unused */
+        },
         () => runPreviewCanvas()
     );
 }
@@ -461,7 +509,6 @@ function setProcStatus(message: string, isError = false): void {
         el.style.color = isError ? '#e74c3c' : '#888';
     }
 }
-
 
 const PREVIEW_DEBOUNCE_MS = 120;
 
@@ -483,7 +530,8 @@ async function runPreviewCanvas(opts?: { skipRebuildIfLoaded?: boolean }): Promi
     const canvasSidebar = document.getElementById('proc-preview-canvas') as HTMLCanvasElement;
     try {
         const param = getProcParam();
-        const mapgenParam = param as any as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
+        const mapgenParam =
+            param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
         if (editorInstance) {
             const shouldRebuild = !currentLoadedMap || !skipRebuildIfLoaded;
             if (shouldRebuild) {
@@ -536,7 +584,8 @@ function getProcParam(): ProcParam {
         parseFloat((document.getElementById(id) as HTMLInputElement)?.value ?? '0') || 0;
     const int = (id: string) =>
         parseInt((document.getElementById(id) as HTMLInputElement)?.value ?? '0', 10) || 0;
-    const checked = (id: string) => (document.getElementById(id) as HTMLInputElement)?.checked ?? false;
+    const checked = (id: string) =>
+        (document.getElementById(id) as HTMLInputElement)?.checked ?? false;
     return {
         spacing: num('proc-spacing') || 5.5,
         mountainSpacing: num('proc-mountain-spacing') || 35,
@@ -593,10 +642,14 @@ function buildMapPayload(): MapEditorDataPayload | null {
     if (!editorInstance) return null;
 
     const serialized = editorInstance.serialize();
-    const fromEditor = editorInstance?.getMapgen4Param?.() as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param | undefined;
-    const fromUIParam = getProcParam() as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
+    const fromEditor = editorInstance?.getMapgen4Param?.() as
+        | import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param
+        | undefined;
+    const fromUIParam =
+        getProcParam() as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param;
 
-    const mapgen4Param = fromEditor && Object.keys(fromEditor).length > 0 ? fromEditor : fromUIParam;
+    const mapgen4Param =
+        fromEditor && Object.keys(fromEditor).length > 0 ? fromEditor : fromUIParam;
     const paramSource = fromEditor ? 'procCache' : lastLoadedMapgen4Param ? 'lastLoaded' : 'form';
     Logger.info(`[MapEditor] buildMapPayload: mapgen4Param source=${paramSource}`);
 
@@ -748,7 +801,9 @@ function initProceduralPanel(): void {
                 return;
             }
             const param = editorInstance.getMapgen4Param() ?? getProcParam();
-            await editorInstance.setProceduralPreview(param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
+            await editorInstance.setProceduralPreview(
+                param as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param
+            );
             setProcStatus('Railroad path rebuilt.');
         });
     }
@@ -889,7 +944,9 @@ async function loadMapByName(filename: string): Promise<void> {
 
     setMapStatus('Loading...');
     try {
-        const res = await fetch(`/api/load_map?filename=${encodeURIComponent(filename)}`, { cache: 'no-store' });
+        const res = await fetch(`/api/load_map?filename=${encodeURIComponent(filename)}`, {
+            cache: 'no-store'
+        });
         const result = await res.json();
         if (result.success && result.data) {
             const data = result.data as unknown as MapEditorDataPayload;
@@ -897,7 +954,9 @@ async function loadMapByName(filename: string): Promise<void> {
             lastLoadedMapgen4Param = (data.mapgen4Param as unknown as ProcParam) ?? null;
             setProcParamFromData(data.mapgen4Param as unknown as ProcParam);
             if (data.mapgen4Param) {
-                await editorInstance.setProceduralPreview(data.mapgen4Param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param);
+                await editorInstance.setProceduralPreview(
+                    data.mapgen4Param as unknown as import('../../../src/tools/map-editor/Mapgen4Generator').Mapgen4Param
+                );
             }
             currentLoadedMap = filename;
             updateLoadedDisplay();
@@ -941,21 +1000,27 @@ async function deleteMapByName(filename: string): Promise<void> {
 
 function initModeAndTools(): void {
     const modes = ['object', 'ground', 'zone', 'manipulation'] as const;
-    type EditorMode = typeof modes[number];
+    type EditorMode = (typeof modes)[number];
 
     const updateModeUI = (mode: EditorMode) => {
-        modes.forEach(m => {
+        modes.forEach((m) => {
             const btn = document.getElementById(`mode-${m}`);
             if (btn) {
                 btn.classList.toggle('active', m === mode);
             }
         });
 
-        if (editorInstance) editorInstance.setMode(mode as any);
-        if (paletteInstance) paletteInstance.setMode(mode as any);
+        if (editorInstance)
+            editorInstance.setMode(
+                mode as unknown as import('../../../src/tools/map-editor/MapEditorTypes').EditorMode
+            );
+        if (paletteInstance)
+            paletteInstance.setMode(
+                mode as unknown as import('../../../src/tools/map-editor/MapEditorTypes').EditorMode
+            );
     };
 
-    modes.forEach(mode => {
+    modes.forEach((mode) => {
         const btn = document.getElementById(`mode-${mode}`);
         btn?.addEventListener('click', () => updateModeUI(mode));
     });
@@ -970,11 +1035,14 @@ function initModeAndTools(): void {
 
     const debugBtn = document.getElementById('debug-btn');
     const debugPanel = document.getElementById('debug-panel');
-    const debugStationNumbersCheck = document.getElementById('debug-station-numbers') as HTMLInputElement;
+    const debugStationNumbersCheck = document.getElementById(
+        'debug-station-numbers'
+    ) as HTMLInputElement;
     const debugSplinePathCheck = document.getElementById('debug-spline-path') as HTMLInputElement;
     debugBtn?.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (debugPanel) debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+        if (debugPanel)
+            debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
     });
     debugStationNumbersCheck?.addEventListener('change', () => {
         if (editorInstance) editorInstance.setDebugStationNumbers(debugStationNumbersCheck.checked);
@@ -992,8 +1060,6 @@ function initModeAndTools(): void {
         if (debugPanel) debugPanel.style.display = 'none';
     });
     debugPanel?.addEventListener('click', (e) => e.stopPropagation());
-
-
 }
 
 export function hideMapEditorView(): void {
@@ -1017,7 +1083,7 @@ export function hideMapEditorView(): void {
 if (import.meta.hot) {
     import.meta.hot.accept(() => {
         if (editorInstance) {
-            runPreviewCanvas().catch(() => { });
+            runPreviewCanvas().catch(() => {});
         }
     });
 }

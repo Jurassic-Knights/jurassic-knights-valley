@@ -53,13 +53,13 @@ class UIManagerService {
 
         // Listen for platform changes
         if (PlatformManager) {
-            PlatformManager.on('modechange', (config: any) =>
-                this.onPlatformChange(config)
-            );
+            PlatformManager.on('modechange', (config: unknown) => this.onPlatformChange(config));
             this.onPlatformChange(PlatformManager.getConfig());
         } else if (ResponsiveManager) {
-            ResponsiveManager.on('change', (data: { format: string; orientation?: string; breakpoint?: string }) =>
-                this.onResponsiveChange(data)
+            ResponsiveManager.on('change', (data: unknown) =>
+                this.onResponsiveChange(
+                    data as { format: string; orientation?: string; breakpoint?: string }
+                )
             );
         }
 
@@ -126,17 +126,12 @@ class UIManagerService {
             EventBus.on(E.UI_FADE_SCREEN, (data: { onMidpoint?: () => void } | null) =>
                 this.fadeInOut(data ? data.onMidpoint : null)
             );
-            EventBus.on(
-                E.QUEST_UPDATED,
-                (data: { quest: IQuest | null; animate?: boolean }) =>
-                    this.updateQuest(data.quest ?? null, data.animate ?? false)
+            EventBus.on(E.QUEST_UPDATED, (data: { quest: IQuest | null; animate?: boolean }) =>
+                this.updateQuest(data.quest ?? null, data.animate ?? false)
             );
-            EventBus.on(
-                E.UI_FULLSCREEN_OPENED,
-                (data: { source: IFullscreenUI } | null) => {
-                    if (data?.source) this.closeOtherFullscreenUIs(data.source);
-                }
-            );
+            EventBus.on(E.UI_FULLSCREEN_OPENED, (data: { source: IFullscreenUI } | null) => {
+                if (data?.source) this.closeOtherFullscreenUIs(data.source);
+            });
 
             // Track when main UI panels override the footer
             EventBus.on('UI_PANEL_OPENED', (data: { panelId: string }) => {
@@ -174,7 +169,6 @@ class UIManagerService {
             }
         });
     }
-
 
     // === Platform/Layout ===
     onPlatformChange(_config: unknown) {

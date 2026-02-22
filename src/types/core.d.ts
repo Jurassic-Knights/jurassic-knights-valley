@@ -53,7 +53,7 @@ export interface IEquipmentManager {
     getStatBonus(stat: string): number;
     getSlot(slot: string): unknown;
     equip(slot: string, item: unknown): boolean;
-    unequip(slot: string): boolean;
+    unequip(slot: string): unknown | null;
 }
 
 export interface EntitySpawnConfig {
@@ -201,6 +201,8 @@ export interface IEntity {
     maxStamina?: number;
     /** Equipment system reference (has getStatBonus, getSlot methods) */
     equipment?: IEquipmentManager;
+    /** Inventory properties */
+    inventory?: Record<string, number>;
     /** Whether entity is at home outpost */
     isAtHomeOutpost?: boolean;
     /** Whether entity is locked (cannot move) */
@@ -364,6 +366,7 @@ export interface StatsComponent extends IComponent {
 
 export interface InventoryComponent extends IComponent {
     items: Record<string, number>;
+    gold?: number;
     capacity: number;
     add(itemId: string, amount?: number): boolean;
     remove(itemId: string, amount?: number): boolean;

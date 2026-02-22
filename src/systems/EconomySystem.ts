@@ -31,10 +31,8 @@ class EconomySystem {
     initListeners() {
         if (!EventBus) return;
 
-
         // Listen for direct gold modification requests (e.g. from debug or cheats)
         EventBus.on(GameConstants.Events.ADD_GOLD, (amount: number) => this.addGold(amount));
-
     }
 
     update(_dt: number) {
@@ -45,11 +43,11 @@ class EconomySystem {
      * Get current gold amount
      */
     getGold() {
-        const hero = this.game?.hero as any;
+        const hero = this.game?.hero;
         if (hero && hero.inventory) {
             return hero.inventory.gold || 0;
         }
-        return GameState ? GameState.get('gold') || 0 : 0;
+        return GameState ? GameState.get<number>('gold') || 0 : 0;
     }
 
     /**
@@ -63,7 +61,7 @@ class EconomySystem {
         const newGold = currentGold - amount;
 
         // Update Hero
-        const hero = this.game?.hero as any;
+        const hero = this.game?.hero;
         if (hero && hero.inventory) {
             hero.inventory.gold = newGold;
         }
@@ -91,7 +89,7 @@ class EconomySystem {
         const newGold = currentGold + amount;
 
         // Update Hero
-        const hero = this.game?.hero as any;
+        const hero = this.game?.hero;
         if (hero && hero.inventory) {
             hero.inventory.gold = newGold;
         }
@@ -108,8 +106,6 @@ class EconomySystem {
 
         Logger.info(`[EconomySystem] Added ${amount}. New Balance: ${newGold}`);
     }
-
-
 }
 
 // Create singleton and export

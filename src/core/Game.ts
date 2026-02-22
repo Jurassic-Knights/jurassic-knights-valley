@@ -23,7 +23,7 @@ import { VFXController } from '@vfx/VFXController';
 import type { ISystem, IEntity } from '../types/core';
 
 class Game {
-    private isRunning: boolean = false;
+    isRunning: boolean = false;
     private lastTime: number = 0;
     private tickRate: number;
     private accumulator: number = 0;
@@ -84,7 +84,7 @@ class Game {
         let criticalInitFailed = false;
         for (const config of sortedSystems) {
             const name = config.global;
-            let sys;
+            let sys: ISystem | null = null;
 
             try {
                 debugStatus(`Loading: ${name}`);
@@ -101,14 +101,14 @@ class Game {
 
                 // Initialization
                 if (config.init) {
-                    if (typeof sys.init === 'function') {
+                    if (sys && typeof sys.init === 'function') {
                         // Check for Async
                         if (config.isAsync) {
                             Logger.info(`[Game] Awaiting async init: ${name}`);
                             debugStatus(`Awaiting: ${name}...`);
-                            await (sys as any).init(this);
+                            await sys.init(this);
                         } else {
-                            (sys as any).init(this);
+                            sys.init(this);
                         }
                         Logger.info(`[Game] Initialized ${name}`);
                         debugStatus(`OK: ${name}`);
@@ -118,7 +118,7 @@ class Game {
                 }
 
                 // Register for Update Loop
-                if (typeof (sys as any).update === 'function') {
+                if (sys && typeof sys.update === 'function') {
                     this.systems.push(sys);
                 }
             } catch (err) {
@@ -147,7 +147,8 @@ class Game {
             if (config.start) {
                 const globalWindow = window as unknown as Record<string, unknown>;
                 const sys =
-                    (globalWindow[config.global] as ISystem) || (Registry && Registry.get(config.global));
+                    (globalWindow[config.global] as ISystem) ||
+                    (Registry && Registry.get(config.global));
                 if (sys && typeof sys.start === 'function') {
                     sys.start();
                     Logger.info(`[Game] Started ${config.global}`);
@@ -165,8 +166,14 @@ class Game {
 
     private spawnHero(): void {
         try {
-            const worldManager = Registry?.get<{ getHeroSpawnPosition: () => { x: number; y: number } }>('WorldManager');
-            const gameRenderer = Registry?.get<{ setHero: (h: IEntity) => void; worldWidth?: number; worldHeight?: number }>('GameRenderer');
+            const worldManager = Registry?.get<{
+                getHeroSpawnPosition: () => { x: number; y: number };
+            }>('WorldManager');
+            const gameRenderer = Registry?.get<{
+                setHero: (h: IEntity) => void;
+                worldWidth?: number;
+                worldHeight?: number;
+            }>('GameRenderer');
             const spawn = worldManager?.getHeroSpawnPosition?.() ?? {
                 x: GameConstants.World.DEFAULT_SPAWN_X,
                 y: GameConstants.World.DEFAULT_SPAWN_Y
@@ -257,12 +264,12 @@ class Game {
             for (const system of this.systems) {
                 const name = system.constructor?.name || 'Unknown';
                 const start = performance.now();
-                (system as any).update(dt);
+                if (system.update) system.update(dt);
                 profile.systems[name] = (profile.systems[name] || 0) + (performance.now() - start);
             }
         } else {
             for (const system of this.systems) {
-                (system as any).update(dt);
+                if (system.update) system.update(dt);
             }
         }
 

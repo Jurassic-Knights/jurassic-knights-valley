@@ -8,7 +8,7 @@
  */
 
 import { getConfig } from '@data/GameConfig';
-import type { IGame } from '../types/core';
+import type { IGame, ISystem } from '../types/core';
 
 const HomeOutpostRenderer = {
     /**
@@ -23,7 +23,11 @@ const HomeOutpostRenderer = {
         let centerY = worldHeight / 2;
 
         // Use WorldManager if available
-        const worldMgr = game ? game.getSystem('WorldManager') as any : null;
+        const worldMgr = game
+            ? game.getSystem<ISystem & { getHeroSpawnPosition?(): { x: number; y: number } }>(
+                  'WorldManager'
+              )
+            : null;
         if (worldMgr && worldMgr.getHeroSpawnPosition) {
             const spawn = worldMgr.getHeroSpawnPosition();
             if (spawn) {

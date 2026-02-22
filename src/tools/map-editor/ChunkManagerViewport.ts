@@ -69,8 +69,9 @@ export function updateChunkViewport(
                 const lineWidth = Math.max(32, 2 / zoom);
                 // Basic check to avoid rebuilding geometry every frame if nothing changed
                 const currentKey = `${lineWidth}_${ctx.gridOpacity}`;
-                if ((g as any).__borderKey !== currentKey) {
-                    (g as any).__borderKey = currentKey;
+                const gBorder = g as PIXI.Graphics & { __borderKey?: string };
+                if (gBorder.__borderKey !== currentKey) {
+                    gBorder.__borderKey = currentKey;
                     g.clear();
                     g.rect(0, 0, chunkSizePx, chunkSizePx);
                     g.stroke({

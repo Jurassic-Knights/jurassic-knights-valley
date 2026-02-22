@@ -54,7 +54,11 @@ import {
 import { MapEditorDebugOverlay } from './MapEditorDebugOverlay';
 import { MapEditorWaypointManager } from './MapEditorWaypointManager';
 import { MapEditorManipulationHandles } from './MapEditorManipulationHandles';
-import { getDebugOverlayHost, getWaypointManagerHost, getManipulationHandlesHost } from './MapEditorHosts';
+import {
+    getDebugOverlayHost,
+    getWaypointManagerHost,
+    getManipulationHandlesHost
+} from './MapEditorHosts';
 import { setupInputListeners, type InputState } from './MapEditorInput';
 
 /**
@@ -86,7 +90,7 @@ export class MapEditorCore {
     private currentLayer: number = MapEditorConfig.Layers.GROUND;
 
     // Zone Editor State
-    private editingMode: 'object' | 'manipulation' = 'object';
+    private editingMode: 'object' | 'manipulation' | 'ground' | 'zone' = 'object';
 
     // Viewport State
     private zoom: number = 1.0; // Default to 100% (Gameplay parity)
@@ -150,7 +154,7 @@ export class MapEditorCore {
         containerId: string,
         dataFetcher?: (
             category: string
-        ) => Promise<{ entities: Array<{ id: string;[key: string]: unknown }> }>
+        ) => Promise<{ entities: Array<{ id: string; [key: string]: unknown }> }>
     ): Promise<void> {
         if (this.isInitialized) return;
 
@@ -212,12 +216,14 @@ export class MapEditorCore {
         };
     }
 
-    public setMode(mode: 'object' | 'manipulation') {
-        this.editingMode = mode;
+    public setMode(mode: 'object' | 'manipulation' | 'ground' | 'zone') {
+        this.editingMode = mode as 'object' | 'manipulation' | 'ground' | 'zone';
         Logger.info(`[MapEditor] Mode set to ${mode}`);
     }
 
-    public setGridOpacity(opacity: number) { this.chunkManager?.setGridOpacity(opacity); }
+    public setGridOpacity(opacity: number) {
+        this.chunkManager?.setGridOpacity(opacity);
+    }
 
     private createUIOverlays() {
         createZoomUI(this.container, () => this.resetZoomToGame());
@@ -240,7 +246,9 @@ export class MapEditorCore {
         this.updateZoomUI();
     }
 
-    private updateZoomUI() { updateZoomUI(this.zoom); }
+    private updateZoomUI() {
+        updateZoomUI(this.zoom);
+    }
 
     public unmount(): void {
         if (!this.isInitialized || !this.app) return;
@@ -271,7 +279,11 @@ export class MapEditorCore {
             /* viewport/load errors logged elsewhere */
         }
         this.drawProceduralToMainView();
-        this.scaleReferenceOverlay?.update(this.zoom, this.app.canvas.width, this.app.canvas.height);
+        this.scaleReferenceOverlay?.update(
+            this.zoom,
+            this.app.canvas.width,
+            this.app.canvas.height
+        );
         try {
             this.debugOverlay.update(this.getDebugOverlayHost());
         } catch (err) {
@@ -361,35 +373,67 @@ export class MapEditorCore {
         return this.debugShowSplinePath;
     }
 
-    public getChunkManager(): ChunkManager | null { return this.chunkManager; }
+    public getChunkManager(): ChunkManager | null {
+        return this.chunkManager;
+    }
 
-    public setSelectedObject(obj: MapObject | null): void { this.selectedObject = obj; }
-    public getSelectedObject(): MapObject | null { return this.selectedObject; }
+    public setSelectedObject(obj: MapObject | null): void {
+        this.selectedObject = obj;
+    }
+    public getSelectedObject(): MapObject | null {
+        return this.selectedObject;
+    }
 
-    public clearOnNextClickAction(): void { this.onNextClickAction = null; }
-    public getOnNextClickAction(): ((x: number, y: number) => void) | null { return this.onNextClickAction; }
+    public clearOnNextClickAction(): void {
+        this.onNextClickAction = null;
+    }
+    public getOnNextClickAction(): ((x: number, y: number) => void) | null {
+        return this.onNextClickAction;
+    }
     public setOnNextClickAction(fn: ((x: number, y: number) => void) | null): void {
         this.onNextClickAction = fn;
     }
 
     // --- Accessors for UI/Input ---
-    public getApp() { return this.app; }
-    public getWorldContainer() { return this.worldContainer; }
-    public getProcCache() { return this.procCache; }
-    public getZoom() { return this.zoom; }
+    public getApp() {
+        return this.app;
+    }
+    public getWorldContainer() {
+        return this.worldContainer;
+    }
+    public getProcCache() {
+        return this.procCache;
+    }
+    public getZoom() {
+        return this.zoom;
+    }
     public setZoom(z: number) {
         this.zoom = z;
         if (this.worldContainer) {
             this.worldContainer.scale.set(z);
         }
     }
-    public triggerZoomUIUpdate() { this.updateZoomUI(); }
-    public getEditingMode() { return this.editingMode; }
-    public getCurrentTool() { return this.currentTool; }
-    public getSelectedAsset() { return this.selectedAsset; }
-    public getBrushCursor() { return this.brushCursor; }
-    public getCommandManager() { return this.commandManager; }
-    public getWaypointManager() { return this.waypointManager; }
+    public triggerZoomUIUpdate() {
+        this.updateZoomUI();
+    }
+    public getEditingMode() {
+        return this.editingMode;
+    }
+    public getCurrentTool() {
+        return this.currentTool;
+    }
+    public getSelectedAsset() {
+        return this.selectedAsset;
+    }
+    public getBrushCursor() {
+        return this.brushCursor;
+    }
+    public getCommandManager() {
+        return this.commandManager;
+    }
+    public getWaypointManager() {
+        return this.waypointManager;
+    }
 
     public enterHeroSpawnPlacementMode(): void {
         if (!this.chunkManager || !this.app || !this.worldContainer) return;
@@ -397,8 +441,12 @@ export class MapEditorCore {
         if (!viewport) return;
         const centerX = viewport.x + viewport.width / 2;
         const centerY = viewport.y + viewport.height / 2;
-        this.executeCommand(new SetHeroSpawnCommand(this.chunkManager, Math.round(centerX), Math.round(centerY)));
-        Logger.info(`[MapEditor] Hero spawn set to view center: ${Math.round(centerX)}, ${Math.round(centerY)}`);
+        this.executeCommand(
+            new SetHeroSpawnCommand(this.chunkManager, Math.round(centerX), Math.round(centerY))
+        );
+        Logger.info(
+            `[MapEditor] Hero spawn set to view center: ${Math.round(centerX)}, ${Math.round(centerY)}`
+        );
     }
 
     public moveSelectedObjectTo(newX: number, newY: number): boolean {
@@ -430,13 +478,19 @@ export class MapEditorCore {
     public async setProceduralPreview(param: Mapgen4Param): Promise<void> {
         const manual: import('./Mapgen4Generator').ManualTownsAndRailroads | undefined =
             this.manualTowns.length > 0 ||
-                this.manualStations.length > 0 ||
-                this.railroadWaypoints.length > 0
+            this.manualStations.length > 0 ||
+            this.railroadWaypoints.length > 0
                 ? {
-                    manualTowns: this.manualTowns.length > 0 ? [...this.manualTowns] : undefined,
-                    manualStations: this.manualStations.length > 0 ? this.manualStations.map((s) => ({ ...s })) : undefined,
-                    railroadWaypoints: this.railroadWaypoints.length > 0 ? this.railroadWaypoints.map((w) => ({ ...w })) : undefined
-                }
+                      manualTowns: this.manualTowns.length > 0 ? [...this.manualTowns] : undefined,
+                      manualStations:
+                          this.manualStations.length > 0
+                              ? this.manualStations.map((s) => ({ ...s }))
+                              : undefined,
+                      railroadWaypoints:
+                          this.railroadWaypoints.length > 0
+                              ? this.railroadWaypoints.map((w) => ({ ...w }))
+                              : undefined
+                  }
                 : undefined;
         let newCache: import('./MapEditorProceduralRenderer').ProceduralCache;
         try {
@@ -477,7 +531,12 @@ export class MapEditorCore {
         viewport?: { x: number; y: number; width: number; height: number }
     ): boolean {
         if (!this.procCache) return false;
-        return drawProceduralToCanvas(this.procCache, canvas, viewport, EditorContext.hiddenZoneIds);
+        return drawProceduralToCanvas(
+            this.procCache,
+            canvas,
+            viewport,
+            EditorContext.hiddenZoneIds
+        );
     }
 
     /** Update railroad PIXI meshes when cache or visibility changes. Uses spline mesh for gapless rendering. */
@@ -494,18 +553,20 @@ export class MapEditorCore {
 
     /** Draw procedural map to offscreen canvas; display via PIXI sprite on stage. */
     private drawProceduralToMainView(): void {
-        if (!this.procCache || !this.proceduralCanvas || !this.proceduralSprite || !this.app || !this.worldContainer) return;
+        if (
+            !this.procCache ||
+            !this.proceduralCanvas ||
+            !this.proceduralSprite ||
+            !this.app ||
+            !this.worldContainer
+        )
+            return;
         const maxSize = MapEditorConfig.MAX_PROCEDURAL_CANVAS_SIZE;
         const w = Math.min(this.app.canvas.width, maxSize);
         const h = Math.min(this.app.canvas.height, maxSize);
         if (w < 1 || h < 1) return;
 
-        const { vpX, vpY, vpW, vpH } = worldToMeshViewport(
-            this.worldContainer,
-            this.zoom,
-            w,
-            h
-        );
+        const { vpX, vpY, vpW, vpH } = worldToMeshViewport(this.worldContainer, this.zoom, w, h);
         if (!Number.isFinite(vpX + vpY + vpW + vpH) || vpW < 1 || vpH < 1) return;
         const visKey = [...EditorContext.hiddenZoneIds].sort().join(',');
         const vpKey = `${Math.round(vpX * 10) / 10},${Math.round(vpY * 10) / 10},${Math.round(vpW * 10) / 10},${Math.round(vpH * 10) / 10}|${visKey}`;
@@ -516,7 +577,10 @@ export class MapEditorCore {
         if (this.proceduralCanvas.width !== w || this.proceduralCanvas.height !== h) {
             this.proceduralCanvas.width = w;
             this.proceduralCanvas.height = h;
-            const newSource = new PIXI.CanvasSource({ resource: this.proceduralCanvas, dynamic: true });
+            const newSource = new PIXI.CanvasSource({
+                resource: this.proceduralCanvas,
+                dynamic: true
+            });
             const oldTexture = this.proceduralSprite.texture;
             this.proceduralSprite.texture = new PIXI.Texture({ source: newSource });
             oldTexture.destroy();
@@ -540,7 +604,12 @@ export class MapEditorCore {
         if (!this.app || !this.worldContainer) return null;
         const w = this.app.canvas.width / this.zoom;
         const h = this.app.canvas.height / this.zoom;
-        return { x: -this.worldContainer.x / this.zoom, y: -this.worldContainer.y / this.zoom, width: w, height: h };
+        return {
+            x: -this.worldContainer.x / this.zoom,
+            y: -this.worldContainer.y / this.zoom,
+            width: w,
+            height: h
+        };
     }
     public centerViewOn(worldX: number, worldY: number): void {
         if (!this.app || !this.worldContainer) return;
@@ -561,8 +630,10 @@ export class MapEditorCore {
         if (!base) return null;
         const out: NonNullable<ReturnType<MapEditorCore['serialize']>> = { ...base };
         if (this.manualTowns.length > 0) out.manualTowns = [...this.manualTowns];
-        if (this.manualStations.length > 0) out.manualStations = this.manualStations.map((s) => ({ ...s }));
-        if (this.railroadWaypoints.length > 0) out.railroadWaypoints = this.railroadWaypoints.map((w) => ({ ...w }));
+        if (this.manualStations.length > 0)
+            out.manualStations = this.manualStations.map((s) => ({ ...s }));
+        if (this.railroadWaypoints.length > 0)
+            out.railroadWaypoints = this.railroadWaypoints.map((w) => ({ ...w }));
         return out;
     }
     public loadData(data: {
@@ -610,9 +681,8 @@ export class MapEditorCore {
         this.onManualDataChange?.();
     }
     public addManualStation(regionId: number, order: number): void {
-        const next = order <= 0
-            ? (this.manualStations.reduce((m, s) => Math.max(m, s.order), 0) + 1)
-            : order;
+        const next =
+            order <= 0 ? this.manualStations.reduce((m, s) => Math.max(m, s.order), 0) + 1 : order;
         this.manualStations.push({ regionId, order: next });
         this.onManualDataChange?.();
     }
@@ -685,5 +755,7 @@ export class MapEditorCore {
         this.onManualDataChange?.();
     }
 
-    private refreshZoneRendering() { this.chunkManager?.refreshZones(); }
+    private refreshZoneRendering() {
+        this.chunkManager?.refreshZones();
+    }
 }

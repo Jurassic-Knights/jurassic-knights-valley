@@ -2,7 +2,10 @@
 // Offloads heavy procedural terrain mesh and map generation from the main thread.
 
 import { buildMeshAndMap, computeTownsAndRoads } from '../tools/map-editor/Mapgen4Generator';
-import { buildCellRegions, computeRegionDistanceFromWater } from '../tools/map-editor/Mapgen4RegionUtils';
+import {
+    buildCellRegions,
+    computeRegionDistanceFromWater
+} from '../tools/map-editor/Mapgen4RegionUtils';
 import { COAST_MAX_POLYGON_STEPS } from '../tools/map-editor/Mapgen4ZoneMapping';
 
 self.onmessage = async (e: MessageEvent) => {
@@ -12,7 +15,11 @@ self.onmessage = async (e: MessageEvent) => {
         const meshAndMap = buildMeshAndMap(param);
         const townsAndRoads = computeTownsAndRoads(meshAndMap.mesh, meshAndMap.map, param, manual);
         const cellRegions = buildCellRegions(meshAndMap.mesh);
-        const distMap = computeRegionDistanceFromWater(meshAndMap.mesh, meshAndMap.map, COAST_MAX_POLYGON_STEPS);
+        const distMap = computeRegionDistanceFromWater(
+            meshAndMap.mesh,
+            meshAndMap.map,
+            COAST_MAX_POLYGON_STEPS
+        );
         const distanceFromWater = Array.from(distMap.entries());
 
         const meshData = {
@@ -73,17 +80,25 @@ self.onmessage = async (e: MessageEvent) => {
             mapData.mountain_distance_t.buffer
         ];
 
-        (self as any).postMessage({
-            jobId,
-            success: true,
-            meshData,
-            mapData,
-            townsAndRoads,
-            cellRegions,
-            distanceFromWater // [[regionId, distance], ...]
-        }, transferables);
-
+        (
+            self as unknown as { postMessage: (msg: unknown, transfer?: Transferable[]) => void }
+        ).postMessage(
+            {
+                jobId,
+                success: true,
+                meshData,
+                mapData,
+                townsAndRoads,
+                cellRegions,
+                distanceFromWater // [[regionId, distance], ...]
+            },
+            transferables
+        );
     } catch (err: unknown) {
-        (self as any).postMessage({ jobId, success: false, error: (err as Error).message });
+        (self as unknown as { postMessage: (msg: unknown) => void }).postMessage({
+            jobId,
+            success: false,
+            error: (err as Error).message
+        });
     }
 };
