@@ -513,14 +513,14 @@ export async function loadGlobalAssetLookup(): Promise<void> {
                 // 1. Build Lookup (same priority as AssetLoader: clean → approved_original → original)
                 const displayPath = selectBestImagePath(item.files as { clean?: string; approved_original?: string; original?: string });
                 if (displayPath) {
-                    lookup[item.id] = {
-                        id: item.id,
+                    lookup[item.id as string] = {
+                        id: item.id as string,
                         path: displayPath,
-                        name: item.name,
+                        name: item.name as string,
                         category: cat,
                     };
                     if (item.name) {
-                        lookup[item.name] = lookup[item.id];
+                        lookup[item.name as string] = lookup[item.id as string];
                     }
                 }
 
@@ -529,8 +529,8 @@ export async function loadGlobalAssetLookup(): Promise<void> {
                 if (item.loot && Array.isArray(item.loot)) {
                     for (const drop of item.loot) {
                         if (!sourceMap[drop.item]) sourceMap[drop.item] = [];
-                        if (!sourceMap[drop.item].includes(item.id)) {
-                            sourceMap[drop.item].push(item.id);
+                        if (!sourceMap[drop.item].includes(item.id as string)) {
+                            sourceMap[drop.item].push(item.id as string);
                         }
                     }
                 }
@@ -538,10 +538,10 @@ export async function loadGlobalAssetLookup(): Promise<void> {
                 // B. Check DROPS (Nodes - New Standard)
                 if (item.drops && Array.isArray(item.drops)) {
                     for (const drop of item.drops) {
-                        const dropId = drop.item;
+                        const dropId = drop.item as string;
                         if (!sourceMap[dropId]) sourceMap[dropId] = [];
-                        if (!sourceMap[dropId].includes(item.id)) {
-                            sourceMap[dropId].push(item.id);
+                        if (!sourceMap[dropId].includes(item.id as string)) {
+                            sourceMap[dropId].push(item.id as string);
                         }
                     }
                 }
@@ -554,23 +554,24 @@ export async function loadGlobalAssetLookup(): Promise<void> {
                     if (Array.isArray(item.recipe)) {
                         ingredients = (item.recipe as Array<{ item: string }>).map((r) => r.item);
                     } else if (typeof item.recipe === 'object') {
-                        ingredients = Object.keys(item.recipe);
+                        ingredients = Object.keys(item.recipe as Record<string, unknown>);
                     }
                     // String parsing is safer done elsewhere or simplified here
 
                     for (const ing of ingredients) {
                         if (!usageMap[ing]) usageMap[ing] = [];
-                        if (!usageMap[ing].includes(item.id)) {
-                            usageMap[ing].push(item.id); // "Used To Craft" relationship
+                        if (!usageMap[ing].includes(item.id as string)) {
+                            usageMap[ing].push(item.id as string); // "Used To Craft" relationship
                         }
                     }
                 }
 
                 // D. Check RESOURCE DROP (Nodes - Legacy)
                 if (item.resourceDrop) {
-                    if (!sourceMap[item.resourceDrop]) sourceMap[item.resourceDrop] = [];
-                    if (!sourceMap[item.resourceDrop].includes(item.id)) {
-                        sourceMap[item.resourceDrop].push(item.id);
+                    const dropKey = item.resourceDrop as string;
+                    if (!sourceMap[dropKey]) sourceMap[dropKey] = [];
+                    if (!sourceMap[dropKey].includes(item.id as string)) {
+                        sourceMap[dropKey].push(item.id as string);
                     }
                 }
             };
@@ -579,7 +580,7 @@ export async function loadGlobalAssetLookup(): Promise<void> {
             if (data.files) {
                 for (const [, items] of Object.entries(data.files as Record<string, AssetItem[]>)) {
                     for (const item of items) {
-                        processItem(item);
+                        processItem(item as unknown as Record<string, unknown>);
                     }
                 }
             }

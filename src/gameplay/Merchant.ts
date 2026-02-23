@@ -33,7 +33,7 @@ class Merchant extends Entity {
     _cachedSpriteId: string | null = null;
     _iconImg: HTMLImageElement | null = null;
 
-    constructor(config: { x?: number; y?: number; [key: string]: unknown } = {}) {
+    constructor(config: { x?: number; y?: number;[key: string]: unknown } = {}) {
         // 1. Load Config
         const defaults = {
             gridSize: 1.5,
@@ -44,10 +44,10 @@ class Merchant extends Entity {
         };
 
         // Determine correct Registry ID based on Zone Name (same logic as Sprite ID)
-        const zoneName = config.zoneName || 'Unknown Zone';
+        const zoneName = (config.zoneName as string) || 'Unknown Zone';
 
         // If config provides specific ID, use it. Otherwise derive from zone.
-        let registryId = config.registryId;
+        let registryId = config.registryId as string | undefined;
         if (!registryId) {
             const name = zoneName.toLowerCase();
             if (name.includes('quarry')) registryId = 'npc_merchant_01';
@@ -90,9 +90,9 @@ class Merchant extends Entity {
 
         this.scale = size.scale;
         this.registryId = registryId;
-        this.zoneId = config.zoneId || 'unknown';
+        this.zoneId = (config.zoneId as string) || 'unknown';
         this.zoneName = zoneName;
-        this.interactRadius = finalConfig.interactRadius || 140;
+        this.interactRadius = (finalConfig.interactRadius as number) || 140;
 
         // Animation timer
         this.bobTime = 0;

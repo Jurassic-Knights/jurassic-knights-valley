@@ -2,7 +2,7 @@
  * Entity: building_t1_02
  * Auto-generated. Edit in dashboard.
  */
-import type { EnvironmentEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "building_t1_02",
@@ -22,4 +22,4 @@ export default {
         "width": 128,
         "height": 128
     }
-} satisfies EnvironmentEntity;
+} satisfies EntityConfig;

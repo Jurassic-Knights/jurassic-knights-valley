@@ -62,7 +62,7 @@ class VFXSystem {
             EventBus.on(GameConstants.Events.HERO_LEVEL_UP, (data: { hero?: { x: number; y: number } }) => {
                 const hero = data?.hero;
                 if (hero && typeof hero.x === 'number' && typeof hero.y === 'number') {
-                    const opts = VFXConfig.TEMPLATES?.LEVEL_UP_FX || { type: 'burst', color: '#FFD700', count: 30, lifetime: 1000 };
+                    const opts = (VFXConfig.TEMPLATES?.LEVEL_UP_FX || { type: 'burst', color: '#FFD700', count: 30, lifetime: 1000 }) as ParticleOptions;
                     this.playForeground(hero.x, hero.y, opts);
                 }
             });
@@ -210,7 +210,7 @@ class VFXSystem {
         }
 
         const system = layer === 'bg' ? this.bgParticles : this.fgParticles;
-        if (system) system.emit(x, y, config);
+        if (system) system.emit(x, y, config as ParticleOptions);
     }
 
     /**

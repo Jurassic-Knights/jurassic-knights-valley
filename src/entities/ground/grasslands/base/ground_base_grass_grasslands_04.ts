@@ -2,7 +2,7 @@
  * Entity: ground_base_grass_grasslands_04
  * Auto-generated. Edit in dashboard.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_base_grass_grasslands_04",
@@ -27,4 +27,4 @@ export default {
         "grass"
     ],
     "declineNote": ""
-} satisfies BaseEntity;
+} satisfies EntityConfig;

@@ -27,8 +27,8 @@ const ProgressionSystem = {
         if (EventBus) {
             EventBus.on(
                 Events.ENEMY_DIED,
-                (data: { entity?: IEntity; xpReward?: number; [key: string]: unknown }) =>
-                    this.onEnemyKilled(data)
+                (data: unknown) =>
+                    this.onEnemyKilled(data as { enemy: IEntity; xpReward: number })
             );
         }
     },
@@ -88,7 +88,7 @@ const ProgressionSystem = {
 
         // Stat increases per level (config-driven)
         // Check hero registry (skin) or use defaults
-        const perLevel = EntityRegistry.hero?.['hero']?.levelBonuses || {
+        const perLevel = (EntityRegistry.hero?.['hero']?.levelBonuses as Record<string, number>) || {
             maxHealth: 10,
             attack: 2,
             defense: 1,
@@ -124,8 +124,8 @@ const ProgressionSystem = {
      */
     getXPForLevel(level: number): number {
         const prog = GameConstants?.Progression;
-        const base = EntityRegistry.hero?.['hero']?.xpToNextLevel ?? prog.XP_BASE;
-        const scaling = EntityRegistry.hero?.['hero']?.xpScaling ?? prog.XP_SCALING;
+        const base = (EntityRegistry.hero?.['hero']?.xpToNextLevel as number) ?? prog.XP_BASE;
+        const scaling = (EntityRegistry.hero?.['hero']?.xpScaling as number) ?? prog.XP_SCALING;
         return Math.floor(base * Math.pow(scaling, level - 1));
     },
 
@@ -153,11 +153,12 @@ const ProgressionSystem = {
         if (!hero) return true;
 
         const stats = hero.components?.stats;
-        if (requirements.level && stats && stats.level < requirements.level) return false;
+        const reqLevel = requirements.level as number | undefined;
+        if (reqLevel && stats && stats.level !== undefined && stats.level < reqLevel) return false;
         return true;
     },
 
-    getAvailableUnlocks(): Array<{ id: string; [key: string]: unknown }> {
+    getAvailableUnlocks(): Array<{ id: string;[key: string]: unknown }> {
         return [];
     }
 };

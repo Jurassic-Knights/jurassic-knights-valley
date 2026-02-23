@@ -61,7 +61,7 @@ class State {
         if (!this.listeners[key]) {
             this.listeners[key] = [];
         }
-        this.listeners[key].push(callback);
+        this.listeners[key].push(callback as unknown as StateCallback | GlobalStateCallback);
     }
 
     /**

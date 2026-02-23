@@ -11,13 +11,14 @@
 
 import { EventBus } from '../../../core/EventBus';
 import { MathUtils } from '../../../core/MathUtils';
-import type { IEntity } from '../../../types/core';
+import type { IEntity, INpcEntity } from '../../../types/core';
 
 const NPCAI = {
     /**
      * Update NPC AI state
      */
-    updateState(npc: IEntity, hero: IEntity | null, dt: number) {
+    updateState(baseEntity: IEntity, hero: IEntity | null, dt: number) {
+        const npc = baseEntity as INpcEntity;
         if (!npc.active) return;
 
         switch (npc.state) {
@@ -36,7 +37,7 @@ const NPCAI = {
     /**
      * Idle behavior - check for player proximity
      */
-    updateIdle(npc: IEntity, hero: IEntity | null, _dt: number) {
+    updateIdle(npc: INpcEntity, hero: IEntity | null, _dt: number) {
         if (!hero) return;
 
         const dist = npc.distanceTo
@@ -66,7 +67,7 @@ const NPCAI = {
     /**
      * Patrol behavior
      */
-    updatePatrol(npc: IEntity, dt: number) {
+    updatePatrol(npc: INpcEntity, dt: number) {
         if (!npc.patrolPoints || npc.patrolPoints.length === 0) {
             npc.state = 'idle';
             return;
@@ -94,7 +95,7 @@ const NPCAI = {
     /**
      * Dialogue state (player is interacting)
      */
-    updateDialogue(npc: IEntity, hero: IEntity | null, _dt: number) {
+    updateDialogue(npc: INpcEntity, hero: IEntity | null, _dt: number) {
         // Face the player during dialogue
         if (hero) {
             npc.facingRight = hero.x > npc.x;
@@ -105,7 +106,7 @@ const NPCAI = {
     /**
      * Player approached NPC
      */
-    onPlayerApproach(npc: IEntity, hero: IEntity) {
+    onPlayerApproach(npc: INpcEntity, hero: IEntity) {
         if (EventBus) {
             EventBus.emit('NPC_PLAYER_NEARBY', {
                 npc,
@@ -117,7 +118,7 @@ const NPCAI = {
     /**
      * Player left NPC range
      */
-    onPlayerLeave(npc: IEntity) {
+    onPlayerLeave(npc: INpcEntity) {
         if (EventBus) {
             EventBus.emit('NPC_PLAYER_LEFT', { npc });
         }
@@ -126,7 +127,7 @@ const NPCAI = {
     /**
      * Start dialogue with NPC
      */
-    startDialogue(npc: IEntity) {
+    startDialogue(npc: INpcEntity) {
         npc.state = 'dialogue';
 
         if (EventBus) {
@@ -137,7 +138,7 @@ const NPCAI = {
     /**
      * End dialogue
      */
-    endDialogue(npc: IEntity) {
+    endDialogue(npc: INpcEntity) {
         npc.state = 'idle';
 
         if (EventBus) {

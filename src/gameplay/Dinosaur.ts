@@ -6,7 +6,7 @@
  * Owner: Director (engine), Gameplay Designer (stats)
  */
 import { Entity } from '@core/Entity';
-import type { IEntity } from '../types/core';
+import type { IEntity, IComponents } from '../types/core';
 import { Logger } from '@core/Logger';
 import { AssetLoader } from '@core/AssetLoader';
 import { GameConstants } from '@data/GameConstants';
@@ -28,12 +28,7 @@ class Dinosaur extends Entity {
     amount: number = 1;
 
     // Component system
-    components: {
-        health?: HealthComponent;
-        stats?: StatsComponent;
-        ai?: AIComponent;
-        [key: string]: unknown;
-    } = {};
+    components: IComponents = {};
 
     // Health and state
     maxHealth: number = 60;
@@ -56,7 +51,7 @@ class Dinosaur extends Entity {
     _shadowImg?: HTMLImageElement | HTMLCanvasElement;
 
     constructor(
-        config: { dinoType?: string; x?: number; y?: number; [key: string]: unknown } = {}
+        config: { dinoType?: string; x?: number; y?: number;[key: string]: unknown } = {}
     ) {
         // 1. Load Config from EntityRegistry (modern: use dinoType to look up herbivore entities)
 
@@ -96,20 +91,20 @@ class Dinosaur extends Entity {
         this.dinoType = config.dinoType || 'enemy_herbivore_t1_01';
 
         // Loot: prioritize config.lootTable (from ResourceSpawner) > entityConfig.lootTable (from EntityLoader)
-        this.lootTable = config.lootTable || entityConfig.lootTable || null;
-        this.xpReward = entityConfig.xpReward ?? GameConstants.Dinosaur.DEFAULT_XP_REWARD;
+        this.lootTable = (config.lootTable || entityConfig.lootTable || null) as Array<{ item: string; chance: number; min: number; max: number }> | null;
+        this.xpReward = (entityConfig.xpReward as number) ?? GameConstants.Dinosaur.DEFAULT_XP_REWARD;
 
         // Gameplay Props
-        this.resourceType = config.resourceType || 'food_t1_01';
-        this.amount = finalConfig.amount || 1;
+        this.resourceType = (config.resourceType as string) || 'food_t1_01';
+        this.amount = (finalConfig.amount as number) || 1;
 
         // Components
         this.components = {};
         const dinoMaxHp = GameConstants.Dinosaur.DEFAULT_MAX_HEALTH;
         if (HealthComponent) {
             this.components.health = new HealthComponent(this, {
-                maxHealth: finalConfig.maxHealth || dinoMaxHp,
-                health: finalConfig.maxHealth || dinoMaxHp
+                maxHealth: (finalConfig.maxHealth as number) || dinoMaxHp,
+                health: (finalConfig.maxHealth as number) || dinoMaxHp
             });
         }
 
@@ -130,7 +125,7 @@ class Dinosaur extends Entity {
             // Logic was: moveSpeed * 60 (essentially).
             // Default speed config is typically 30 (px/sec).
             // finalConfig.speed is usually 30.
-            const speed = finalConfig.speed ?? GameConstants.Dinosaur.DEFAULT_SPEED;
+            const speed = (finalConfig.speed as number) ?? GameConstants.Dinosaur.DEFAULT_SPEED;
             const maxStamina = GameConstants.Dinosaur.DEFAULT_STAMINA;
             this.components.stats = new StatsComponent(this, {
                 speed: speed,
@@ -159,7 +154,7 @@ class Dinosaur extends Entity {
         // Animation Props
         this.frameIndex = 0;
         this.frameTimer = 0;
-        this.frameInterval = finalConfig.frameInterval ?? GameConstants.Dinosaur.FRAME_INTERVAL;
+        this.frameInterval = (finalConfig.frameInterval as number) ?? GameConstants.Dinosaur.FRAME_INTERVAL;
         this.walkFrames = [];
 
         // Sprite Setup - Use dinoType directly as asset key (matches AssetLoader keys)

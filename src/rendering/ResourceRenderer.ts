@@ -21,7 +21,7 @@ class ResourceRendererService implements ISystem {
         Logger.info('[ResourceRenderer] Initialized');
     }
 
-    init(_game: IGame): void {}
+    init(_game: IGame): void { }
 
     render(ctx: CanvasRenderingContext2D, res: Resource, includeShadow = true) {
         if (!res.active) return;
@@ -117,7 +117,7 @@ class ResourceRendererService implements ISystem {
                 }
             }
             if (MaterialLibrary && assetId) {
-                res._shadowImg = MaterialLibrary.get(assetId, 'shadow', {});
+                res._shadowImg = MaterialLibrary.get(assetId, 'shadow', {}) as HTMLImageElement;
             }
         }
 

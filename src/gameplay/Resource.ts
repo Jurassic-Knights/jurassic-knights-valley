@@ -10,7 +10,7 @@ import { Logger } from '@core/Logger';
 import { WorldManager } from '../world/WorldManager';
 import { AudioManager } from '../audio/AudioManager';
 import { VFXController } from '@vfx/VFXController';
-import { IEntity } from '../types/core';
+import { IEntity, IComponents } from '../types/core';
 import { spawnResourceDrops } from './ResourceDrops';
 import { ProgressBarRenderer } from '@vfx/ProgressBarRenderer';
 import { GameConstants, getConfig } from '@data/GameConstants';
@@ -39,6 +39,12 @@ class Resource extends Entity {
     respawnTimer: number = 0;
     maxRespawnTime: number = 30;
 
+    // Visual caches
+    _shadowImg?: HTMLImageElement | null;
+    _consumedImage?: HTMLImageElement | null;
+    _spriteImage?: HTMLImageElement | null;
+    components?: IComponents;
+
     // Respawn tracking
     currentRespawnDuration: number = 30;
 
@@ -47,7 +53,7 @@ class Resource extends Entity {
      * @param {object} config
      */
     constructor(
-        config: { resourceType?: string; x?: number; y?: number; [key: string]: unknown } = {}
+        config: { resourceType?: string; x?: number; y?: number;[key: string]: unknown } = {}
     ) {
         // 1. Load Config from EntityRegistry (nodes or resources)
         const nodeConfig = EntityRegistry.nodes?.[config.resourceType];
@@ -79,7 +85,7 @@ class Resource extends Entity {
 
         // Extract nodeSubtype from config or parse from resourceType (node_mining_t1_01 ? mining)
         if (finalConfig.nodeSubtype) {
-            this.nodeSubtype = finalConfig.nodeSubtype;
+            this.nodeSubtype = finalConfig.nodeSubtype as string;
         } else if (this.resourceType.startsWith('node_')) {
             // Parse from ID like node_mining_t1_01 ? mining
             const match = this.resourceType.match(/^node_([a-z]+)_t\d/);
@@ -88,12 +94,12 @@ class Resource extends Entity {
             this.nodeSubtype = null;
         }
 
-        this.amount = finalConfig.amount || 1;
+        this.amount = (finalConfig.amount as number) || 1;
         this.interactRadius =
-            finalConfig.interactRadius || getConfig().Combat?.DEFAULT_MINING_RANGE || 150;
+            (finalConfig.interactRadius as number) || getConfig().Combat?.DEFAULT_MINING_RANGE || 150;
 
         // Health system
-        this.maxHealth = finalConfig.maxHealth || 30;
+        this.maxHealth = (finalConfig.maxHealth as number) || 30;
         this.health = this.maxHealth;
 
         // Set color based on type
@@ -323,7 +329,7 @@ class Resource extends Entity {
     static COLORS = RESOURCE_COLORS;
     static RARITY = RESOURCE_RARITY;
     static RARITY_COLORS = RESOURCE_RARITY_COLORS;
-    static TYPES: Record<string, { baseRespawnTime?: number; [key: string]: unknown }> = {};
+    static TYPES: Record<string, { baseRespawnTime?: number;[key: string]: unknown }> = {};
 }
 
 // ES6 Module Export

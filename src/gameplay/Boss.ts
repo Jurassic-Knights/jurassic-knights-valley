@@ -23,7 +23,7 @@ class Boss extends Enemy {
     isBoss: boolean = true;
     bossType: string = 'unknown_boss';
     bossName: string = 'Unknown Boss';
-    abilities: Array<{ id: string; name: string; cooldown?: number; [key: string]: unknown }> = [];
+    abilities: Array<{ id: string; name: string; cooldown?: number;[key: string]: unknown }> = [];
     glowColor: string = '#FF4500';
     scale: number = 1.2;
 
@@ -32,7 +32,7 @@ class Boss extends Enemy {
      * @param {object} config - Boss configuration
      */
     constructor(
-        config: { bossType?: string; x?: number; y?: number; [key: string]: unknown } = {}
+        config: { bossType?: string; x?: number; y?: number;[key: string]: unknown } = {}
     ) {
         // Get boss config hierarchy: defaults -> type config -> instance config
         // Get boss config from EntityRegistry
@@ -108,7 +108,7 @@ class Boss extends Enemy {
      */
     die(killer: IEntity | null = null) {
         // Call parent die
-        super.die(killer);
+        super.die(killer as never);
 
         // Emit boss-specific death event
         if (EventBus && GameConstants.Events) {

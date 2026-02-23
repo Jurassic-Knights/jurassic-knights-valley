@@ -112,7 +112,7 @@ class RoadRenderer {
      */
     renderSplineRoad(
         ctx: CanvasRenderingContext2D,
-        road: { points: Array<{ x: number; y: number }>; width?: number },
+        road: import('../types/world').RoadDef,
         viewport: IViewport
     ) {
         if (!road.points || road.points.length < 4) return;

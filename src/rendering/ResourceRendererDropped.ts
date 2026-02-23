@@ -60,7 +60,7 @@ export function renderDroppedItem(ctx: CanvasRenderingContext2D, item: DroppedIt
     if (item._spriteLoaded && item._spriteImage) {
         if (MaterialLibrary && !item._silhouetteCanvas) {
             const rarityColor = item.rarityColor || '#BDC3C7';
-            item._silhouetteCanvas = MaterialLibrary.get(assetId, 'silhouette', { color: rarityColor }, item._spriteImage);
+            item._silhouetteCanvas = MaterialLibrary.get(assetId, 'silhouette', { color: rarityColor }, item._spriteImage) as HTMLCanvasElement;
         }
 
         ctx.save();

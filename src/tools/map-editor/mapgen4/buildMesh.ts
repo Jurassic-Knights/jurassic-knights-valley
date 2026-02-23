@@ -22,8 +22,8 @@ export function buildMesh(seed: number, spacing: number, mountainSpacing: number
     const numBoundaryPoints = numExteriorBoundaryPoints + numInteriorBoundaryPoints;
     const delaunator = Delaunator.from(
         points,
-        (p: [number, number]) => p[0],
-        (p: [number, number]) => p[1]
+        (p: unknown) => (p as [number, number])[0],
+        (p: unknown) => (p as [number, number])[1]
     );
 
     const triangles = new Int32Array(delaunator.triangles);

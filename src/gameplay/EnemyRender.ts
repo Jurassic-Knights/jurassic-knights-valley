@@ -51,7 +51,7 @@ Enemy.prototype._loadSprite = function () {
         Logger.info(`[Enemy] Sprite loaded: ${assetKey}`);
     });
     this._sprite.onerror = (_e: Event | string) => {
-        Logger.error(`[Enemy] Failed to load sprite: ${assetKey}, path: ${path}`, e);
+        Logger.error(`[Enemy] Failed to load sprite: ${assetKey}, path: ${path}`, _e);
         this._spriteLoaded = false;
     };
 };

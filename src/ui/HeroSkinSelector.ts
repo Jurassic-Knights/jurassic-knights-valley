@@ -101,7 +101,7 @@ class HeroSkinSelectorClass {
 
         // Update character sprite if provided
         if (charSprite) {
-            const skinData = EntityRegistry?.hero?.[skinId];
+            const skinData = (EntityRegistry?.hero as Record<string, IHeroSkin>)?.[skinId];
             let path = null;
             if (skinData?.files?.clean) {
                 path = 'assets/' + skinData.files.clean;

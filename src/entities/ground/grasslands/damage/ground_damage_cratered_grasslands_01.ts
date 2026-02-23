@@ -2,9 +2,9 @@
  * Entity: ground_damage_cratered_grasslands_01
  * Auto-generated.
  */
-import type { EnvironmentEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
-const entity: EnvironmentEntity = {
+const entity: EntityConfig = {
     id: 'ground_damage_cratered_grasslands_01',
     name: 'Grasslands Cratered 01',
     sourceCategory: 'ground',

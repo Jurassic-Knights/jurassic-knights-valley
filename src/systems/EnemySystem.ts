@@ -297,15 +297,16 @@ class EnemySystem {
         if (AudioManager) AudioManager.playSFX('sfx_enemy_hurt');
 
         if (VFXController && VFXConfig) {
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
+            const vfx = VFXConfig as any;
+            VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_SPLATTER);
             // Blood mist
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_MIST);
+            VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_MIST);
             // Blood droplets
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_DROPS);
+            VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_DROPS);
             // Meat chunks on heavy hits
             const threshold = GameConstants.Combat.DAMAGE_VFX_THRESHOLD;
             if (amount > threshold) {
-                VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.MEAT_CHUNKS);
+                VFXController.playForeground(entity.x, entity.y, vfx.DINO.MEAT_CHUNKS);
             }
         }
     }

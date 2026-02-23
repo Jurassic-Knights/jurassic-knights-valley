@@ -108,7 +108,7 @@ const HeroCombatService = {
         const dist = MathUtils.distance(hero.x, hero.y, target.x, target.y);
 
         // Get equipped weapons from the active weapon set
-        const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
+        const activeWeapons = hero.equipment?.getActiveWeapons?.() || ({} as Record<string, string>);
         const hand1Item = activeWeapons.mainHand;
         const hand2Item = activeWeapons.offHand;
         const activeSlots = hero.equipment?.getActiveWeaponSlots?.() || {
@@ -117,8 +117,8 @@ const HeroCombatService = {
         };
 
         // Use getWeaponStats for consistent range (base + bonus)
-        const hand1Range = hand1Item ? getWeaponStats(hand1Item).range : 80;
-        const hand2Range = hand2Item ? getWeaponStats(hand2Item).range : 80;
+        const hand1Range = hand1Item ? getWeaponStats(hand1Item as unknown as { weaponSubtype?: string; stats?: { range?: number; damage?: number; attackSpeed?: number; } }).range : 80;
+        const hand2Range = hand2Item ? getWeaponStats(hand2Item as unknown as { weaponSubtype?: string; stats?: { range?: number; damage?: number; attackSpeed?: number; } }).range : 80;
 
         // For non-combat (mining), use mining range
         if (!isRangedTarget) {

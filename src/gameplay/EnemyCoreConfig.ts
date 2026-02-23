@@ -40,34 +40,34 @@ export function buildEnemyConfig(config: EntityConfig): EnemyConfigResult {
         };
         const eliteFallback = GameConstants.Enemy.ELITE_FALLBACK_HEALTH;
         finalConfig.health = (Number(finalConfig.health) || eliteFallback) * mult.health;
-        finalConfig.maxHealth = (Number(finalConfig.maxHealth) || finalConfig.health) * mult.health;
+        finalConfig.maxHealth = (Number(finalConfig.maxHealth) || Number(finalConfig.health)) * mult.health;
         finalConfig.damage = (Number(finalConfig.damage) || GameConstants.Enemy.DEFAULT_DAMAGE) * mult.damage;
         finalConfig.xpReward = (Number(finalConfig.xpReward) || GameConstants.Enemy.DEFAULT_XP_REWARD) * mult.xpReward;
     }
 
-    if (config.biomeId && (BiomeConfig.types as Record<string, { difficulty?: string }>)?.[config.biomeId]) {
-        const biome = (BiomeConfig.types as Record<string, { difficulty?: string }>)[config.biomeId];
-        const diffMult = (BiomeConfig.difficultyMultipliers as Record<string, { health?: number; damage?: number; xp?: number }>)?.[biome.difficulty] || {
+    if (config.biomeId && (BiomeConfig.types as unknown as Record<string, { difficulty?: number }>)?.[config.biomeId]) {
+        const biome = (BiomeConfig.types as unknown as Record<string, { difficulty?: number }>)[config.biomeId];
+        const diffMult = (BiomeConfig.difficultyMultipliers as Record<number, { health?: number; damage?: number; xp?: number }>)?.[biome.difficulty!] || {
             health: 1,
             damage: 1,
             xp: 1,
             loot: 1
         };
-        finalConfig.health = (finalConfig.health || 0) * (diffMult.health ?? 1);
+        finalConfig.health = (Number(finalConfig.health) || 0) * (diffMult.health ?? 1);
         finalConfig.maxHealth = finalConfig.health;
-        finalConfig.damage = (finalConfig.damage || 0) * (diffMult.damage ?? 1);
-        finalConfig.xpReward = (finalConfig.xpReward || 0) * (diffMult.xp ?? 1);
+        finalConfig.damage = (Number(finalConfig.damage) || 0) * (diffMult.damage ?? 1);
+        finalConfig.xpReward = (Number(finalConfig.xpReward) || 0) * (diffMult.xp ?? 1);
     }
 
     let entityType = finalConfig.entityType;
     if (!entityType) {
-        const sourceFile = (typeConfig.sourceFile || config.enemyType || '').toLowerCase();
+        const sourceFile = (String(typeConfig.sourceFile || '') || String(config.enemyType || '')).toLowerCase();
         if (sourceFile.includes('soldier') || sourceFile.includes('human')) entityType = EntityTypes.ENEMY_SOLDIER;
         else if (sourceFile.includes('saurian')) entityType = EntityTypes.ENEMY_SAURIAN;
         else entityType = EntityTypes.ENEMY_DINOSAUR;
     }
 
-    const isBoss = typeConfig.isBoss || typeConfig.entityType === 'Boss';
+    const isBoss = Boolean(typeConfig.isBoss) || typeConfig.entityType === 'Boss';
     const defaultSize = GameConstants.Enemy.DEFAULT_SIZE;
     const sizeInfo = SpeciesScaleConfig.getSize(typeConfig, isBoss) || { width: defaultSize, height: defaultSize };
 
@@ -81,19 +81,19 @@ export function getPatrolConfig(
     const Biome = GameConstants.Biome;
     return {
         patrolRadius:
-            finalConfig.patrolRadius ??
-            getConfig().AI?.PATROL_AREA_RADIUS ??
-            BiomeConfig.patrolDefaults?.areaRadius ??
+            Number(finalConfig.patrolRadius) ||
+            Number(getConfig().AI?.PATROL_AREA_RADIUS) ||
+            Number(BiomeConfig.patrolDefaults?.areaRadius) ||
             Biome.PATROL_AREA_RADIUS,
         leashDistance:
-            finalConfig.leashDistance ??
-            getConfig().Biome?.LEASH_DISTANCE ??
-            BiomeConfig.patrolDefaults?.leashDistance ??
+            Number(finalConfig.leashDistance) ||
+            Number(getConfig().Biome?.LEASH_DISTANCE) ||
+            Number(BiomeConfig.patrolDefaults?.leashDistance) ||
             Biome.LEASH_DISTANCE,
         aggroRange:
-            finalConfig.aggroRange ??
-            getConfig().Biome?.AGGRO_RANGE ??
-            BiomeConfig.patrolDefaults?.aggroRange ??
+            Number(finalConfig.aggroRange) ||
+            Number(getConfig().Biome?.AGGRO_RANGE) ||
+            Number(BiomeConfig.patrolDefaults?.aggroRange) ||
             Biome.AGGRO_RANGE
     };
 }

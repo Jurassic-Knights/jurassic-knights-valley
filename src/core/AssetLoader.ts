@@ -135,7 +135,7 @@ const AssetLoader = {
 
         for (const cat of categories) {
             const category = cat as keyof typeof EntityRegistry;
-            const registry = EntityRegistry[category];
+            const registry = EntityRegistry[category] as Record<string, { files?: Record<string, string> }> | undefined;
             if (!registry) continue;
 
             // Direct ID match

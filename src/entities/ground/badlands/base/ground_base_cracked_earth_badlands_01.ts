@@ -2,7 +2,7 @@
  * Entity: ground_base_cracked_earth_badlands_01
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_base_cracked_earth_badlands_01",
@@ -27,4 +27,4 @@ export default {
         "base",
         "cracked_earth"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

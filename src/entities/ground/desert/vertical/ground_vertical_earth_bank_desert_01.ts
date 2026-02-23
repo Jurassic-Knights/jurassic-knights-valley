@@ -2,7 +2,7 @@
  * Entity: ground_vertical_earth_bank_desert_01
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_vertical_earth_bank_desert_01",
@@ -27,4 +27,4 @@ export default {
         "vertical",
         "earth_bank"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

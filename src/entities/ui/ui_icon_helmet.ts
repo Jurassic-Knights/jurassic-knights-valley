@@ -2,7 +2,7 @@
  * Entity: ui_icon_helmet
  * Auto-generated. Edit in dashboard.
  */
-import type { UIEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     id: 'ui_icon_helmet',
@@ -13,4 +13,4 @@ export default {
     files: {
         original: 'assets/images/ui/ui_icon_helmet_original.png'
     }
-} satisfies UIEntity;
+} satisfies EntityConfig;

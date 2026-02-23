@@ -83,7 +83,7 @@ export function findRegionAt(mesh: Mesh, x: number, y: number, cellRegions: numb
 }
 
 export function buildCellRegions(mesh: Mesh): number[][] {
-    const grid: number[][] = Array.from<number[]>({ length: MAPGEN4_GRID_N * MAPGEN4_GRID_N }, () => []);
+    const grid: number[][] = Array.from({ length: MAPGEN4_GRID_N * MAPGEN4_GRID_N }, () => [] as number[]);
     for (let r = 0; r < mesh.numSolidRegions; r++) {
         if (mesh.is_ghost_r(r)) continue;
         const gx = Math.floor(mesh.x_of_r(r) / MAPGEN4_GRID_CELL);

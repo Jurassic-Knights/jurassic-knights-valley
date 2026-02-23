@@ -2,7 +2,7 @@
  * Entity: ground_interior_metal_plate_tundra_01
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_interior_metal_plate_tundra_01",
@@ -27,4 +27,4 @@ export default {
         "interior",
         "metal_plate"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

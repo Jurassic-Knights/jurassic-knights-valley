@@ -504,9 +504,9 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                     // --- SYNC CHECK: If uploading Original, also update Clean (if exists) ---
                     if (assetId && typeof categoryData !== 'undefined' && categoryData?.files) {
                         // Find asset
-                        let asset: { id: string; [key: string]: unknown } | null = null;
+                        let asset: Record<string, unknown> | null = null;
                         for (const list of Object.values(categoryData.files)) {
-                            const found = list.find((i: { id: string }) => i.id === assetId);
+                            const found = (list as unknown as Record<string, unknown>[]).find((i: Record<string, unknown>) => i.id === assetId);
                             if (found) {
                                 asset = found;
                                 break;
@@ -514,8 +514,8 @@ async function uploadImageFile(blob: Blob, path: string, assetId?: string) {
                         }
 
                         if (asset && asset.files) {
-                            const originalFile = asset.files.original || '';
-                            const cleanFile = asset.files.clean || '';
+                            const originalFile = (asset.files as Record<string, string>).original || '';
+                            const cleanFile = (asset.files as Record<string, string>).clean || '';
 
                             // Check if we just uploaded the Original
                             // Note: cleanPath is relative (images/...), asset.files are relative usually

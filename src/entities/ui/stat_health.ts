@@ -2,7 +2,7 @@
  * Entity: stat_health
  * Auto-generated. Edit in dashboard.
  */
-import type { UIEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     id: 'stat_health',
@@ -13,4 +13,4 @@ export default {
     files: {
         original: 'assets/images/ui/stat_health_original.png'
     }
-} satisfies UIEntity;
+} satisfies EntityConfig;

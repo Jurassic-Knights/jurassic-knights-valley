@@ -5,7 +5,7 @@
 
 
 
-import type { NodeEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "node_harvesting_t1_02",
@@ -26,4 +26,4 @@ export default {
         "width": 64,
         "height": 64
     }
-} satisfies NodeEntity;
+} satisfies EntityConfig;

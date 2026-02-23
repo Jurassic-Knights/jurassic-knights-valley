@@ -32,7 +32,10 @@ export function drawRangeCircles(ctx: CanvasRenderingContext2D, hero: Hero): voi
     }
     if (!hasNearbyEnemy) return;
 
-    const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
+    const activeWeapons = (hero.equipment?.getActiveWeapons?.() as {
+        mainHand?: { gripType?: string; weaponType?: string; weaponSubtype?: string; stats?: any };
+        offHand?: { gripType?: string; weaponType?: string; weaponSubtype?: string; stats?: any };
+    }) || {};
     const hand1Item = activeWeapons.mainHand;
     const hand2Item = activeWeapons.offHand;
 

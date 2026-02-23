@@ -102,9 +102,9 @@ self.onmessage = async (e: MessageEvent) => {
             }
         }
 
-        self.postMessage({ jobId, success: true, buffer: outBuffer }, [outBuffer]);
+        (self as unknown as any).postMessage({ jobId, success: true, buffer: outBuffer }, [outBuffer]);
     } catch (err: unknown) {
-        self.postMessage({ jobId, success: false, error: (err as Error).message });
+        (self as unknown as any).postMessage({ jobId, success: false, error: (err as Error).message });
     }
 };
 

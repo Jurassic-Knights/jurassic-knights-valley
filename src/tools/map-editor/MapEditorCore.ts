@@ -133,7 +133,7 @@ export class MapEditorCore {
         containerId: string,
         dataFetcher?: (
             category: string
-        ) => Promise<{ entities: Array<{ id: string; [key: string]: unknown }> }>
+        ) => Promise<{ entities: Array<{ id: string; width?: number; height?: number }> }>
     ): Promise<void> {
         if (this.isInitialized) return;
 
@@ -457,19 +457,19 @@ export class MapEditorCore {
     public async setProceduralPreview(param: Mapgen4Param): Promise<void> {
         const manual: import('./Mapgen4Generator').ManualTownsAndRailroads | undefined =
             this.manualTowns.length > 0 ||
-            this.manualStations.length > 0 ||
-            this.railroadWaypoints.length > 0
+                this.manualStations.length > 0 ||
+                this.railroadWaypoints.length > 0
                 ? {
-                      manualTowns: this.manualTowns.length > 0 ? [...this.manualTowns] : undefined,
-                      manualStations:
-                          this.manualStations.length > 0
-                              ? this.manualStations.map((s) => ({ ...s }))
-                              : undefined,
-                      railroadWaypoints:
-                          this.railroadWaypoints.length > 0
-                              ? this.railroadWaypoints.map((w) => ({ ...w }))
-                              : undefined
-                  }
+                    manualTowns: this.manualTowns.length > 0 ? [...this.manualTowns] : undefined,
+                    manualStations:
+                        this.manualStations.length > 0
+                            ? this.manualStations.map((s) => ({ ...s }))
+                            : undefined,
+                    railroadWaypoints:
+                        this.railroadWaypoints.length > 0
+                            ? this.railroadWaypoints.map((w) => ({ ...w }))
+                            : undefined
+                }
                 : undefined;
         let newCache: import('./MapEditorProceduralRenderer').ProceduralCache;
         try {

@@ -46,7 +46,7 @@ class CombatController {
         this._logTimer++;
         const doLog = this._logTimer % 60 === 0;
 
-        const hero = this.game.hero;
+        const hero = this.game.hero as import('../gameplay/Hero').Hero;
         // Use EntityManager for efficient lookups
         const resources = EntityManager ? EntityManager.getByType('Resource') : [];
         const dinosaurs = EntityManager ? EntityManager.getByType('Dinosaur') : [];
@@ -88,7 +88,7 @@ class CombatController {
 
         // Check dinosaurs (Gun Range) - use stats component for equipped weapon range
         const gunDist =
-            hero.stats?.getAttackRange?.() ||
+            hero.stats?.getWeaponRange?.('mainHand') ||
             (combat ? combat.range : GameConstants.Combat.DEFAULT_GUN_RANGE);
 
         for (const dino of dinosaurs) {

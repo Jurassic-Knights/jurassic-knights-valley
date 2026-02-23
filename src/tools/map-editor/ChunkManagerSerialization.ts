@@ -26,7 +26,7 @@ export function parseChunkFromRaw(raw: { id?: string; objects?: unknown; zones?:
     return {
         id: raw.id ?? '',
         objects: Array.isArray(raw.objects) ? raw.objects : [],
-        zones: raw.zones && typeof raw.zones === 'object' ? raw.zones : undefined,
+        zones: raw.zones && typeof raw.zones === 'object' ? (raw.zones as Record<string, Record<string, string>>) : undefined,
         splatMap: undefined
     };
 }

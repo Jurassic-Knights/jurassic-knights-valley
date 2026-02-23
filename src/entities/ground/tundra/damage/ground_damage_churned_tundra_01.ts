@@ -2,7 +2,7 @@
  * Entity: ground_damage_churned_tundra_01
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_damage_churned_tundra_01",
@@ -27,4 +27,4 @@ export default {
         "damage",
         "churned"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

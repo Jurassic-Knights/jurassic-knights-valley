@@ -96,7 +96,7 @@ export function spawnCraftedItem(
         ty = y + Math.sin(angle) * dist;
     }
 
-    const worldManager = getWorldManager();
+    const worldManager = getWorldManager() as typeof import('../world/WorldManager')['WorldManager'] & { clampToPlayableArea?(tx: number, ty: number): { x: number; y: number } };
     const clamped = worldManager?.clampToPlayableArea?.(tx, ty) ?? clampToWorldBounds(tx, ty);
     drop.flyTo(clamped.x, clamped.y);
 

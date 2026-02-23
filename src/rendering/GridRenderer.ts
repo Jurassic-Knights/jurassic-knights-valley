@@ -7,7 +7,19 @@
  * Owner: Rendering System
  */
 
-import type { IViewport, IGame } from '../types/core';
+import type { IViewport, IGame, ISystem } from '../types/core';
+
+type GridWorldManager = ISystem & {
+    islands: Array<{ name: string; type?: string; worldX: number; worldY: number; width: number; height: number; unlocked?: boolean; unlockCost?: number;[key: string]: unknown }>;
+    getBridges: () => Array<{ x: number; y: number; width: number; height: number; type: string }>;
+};
+
+type GridAssetLoader = ISystem & {
+    getImagePath: (id: string) => string;
+    createImage: (path: string) => HTMLImageElement;
+    cache: { get: (id: string) => HTMLImageElement | undefined };
+    preloadImage: (id: string) => void;
+};
 
 
 const GridRenderer = {
@@ -21,8 +33,8 @@ const GridRenderer = {
      * @param {Object} game - Game reference
      */
     drawGrid(ctx: CanvasRenderingContext2D, viewport: IViewport, canvas: HTMLCanvasElement, game: IGame | null) {
-        const islandManager = game ? game.getSystem('WorldManager') : null;
-        const assetLoader = game ? game.getSystem('AssetLoader') : null;
+        const islandManager = game ? game.getSystem('WorldManager') as GridWorldManager | undefined : null;
+        const assetLoader = game ? game.getSystem('AssetLoader') as GridAssetLoader | undefined : null;
 
         if (!islandManager) {
             this.drawFallbackGrid(ctx, viewport, canvas);
@@ -68,7 +80,11 @@ const GridRenderer = {
     /**
      * Draw all islands
      */
-    drawIslands(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string; type?: string;[key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
+    drawIslands(
+        ctx: CanvasRenderingContext2D,
+        islandManager: GridWorldManager,
+        assetLoader: GridAssetLoader | null | undefined
+    ) {
         const islandColor = '#4A5D23';
         const islandBorder = '#3A4D13';
 
@@ -123,7 +139,7 @@ const GridRenderer = {
     /**
      * Draw lock overlay for locked islands
      */
-    drawLockOverlay(ctx: CanvasRenderingContext2D, island: { name: string;[key: string]: unknown }) {
+    drawLockOverlay(ctx: CanvasRenderingContext2D, island: GridWorldManager['islands'][0]) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
         ctx.font = 'bold 80px "Courier New", sans-serif';
         ctx.textAlign = 'center';
@@ -146,7 +162,11 @@ const GridRenderer = {
     /**
      * Draw all bridges
      */
-    drawBridges(ctx: CanvasRenderingContext2D, islandManager: { islands: Array<{ name: string;[key: string]: unknown }> }, assetLoader: { getImagePath(id: string): string } | null) {
+    drawBridges(
+        ctx: CanvasRenderingContext2D,
+        islandManager: GridWorldManager,
+        assetLoader: GridAssetLoader | null | undefined
+    ) {
         const bridges = islandManager.getBridges();
         let planksImg = null;
 

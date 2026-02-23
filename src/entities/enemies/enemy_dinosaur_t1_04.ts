@@ -2,7 +2,7 @@
  * Entity: enemy_dinosaur_t1_04
  * Auto-generated. Edit in dashboard.
  */
-import type { EnemyEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "enemy_dinosaur_t1_04",
@@ -50,21 +50,17 @@ export default {
         {
             "item": "food_t1_02",
             "chance": 1,
-            "amount": [
-                1,
-                2
-            ]
+            "min": 1,
+            "max": 2
         },
         {
             "item": "leather_t1_01",
             "chance": 0.4,
-            "amount": [
-                1,
-                1
-            ]
+            "min": 1,
+            "max": 1
         }
     ],
     "xpReward": 5,
     "species": "Gallimimus",
     "weaponType": "claws"
-} satisfies EnemyEntity;
+} satisfies EntityConfig;

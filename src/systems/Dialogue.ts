@@ -8,9 +8,21 @@
 import { Logger } from '@core/Logger';
 import { GameState } from '@core/State';
 
+export interface DialogueFormat {
+    startNode?: string;
+    nodes?: Record<
+        string,
+        {
+            text: string;
+            speaker?: string;
+            choices?: Array<{ text: string; next?: string }>;
+        }
+    >;
+}
+
 const DialogueSystem = {
-    dialogues: {} as Record<string, unknown>,
-    currentDialogue: null as unknown | null,
+    dialogues: {} as Record<string, DialogueFormat>,
+    currentDialogue: null as DialogueFormat | null,
     currentNode: null as string | null,
 
     /**

@@ -10,10 +10,11 @@ import { Registry } from '@core/Registry';
 import { GameConstants } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 import manifest from './manifest';
-import { EntityConfig } from '../types/core';
+import type { EntityConfig } from '../types/core';
 import { processEntity } from './EntityLoaderProcess';
 import { handleEntityUpdate } from './EntityLoaderBroadcast';
 import * as Lookup from './EntityLoaderLookup';
+import type { EntityRegistryStrict } from './EntityLoaderLookup';
 
 interface EntityModule {
     default: Partial<EntityConfig>;
@@ -35,20 +36,6 @@ const entityModules: Record<string, EntityModule> = import.meta.glob(
     ],
     { eager: true }
 );
-
-interface EntityRegistryStrict {
-    enemies: Record<string, EntityConfig>;
-    bosses: Record<string, EntityConfig>;
-    nodes: Record<string, EntityConfig>;
-    resources: Record<string, EntityConfig>;
-    items: Record<string, EntityConfig>;
-    equipment: Record<string, EntityConfig>;
-    npcs: Record<string, EntityConfig>;
-    environment: Record<string, EntityConfig>;
-    ground: Record<string, EntityConfig>;
-    hero: Record<string, EntityConfig>;
-    defaults: Record<string, Partial<EntityConfig>>;
-}
 
 declare global {
     interface Window {
@@ -110,7 +97,7 @@ const getDefaults = () =>
             respawnTime: L.BOSS_RESPAWN_TIME,
             xpReward: L.BOSS_XP_REWARD
         }
-    }) as Record<string, unknown>;
+    }) as Record<string, Partial<EntityConfig>>;
 
 const EntityLoader = {
     loaded: false,
@@ -213,7 +200,7 @@ const EntityLoader = {
         (entity as Record<string, unknown>)._sourceFile = `${id}.ts`;
 
         if (data.display) Object.assign(entity, data.display);
-        if (EntityRegistry[category]) EntityRegistry[category][id] = entity;
+        if (EntityRegistry[category]) (EntityRegistry as Record<string, Record<string, EntityConfig>>)[category][id] = entity;
         return entity;
     },
 

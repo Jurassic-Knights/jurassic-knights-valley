@@ -115,7 +115,7 @@ export async function showMapEditorView(pushState = true): Promise<void> {
             if (editorInstance) {
                 editorInstance.setOnManualDataChange(() => {
                     OutlinerPanel.refresh();
-                    runPreviewCanvas().catch(() => {});
+                    runPreviewCanvas().catch(() => { });
                     if (getAutoSaveEnabled()) scheduleAutoSave();
                 });
                 editorInstance.setOnCommandExecuted(() => {
@@ -326,9 +326,9 @@ function initMapEditorBeforeUnload(): void {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ filename, mapData }),
                     keepalive: true
-                }).catch(() => {});
+                }).catch(() => { });
                 if (filename === DEFAULT_MAP_FILENAME || filename === 'default') {
-                    saveDefaultMap(mapData).catch(() => {});
+                    saveDefaultMap(mapData).catch(() => { });
                 }
             }
         }
@@ -1002,7 +1002,7 @@ function initModeAndTools(): void {
     const modes = ['object', 'ground', 'zone', 'manipulation'] as const;
     type EditorMode = (typeof modes)[number];
 
-    const updateModeUI = (mode: EditorMode) => {
+    const updateModeUI = (mode: 'object' | 'ground' | 'zone' | 'manipulation') => {
         modes.forEach((m) => {
             const btn = document.getElementById(`mode-${m}`);
             if (btn) {
@@ -1011,13 +1011,9 @@ function initModeAndTools(): void {
         });
 
         if (editorInstance)
-            editorInstance.setMode(
-                mode as unknown as import('../../../src/tools/map-editor/MapEditorTypes').EditorMode
-            );
+            editorInstance.setMode(mode);
         if (paletteInstance)
-            paletteInstance.setMode(
-                mode as unknown as import('../../../src/tools/map-editor/MapEditorTypes').EditorMode
-            );
+            paletteInstance.setMode(mode);
     };
 
     modes.forEach((mode) => {
@@ -1083,7 +1079,7 @@ export function hideMapEditorView(): void {
 if (import.meta.hot) {
     import.meta.hot.accept(() => {
         if (editorInstance) {
-            runPreviewCanvas().catch(() => {});
+            runPreviewCanvas().catch(() => { });
         }
     });
 }

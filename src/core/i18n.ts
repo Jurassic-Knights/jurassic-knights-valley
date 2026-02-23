@@ -66,7 +66,7 @@ class I18n {
             || key;
 
         // Interpolate {param} placeholders
-        return value.replace(/\{(\w+)\}/g, (_: string, name: string) => params[name] ?? `{${name}}`);
+        return String(value).replace(/\{(\w+)\}/g, (_: string, name: string) => String(params[name] ?? `{${name}}`));
     }
 
     /**

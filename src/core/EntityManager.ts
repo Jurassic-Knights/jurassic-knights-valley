@@ -156,7 +156,7 @@ class EntityManagerService {
         const buffer = this._queryBuffer;
         buffer.length = 0;
         for (let i = 0; i < results.length; i++) {
-            buffer.push(results[i].entity);
+            buffer.push((results[i] as { entity: IEntity }).entity);
         }
         return buffer;
     }

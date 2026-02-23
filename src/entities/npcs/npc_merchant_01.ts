@@ -2,7 +2,7 @@
  * Entity: npc_merchant_01
  * Auto-generated. Edit in dashboard.
  */
-import type { NPCEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "npc_merchant_01",
@@ -21,4 +21,4 @@ export default {
         "width": 256,
         "height": 256
     }
-} satisfies NPCEntity;
+} satisfies EntityConfig;

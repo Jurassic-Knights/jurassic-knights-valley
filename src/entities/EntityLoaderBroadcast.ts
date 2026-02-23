@@ -5,11 +5,7 @@ import { Logger } from '@core/Logger';
 import { entityManager } from '@core/EntityManager';
 import { EntityConfig, IEntity } from '../types/core';
 
-interface EntityRegistryStrict {
-    enemies: Record<string, EntityConfig>;
-    bosses: Record<string, EntityConfig>;
-    [key: string]: Record<string, EntityConfig> | undefined;
-}
+import type { EntityRegistryStrict } from './EntityLoaderLookup';
 
 export function handleEntityUpdate(
     EntityRegistry: EntityRegistryStrict,
@@ -18,9 +14,10 @@ export function handleEntityUpdate(
     updates: Record<string, unknown>
 ) {
     const validCategory = category as keyof EntityRegistryStrict;
-    if (!EntityRegistry[validCategory]) return;
+    const safeRegistry = EntityRegistry as Record<string, Record<string, EntityConfig>>;
+    if (!safeRegistry[validCategory]) return;
 
-    const registryEntity = EntityRegistry[validCategory][configId];
+    const registryEntity = safeRegistry[validCategory][configId];
     if (!registryEntity) {
         Logger.warn(`[EntityLoader] Received update for unknown entity: ${category}/${configId}`);
         return;
@@ -83,11 +80,11 @@ export function handleEntityUpdate(
                 const statName = key.split('.')[1];
                 const numVal = Number(value);
                 if (!isNaN(numVal)) {
-                    (entity as Record<string, unknown>)[statName] = numVal;
+                    (entity as unknown as Record<string, unknown>)[statName] = numVal;
                 }
             } else {
                 if (typeof value !== 'object') {
-                    (entity as Record<string, unknown>)[key] = value;
+                    (entity as unknown as Record<string, unknown>)[key] = value;
                 }
             }
         }

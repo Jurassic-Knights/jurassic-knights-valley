@@ -26,7 +26,7 @@ export function spawnResourceDrops(
             }
         });
     } else if (typeConfig.resourceDrop) {
-        spawnDrop(x, y, typeConfig.resourceDrop, amount);
+        spawnDrop(x, y, typeConfig.resourceDrop as string, amount);
     } else if (typeConfig.loot && Array.isArray(typeConfig.loot)) {
         typeConfig.loot.forEach((drop: { item: string; chance?: number }) => {
             if (Math.random() <= (drop.chance || 1)) spawnDrop(x, y, drop.item, 1);

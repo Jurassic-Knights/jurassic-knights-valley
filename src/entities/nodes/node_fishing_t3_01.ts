@@ -2,7 +2,7 @@
  * Entity: node_fishing_t3_01
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "node_fishing_t3_01",
@@ -38,4 +38,4 @@ export default {
         "width": 64,
         "height": 64
     }
-} satisfies NodeEntity;
+} satisfies EntityConfig;

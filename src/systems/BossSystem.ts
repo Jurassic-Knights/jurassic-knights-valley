@@ -17,6 +17,7 @@ import { entityManager } from '@core/EntityManager';
 import { Registry } from '@core/Registry';
 import { EntityRegistry } from '@entities/EntityLoader';
 import { BiomeConfig } from '@data/BiomeConfig';
+import { Boss } from '../gameplay/Boss';
 import type { IGame, IEntity } from '../types/core';
 
 class BossSystem {
@@ -70,6 +71,7 @@ class BossSystem {
                     bossId?: string;
                     bossSpawn?: { x: number; y: number };
                     bounds?: { x: number; y: number; width: number; height: number };
+                    levelRange?: { max: number; min: number };
                     [key: string]: unknown;
                 }
             >
@@ -132,6 +134,7 @@ class BossSystem {
                 {
                     bossSpawn?: { x: number; y: number };
                     bounds?: { x: number; y: number; width: number; height: number };
+                    levelRange?: { max: number; min: number };
                     [key: string]: unknown;
                 }
             >
@@ -177,7 +180,12 @@ class BossSystem {
             bossName?: string;
         };
     }) {
-        const enemy = data.enemy || data.entity;
+        const enemy = (data.enemy || data.entity) as IEntity & {
+            isBoss?: boolean;
+            biomeId?: string;
+            respawnTime?: number;
+            bossName?: string;
+        };
         if (!enemy?.isBoss) return;
 
         const biomeId = enemy.biomeId;
@@ -263,7 +271,7 @@ class BossSystem {
 
         for (const biomeId of Object.keys(biomes)) {
             if (
-                (biomes as Record<string, { bossId?: string; [key: string]: unknown }>)[biomeId]
+                (biomes as Record<string, { bossId?: string;[key: string]: unknown }>)[biomeId]
                     ?.bossId
             ) {
                 this.spawnBoss(biomeId);

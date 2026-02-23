@@ -112,10 +112,11 @@ export async function showCategoryView(categoryName: string, pushState: boolean 
 
     // Update Sidebar Active State
     document.querySelectorAll('.nav-item').forEach(btn => {
-        const btnCat = btn.getAttribute('data-category');
+        const htmlBtn = btn as HTMLElement;
+        const btnCat = htmlBtn.dataset.category;
         // Clear all action-based buttons (like map editor) if switching to category
-        if (btn.dataset.action !== 'navigate-category' && btn.dataset.action !== 'toggle-config') {
-            btn.classList.remove('active');
+        if (htmlBtn.dataset.action !== 'navigate-category' && htmlBtn.dataset.action !== 'toggle-config') {
+            htmlBtn.classList.remove('active');
         }
 
         if (btnCat === categoryName) {

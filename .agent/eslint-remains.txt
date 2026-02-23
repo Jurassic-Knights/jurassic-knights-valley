@@ -1,0 +1,103 @@
+Found 102 warnings.
+core\AnalyticsManager.ts:49 - '_e' is defined but never used.
+core\AnalyticsManager.ts:75 - '_e' is defined but never used.
+core\AnalyticsManager.ts:96 - '_e' is defined but never used.
+core\AnalyticsManager.ts:113 - '_e' is defined but never used.
+core\AnalyticsManager.ts:130 - '_e' is defined but never used.
+core\GameRenderer.ts:24 - 'ISystem' is defined but never used.
+core\GameRenderer.ts:29 - 'CollisionSystem' is defined but never used.
+core\Profiler.ts:14 - 'StateSystem' is defined but never used.
+data\ZoneConfig.ts:28 - 'stringToColor' is defined but never used.
+gameplay\Boss.ts:18 - 'AssetLoader' is defined but never used.
+rendering\ResourceRenderer.ts:15 - 'getTintForHealth' is defined but never used.
+rendering\RoadRenderer.ts:126 - '_tNext' is assigned a value but never used.
+rendering\WorldRendererMapgen4.ts:150 - '_scale' is assigned a value but never used.
+systems\BossSystem.ts:20 - 'AISystem' is defined but never used.
+systems\BossSystem.ts:20 - 'IBehaviorNode' is defined but never used.
+systems\BossSystem.ts:20 - 'AIState' is defined but never used.
+systems\BossSystem.ts:20 - 'AIContext' is defined but never used.
+systems\CombatController.ts:88 - 'i' is assigned a value but never used.
+systems\DamageSystem.ts:24 - '_DamageableEntity' is defined but never used.
+systems\DamageSystem.ts:186 - 'killer' is assigned a value but never used.
+systems\DinosaurSystem.ts:19 - 'BOUNDS_PADDING' is assigned a value but never used.
+systems\EconomySystem.ts:10 - 'getConfig' is defined but never used.
+systems\EconomySystem.ts:12 - 'WorldManager' is defined but never used.
+systems\EconomySystem.ts:13 - 'AudioManager' is defined but never used.
+systems\EconomySystem.ts:14 - 'VFXTriggerService' is defined but never used.
+systems\EquipmentManager.ts:81 - '_activeSlots' is assigned a value but never used.
+tools\map-editor\EditorContext.ts:1 - 'ZoneCategory' is defined but never used.
+tools\map-editor\GroundSystem.ts:117 - 'CHUNK_SIZE' is assigned a value but never used.
+tools\map-editor\GroundSystemPalette.ts:6 - 'ZoneCategory' is defined but never used.
+tools\map-editor\GroundSystemSplat.ts:62 - 'CHUNK_SIZE' is assigned a value but never used.
+tools\map-editor\MapEditorBrushCursor.ts:5 - 'MapEditorConfig' is defined but never used.
+tools\map-editor\MapEditorCore.ts:6 - 'ZoneConfig' is defined but never used.
+tools\map-editor\MapEditorCore.ts:6 - 'ZoneCategory' is defined but never used.
+tools\map-editor\MapEditorCore.ts:12 - 'PlaceObjectCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:13 - 'RemoveObjectCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:14 - 'AddWaypointCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:15 - 'RemoveWaypointCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:16 - 'UpdateWaypointRegionCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:17 - 'AddManualTownCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:18 - 'AddManualStationCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:19 - 'RemoveManualTownCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:20 - 'RemoveManualStationCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:21 - 'SetManualTownAtCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:22 - 'SetManualStationRegionCommand' is defined but never used.
+tools\map-editor\MapEditorCore.ts:35 - 'updateCursorCoords' is defined but never used.
+tools\map-editor\MapEditorCore.ts:37 - 'updateBrushCursor' is defined but never used.
+tools\map-editor\MapEditorCore.ts:38 - 'screenToWorld' is defined but never used.
+tools\map-editor\MapEditorCore.ts:38 - 'toCanvasCoords' is defined but never used.
+tools\map-editor\MapEditorCore.ts:39 - 'handleZoomViewport' is defined but never used.
+tools\map-editor\MapEditorCore.ts:42 - 'executeTool' is defined but never used.
+tools\map-editor\MapEditorCore.ts:49 - 'SPLINE_HIT_THRESHOLD_WORLD' is defined but never used.
+tools\map-editor\MapEditorCore.ts:50 - 'isWorldPointOnSplinePath' is defined but never used.
+tools\map-editor\MapEditorCore.ts:51 - 'getNearestLegIndexForWorldPoint' is defined but never used.
+tools\map-editor\MapEditorCore.ts:52 - 'getWaypointInsertionIndex' is defined but never used.
+tools\map-editor\MapEditorCore.ts:278 - '_err' is defined but never used.
+tools\map-editor\MapEditorInput.ts:1 - 'PIXI' is defined but never used.
+tools\map-editor\MapEditorManipulationHandles.ts:37 - 'zoom' is assigned a value but never used.
+tools\map-editor\MapEditorProceduralRenderer.ts:16 - 'buildMeshAndMap' is defined but never used.
+tools\map-editor\MapEditorProceduralRenderer.ts:16 - 'computeTownsAndRoads' is defined but never used.
+tools\map-editor\MapEditorProceduralRenderer.ts:19 - 'buildCellRegions' is defined but never used.
+tools\map-editor\MapEditorProceduralRenderer.ts:19 - 'computeRegionDistanceFromWater' is defined but never used.
+tools\map-editor\MapEditorProceduralRenderer.ts:20 - 'COAST_MAX_POLYGON_STEPS' is defined but never used.
+tools\map-editor\MapEditorState.ts:9 - 'ZoneCategory' is defined but never used.
+tools\map-editor\MapEditorToolUse.ts:4 - 'Logger' is defined but never used.
+tools\map-editor\MapEditorToolUse.ts:32 - 'TILE_SIZE' is assigned a value but never used.
+tools\map-editor\MapEditorViewport.ts:7 - 'PIXI' is defined but never used.
+tools\map-editor\MapEditorViewport.ts:8 - 'MapEditorConfig' is defined but never used.
+tools\map-editor\MapEditorWaypointManager.ts:45 - 'zoom' is assigned a value but never used.
+tools\map-editor\MapEditorWaypointManager.ts:51 - 'onRemoveWaypoint' is assigned a value but never used.
+tools\map-editor\MapEditorWaypointManager.ts:52 - 'onUpdateWaypointRegion' is assigned a value but never used.
+tools\map-editor\MapEditorWaypointManager.ts:53 - 'getRegionAtWorld' is assigned a value but never used.
+tools\map-editor\MapRenderer.ts:3 - 'MapEditorConfig' is defined but never used.
+tools\map-editor\Mapgen4CurveUtils.ts:224 - 'loop2Len' is assigned a value but never used.
+tools\map-editor\Mapgen4Generator.ts:23 - 'buildRailroadSplineMeshData' is defined but never used.
+tools\map-editor\Mapgen4Generator.ts:37 - 'PREVIEW_MAP_SIZE' is assigned a value but never used.
+tools\map-editor\Mapgen4Generator.ts:149 - 'railroadPath' is assigned a value but never used.
+tools\map-editor\mapgen4\map.ts:139 - 'elevation_t' is assigned a value but never used.
+ui\MinimapRenderer.ts:7 - 'generateMapgen4' is defined but never used.
+ui\MinimapRenderer.ts:9 - 'Mapgen4Param' is defined but never used.
+ui\UIManager.ts:22 - 'DOMUtils' is defined but never used.
+ui\controllers\HUDController.ts:10 - 'getConfig' is defined but never used.
+ui\core\UIPanel.ts:12 - 'Registry' is defined but never used.
+ui\core\UIPanel.ts:15 - 'UIPanelConfig' is defined but never used.
+utils\EntityScaling.ts:7 - 'Logger' is defined but never used.
+vfx\HealthBarRenderer.ts:10 - 'ProgressBarOptions' is defined but never used.
+vfx\ProjectileVFX.ts:165 - 'e' is defined but never used.
+vfx\VFXController.ts:19 - 'VFXSequence' is defined but never used.
+vfx\weather\RainVFX.ts:87 - 'vx_frame' is assigned a value but never used.
+vfx\weather\RainVFX.ts:88 - 'vy_frame' is assigned a value but never used.
+workers\GroundRenderWorker.ts:8 - 'height' is assigned a value but never used.
+workers\GroundRenderWorker.ts:15 - '_config' is assigned a value but never used.
+workers\GroundRenderWorker.ts:45 - '_hw' is assigned a value but never used.
+workers\GroundRenderWorker.ts:46 - '_nw' is assigned a value but never used.
+workers\GroundRenderWorker.ts:166 - '_clamp' is defined but never used.
+workers\GroundRenderWorker.ts:166 - 'value' is defined but never used. Allowed unused args must match /^_/u.
+workers\GroundRenderWorker.ts:166 - 'min' is defined but never used. Allowed unused args must match /^_/u.
+workers\GroundRenderWorker.ts:166 - 'max' is defined but never used. Allowed unused args must match /^_/u.
+world\BiomeManager.ts:14 - 'IGame' is defined but never used.
+world\BiomeManager.ts:14 - 'Vector2' is defined but never used.
+world\HomeBase.ts:222 - '_' is assigned a value but never used.
+world\WorldManager.ts:48 - 'SCALE' is assigned a value but never used.
+world\WorldManager.ts:68 - '_SCALE' is assigned a value but never used.

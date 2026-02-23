@@ -46,7 +46,7 @@ export interface EnemyEntity {
     weaponType?: string;
     display?: { sizeScale?: number; width?: number; height?: number };
     sfx?: Record<string, string | { id: string }>;
-    spawning?: { biomes?: string[]; weight?: number };
+    spawning?: { biomes?: string[]; weight?: number; groupSize?: number | number[]; respawnTime?: number };
     [key: string]: unknown;
 }
 

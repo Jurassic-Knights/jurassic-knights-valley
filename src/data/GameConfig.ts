@@ -195,17 +195,17 @@ if (typeof window !== 'undefined') {
             if (typedKey === 'WeaponDefaults') {
                 // Deep merge WeaponDefaults (each weapon is a nested object)
                 const newWeapons = GameConfig.WeaponDefaults;
-                if (!persisted.WeaponDefaults) persisted.WeaponDefaults = {} as Record<string, unknown>;
+                if (!persisted.WeaponDefaults) persisted.WeaponDefaults = {} as any;
                 for (const weaponKey of Object.keys(newWeapons)) {
-                    (persisted.WeaponDefaults as Record<string, unknown>)[weaponKey] = {
-                        ...((persisted.WeaponDefaults as Record<string, unknown>)[weaponKey] as object),
-                        ...((newWeapons as Record<string, unknown>)[weaponKey] as object)
+                    (persisted.WeaponDefaults as any)[weaponKey] = {
+                        ...((persisted.WeaponDefaults as any)[weaponKey] as object),
+                        ...((newWeapons as any)[weaponKey] as object)
                     };
                 }
             } else if (typeof GameConfig[typedKey] === 'object') {
                 Object.assign(persisted[typedKey], GameConfig[typedKey]);
             } else {
-                (persisted as Record<string, unknown>)[typedKey] = GameConfig[typedKey];
+                (persisted as any)[typedKey] = GameConfig[typedKey];
             }
         }
         Logger.info('[HMR] GameConfig updated:', {

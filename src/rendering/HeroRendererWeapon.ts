@@ -36,7 +36,7 @@ export function drawWeapon(ctx: CanvasRenderingContext2D, hero: Hero): void {
     ctx.save();
     ctx.translate(hero.x, hero.y);
 
-    const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
+    const activeWeapons = (hero.equipment?.getActiveWeapons?.() as { mainHand?: { weaponType?: string; id?: string; weaponSubtype?: string }; offHand?: { weaponType?: string; id?: string; weaponSubtype?: string } }) || {};
     const hand1Item = activeWeapons.mainHand;
     const hand2Item = activeWeapons.offHand;
 
@@ -57,7 +57,7 @@ export function drawWeapon(ctx: CanvasRenderingContext2D, hero: Hero): void {
 
     let toolItem: { id?: string } | null = null;
     if (isGathering && target) {
-        const nodeSubtype = target.nodeSubtype;
+        const nodeSubtype = (target as import('../types/core').IEntity & { nodeSubtype?: string }).nodeSubtype;
         if (nodeSubtype) {
             const toolSlotId = `tool_${nodeSubtype}`;
             toolItem = hero.equipment?.getSlot?.(toolSlotId) ?? null;

@@ -13,7 +13,7 @@ import { GameConstants } from '@data/GameConstants';
 import { SFX } from '../audio/SFX_Core';
 import { RainVFX } from '@vfx/weather/RainVFX';
 import { SnowVFX } from '@vfx/weather/SnowVFX';
-import { IGame, IViewport } from '@app-types/core';
+import type { IGame, IViewport, ISystem } from '@app-types/core';
 import { computeLighting, computeShadows } from './EnvironmentRendererLighting';
 import {
     createLightningState,
@@ -125,7 +125,7 @@ class EnvironmentRenderer {
         let viewport = null;
 
         if (this.game) {
-            const renderer = this.game.getSystem<{ viewport?: IViewport; updateCamera?: () => void }>('GameRenderer');
+            const renderer = this.game.getSystem<ISystem & { viewport?: IViewport; updateCamera?: () => void }>('GameRenderer');
             if (renderer) {
                 // Force update camera to get latest world position (minimizes lag)
                 if (typeof renderer.updateCamera === 'function') {
@@ -165,7 +165,7 @@ class EnvironmentRenderer {
         const getCtx = () => {
             if (this.ctx) return this.ctx;
             if (this.game) {
-                const r = this.game.getSystem<{ ctx?: CanvasRenderingContext2D }>('GameRenderer');
+                const r = this.game.getSystem<ISystem & { ctx?: CanvasRenderingContext2D }>('GameRenderer');
                 if (r?.ctx) { this.ctx = r.ctx; return this.ctx; }
             }
             return null;

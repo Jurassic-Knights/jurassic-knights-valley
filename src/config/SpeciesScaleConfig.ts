@@ -94,9 +94,9 @@ const SpeciesScaleConfig = {
      * @returns {number} Scale multiplier
      */
     getScale(entityConfig: EntityConfig, isBoss = false) {
-        const sourceFile = entityConfig.sourceFile || '';
-        const species = entityConfig.species || '';
-        const bodyType = entityConfig.bodyType || 'medium';
+        const sourceFile = String(entityConfig.sourceFile || '');
+        const species = String(entityConfig.species || '');
+        const bodyType = String(entityConfig.bodyType || 'medium');
 
         let scale = 1.0;
 
@@ -163,10 +163,10 @@ const SpeciesScaleConfig = {
     getSize(entityConfig: EntityConfig, isBoss = false) {
         // Priority: Explicit config > Species Scale
         if (entityConfig.width && entityConfig.height) {
-            const explicitScale = entityConfig.sizeScale || 1.0;
+            const explicitScale = Number(entityConfig.sizeScale) || 1.0;
             return {
-                width: Math.round(entityConfig.width * explicitScale),
-                height: Math.round(entityConfig.height * explicitScale),
+                width: Math.round(Number(entityConfig.width) * explicitScale),
+                height: Math.round(Number(entityConfig.height) * explicitScale),
                 scale: explicitScale
             };
         }

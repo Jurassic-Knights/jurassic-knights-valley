@@ -13,8 +13,9 @@ const BalanceManager = {
     xpForLevel(level: number): number {
         // Mock ProgressionData if not available, or assume it's global
         const ProgressionData = (typeof window !== 'undefined' ? (window as Window & { ProgressionData?: Record<string, unknown> }).ProgressionData : {}) || {};
-        const base = ProgressionData.xpCurve?.base || 100;
-        const mult = ProgressionData.xpCurve?.multiplier || 1.5;
+        const xpCurve = ProgressionData.xpCurve as { base?: number; multiplier?: number } | undefined;
+        const base = xpCurve?.base || 100;
+        const mult = xpCurve?.multiplier || 1.5;
         return Math.floor(base * Math.pow(mult, level - 1));
     },
 

@@ -2,7 +2,7 @@
  * Entity: ground_overgrown_forest_floor_badlands_02
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_overgrown_forest_floor_badlands_02",
@@ -27,4 +27,4 @@ export default {
         "overgrown",
         "forest_floor"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

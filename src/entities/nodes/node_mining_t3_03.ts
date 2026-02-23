@@ -2,7 +2,7 @@
  * Entity: node_mining_t3_03
  * Auto-generated. Edit in dashboard.
  */
-import type { NodeEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "node_mining_t3_03",
@@ -24,4 +24,4 @@ export default {
         "height": 64
     },
     "declineNote": ""
-} satisfies NodeEntity;
+} satisfies EntityConfig;

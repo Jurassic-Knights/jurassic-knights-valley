@@ -2,7 +2,7 @@
  * Entity: ground_interior_concrete_badlands_01
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_interior_concrete_badlands_01",
@@ -27,4 +27,4 @@ export default {
         "interior",
         "concrete"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

@@ -17,7 +17,7 @@ import { BiomeConfig } from '../../../data/BiomeConfig';
 import { EntityTypes } from '../../../config/EntityTypes';
 import { GameInstance } from '../../../core/Game';
 import { MathUtils } from '../../../core/MathUtils';
-import type { IEntity } from '../../../types/core';
+import type { IEntity, IEnemyEntity } from '../../../types/core';
 
 const EnemyAI = {
     /**
@@ -25,7 +25,8 @@ const EnemyAI = {
      * @param {Enemy} enemy - The enemy to update
      * @param {number} dt - Delta time in ms
      */
-    updateState(enemy: IEntity, dt: number) {
+    updateState(baseEntity: IEntity, dt: number) {
+        const enemy = baseEntity as IEnemyEntity;
         if (!enemy.active || enemy.isDead) return;
 
         switch (enemy.state) {
@@ -48,7 +49,7 @@ const EnemyAI = {
     /**
      * Wander behavior with aggro detection
      */
-    updateWander(enemy: IEntity, dt: number) {
+    updateWander(enemy: IEnemyEntity, dt: number) {
         // Check for hero aggro
         const hero = entityManager?.getByType('Hero')?.[0] || GameInstance?.hero;
         if (hero && !hero.isDead && this.canSee(enemy, hero)) {
@@ -88,7 +89,7 @@ const EnemyAI = {
     /**
      * Chase behavior with leash distance check
      */
-    updateChase(enemy: IEntity, dt: number) {
+    updateChase(enemy: IEnemyEntity, dt: number) {
         if (!enemy.target) {
             enemy.state = 'returning';
             return;
@@ -117,7 +118,7 @@ const EnemyAI = {
     /**
      * Attack behavior
      */
-    updateAttack(enemy: IEntity, _dt: number) {
+    updateAttack(enemy: IEnemyEntity, _dt: number) {
         if (!enemy.target) {
             enemy.state = 'wander';
             return;
@@ -141,7 +142,7 @@ const EnemyAI = {
     /**
      * Return to spawn behavior
      */
-    updateReturning(enemy: IEntity, dt: number) {
+    updateReturning(enemy: IEnemyEntity, dt: number) {
         const dist = MathUtils.distance(enemy.spawnX, enemy.spawnY, enemy.x, enemy.y);
 
         if (dist < 20) {
@@ -159,7 +160,7 @@ const EnemyAI = {
     /**
      * Perform attack on target
      */
-    performAttack(enemy: IEntity) {
+    performAttack(enemy: IEnemyEntity) {
         if (!enemy.target) return;
 
         if (EventBus && GameConstants?.Events) {
@@ -175,15 +176,17 @@ const EnemyAI = {
             AudioManager.playSFX('sfx_enemy_attack');
         }
 
-        if (enemy.target.takeDamage) {
-            enemy.target.takeDamage(enemy.damage, enemy);
+        const target = enemy.target as import('../../../types/core').ICombatEntity;
+        if (target && target.takeDamage) {
+            // Provide a fallback of 0 if damage is undefined, though IEnemyEntity strictly has it
+            target.takeDamage(enemy.damage || 0, enemy);
         }
     },
 
     /**
      * Trigger pack aggro for group members
      */
-    triggerPackAggro(enemy: IEntity, target: IEntity | null) {
+    triggerPackAggro(enemy: IEnemyEntity, target: IEntity | null) {
         if (!entityManager || !enemy.groupId) return;
 
         // Read pack aggro radius from config for live tuning
@@ -215,7 +218,7 @@ const EnemyAI = {
     /**
      * Check if enemy can see hero (in aggro range)
      */
-    canSee(enemy: IEntity, hero: IEntity | null) {
+    canSee(enemy: IEnemyEntity, hero: IEntity | null) {
         if (!hero || enemy.isDead) return false;
         return enemy.distanceTo(hero) <= enemy.aggroRange;
     }

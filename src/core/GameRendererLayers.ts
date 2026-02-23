@@ -9,9 +9,9 @@ import type { IEntity, IGame } from '../types/core';
 import type { RenderTiming } from '../rendering/RenderProfiler';
 import type { WorldRenderer } from '../rendering/WorldRenderer';
 import type { RoadRenderer } from '../rendering/RoadRenderer';
-import type { HeroRenderer } from '../rendering/HeroRenderer';
-import type { DinosaurRenderer } from '../rendering/DinosaurRenderer';
-import type { ResourceRenderer } from '../rendering/ResourceRenderer';
+import { HeroRenderer } from '../rendering/HeroRenderer';
+import { DinosaurRenderer } from '../rendering/DinosaurRenderer';
+import { ResourceRenderer } from '../rendering/ResourceRenderer';
 import type { EnvironmentRenderer } from '../rendering/EnvironmentRenderer';
 
 export interface GameRendererState {
@@ -32,15 +32,15 @@ export interface GameRendererState {
         render?: (ctx: CanvasRenderingContext2D) => void;
     } | null;
     _homeBase: { render: (ctx: CanvasRenderingContext2D) => void } | null;
-    _heroRenderer: HeroRenderer | null;
-    _dinosaurRenderer: DinosaurRenderer | null;
-    _resourceRenderer: ResourceRenderer | null;
+    _heroRenderer: typeof HeroRenderer | null;
+    _dinosaurRenderer: typeof DinosaurRenderer | null;
+    _resourceRenderer: typeof ResourceRenderer | null;
     _ambientSystem: { render: (ctx: CanvasRenderingContext2D) => void } | null;
     _fogSystem: { render: (ctx: CanvasRenderingContext2D, viewport: unknown) => void } | null;
     _envRenderer: EnvironmentRenderer | null;
     _lightingSystem: { render: (ctx: CanvasRenderingContext2D) => void } | null;
     _renderTiming: RenderTiming | null;
-    getVisibleBounds: () => { left: number; top: number; right: number; bottom: number };
+    getVisibleBounds: () => { left: number; top: number; right: number; bottom: number; width: number; height: number };
     renderShadowPass: (entities: IEntity[]) => void;
 }
 

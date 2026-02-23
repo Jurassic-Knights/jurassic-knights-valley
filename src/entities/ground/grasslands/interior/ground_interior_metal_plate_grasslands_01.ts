@@ -2,9 +2,9 @@
  * Entity: ground_interior_metal_plate_grasslands_01
  * Auto-generated.
  */
-import type { EnvironmentEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
-const entity: EnvironmentEntity = {
+const entity: EntityConfig = {
     id: 'ground_interior_metal_plate_grasslands_01',
     name: 'Grasslands Metal plate 01',
     sourceCategory: 'ground',

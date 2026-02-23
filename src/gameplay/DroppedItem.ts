@@ -28,6 +28,12 @@ class DroppedItem extends Entity {
     rarityColor: string = '#BDC3C7';
     scale: number = 1.0;
 
+    // Visual Caches
+    _cachedAssetId?: string | null;
+    _spriteImage?: HTMLImageElement | null;
+    _spriteLoaded?: boolean;
+    _silhouetteCanvas?: HTMLCanvasElement | null;
+
     // Visual state
     pulseTime: number = 0;
 
@@ -44,7 +50,7 @@ class DroppedItem extends Entity {
     magnetAcceleration: number = 500;
 
     // Trail effect
-    trailHistory: Array<{ x: number; y: number }> = [];
+    trailHistory: Array<{ x: number; y: number; z?: number }> = [];
     maxTrailLength: number = 15;
 
     // Pickup timing
@@ -56,6 +62,9 @@ class DroppedItem extends Entity {
     constructor(
         config: {
             itemId?: string;
+            resourceType?: string;
+            customIcon?: string | null;
+            minPickupTime?: number;
             amount?: number;
             x?: number;
             y?: number;
@@ -63,7 +72,7 @@ class DroppedItem extends Entity {
         } = {}
     ) {
         // 1. Load Config
-        const typeConfig = EntityRegistry.items?.[config.resourceType] || {};
+        const typeConfig = (EntityRegistry.items?.[config.resourceType as string] || {}) as Record<string, unknown>;
 
         // Calculate size directly using utility (Item defaults: 96x96, smaller than entities)
         const size = EntityScaling.calculateSize(config, typeConfig, { width: 96, height: 96 });
@@ -73,7 +82,7 @@ class DroppedItem extends Entity {
             gridSize: 0.75,
             pickupRadius: 120
         };
-        const finalConfig = { ...defaults, ...typeConfig, ...config };
+        const finalConfig = { ...defaults, ...typeConfig, ...config } as Record<string, unknown>;
 
         super({
             entityType: EntityTypes.DROPPED_ITEM,
@@ -84,11 +93,11 @@ class DroppedItem extends Entity {
 
         this.scale = size.scale;
 
-        this.resourceType = config.resourceType || 'scraps_t1_01';
+        this.resourceType = (config.resourceType as string) || 'scraps_t1_01';
         this.amount = config.amount || 1;
         this.pickupRadius =
-            finalConfig.pickupRadius || getConfig().Interaction?.DROPPED_ITEM_PICKUP_RADIUS || 50;
-        this.customIcon = config.customIcon || null;
+            (finalConfig.pickupRadius as number) || getConfig().Interaction?.DROPPED_ITEM_PICKUP_RADIUS || 50;
+        this.customIcon = (config.customIcon as string) || null;
 
         // Visual pulse timer
         this.pulseTime = 0;
@@ -97,7 +106,7 @@ class DroppedItem extends Entity {
         this.color = Resource && Resource.COLORS ? Resource.COLORS[this.resourceType] : '#888888';
 
         // Determine rarity
-        this.rarity = typeConfig.rarity || 'common';
+        this.rarity = (typeConfig.rarity as string) || 'common';
 
         this.rarityColor =
             Resource && Resource.RARITY_COLORS ? Resource.RARITY_COLORS[this.rarity] : '#BDC3C7';
@@ -113,9 +122,9 @@ class DroppedItem extends Entity {
         this.magnetTarget = null;
 
         // REWRITE: Gentle pull (visual collect)
-        this.magnetSpeed = finalConfig.magnetSpeed ?? GameConstants.DroppedItem.MAGNET_SPEED;
+        this.magnetSpeed = (finalConfig.magnetSpeed as number) ?? GameConstants.DroppedItem.MAGNET_SPEED;
         this.magnetAcceleration =
-            finalConfig.magnetAcceleration ?? GameConstants.DroppedItem.MAGNET_ACCELERATION;
+            (finalConfig.magnetAcceleration as number) ?? GameConstants.DroppedItem.MAGNET_ACCELERATION;
 
         this.trailHistory = []; // [ {x, y, z} ]
         this.maxTrailLength = 15;
@@ -127,7 +136,7 @@ class DroppedItem extends Entity {
         // Use config (SpawnManager) or default
         this.minPickupTime =
             config.minPickupTime !== undefined
-                ? config.minPickupTime
+                ? (config.minPickupTime as number)
                 : GameConstants.DroppedItem.MIN_PICKUP_TIME;
     }
 
@@ -156,7 +165,7 @@ class DroppedItem extends Entity {
         // Tween position and progress
         if (Tween) {
             Tween.to(
-                this,
+                this as unknown as Record<string, number>,
                 {
                     x: targetX,
                     y: targetY,

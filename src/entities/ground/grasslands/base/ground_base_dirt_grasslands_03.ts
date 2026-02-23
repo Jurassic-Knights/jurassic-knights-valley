@@ -2,9 +2,9 @@
  * Entity: ground_base_dirt_grasslands_03
  * Auto-generated.
  */
-import type { EnvironmentEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
-const entity: EnvironmentEntity = {
+const entity: EntityConfig = {
     id: 'ground_base_dirt_grasslands_03',
     name: 'Grasslands Dirt 03',
     sourceCategory: 'ground',

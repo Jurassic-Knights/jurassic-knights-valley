@@ -6,14 +6,16 @@ import { EntityConfig, IEntity } from '../types/core';
 export interface EntityRegistryStrict {
     enemies: Record<string, EntityConfig>;
     bosses: Record<string, EntityConfig>;
+    nodes: Record<string, EntityConfig>;
+    resources: Record<string, EntityConfig>;
+    items: Record<string, EntityConfig>;
     equipment: Record<string, EntityConfig>;
-    resources?: Record<string, EntityConfig>;
-    nodes?: Record<string, EntityConfig>;
-    items?: Record<string, EntityConfig>;
-    npcs?: Record<string, EntityConfig>;
-    environment?: Record<string, EntityConfig>;
-    hero?: Record<string, EntityConfig>;
-    [key: string]: Record<string, EntityConfig> | undefined;
+    npcs: Record<string, EntityConfig>;
+    environment: Record<string, EntityConfig>;
+    ground: Record<string, EntityConfig>;
+    hero: Record<string, EntityConfig>;
+    defaults?: Record<string, Partial<EntityConfig>>;
+    [key: string]: unknown;
 }
 
 export function getEnemy(registry: EntityRegistryStrict, id: string) {
@@ -37,19 +39,19 @@ export function getEnemiesForBiome(registry: EntityRegistryStrict, biomeId: stri
 
 export function getEnemiesByTier(registry: EntityRegistryStrict, tier: number) {
     const enemies = registry.enemies || {};
-    return Object.values(enemies).filter((e: IEntity & { tier?: string }) => e.tier === tier);
+    return Object.values(enemies).filter((e: EntityConfig) => e.tier === tier);
 }
 
 export function getEnemiesByCategory(registry: EntityRegistryStrict, category: string) {
     const enemies = registry.enemies || {};
     return Object.values(enemies).filter(
-        (e: IEntity & { category?: string }) => e.category === category
+        (e: EntityConfig) => e.category === category
     );
 }
 
 export function getAllEquipment(registry: EntityRegistryStrict) {
     const equipment = registry?.equipment || {};
-    const allEquipment: Array<{ id: string; [key: string]: unknown }> = [];
+    const allEquipment: Array<{ id: string;[key: string]: unknown }> = [];
 
     for (const [id, item] of Object.entries(equipment)) {
         let sourceFile = 'equipment';
@@ -64,7 +66,7 @@ export function getAllEquipment(registry: EntityRegistryStrict) {
         else if (id.startsWith('accessory_')) sourceFile = 'accessory';
 
         const itemData = item as Record<string, unknown>;
-        allEquipment.push({ ...itemData, id: itemData.id || id, sourceFile });
+        allEquipment.push({ ...itemData, id: (itemData.id as string) || id, sourceFile });
     }
     return allEquipment;
 }

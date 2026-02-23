@@ -2,7 +2,7 @@
  * Entity: body_t1_01
  * Auto-generated. Edit in dashboard.
  */
-import type { EquipmentEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "body_t1_01",
@@ -16,7 +16,9 @@ export default {
     },
     "type": "weapon",
     "slot": "body",
-    "stats": "+3 Armor",
+    "stats": {
+        "armor": 3
+    },
     "recipe": "4x Plant Fiber",
     "biome": "grasslands"
-} satisfies EquipmentEntity;
+} satisfies EntityConfig;

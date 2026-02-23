@@ -380,7 +380,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
             const gridEl = groupEl.querySelector('.config-group-grid')! as HTMLElement;
 
             for (const sectionKey of validKeys) {
-                renderSectionCard(sectionKey, currentConfig[sectionKey], gridEl);
+                renderSectionCard(sectionKey, currentConfig[sectionKey] as Record<string, unknown>, gridEl);
                 renderedSections.add(sectionKey);
             }
 
@@ -423,7 +423,7 @@ export async function renderConfigView(container: HTMLElement): Promise<void> {
             const gridEl = groupEl.querySelector('.config-group-grid')! as HTMLElement;
 
             for (const sectionKey of orphans) {
-                renderSectionCard(sectionKey, currentConfig[sectionKey], gridEl);
+                renderSectionCard(sectionKey, currentConfig[sectionKey] as Record<string, unknown>, gridEl);
             }
             rootEl.appendChild(groupEl);
         }

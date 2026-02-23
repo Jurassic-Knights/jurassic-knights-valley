@@ -35,9 +35,8 @@ export class ObjectSystem {
         this.renderChunkObjects(container, data, chunkX, chunkY);
     }
 
-    /** Look up entity config from EntityRegistry and compute final size via EntityScaling */
     private getEntitySize(assetId: string): { width: number; height: number } {
-        const reg = EntityRegistry as Record<string, Record<string, { width?: number; height?: number; sizeScale?: number; display?: { width?: number; height?: number; sizeScale?: number } }>>;
+        const reg = EntityRegistry as import('@entities/EntityLoaderLookup').EntityRegistryStrict;
         const cfg = Lookup.getConfig(reg, assetId);
         if (!cfg) return { width: 64, height: 64 };
 

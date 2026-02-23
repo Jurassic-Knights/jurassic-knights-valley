@@ -8,12 +8,14 @@ import { createAlignerUI, bindAlignerEvents } from './TextureAlignerUI';
 
 interface FileSystemFileHandle {
     kind: 'file';
+    name: string;
     createWritable(options?: { keepExistingData?: boolean }): Promise<WritableStream & { write(d: string | BufferSource | Blob): Promise<void>; close(): Promise<void> }>;
     getFile(): Promise<File>;
 }
-declare function showOpenFilePicker(options?: { types?: { description?: string; accept: Record<string, string[]> }[] }): Promise<FileSystemFileHandle[]>;
+declare function showOpenFilePicker(options?: { types?: { description?: string; accept: Record<string, string[]> }[]; multiple?: boolean }): Promise<FileSystemFileHandle[]>;
 
 declare const UI_MANIFEST: string[];
+declare const UI_THEME_RUNTIME: any;
 
 class TextureAlignerService {
     // Property declarations

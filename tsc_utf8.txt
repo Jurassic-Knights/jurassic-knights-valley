@@ -1,0 +1,1055 @@
+﻿src/ai/AISystem.ts(22,5): error TS2386: Overload signatures must all be optional or required.
+src/ai/AISystem.ts(45,22): error TS2322: Type '{ updateState(enemy: IEntity, dt: number): void; updateWander(enemy: IEntity, dt: number): void; updateChase(enemy: IEntity, dt: number): void; ... 4 more ...; canSee(enemy: IEntity, hero: IEntity): boolean; }' is not assignable to type 'AIBehavior'.
+  Types of property 'updateState' are incompatible.
+    Type '(enemy: IEntity, dt: number) => void' is not assignable to type '{ (entity: IEntity, dt: number): void; (entity: IEntity, hero: IEntity, dt: number): void; }'.
+      Types of parameters 'dt' and 'hero' are incompatible.
+        Type 'IEntity' is not assignable to type 'number'.
+src/ai/AISystem.ts(46,21): error TS2322: Type '{ updateState(boss: IEntity, hero: IEntity, dt: number): void; updatePhase(boss: IEntity): void; onPhaseChange(boss: IEntity, oldPhase: number, newPhase: number): void; ... 6 more ...; updateReturning(boss: IEntity, dt: number): void; }' is not assignable to type 'AIBehavior'.
+  Types of property 'updateState' are incompatible.
+    Type '(boss: IEntity, hero: IEntity, dt: number) => void' is not assignable to type '{ (entity: IEntity, dt: number): void; (entity: IEntity, hero: IEntity, dt: number): void; }'.
+      Target signature provides too few arguments. Expected 3 or more, but got 2.
+src/ai/AISystem.ts(47,20): error TS2322: Type '{ updateState(npc: IEntity, hero: IEntity, dt: number): void; updateIdle(npc: IEntity, hero: IEntity, _dt: number): void; updatePatrol(npc: IEntity, dt: number): void; ... 4 more ...; endDialogue(npc: IEntity): void; }' is not assignable to type 'AIBehavior'.
+  Types of property 'updateState' are incompatible.
+    Type '(npc: IEntity, hero: IEntity, dt: number) => void' is not assignable to type '{ (entity: IEntity, dt: number): void; (entity: IEntity, hero: IEntity, dt: number): void; }'.
+      Target signature provides too few arguments. Expected 3 or more, but got 2.
+src/ai/AISystem.ts(92,44): error TS2551: Property 'aiType' does not exist on type 'IEntity'. Did you mean 'type'?
+src/ai/AISystem.ts(123,93): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '{ entity: IEntity & { state?: string; target?: IEntity; packAggro?: boolean; groupId?: string; }; source?: IEntity; }'.
+  Property 'entity' is missing in type '{}' but required in type '{ entity: IEntity & { state?: string; target?: IEntity; packAggro?: boolean; groupId?: string; }; source?: IEntity; }'.
+src/ai/AISystem.ts(124,87): error TS2345: Argument of type 'unknown' is not assignable to parameter of type '{ [key: string]: unknown; entity: IEntity & { xpReward?: number; }; }'.
+  Property 'entity' is missing in type '{}' but required in type '{ [key: string]: unknown; entity: IEntity & { xpReward?: number; }; }'.
+src/ai/behaviors/bosses/BossAI.ts(31,18): error TS2339: Property 'abilityCooldown' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(32,18): error TS2339: Property 'abilityCooldown' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(61,31): error TS2339: Property 'phase' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(63,40): error TS2339: Property 'phase' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(64,45): error TS2339: Property 'phase' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(65,19): error TS2339: Property 'phase' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(68,18): error TS2339: Property 'phase' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(69,53): error TS2339: Property 'phase' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(77,38): error TS2339: Property 'enemyName' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(82,18): error TS2339: Property 'attackRate' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(86,18): error TS2339: Property 'damage' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(87,18): error TS2339: Property 'isEnraged' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(105,18): error TS2339: Property 'currentAbility' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(105,41): error TS2339: Property 'abilityTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(106,18): error TS2339: Property 'abilityTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(107,22): error TS2339: Property 'abilityTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(110,22): error TS2339: Property 'currentAbility' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(121,30): error TS2339: Property 'currentAbility' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(122,38): error TS2339: Property 'enemyName' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(164,18): error TS2339: Property 'abilityCooldown' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(164,47): error TS2339: Property 'abilities' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(170,29): error TS2339: Property 'attackRange' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(170,62): error TS2339: Property 'aggroRange' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(188,32): error TS2339: Property 'abilities' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(191,14): error TS2339: Property 'currentAbility' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(192,14): error TS2339: Property 'abilityTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/bosses/BossAI.ts(193,14): error TS2339: Property 'abilityCooldown' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(64,15): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(66,20): error TS2339: Property 'wanderTarget' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(66,42): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(66,63): error TS2339: Property 'wanderInterval' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(68,48): error TS2339: Property 'patrolRadius' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(69,19): error TS2339: Property 'wanderTarget' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(73,19): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(78,19): error TS2339: Property 'wanderInterval' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(81,19): error TS2339: Property 'wanderTarget' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(82,19): error TS2339: Property 'moveAlongPath' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(82,39): error TS2339: Property 'wanderTarget' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(82,61): error TS2339: Property 'wanderTarget' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(99,31): error TS2339: Property 'leashDistance' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(106,27): error TS2339: Property 'attackRange' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(112,15): error TS2339: Property 'moveAlongPath' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(127,26): error TS2339: Property 'attackRange' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(133,19): error TS2339: Property 'attackCooldown' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(135,19): error TS2339: Property 'attackCooldown' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(135,46): error TS2339: Property 'attackRate' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(148,19): error TS2339: Property 'wanderTarget' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(149,19): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(154,15): error TS2339: Property 'moveAlongPath' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(167,31): error TS2339: Property 'damage' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(168,35): error TS2339: Property 'attackType' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(176,26): error TS2339: Property 'takeDamage' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(177,26): error TS2339: Property 'takeDamage' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(177,43): error TS2339: Property 'damage' does not exist on type 'IEntity'.
+src/ai/behaviors/enemies/EnemyAI.ts(218,48): error TS2339: Property 'aggroRange' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(47,35): error TS2339: Property 'interactRadius' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(49,22): error TS2339: Property 'playerNearby' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(50,21): error TS2339: Property 'playerNearby' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(54,21): error TS2339: Property 'playerNearby' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(55,21): error TS2339: Property 'playerNearby' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(61,17): error TS2339: Property 'playerNearby' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(62,17): error TS2339: Property 'facingRight' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(70,18): error TS2339: Property 'patrolPoints' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(70,38): error TS2339: Property 'patrolPoints' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(75,28): error TS2339: Property 'patrolPoints' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(75,45): error TS2339: Property 'patrolIndex' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(80,17): error TS2339: Property 'patrolWait' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(80,35): error TS2339: Property 'patrolWait' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(81,21): error TS2339: Property 'patrolWait' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(81,40): error TS2339: Property 'patrolWaitTime' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(82,21): error TS2339: Property 'patrolWait' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(83,21): error TS2339: Property 'patrolIndex' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(83,41): error TS2339: Property 'patrolIndex' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(83,70): error TS2339: Property 'patrolPoints' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(90,17): error TS2339: Property 'facingRight' does not exist on type 'IEntity'.
+src/ai/behaviors/npcs/NPCAI.ts(100,17): error TS2339: Property 'facingRight' does not exist on type 'IEntity'.
+src/config/BodyTypeConfig.ts(28,38): error TS2339: Property 'scale' does not exist on type 'unknown'.
+src/config/EnemyConfig.ts(72,107): error TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
+src/config/EquipmentSlotsConfig.ts(94,28): error TS2339: Property 'accepts' does not exist on type 'unknown'.
+src/config/SpeciesScaleConfig.ts(104,32): error TS2538: Type 'unknown' cannot be used as an index type.
+src/config/SpeciesScaleConfig.ts(106,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/config/SpeciesScaleConfig.ts(108,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/config/SpeciesScaleConfig.ts(112,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/config/SpeciesScaleConfig.ts(113,37): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/config/SpeciesScaleConfig.ts(168,56): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/config/SpeciesScaleConfig.ts(169,58): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/core/AnalyticsManager.ts(42,41): error TS2339: Property 'configureBuild' does not exist on type '{ setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }'.
+src/core/AnalyticsManager.ts(64,45): error TS2339: Property 'addProgressionEvent' does not exist on type '{ setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }'.
+src/core/AnalyticsManager.ts(65,35): error TS2339: Property 'EGAProgressionStatus' does not exist on type '{ GameAnalytics: { setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }; }'.
+src/core/AnalyticsManager.ts(70,45): error TS2339: Property 'addProgressionEvent' does not exist on type '{ setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }'.
+src/core/AnalyticsManager.ts(71,35): error TS2339: Property 'EGAProgressionStatus' does not exist on type '{ GameAnalytics: { setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }; }'.
+src/core/AnalyticsManager.ts(89,41): error TS2339: Property 'addResourceEvent' does not exist on type '{ setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }'.
+src/core/AnalyticsManager.ts(90,31): error TS2339: Property 'EGAResourceFlowType' does not exist on type '{ GameAnalytics: { setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }; }'.
+src/core/AnalyticsManager.ts(127,31): error TS2339: Property 'EGAErrorSeverity' does not exist on type '{ GameAnalytics: { setEnabledInfoLog(enabled: boolean): void; initialize(gameKey: string, secretKey: string): void; addDesignEvent(eventId: string, value?: number): void; addErrorEvent(severity: number, message: string): void; }; }'.
+src/core/Entity.ts(58,47): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/core/Entity.ts(59,47): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/core/EntityManager.ts(159,36): error TS2339: Property 'entity' does not exist on type 'unknown'.
+src/core/GameRenderer.ts(219,21): error TS2322: Type 'DinosaurRendererService' is not assignable to type 'IEntityRenderer'.
+  Types of property 'render' are incompatible.
+    Type '(ctx: CanvasRenderingContext2D, dino: Dinosaur, includeShadow?: boolean, alpha?: number) => void' is not assignable to type '(ctx: CanvasRenderingContext2D, entity: IEntity, includeShadow?: boolean, alpha?: number) => void'.
+      Types of parameters 'dino' and 'entity' are incompatible.
+        Type 'IEntity' is missing the following properties from type 'Dinosaur': lootTable, amount, respawnTimer, maxRespawnTime, and 16 more.
+src/core/GameRendererLayers.ts(33,20): error TS2749: 'HeroRenderer' refers to a value, but is being used as a type here. Did you mean 'typeof HeroRenderer'?
+src/core/GameRendererLayers.ts(34,24): error TS2749: 'DinosaurRenderer' refers to a value, but is being used as a type here. Did you mean 'typeof DinosaurRenderer'?
+src/core/GameRendererLayers.ts(35,24): error TS2749: 'ResourceRenderer' refers to a value, but is being used as a type here. Did you mean 'typeof ResourceRenderer'?
+src/core/GameRendererLayers.ts(105,46): error TS2345: Argument of type '{ left: number; top: number; right: number; bottom: number; }' is not assignable to parameter of type 'IVisibleBounds'.
+  Type '{ left: number; top: number; right: number; bottom: number; }' is missing the following properties from type 'IVisibleBounds': width, height
+src/core/i18n.ts(69,22): error TS2339: Property 'replace' does not exist on type 'unknown'.
+src/core/Profiler.ts(143,45): error TS2339: Property 'getIslandAt' does not exist on type 'WorldManagerService'.
+src/core/Quadtree.ts(161,45): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Rect'.
+  Type '{}' is missing the following properties from type 'Rect': x, y, width, height
+src/core/Quadtree.ts(163,46): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Rect'.
+  Type '{}' is missing the following properties from type 'Rect': x, y, width, height
+src/core/Quadtree.ts(207,33): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Rect'.
+  Type '{}' is missing the following properties from type 'Rect': x, y, width, height
+src/core/SpriteLoader.ts(31,13): error TS2322: Type 'unknown' is not assignable to type 'boolean'.
+src/core/SpriteLoader.ts(45,30): error TS2339: Property 'complete' does not exist on type 'unknown'.
+src/core/SpriteLoader.ts(68,13): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'CanvasImageSource'.
+src/core/SpriteLoader.ts(69,13): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/core/SpriteLoader.ts(69,24): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/core/SpriteLoader.ts(70,13): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/core/SpriteLoader.ts(70,24): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/core/SpriteLoader.ts(99,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/SpriteLoader.ts(99,46): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/SpriteLoader.ts(105,18): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/SpriteLoader.ts(109,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/SpriteLoader.ts(113,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/SpriteLoader.ts(113,53): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/SpriteLoader.ts(124,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/core/State.ts(64,34): error TS2345: Argument of type 'StateCallback<T>' is not assignable to parameter of type 'StateCallback<unknown> | GlobalStateCallback<unknown>'.
+  Type 'StateCallback<T>' is not assignable to type 'StateCallback<unknown>'.
+    Type 'unknown' is not assignable to type 'T'.
+      'T' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
+src/data/GameConfig.ts(198,48): error TS2740: Type 'Record<string, unknown>' is missing the following properties from type '{ sword: { range: number; damage: number; attackSpeed: number; }; axe: { range: number; damage: number; attackSpeed: number; }; war_axe: { range: number; damage: number; attackSpeed: number; }; war_hammer: { ...; }; ... 14 more ...; flamethrower: { ...; }; }': sword, axe, war_axe, war_hammer, and 15 more.
+src/data/GameConstants/index.ts(97,18): error TS2339: Property 'WeaponDefaults' does not exist on type '{}'.
+src/data/GameConstants/index.ts(98,51): error TS2339: Property 'WeaponDefaults' does not exist on type '{}'.
+src/data/GameConstants/index.ts(100,17): error TS2698: Spread types may only be created from object types.
+src/data/GameConstants/index.ts(101,29): error TS2339: Property 'WeaponDefaults' does not exist on type '{}'.
+src/data/GameConstants/index.ts(108,24): error TS2339: Property 'Hero' does not exist on type '{}'.
+src/data/GameConstants/index.ts(109,26): error TS2339: Property 'Combat' does not exist on type '{}'.
+src/data/GameConstants/index.ts(110,31): error TS2339: Property 'Interaction' does not exist on type '{}'.
+src/data/GameConstants/index.ts(111,22): error TS2339: Property 'AI' does not exist on type '{}'.
+src/data/GameConstants/index.ts(112,28): error TS2339: Property 'Spawning' does not exist on type '{}'.
+src/data/GameConstants/index.ts(113,24): error TS2339: Property 'Time' does not exist on type '{}'.
+src/data/GameConstants/index.ts(114,29): error TS2339: Property 'BodyTypes' does not exist on type '{}'.
+src/data/GameConstants/index.ts(117,22): error TS2339: Property 'PlayerResources' does not exist on type '{}'.
+src/entities/enemies/enemy_dinosaur_t1_01.ts(5,34): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/enemies/enemy_dinosaur_t1_01.ts(5,34): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/enemies/enemy_dinosaur_t1_04.ts(42,9): error TS2353: Object literal may only specify known properties, and '"groupSize"' does not exist in type '{ biomes?: string[]; weight?: number; }'.
+src/entities/enemies/enemy_dinosaur_t1_04.ts(53,13): error TS2353: Object literal may only specify known properties, and '"amount"' does not exist in type '{ item: string; chance: number; min: number; max: number; }'.
+src/entities/enemies/enemy_dinosaur_t1_04.ts(61,13): error TS2353: Object literal may only specify known properties, and '"amount"' does not exist in type '{ item: string; chance: number; min: number; max: number; }'.
+src/entities/EntityLoader.ts(131,9): error TS2322: Type 'Record<string, unknown>' is not assignable to type 'Record<string, Partial<EntityConfig>>'.
+  'string' index signatures are incompatible.
+    Type 'unknown' is not assignable to type 'Partial<EntityConfig>'.
+      Index signature for type 'string' is missing in type '{}'.
+src/entities/EntityLoader.ts(221,32): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(225,31): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(229,31): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(233,42): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(237,40): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(241,44): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(245,39): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(249,33): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/entities/EntityLoaderLookup").EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoader.ts(285,32): error TS2345: Argument of type 'EntityRegistryStrict' is not assignable to parameter of type 'EntityRegistryStrict'.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/entities/EntityLoaderBroadcast.ts(86,22): error TS2352: Conversion of type 'IEntity' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'IEntity'.
+src/entities/EntityLoaderBroadcast.ts(90,22): error TS2352: Conversion of type 'IEntity' to type 'Record<string, unknown>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'IEntity'.
+src/entities/EntityLoaderLookup.ts(40,42): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(predicate: (value: EntityConfig, index: number, array: EntityConfig[]) => value is EntityConfig, thisArg?: any): EntityConfig[]', gave the following error.
+    Argument of type '(e: IEntity & { tier?: string; }) => boolean' is not assignable to parameter of type '(value: EntityConfig, index: number, array: EntityConfig[]) => value is EntityConfig'.
+      Types of parameters 'e' and 'value' are incompatible.
+        Type 'EntityConfig' is not assignable to type 'IEntity & { tier?: string; }'.
+          Type 'EntityConfig' is missing the following properties from type 'IEntity': type, active
+  Overload 2 of 2, '(predicate: (value: EntityConfig, index: number, array: EntityConfig[]) => unknown, thisArg?: any): EntityConfig[]', gave the following error.
+    Argument of type '(e: IEntity & { tier?: string; }) => boolean' is not assignable to parameter of type '(value: EntityConfig, index: number, array: EntityConfig[]) => unknown'.
+      Types of parameters 'e' and 'value' are incompatible.
+        Type 'EntityConfig' is not assignable to type 'IEntity & { tier?: string; }'.
+          Type 'EntityConfig' is missing the following properties from type 'IEntity': type, active
+src/entities/EntityLoaderLookup.ts(40,78): error TS2367: This comparison appears to be unintentional because the types 'string' and 'number' have no overlap.
+src/entities/EntityLoaderLookup.ts(46,9): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(predicate: (value: EntityConfig, index: number, array: EntityConfig[]) => value is EntityConfig, thisArg?: any): EntityConfig[]', gave the following error.
+    Argument of type '(e: IEntity & { category?: string; }) => boolean' is not assignable to parameter of type '(value: EntityConfig, index: number, array: EntityConfig[]) => value is EntityConfig'.
+      Types of parameters 'e' and 'value' are incompatible.
+        Type 'EntityConfig' is not assignable to type 'IEntity & { category?: string; }'.
+          Type 'EntityConfig' is missing the following properties from type 'IEntity': type, active
+  Overload 2 of 2, '(predicate: (value: EntityConfig, index: number, array: EntityConfig[]) => unknown, thisArg?: any): EntityConfig[]', gave the following error.
+    Argument of type '(e: IEntity & { category?: string; }) => boolean' is not assignable to parameter of type '(value: EntityConfig, index: number, array: EntityConfig[]) => unknown'.
+      Types of parameters 'e' and 'value' are incompatible.
+        Type 'EntityConfig' is not assignable to type 'IEntity & { category?: string; }'.
+          Type 'EntityConfig' is missing the following properties from type 'IEntity': type, active
+src/entities/EntityLoaderLookup.ts(67,42): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/entities/environment/building_t1_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/environment/building_t1_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/equipment/body_t1_01.ts(5,38): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/equipment/body_t1_01.ts(5,38): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_cracked_earth_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_cracked_earth_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_cracked_earth_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_cracked_earth_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_cracked_earth_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_cracked_earth_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_dirt_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_dirt_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_dirt_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_dirt_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_dirt_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_dirt_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_grass_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_grass_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_grass_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_grass_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_grass_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_grass_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_grass_badlands_04.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_grass_badlands_04.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_gravel_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_gravel_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_gravel_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_gravel_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_rock_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_rock_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_rock_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_rock_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_rock_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_rock_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_sand_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_sand_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/base/ground_base_sand_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/base/ground_base_sand_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/damage/ground_damage_churned_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/damage/ground_damage_churned_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/damage/ground_damage_churned_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/damage/ground_damage_churned_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/damage/ground_damage_cratered_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/damage/ground_damage_cratered_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/damage/ground_damage_scorched_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/damage/ground_damage_scorched_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/damage/ground_damage_scorched_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/damage/ground_damage_scorched_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_cobblestone_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_cobblestone_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_cobblestone_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_cobblestone_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_concrete_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_concrete_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_concrete_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_concrete_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_flagstone_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_flagstone_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_flagstone_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_flagstone_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_metal_plate_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_metal_plate_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_metal_plate_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_metal_plate_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_planks_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_planks_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_planks_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_planks_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/interior/ground_interior_planks_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/interior/ground_interior_planks_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_flowers_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_flowers_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_flowers_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_flowers_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_forest_floor_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_forest_floor_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_forest_floor_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_forest_floor_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_forest_floor_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_forest_floor_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_leaves_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_leaves_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_leaves_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_leaves_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_leaves_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_leaves_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_moss_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_moss_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_moss_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_moss_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_roots_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_roots_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/overgrown/ground_overgrown_roots_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/overgrown/ground_overgrown_roots_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/vertical/ground_vertical_cliff_rock_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/vertical/ground_vertical_cliff_rock_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/vertical/ground_vertical_cliff_rock_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/vertical/ground_vertical_cliff_rock_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/vertical/ground_vertical_cliff_rock_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/vertical/ground_vertical_cliff_rock_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/vertical/ground_vertical_earth_bank_badlands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/vertical/ground_vertical_earth_bank_badlands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/vertical/ground_vertical_earth_bank_badlands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/vertical/ground_vertical_earth_bank_badlands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/badlands/vertical/ground_vertical_earth_bank_badlands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/badlands/vertical/ground_vertical_earth_bank_badlands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_dirt_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_dirt_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_dirt_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_dirt_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_dirt_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_dirt_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_dunes_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_dunes_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_dunes_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_dunes_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_grass_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_grass_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_grass_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_grass_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_grass_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_grass_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_grass_desert_04.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_grass_desert_04.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_gravel_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_gravel_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_gravel_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_gravel_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_rock_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_rock_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_rock_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_rock_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_rock_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_rock_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_sand_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_sand_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_sand_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_sand_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/base/ground_base_sand_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/base/ground_base_sand_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/damage/ground_damage_churned_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/damage/ground_damage_churned_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/damage/ground_damage_churned_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/damage/ground_damage_churned_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/damage/ground_damage_cratered_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/damage/ground_damage_cratered_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/damage/ground_damage_scorched_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/damage/ground_damage_scorched_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/damage/ground_damage_scorched_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/damage/ground_damage_scorched_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_cobblestone_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_cobblestone_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_cobblestone_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_cobblestone_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_concrete_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_concrete_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_concrete_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_concrete_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_flagstone_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_flagstone_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_flagstone_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_flagstone_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_metal_plate_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_metal_plate_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_metal_plate_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_metal_plate_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_planks_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_planks_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_planks_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_planks_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/interior/ground_interior_planks_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/interior/ground_interior_planks_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_flowers_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_flowers_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_flowers_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_flowers_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_forest_floor_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_forest_floor_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_forest_floor_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_forest_floor_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_forest_floor_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_forest_floor_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_leaves_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_leaves_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_leaves_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_leaves_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_leaves_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_leaves_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_moss_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_moss_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_moss_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_moss_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_roots_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_roots_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/overgrown/ground_overgrown_roots_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/overgrown/ground_overgrown_roots_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/vertical/ground_vertical_cliff_rock_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/vertical/ground_vertical_cliff_rock_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/vertical/ground_vertical_cliff_rock_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/vertical/ground_vertical_cliff_rock_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/vertical/ground_vertical_cliff_rock_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/vertical/ground_vertical_cliff_rock_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/vertical/ground_vertical_earth_bank_desert_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/vertical/ground_vertical_earth_bank_desert_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/vertical/ground_vertical_earth_bank_desert_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/vertical/ground_vertical_earth_bank_desert_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/desert/vertical/ground_vertical_earth_bank_desert_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/desert/vertical/ground_vertical_earth_bank_desert_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_dirt_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_dirt_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_dirt_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_dirt_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_dirt_grasslands_03.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_dirt_grasslands_03.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_04.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_grass_grasslands_04.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_gravel_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_gravel_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_gravel_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_gravel_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_rock_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_rock_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_rock_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_rock_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_rock_grasslands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_rock_grasslands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_sand_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_sand_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/base/ground_base_sand_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/base/ground_base_sand_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/damage/ground_damage_churned_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/damage/ground_damage_churned_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/damage/ground_damage_churned_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/damage/ground_damage_churned_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/damage/ground_damage_cratered_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/damage/ground_damage_cratered_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/damage/ground_damage_scorched_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/damage/ground_damage_scorched_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/damage/ground_damage_scorched_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/damage/ground_damage_scorched_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_cobblestone_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_cobblestone_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_cobblestone_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_cobblestone_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_concrete_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_concrete_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_concrete_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_concrete_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_flagstone_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_flagstone_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_flagstone_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_flagstone_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_metal_plate_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_metal_plate_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_metal_plate_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_metal_plate_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_planks_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_planks_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_planks_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_planks_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/interior/ground_interior_planks_grasslands_03.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/interior/ground_interior_planks_grasslands_03.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_flowers_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_flowers_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_flowers_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_flowers_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_forest_floor_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_forest_floor_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_forest_floor_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_forest_floor_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_forest_floor_grasslands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_forest_floor_grasslands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_leaves_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_leaves_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_leaves_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_leaves_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_leaves_grasslands_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_leaves_grasslands_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_moss_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_moss_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_moss_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_moss_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_roots_grasslands_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_roots_grasslands_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/overgrown/ground_overgrown_roots_grasslands_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/overgrown/ground_overgrown_roots_grasslands_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/vertical/ground_vertical_cliff_rock_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/vertical/ground_vertical_cliff_rock_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/vertical/ground_vertical_cliff_rock_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/vertical/ground_vertical_cliff_rock_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/vertical/ground_vertical_cliff_rock_grasslands_03.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/vertical/ground_vertical_cliff_rock_grasslands_03.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/vertical/ground_vertical_earth_bank_grasslands_01.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/vertical/ground_vertical_earth_bank_grasslands_01.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/vertical/ground_vertical_earth_bank_grasslands_02.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/vertical/ground_vertical_earth_bank_grasslands_02.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/grasslands/vertical/ground_vertical_earth_bank_grasslands_03.ts(5,40): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/grasslands/vertical/ground_vertical_earth_bank_grasslands_03.ts(5,40): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_dirt_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_dirt_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_dirt_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_dirt_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_dirt_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_dirt_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_grass_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_grass_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_grass_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_grass_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_grass_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_grass_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_grass_tundra_04.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_grass_tundra_04.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_gravel_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_gravel_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_gravel_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_gravel_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_rock_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_rock_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_rock_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_rock_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_rock_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_rock_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_snow_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_snow_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_snow_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_snow_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/base/ground_base_snow_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/base/ground_base_snow_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/damage/ground_damage_churned_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/damage/ground_damage_churned_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/damage/ground_damage_churned_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/damage/ground_damage_churned_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/damage/ground_damage_cratered_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/damage/ground_damage_cratered_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/damage/ground_damage_scorched_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/damage/ground_damage_scorched_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/damage/ground_damage_scorched_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/damage/ground_damage_scorched_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_cobblestone_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_cobblestone_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_cobblestone_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_cobblestone_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_concrete_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_concrete_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_concrete_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_concrete_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_flagstone_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_flagstone_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_flagstone_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_flagstone_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_metal_plate_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_metal_plate_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_metal_plate_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_metal_plate_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_planks_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_planks_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_planks_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_planks_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/interior/ground_interior_planks_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/interior/ground_interior_planks_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_flowers_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_flowers_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_flowers_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_flowers_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_forest_floor_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_forest_floor_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_forest_floor_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_forest_floor_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_forest_floor_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_forest_floor_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_leaves_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_leaves_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_leaves_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_leaves_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_leaves_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_leaves_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_moss_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_moss_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_moss_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_moss_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_roots_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_roots_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/overgrown/ground_overgrown_roots_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/overgrown/ground_overgrown_roots_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/vertical/ground_vertical_cliff_rock_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/vertical/ground_vertical_cliff_rock_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/vertical/ground_vertical_cliff_rock_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/vertical/ground_vertical_cliff_rock_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/vertical/ground_vertical_cliff_rock_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/vertical/ground_vertical_cliff_rock_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/vertical/ground_vertical_earth_bank_tundra_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/vertical/ground_vertical_earth_bank_tundra_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/vertical/ground_vertical_earth_bank_tundra_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/vertical/ground_vertical_earth_bank_tundra_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/ground/tundra/vertical/ground_vertical_earth_bank_tundra_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/ground/tundra/vertical/ground_vertical_earth_bank_tundra_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t1_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t1_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t1_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t1_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t2_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t2_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t2_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t2_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t2_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t2_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t2_06.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t2_06.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t2_08.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t2_08.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t3_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t3_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t3_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t3_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t3_03.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t3_03.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t3_05.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t3_05.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t3_06.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t3_06.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t3_08.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t3_08.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t4_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t4_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_mining_t4_02.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_mining_t4_02.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/entities/nodes/node_woodcutting_t1_01.ts(5,33): error TS2307: Cannot find module '@types/entities' or its corresponding type declarations.
+src/entities/nodes/node_woodcutting_t1_01.ts(5,33): error TS6137: Cannot import type declaration files. Consider importing 'entities' instead of '@types/entities'.
+src/gameplay/BalanceManager.ts(16,47): error TS2339: Property 'base' does not exist on type 'unknown'.
+src/gameplay/BalanceManager.ts(17,47): error TS2339: Property 'multiplier' does not exist on type 'unknown'.
+src/gameplay/Boss.ts(54,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Boss.ts(55,9): error TS2740: Type '{}' is missing the following properties from type '{ [key: string]: unknown; id: string; name: string; cooldown?: number; }[]': length, pop, push, concat, and 29 more.
+src/gameplay/Boss.ts(56,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Boss.ts(62,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Boss.ts(66,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Boss.ts(67,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Boss.ts(70,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Boss.ts(110,19): error TS2345: Argument of type 'IEntity' is not assignable to parameter of type 'Entity'.
+  Type 'IEntity' is missing the following properties from type 'Entity': color, drawShadow, getBounds, collidesWith
+src/gameplay/Dinosaur.ts(98,9): error TS2740: Type '{}' is missing the following properties from type '{ item: string; chance: number; min: number; max: number; }[]': length, pop, push, concat, and 29 more.
+src/gameplay/Dinosaur.ts(99,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Dinosaur.ts(102,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Dinosaur.ts(103,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Dinosaur.ts(109,58): error TS2345: Argument of type 'this' is not assignable to parameter of type 'IEntity'.
+  Type 'Dinosaur' is not assignable to type 'IEntity'.
+    The types of 'components.health' are incompatible between these types.
+      Type 'HealthComponent' is missing the following properties from type 'HealthComponent': damage, heal
+src/gameplay/Dinosaur.ts(120,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Dinosaur.ts(134,56): error TS2345: Argument of type 'this' is not assignable to parameter of type 'IEntity'.
+  Type 'Dinosaur' is not assignable to type 'IEntity'.
+    The types of 'components.health' are incompatible between these types.
+      Type 'HealthComponent' is missing the following properties from type 'HealthComponent': damage, heal
+src/gameplay/Dinosaur.ts(144,50): error TS2345: Argument of type 'this' is not assignable to parameter of type 'IEntity'.
+  Type 'Dinosaur' is not assignable to type 'IEntity'.
+    The types of 'components.health' are incompatible between these types.
+      Type 'HealthComponent' is missing the following properties from type 'HealthComponent': damage, heal
+src/gameplay/Dinosaur.ts(161,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Dinosaur.ts(282,69): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'boolean'.
+src/gameplay/DroppedItem.ts(58,51): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/DroppedItem.ts(79,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/DroppedItem.ts(83,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/DroppedItem.ts(119,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/DroppedItem.ts(147,17): error TS2345: Argument of type 'this' is not assignable to parameter of type 'Record<string, number>'.
+  Type 'DroppedItem' is not assignable to type 'Record<string, number>'.
+    Index signature for type 'string' is missing in type 'DroppedItem'.
+src/gameplay/DroppedItem.ts(238,60): error TS2353: Object literal may only specify known properties, and 'z' does not exist in type '{ x: number; y: number; }'.
+src/gameplay/EnemyBehavior.ts(36,13): error TS2322: Type 'IEntity | Hero' is not assignable to type 'Entity'.
+  Type 'IEntity' is missing the following properties from type 'Entity': color, drawShadow, getBounds, collidesWith
+src/gameplay/EnemyBehavior.ts(189,69): error TS2339: Property 'BLOOD_SPLATTER' does not exist on type 'unknown'.
+src/gameplay/EnemyBehavior.ts(191,69): error TS2339: Property 'BLOOD_MIST' does not exist on type 'unknown'.
+src/gameplay/EnemyBehavior.ts(193,69): error TS2339: Property 'BLOOD_DROPS' does not exist on type 'unknown'.
+src/gameplay/EnemyBehavior.ts(196,73): error TS2339: Property 'MEAT_CHUNKS' does not exist on type 'unknown'.
+src/gameplay/EnemyCore.ts(139,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(140,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(141,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(142,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCore.ts(145,15): error TS2365: Operator '+' cannot be applied to types 'unknown' and '2'.
+src/gameplay/EnemyCore.ts(150,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(151,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(166,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(169,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCore.ts(170,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(171,9): error TS2322: Type 'unknown' is not assignable to type 'Record<string, number>'.
+  Index signature for type 'string' is missing in type '{}'.
+src/gameplay/EnemyCore.ts(177,9): error TS2322: Type 'unknown' is not assignable to type 'Record<string, string>'.
+  Index signature for type 'string' is missing in type '{}'.
+src/gameplay/EnemyCore.ts(180,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(187,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCore.ts(195,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCore.ts(204,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/EnemyCore.ts(223,17): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCoreConfig.ts(25,47): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/EnemyCoreConfig.ts(43,33): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/gameplay/EnemyCoreConfig.ts(48,28): error TS2352: Conversion of type '{ grasslands: { id: string; name: string; description: string; difficulty: number; levelRange: { min: number; max: number; }; visualTheme: { groundColor: string; ambientColor: string; fogDensity: number; }; enemySpawnTable: { ...; }[]; bossId: string; bossRespawnTime: number; }; tundra: { ...; }; desert: { ...; }; b...' to type 'Record<string, { difficulty?: string; }>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'grasslands' is incompatible with index signature.
+    Type '{ id: string; name: string; description: string; difficulty: number; levelRange: { min: number; max: number; }; visualTheme: { groundColor: string; ambientColor: string; fogDensity: number; }; enemySpawnTable: { ...; }[]; bossId: string; bossRespawnTime: number; }' is not comparable to type '{ difficulty?: string; }'.
+      Types of property 'difficulty' are incompatible.
+        Type 'number' is not comparable to type 'string'.
+src/gameplay/EnemyCoreConfig.ts(48,92): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/EnemyCoreConfig.ts(49,24): error TS2352: Conversion of type '{ grasslands: { id: string; name: string; description: string; difficulty: number; levelRange: { min: number; max: number; }; visualTheme: { groundColor: string; ambientColor: string; fogDensity: number; }; enemySpawnTable: { ...; }[]; bossId: string; bossRespawnTime: number; }; tundra: { ...; }; desert: { ...; }; b...' to type 'Record<string, { difficulty?: string; }>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'grasslands' is incompatible with index signature.
+    Type '{ id: string; name: string; description: string; difficulty: number; levelRange: { min: number; max: number; }; visualTheme: { groundColor: string; ambientColor: string; fogDensity: number; }; enemySpawnTable: { ...; }[]; bossId: string; bossRespawnTime: number; }' is not comparable to type '{ difficulty?: string; }'.
+      Types of property 'difficulty' are incompatible.
+        Type 'number' is not comparable to type 'string'.
+src/gameplay/EnemyCoreConfig.ts(49,86): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/EnemyCoreConfig.ts(56,30): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/gameplay/EnemyCoreConfig.ts(58,30): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/gameplay/EnemyCoreConfig.ts(59,32): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/gameplay/EnemyCoreConfig.ts(64,78): error TS2339: Property 'toLowerCase' does not exist on type 'unknown'.
+src/gameplay/EnemyCoreConfig.ts(72,61): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'boolean'.
+src/gameplay/EnemyCoreConfig.ts(74,39): error TS2322: Type 'unknown' is not assignable to type 'boolean'.
+src/gameplay/EnemyCoreConfig.ts(83,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCoreConfig.ts(88,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCoreConfig.ts(93,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/EnemyCoreRefresh.ts(17,61): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'boolean'.
+src/gameplay/EnemyRender.ts(54,83): error TS2304: Cannot find name 'e'.
+src/gameplay/Hero.ts(8,10): error TS2300: Duplicate identifier 'EquipmentManager'.
+src/gameplay/Hero.ts(21,10): error TS2300: Duplicate identifier 'EquipmentManager'.
+src/gameplay/Hero.ts(103,13): error TS2739: Type 'HealthComponent' is missing the following properties from type 'HealthComponent': damage, heal
+src/gameplay/Hero.ts(112,13): error TS2322: Type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/components/InventoryComponent").InventoryComponent' is not assignable to type 'import("C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/types/core").InventoryComponent'.
+  The types returned by 'add(...)' are incompatible between these types.
+    Type 'void' is not assignable to type 'boolean'.
+src/gameplay/Hero.ts(127,13): error TS2740: Type 'CombatComponent' is missing the following properties from type 'CombatComponent': attackDamage, attackRange, attackSpeed, startAttack, and 2 more.
+src/gameplay/Hero.ts(164,52): error TS2345: Argument of type 'EntityConfig' is not assignable to parameter of type 'EquipmentItem'.
+  Type 'EntityConfig' is missing the following properties from type 'EquipmentItem': name, slot, tier, type
+src/gameplay/Merchant.ts(52,35): error TS2339: Property 'toLowerCase' does not exist on type 'unknown'.
+src/gameplay/Merchant.ts(65,50): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/Merchant.ts(65,94): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/Merchant.ts(67,36): error TS2538: Type 'unknown' cannot be used as an index type.
+src/gameplay/Merchant.ts(87,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Merchant.ts(88,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Merchant.ts(89,9): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/ProgressionSystem.ts(28,137): error TS2345: Argument of type '{ [key: string]: unknown; entity?: IEntity; xpReward?: number; }' is not assignable to parameter of type '{ enemy: IEntity; xpReward: number; }'.
+  Property 'enemy' is missing in type '{ [key: string]: unknown; entity?: IEntity; xpReward?: number; }' but required in type '{ enemy: IEntity; xpReward: number; }'.
+src/gameplay/ProgressionSystem.ts(94,42): error TS2339: Property 'maxHealth' does not exist on type 'unknown'.
+src/gameplay/ProgressionSystem.ts(99,60): error TS2339: Property 'attack' does not exist on type 'unknown'.
+src/gameplay/ProgressionSystem.ts(100,61): error TS2339: Property 'defense' does not exist on type 'unknown'.
+src/gameplay/ProgressionSystem.ts(101,42): error TS2339: Property 'maxStamina' does not exist on type 'unknown'.
+src/gameplay/ProgressionSystem.ts(118,27): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/gameplay/ProgressionSystem.ts(118,43): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+src/gameplay/ProgressionSystem.ts(143,44): error TS2365: Operator '<' cannot be applied to types 'number' and 'unknown'.
+src/gameplay/QuestManager.ts(147,40): error TS2339: Property 'triggerUIExplosion' does not exist on type 'unknown'.
+src/gameplay/QuestManager.ts(148,31): error TS2339: Property 'triggerUIExplosion' does not exist on type 'unknown'.
+src/gameplay/QuestManager.ts(155,26): error TS2339: Property 'playSFX' does not exist on type 'unknown'.
+src/gameplay/Resource.ts(81,13): error TS2322: Type 'unknown' is not assignable to type 'string'.
+src/gameplay/Resource.ts(90,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Resource.ts(91,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Resource.ts(95,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Resource.ts(104,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/Resource.ts(229,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/gameplay/ResourceDrops.ts(29,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+src/gameplay/SpawnHelper.ts(100,35): error TS2339: Property 'clampToPlayableArea' does not exist on type 'IWorldManager'.
+src/rendering/DebugOverlays.ts(28,44): error TS2339: Property 'collisionBlocks' does not exist on type 'WorldManagerService'.
+src/rendering/DebugOverlays.ts(33,47): error TS2339: Property 'collisionBlocks' does not exist on type 'WorldManagerService'.
+src/rendering/EnvironmentRenderer.ts(128,50): error TS2559: Type '{ viewport?: IViewport; updateCamera?: () => void; }' has no properties in common with type 'ISystem'.
+src/rendering/EnvironmentRenderer.ts(168,47): error TS2559: Type '{ ctx?: CanvasRenderingContext2D; }' has no properties in common with type 'ISystem'.
+src/rendering/GridRenderer.ts(36,31): error TS2345: Argument of type 'ISystem' is not assignable to parameter of type '{ islands: { [key: string]: unknown; name: string; type?: string; }[]; }'.
+  Property 'islands' is missing in type 'ISystem' but required in type '{ islands: { [key: string]: unknown; name: string; type?: string; }[]; }'.
+src/rendering/GridRenderer.ts(39,31): error TS2345: Argument of type 'ISystem' is not assignable to parameter of type '{ islands: { [key: string]: unknown; name: string; }[]; }'.
+  Property 'islands' is missing in type 'ISystem' but required in type '{ islands: { [key: string]: unknown; name: string; }[]; }'.
+src/rendering/GridRenderer.ts(86,65): error TS2339: Property 'createImage' does not exist on type '{ getImagePath(id: string): string; }'.
+src/rendering/GridRenderer.ts(92,35): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(93,35): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(94,35): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(94,56): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(95,35): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(95,56): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(105,30): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+src/rendering/GridRenderer.ts(108,32): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+src/rendering/GridRenderer.ts(118,43): error TS2365: Operator '+' cannot be applied to types 'unknown' and 'number'.
+src/rendering/GridRenderer.ts(118,59): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(118,77): error TS2365: Operator '+' cannot be applied to types 'unknown' and '50'.
+src/rendering/GridRenderer.ts(133,13): error TS2365: Operator '+' cannot be applied to types 'unknown' and 'number'.
+src/rendering/GridRenderer.ts(133,29): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(134,13): error TS2365: Operator '+' cannot be applied to types 'unknown' and 'number'.
+src/rendering/GridRenderer.ts(134,29): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(141,13): error TS2365: Operator '+' cannot be applied to types 'unknown' and 'number'.
+src/rendering/GridRenderer.ts(141,29): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(142,13): error TS2365: Operator '+' cannot be applied to types 'unknown' and 'number'.
+src/rendering/GridRenderer.ts(142,29): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+src/rendering/GridRenderer.ts(150,39): error TS2339: Property 'getBridges' does not exist on type '{ islands: { [key: string]: unknown; name: string; }[]; }'.
+src/rendering/GridRenderer.ts(154,37): error TS2339: Property 'cache' does not exist on type '{ getImagePath(id: string): string; }'.
+src/rendering/GridRenderer.ts(156,29): error TS2339: Property 'preloadImage' does not exist on type '{ getImagePath(id: string): string; }'.
+src/rendering/HeroRenderer.ts(55,29): error TS2339: Property 'clean' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(56,47): error TS2339: Property 'clean' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(57,36): error TS2339: Property 'original' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(58,47): error TS2339: Property 'original' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(145,34): error TS2339: Property 'clean' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(146,61): error TS2339: Property 'clean' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(147,41): error TS2339: Property 'original' does not exist on type 'unknown'.
+src/rendering/HeroRenderer.ts(148,61): error TS2339: Property 'original' does not exist on type 'unknown'.
+src/rendering/HeroRendererRangeCircles.ts(36,37): error TS2339: Property 'mainHand' does not exist on type '{}'.
+src/rendering/HeroRendererRangeCircles.ts(37,37): error TS2339: Property 'offHand' does not exist on type '{}'.
+src/rendering/HeroRendererWeapon.ts(40,37): error TS2339: Property 'mainHand' does not exist on type '{}'.
+src/rendering/HeroRendererWeapon.ts(41,37): error TS2339: Property 'offHand' does not exist on type '{}'.
+src/rendering/HeroRendererWeapon.ts(60,36): error TS2339: Property 'nodeSubtype' does not exist on type 'IEntity'.
+src/rendering/ResourceRenderer.ts(101,18): error TS2339: Property '_shadowImg' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(119,21): error TS2339: Property '_shadowImg' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(123,17): error TS2339: Property '_shadowImg' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(125,31): error TS2339: Property '_shadowImg' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(162,22): error TS2339: Property '_consumedImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(163,21): error TS2339: Property '_consumedImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(165,21): error TS2339: Property '_consumedImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(165,52): error TS2339: Property '_consumedImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(167,25): error TS2339: Property '_consumedImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(230,22): error TS2339: Property '_spriteImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(231,21): error TS2339: Property '_spriteImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(233,21): error TS2339: Property '_spriteImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(233,50): error TS2339: Property '_spriteImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(235,25): error TS2339: Property '_spriteImage' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(272,17): error TS2339: Property 'components' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(272,35): error TS2339: Property 'components' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(273,33): error TS2339: Property 'components' does not exist on type 'Resource'.
+src/rendering/ResourceRenderer.ts(274,29): error TS2339: Property 'components' does not exist on type 'Resource'.
+src/rendering/ResourceRendererDropped.ts(49,15): error TS2339: Property '_cachedAssetId' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(49,36): error TS2339: Property '_cachedAssetId' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(50,26): error TS2339: Property '_cachedAssetId' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(52,15): error TS2339: Property '_spriteImage' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(55,18): error TS2339: Property '_spriteImage' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(55,81): error TS2339: Property '_spriteLoaded' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(56,18): error TS2339: Property '_spriteLoaded' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(60,14): error TS2339: Property '_spriteLoaded' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(60,36): error TS2339: Property '_spriteImage' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(61,38): error TS2339: Property '_silhouetteCanvas' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(63,18): error TS2339: Property '_silhouetteCanvas' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(63,110): error TS2339: Property '_spriteImage' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(71,18): error TS2339: Property '_silhouetteCanvas' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(75,32): error TS2339: Property '_silhouetteCanvas' does not exist on type 'DroppedItem'.
+src/rendering/ResourceRendererDropped.ts(82,28): error TS2339: Property '_spriteImage' does not exist on type 'DroppedItem'.
+src/rendering/RoadRenderer.ts(117,53): error TS2345: Argument of type '{ points: { x: number; y: number; }[]; width?: number; }' is not assignable to parameter of type 'RoadDef'.
+  Type '{ points: { x: number; y: number; }[]; width?: number; }' is missing the following properties from type 'RoadDef': id, tier, name
+src/rendering/WeaponRenderer.ts(39,51): error TS2339: Property 'rate' does not exist on type 'CombatComponent'.
+src/rendering/WeaponRenderer.ts(131,51): error TS2339: Property 'rate' does not exist on type 'CombatComponent'.
+src/rendering/WeaponRenderer.ts(183,51): error TS2339: Property 'rate' does not exist on type 'CombatComponent'.
+src/systems/BossSystem.ts(90,38): error TS2339: Property 'max' does not exist on type 'unknown'.
+src/systems/BossSystem.ts(156,21): error TS2339: Property 'isBoss' does not exist on type 'IEntity'.
+src/systems/BossSystem.ts(165,35): error TS2339: Property 'respawnTime' does not exist on type 'IEntity'.
+src/systems/BossSystem.ts(168,43): error TS2339: Property 'bossName' does not exist on type 'IEntity'.
+src/systems/BossSystem.ts(168,83): error TS2339: Property 'respawnTime' does not exist on type 'IEntity'.
+src/systems/CollisionSystemDebug.ts(20,24): error TS2339: Property 'collisionBlocks' does not exist on type 'WorldManagerService'.
+src/systems/CollisionSystemDebug.ts(25,38): error TS2339: Property 'collisionBlocks' does not exist on type 'WorldManagerService'.
+src/systems/CollisionSystemDebug.ts(31,22): error TS2339: Property 'walkableZones' does not exist on type 'WorldManagerService'.
+src/systems/CollisionSystemDebug.ts(32,41): error TS2339: Property 'walkableZones' does not exist on type 'WorldManagerService'.
+src/systems/CombatController.ts(75,18): error TS2339: Property 'miningRange' does not exist on type 'IEntity'.
+src/systems/CombatController.ts(75,50): error TS2339: Property 'range' does not exist on type 'CombatComponent'.
+src/systems/CombatController.ts(93,18): error TS2551: Property 'stats' does not exist on type 'IEntity'. Did you mean 'state'?
+src/systems/CombatController.ts(94,30): error TS2339: Property 'range' does not exist on type 'CombatComponent'.
+src/systems/CombatController.ts(139,50): error TS2345: Argument of type 'IEntity' is not assignable to parameter of type 'Hero'.
+  Type 'IEntity' is missing the following properties from type 'Hero': isAttacking, hand1Attacking, hand2Attacking, targetResource, and 13 more.
+src/systems/CombatController.ts(146,18): error TS2339: Property 'targetResource' does not exist on type 'IEntity'.
+src/systems/DamageSystem.ts(81,55): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(86,29): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(86,66): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(87,33): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(88,33): error TS2339: Property 'isDead' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'isDead' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(89,33): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(92,42): error TS2339: Property 'maxHealth' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'maxHealth' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(94,85): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(96,95): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(119,65): error TS2339: Property 'health' does not exist on type 'HealthComponent | StatsComponent'.
+  Property 'health' does not exist on type 'StatsComponent'.
+src/systems/DamageSystem.ts(171,67): error TS2339: Property 'BLOOD_SPLATTER' does not exist on type 'unknown'.
+src/systems/DamageSystem.ts(172,67): error TS2339: Property 'BLOOD_MIST' does not exist on type 'unknown'.
+src/systems/DamageSystem.ts(176,71): error TS2339: Property 'BLOOD_DROPS' does not exist on type 'unknown'.
+src/systems/DamageSystem.ts(223,53): error TS2339: Property 'destroy' does not exist on type 'unknown'.
+src/systems/DamageSystem.ts(224,26): error TS2339: Property 'destroy' does not exist on type 'unknown'.
+src/systems/Dialogue.ts(42,37): error TS2339: Property 'startNode' does not exist on type 'unknown'.
+src/systems/Dialogue.ts(54,43): error TS2339: Property 'nodes' does not exist on type 'unknown'.
+src/systems/Dialogue.ts(75,43): error TS2339: Property 'nodes' does not exist on type 'unknown'.
+src/systems/DinosaurSystem.ts(68,77): error TS2339: Property 'BLOOD_SPLATTER' does not exist on type 'unknown'.
+src/systems/DinosaurSystem.ts(70,77): error TS2339: Property 'BLOOD_MIST' does not exist on type 'unknown'.
+src/systems/DinosaurSystem.ts(72,77): error TS2339: Property 'BLOOD_DROPS' does not exist on type 'unknown'.
+src/systems/DinosaurSystem.ts(75,81): error TS2339: Property 'MEAT_CHUNKS' does not exist on type 'unknown'.
+src/systems/DinosaurSystem.ts(107,22): error TS2339: Property 'respawnTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(107,42): error TS2339: Property 'maxRespawnTime' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(118,26): error TS2551: Property 'lootTable' does not exist on type 'IEntity'. Did you mean 'lootTableId'?
+src/systems/DinosaurSystem.ts(118,58): error TS2551: Property 'lootTable' does not exist on type 'IEntity'. Did you mean 'lootTableId'?
+src/systems/DinosaurSystem.ts(119,46): error TS2551: Property 'lootTable' does not exist on type 'IEntity'. Did you mean 'lootTableId'?
+src/systems/DinosaurSystem.ts(143,18): error TS2339: Property 'respawnTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(144,22): error TS2339: Property 'respawnTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(155,81): error TS2339: Property 'RESPAWN' does not exist on type 'unknown'.
+src/systems/DinosaurSystem.ts(167,14): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(168,18): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(174,37): error TS2339: Property 'moveSpeed' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(176,25): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(177,25): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(187,29): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(188,29): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(195,14): error TS2339: Property 'frameTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(196,18): error TS2339: Property 'frameTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(196,37): error TS2339: Property 'frameInterval' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(197,18): error TS2339: Property 'frameTimer' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(198,22): error TS2339: Property 'walkFrames' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(199,22): error TS2339: Property 'frameIndex' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(199,41): error TS2339: Property 'frameIndex' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(199,64): error TS2339: Property 'walkFrames' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(211,23): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(212,22): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(214,18): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(215,18): error TS2339: Property 'wanderDirection' does not exist on type 'IEntity'.
+src/systems/DinosaurSystem.ts(216,18): error TS2339: Property 'wanderTimer' does not exist on type 'IEntity'.
+src/systems/EnemySystem.ts(300,77): error TS2339: Property 'BLOOD_SPLATTER' does not exist on type 'unknown'.
+src/systems/EnemySystem.ts(302,77): error TS2339: Property 'BLOOD_MIST' does not exist on type 'unknown'.
+src/systems/EnemySystem.ts(304,77): error TS2339: Property 'BLOOD_DROPS' does not exist on type 'unknown'.
+src/systems/EnemySystem.ts(308,81): error TS2339: Property 'MEAT_CHUNKS' does not exist on type 'unknown'.
+src/systems/HeroCombatService.ts(51,19): error TS2339: Property 'cooldownTimer' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(52,19): error TS2339: Property 'cooldownTimer' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(53,23): error TS2339: Property 'cooldownTimer' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(54,23): error TS2339: Property 'cooldownTimer' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(112,41): error TS2339: Property 'mainHand' does not exist on type '{}'.
+src/systems/HeroCombatService.ts(113,41): error TS2339: Property 'offHand' does not exist on type '{}'.
+src/systems/HeroCombatService.ts(145,24): error TS2339: Property 'staminaCost' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(146,43): error TS2339: Property 'staminaCost' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(147,40): error TS2339: Property 'staminaCost' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(155,20): error TS2339: Property 'cooldownTimer' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(155,47): error TS2339: Property 'rate' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatService.ts(157,43): error TS2339: Property 'rate' does not exist on type 'CombatComponent'.
+src/systems/HeroCombatTargeting.ts(23,38): error TS2339: Property 'mainHand' does not exist on type '{}'.
+src/systems/HeroCombatTargeting.ts(24,40): error TS2339: Property 'mainHand' does not exist on type '{}'.
+src/systems/HeroCombatTargeting.ts(26,38): error TS2339: Property 'offHand' does not exist on type '{}'.
+src/systems/HeroCombatTargeting.ts(26,77): error TS2339: Property 'offHand' does not exist on type '{}'.
+src/systems/HeroVisualsSystem.ts(80,48): error TS2339: Property 'DUST' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(27,67): error TS2339: Property 'COIN_FOUNTAIN' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(29,67): error TS2339: Property 'SPARKLE_BURST' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(31,67): error TS2339: Property 'SUCCESS_AURA' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(51,65): error TS2339: Property 'CORE_FLASH' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(53,65): error TS2339: Property 'SHOCKWAVE_PRIMARY' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(55,65): error TS2339: Property 'SHOCKWAVE_SECONDARY' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(57,65): error TS2339: Property 'DIVINE_GLINT' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(60,30): error TS2339: Property 'DEBRIS_COLORS' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(61,74): error TS2339: Property 'DEBRIS_BASE' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(88,65): error TS2339: Property 'ELECTRIC_ARCS' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(90,65): error TS2339: Property 'STATIC_FLASH' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(96,69): error TS2339: Property 'FIELD_PULSE' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(98,69): error TS2339: Property 'METAL_DEBRIS' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(100,69): error TS2339: Property 'IMPACT_SPARKS' does not exist on type 'unknown'.
+src/systems/VFXTriggerService.ts(104,69): error TS2339: Property 'DUST_CLOUD' does not exist on type 'unknown'.
+src/tools/map-editor/ChunkManagerSerialization.ts(29,9): error TS2322: Type 'object' is not assignable to type 'Record<string, Record<string, string>>'.
+  Index signature for type 'string' is missing in type '{}'.
+src/tools/map-editor/MapEditorCore.ts(327,13): error TS2322: Type '"object" | "ground" | "manipulation" | "zone"' is not assignable to type '"object" | "manipulation"'.
+  Type '"ground"' is not assignable to type '"object" | "manipulation"'.
+src/tools/map-editor/MapEditorCore.ts(341,13): error TS2322: Type '"object" | "ground" | "manipulation" | "zone"' is not assignable to type '"object" | "manipulation"'.
+  Type '"ground"' is not assignable to type '"object" | "manipulation"'.
+src/tools/map-editor/MapEditorInput.ts(156,17): error TS2322: Type '"object" | "ground" | "manipulation" | "zone"' is not assignable to type '"object" | "manipulation"'.
+  Type '"ground"' is not assignable to type '"object" | "manipulation"'.
+src/tools/map-editor/MapEditorRegistry.ts(14,73): error TS7018: Object literal's property 'entities' implicitly has an 'any[]' type.
+src/tools/map-editor/mapgen4/buildMesh.ts(25,9): error TS2345: Argument of type '(p: [number, number]) => number' is not assignable to parameter of type '(p: unknown) => number'.
+  Types of parameters 'p' and 'p' are incompatible.
+    Type 'unknown' is not assignable to type '[number, number]'.
+src/tools/map-editor/mapgen4/generate-points.ts(12,37): error TS7016: Could not find a declaration file for module 'fast-2d-poisson-disk-sampling'. 'C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/node_modules/fast-2d-poisson-disk-sampling/src/fast-poisson-disk-sampling.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/fast-2d-poisson-disk-sampling` if it exists or add a new declaration (.d.ts) file containing `declare module 'fast-2d-poisson-disk-sampling';`
+src/tools/map-editor/Mapgen4RegionUtils.ts(86,11): error TS2322: Type 'unknown[]' is not assignable to type 'number[][]'.
+  Type '{}' is missing the following properties from type 'number[]': length, pop, push, concat, and 29 more.
+src/tools/map-editor/Mapgen4RegionUtils.ts(86,96): error TS2554: Expected 1 arguments, but got 2.
+src/tools/map-editor/ObjectSystem.ts(40,21): error TS2352: Conversion of type 'EntityRegistryStrict' to type 'Record<string, Record<string, { width?: number; height?: number; sizeScale?: number; display?: { width?: number; height?: number; sizeScale?: number; }; }>>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Index signature for type 'string' is missing in type 'EntityRegistryStrict'.
+src/tools/map-editor/ObjectSystem.ts(41,38): error TS2345: Argument of type 'Record<string, Record<string, { width?: number; height?: number; sizeScale?: number; display?: { width?: number; height?: number; sizeScale?: number; }; }>>' is not assignable to parameter of type 'EntityRegistryStrict'.
+  Type 'Record<string, Record<string, { width?: number; height?: number; sizeScale?: number; display?: { width?: number; height?: number; sizeScale?: number; }; }>>' is missing the following properties from type 'EntityRegistryStrict': enemies, bosses, equipment
+src/ui/DebugUI.ts(55,55): error TS2339: Property 'islands' does not exist on type 'WorldManagerService'.
+src/ui/HeroSkinSelector.ts(106,34): error TS2339: Property 'clean' does not exist on type 'unknown'.
+src/ui/HeroSkinSelector.ts(107,51): error TS2339: Property 'clean' does not exist on type 'unknown'.
+src/ui/HeroSkinSelector.ts(108,41): error TS2339: Property 'original' does not exist on type 'unknown'.
+src/ui/HeroSkinSelector.ts(109,51): error TS2339: Property 'original' does not exist on type 'unknown'.
+src/ui/MinimapRenderer.ts(45,91): error TS2339: Property 'railroadStationIds' does not exist on type '{ towns: unknown[]; roadSegments: unknown[]; railroadPath: number[]; railroadCrossings: unknown[]; } | {}'.
+src/ui/MinimapRenderer.ts(55,17): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Mesh'.
+  Type '{}' is missing the following properties from type 'TriangleMesh': numSides, numSolidSides, numRegions, numSolidRegions, and 31 more.
+src/ui/TextureAligner.ts(121,17): error TS2353: Object literal may only specify known properties, and 'multiple' does not exist in type '{ types?: { description?: string; accept: Record<string, string[]>; }[]; }'.
+src/ui/TextureAligner.ts(135,42): error TS2339: Property 'name' does not exist on type 'FileSystemFileHandle'.
+src/ui/TextureAligner.ts(144,37): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/ui/TextureAligner.ts(242,26): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/ui/TextureAligner.ts(242,46): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/ui/TextureAligner.ts(337,14): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/ui/TextureAligner.ts(339,9): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/ui/TextureAligner.ts(341,66): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/ui/TextureAligner.ts(345,37): error TS2304: Cannot find name 'UI_THEME_RUNTIME'.
+src/vfx/VFXController.ts(66,57): error TS2345: Argument of type 'ParticleOptions | { type: "burst"; color: string; count: number; lifetime: number; }' is not assignable to parameter of type 'ParticleOptions'.
+  Type '{ type: "burst"; color: string; count: number; lifetime: number; }' is not assignable to type 'ParticleOptions'.
+    Types of property 'type' are incompatible.
+      Type '"burst"' is not assignable to type '"glow" | "ring" | "spark" | "debris" | "streak" | "smoke" | "text" | "circle" | "cloud"'.
+src/vfx/VFXController.ts(213,39): error TS2345: Argument of type 'string | ParticleOptions' is not assignable to parameter of type 'Partial<ParticleOptions>'.
+  Type 'string' is not assignable to type 'Partial<ParticleOptions>'.
+src/workers/GroundRenderWorker.ts(105,71): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(message: any, targetOrigin: string, transfer?: Transferable[]): void', gave the following error.
+    Argument of type 'ArrayBuffer[]' is not assignable to parameter of type 'string'.
+  Overload 2 of 2, '(message: any, options?: WindowPostMessageOptions): void', gave the following error.
+    Type 'ArrayBuffer[]' has no properties in common with type 'WindowPostMessageOptions'.
+tools/dashboard/src/ActionDelegator.ts(511,33): error TS2322: Type 'AssetItem' is not assignable to type '{ [key: string]: unknown; id: string; }'.
+  Index signature for type 'string' is missing in type 'AssetItem'.
+tools/dashboard/src/ActionDelegator.ts(517,62): error TS2339: Property 'original' does not exist on type 'unknown'.
+tools/dashboard/src/ActionDelegator.ts(518,59): error TS2339: Property 'clean' does not exist on type 'unknown'.
+tools/dashboard/src/api.ts(516,28): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(523,32): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(523,52): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(532,60): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+tools/dashboard/src/api.ts(533,55): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+tools/dashboard/src/api.ts(543,57): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+tools/dashboard/src/api.ts(544,52): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+tools/dashboard/src/api.ts(563,53): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+tools/dashboard/src/api.ts(564,48): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'string'.
+tools/dashboard/src/api.ts(571,36): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(571,66): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(572,36): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(573,35): error TS2538: Type 'unknown' cannot be used as an index type.
+tools/dashboard/src/api.ts(582,37): error TS2345: Argument of type 'AssetItem' is not assignable to parameter of type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type 'AssetItem'.
+tools/dashboard/src/configRenderer.ts(383,47): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '{}'.
+tools/dashboard/src/configRenderer.ts(426,47): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '{}'.
+tools/dashboard/src/mapEditorView.ts(1015,91): error TS2694: Namespace '"C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/tools/map-editor/MapEditorTypes"' has no exported member 'EditorMode'.
+tools/dashboard/src/mapEditorView.ts(1019,91): error TS2694: Namespace '"C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/tools/map-editor/MapEditorTypes"' has no exported member 'EditorMode'.
+tools/dashboard/src/views.ts(117,17): error TS2339: Property 'dataset' does not exist on type 'Element'.
+tools/dashboard/src/views.ts(117,63): error TS2339: Property 'dataset' does not exist on type 'Element'.

@@ -2,7 +2,7 @@
  * Entity: weapon_ranged_pistol_t1_01
  * Auto-generated. Edit in dashboard.
  */
-import type { EquipmentEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     id: 'weapon_ranged_pistol_t1_01',
@@ -17,7 +17,7 @@ export default {
     stats: {
         damage: 8,
         attackSpeed: 2,
-        range: '500',
+        range: 500,
         ammoCapacity: 6
     },
     recipe: {
@@ -30,4 +30,4 @@ export default {
         original: 'images/equipment/weapons/pistol/weapon_pistol_t1_01_original.png'
     },
     gripType: '1-hand'
-} satisfies EquipmentEntity;
+} satisfies EntityConfig;

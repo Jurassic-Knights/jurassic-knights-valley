@@ -14,14 +14,20 @@ import { EntityTypes } from '@config/EntityTypes';
 import { EnemyAI } from './behaviors/enemies/EnemyAI';
 import { BossAI } from './behaviors/bosses/BossAI';
 import { NPCAI } from './behaviors/npcs/NPCAI';
-import type { IGame, IEntity } from '../types/core';
+import type { IGame, IEntity, IEnemyEntity } from '../types/core';
 
 /** Behavior module with updateState (and optionally triggerPackAggro) */
-type AIBehavior = {
-    updateState(entity: IEntity, dt: number): void;
-    updateState?(entity: IEntity, hero: IEntity | null, dt: number): void;
+type BossBehavior = {
+    updateState(entity: IEntity, hero: IEntity | null, dt: number): void;
     triggerPackAggro?(entity: IEntity, target: IEntity | null): void;
 };
+
+type EnemyBehavior = {
+    updateState(entity: IEntity, dt: number): void;
+    triggerPackAggro?(entity: IEntity, target: IEntity | null): void;
+};
+
+type AIBehavior = BossBehavior | EnemyBehavior;
 
 class AISystem {
     private game: IGame | null = null;
@@ -100,11 +106,9 @@ class AISystem {
         if (behavior && typeof behavior.updateState === 'function') {
             // Some behaviors expect (entity, hero, dt), others just (entity, dt)
             if (behavior.updateState.length >= 3) {
-                (
-                    behavior as { updateState(e: IEntity, h: IEntity | null, d: number): void }
-                ).updateState(entity, hero, dt);
+                (behavior as BossBehavior).updateState(entity, hero, dt);
             } else {
-                behavior.updateState(entity, dt);
+                (behavior as EnemyBehavior).updateState(entity, dt);
             }
         } else if (EnemyAI) {
             // Fallback to generic enemy AI (takes entity, dt)
@@ -127,18 +131,17 @@ class AISystem {
      */
     initListeners() {
         if (EventBus && GameConstants.Events) {
-            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data) => this.onEntityDamaged(data));
-            EventBus.on(GameConstants.Events.ENTITY_DIED, (data) => this.onEntityDied(data));
+            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data: unknown) =>
+                this.onEntityDamaged(data as { entity: IEnemyEntity; source?: IEntity })
+            );
+            EventBus.on(GameConstants.Events.ENTITY_DIED, (data: unknown) =>
+                this.onEntityDied(data as { entity: IEnemyEntity })
+            );
         }
     }
 
     onEntityDamaged(data: {
-        entity: IEntity & {
-            state?: string;
-            target?: IEntity | null;
-            packAggro?: boolean;
-            groupId?: string | null;
-        };
+        entity: IEnemyEntity;
         source?: IEntity;
     }) {
         const { entity, source } = data;
@@ -156,7 +159,7 @@ class AISystem {
         }
     }
 
-    onEntityDied(data: { entity: IEntity & { xpReward?: number }; [key: string]: unknown }) {
+    onEntityDied(data: { entity: IEntity & { xpReward?: number };[key: string]: unknown }) {
         const { entity } = data;
         if (!entity) return;
 

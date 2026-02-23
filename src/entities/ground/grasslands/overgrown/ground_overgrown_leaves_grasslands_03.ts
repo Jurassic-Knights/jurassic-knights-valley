@@ -2,7 +2,7 @@
  * Entity: ground_overgrown_leaves_grasslands_03
  * Auto-generated. Edit in dashboard.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_overgrown_leaves_grasslands_03",
@@ -27,4 +27,4 @@ export default {
         "leaves"
     ],
     "declineNote": ""
-} satisfies BaseEntity;
+} satisfies EntityConfig;

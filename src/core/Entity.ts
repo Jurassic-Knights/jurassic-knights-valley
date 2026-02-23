@@ -55,8 +55,8 @@ class Entity implements IEntity {
         this.active = true;
 
         // Grid coordinates (optional)
-        if (config.islandGridX !== undefined) this.islandGridX = config.islandGridX;
-        if (config.islandGridY !== undefined) this.islandGridY = config.islandGridY;
+        if (config.islandGridX !== undefined) this.islandGridX = config.islandGridX as number;
+        if (config.islandGridY !== undefined) this.islandGridY = config.islandGridY as number;
 
         this.prevX = this.x;
         this.prevY = this.y;
@@ -141,8 +141,8 @@ class Entity implements IEntity {
                 registryConfig.maxHealth ||
                 registryConfig.health ||
                 (registryConfig.stats &&
-                typeof registryConfig.stats === 'object' &&
-                'health' in registryConfig.stats
+                    typeof registryConfig.stats === 'object' &&
+                    'health' in registryConfig.stats
                     ? (registryConfig.stats as Record<string, unknown>).health
                     : undefined);
             if (typeof healthValue === 'number' && healthValue > 0) {

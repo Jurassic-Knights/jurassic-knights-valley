@@ -74,7 +74,7 @@ class DamageSystem {
         // 1. Apply Damage (using component if available)
         // Check for StatsComponent (Hero/Complex Entities)
         let finalDamage = amount;
-        const healthComponent = entity.components?.health || entity.components?.stats;
+        const healthComponent = (entity.components?.health || entity.components?.stats) as import('../types/core').HealthComponent | undefined;
 
         // Apply Armor reduction (simple flat reduction for now)
         if (entity.defense) {
@@ -179,13 +179,13 @@ class DamageSystem {
                 // Sparks for mechanical/buildings
                 // TODO: Add Spark VFX config
             } else {
-                // Organic Blood VFX
-                VFXController.playForeground(x, y, VFXConfig.DINO.BLOOD_SPLATTER);
-                VFXController.playForeground(x, y, VFXConfig.DINO.BLOOD_MIST);
+                const vfx = VFXConfig as any;
+                VFXController.playForeground(x, y, vfx.DINO.BLOOD_SPLATTER);
+                VFXController.playForeground(x, y, vfx.DINO.BLOOD_MIST);
 
                 const threshold = GameConstants.Combat.DAMAGE_VFX_THRESHOLD;
                 if (amount > threshold) {
-                    VFXController.playForeground(x, y, VFXConfig.DINO.BLOOD_DROPS);
+                    VFXController.playForeground(x, y, vfx.DINO.BLOOD_DROPS);
                 }
             }
         }
@@ -231,7 +231,7 @@ class DamageSystem {
 
 // Singleton Management for HMR
 if (Registry) {
-    const previousInstance = Registry.get('DamageSystem');
+    const previousInstance = Registry.get('DamageSystem') as { destroy?: () => void } | undefined;
     if (previousInstance && typeof previousInstance.destroy === 'function') {
         previousInstance.destroy();
     }

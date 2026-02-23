@@ -2,7 +2,7 @@
  * Entity: enemy_dinosaur_t1_01
  * Auto-generated. Edit in dashboard.
  */
-import type { EnemyEntity } from '@types/entities';
+import type { EnemyEntity } from '../../types/entities';
 
 export default {
     "id": "enemy_dinosaur_t1_01",
@@ -16,9 +16,9 @@ export default {
     },
     "biome": "grasslands",
     "stats": {
-        "health": "25",
+        "health": 25,
         "damage": 3,
-        "speed": "100",
+        "speed": 100,
         "defense": 0
     },
     "combat": {
@@ -49,18 +49,14 @@ export default {
         {
             "item": "food_t1_02",
             "chance": 0.6,
-            "amount": [
-                1,
-                1
-            ]
+            "min": 1,
+            "max": 1
         },
         {
             "item": "bone_t1_01",
             "chance": 0.15,
-            "amount": [
-                1,
-                1
-            ]
+            "min": 1,
+            "max": 1
         }
     ],
     "xpReward": 8,

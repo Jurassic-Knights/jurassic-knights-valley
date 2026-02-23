@@ -52,7 +52,7 @@ const DebugUI = {
             text: 'Unlock All',
             onClick: () => {
                 if (WorldManager) {
-                    for (const island of WorldManager.islands) {
+                    for (const island of (WorldManager as unknown as { islands: { unlocked: boolean }[] }).islands) {
                         island.unlocked = true;
                     }
                     Logger.info('[DebugUI] All islands unlocked!');

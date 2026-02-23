@@ -2,7 +2,7 @@
  * EntityLoaderProcess - Process entity data: flatten nested structures, apply defaults
  */
 import { GameConstants } from '@data/GameConstants';
-import { EntityConfig } from '../types/core';
+import type { EntityConfig } from '../types/core';
 
 const L = GameConstants.EntityLoader;
 

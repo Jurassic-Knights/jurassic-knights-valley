@@ -50,10 +50,11 @@ class HeroRendererSystem implements ISystem {
 
         // Build image path from skin files
         let path = null;
-        if (skinData.files?.clean) {
-            path = 'assets/' + skinData.files.clean;
-        } else if (skinData.files?.original) {
-            path = 'assets/' + skinData.files.original;
+        const files = skinData.files as { clean?: string; original?: string } | undefined;
+        if (files?.clean) {
+            path = 'assets/' + files.clean;
+        } else if (files?.original) {
+            path = 'assets/' + files.original;
         }
 
         if (!path) {
@@ -140,10 +141,11 @@ class HeroRendererSystem implements ISystem {
             const savedSkin = localStorage.getItem('heroSelectedSkin') || 'hero_t1_01';
             const skinData = EntityRegistry?.hero?.[savedSkin];
 
-            if (skinData?.files?.clean) {
-                this._heroPath = 'assets/' + skinData.files.clean;
-            } else if (skinData?.files?.original) {
-                this._heroPath = 'assets/' + skinData.files.original;
+            const files = skinData?.files as { clean?: string; original?: string; } | undefined;
+            if (files?.clean) {
+                this._heroPath = 'assets/' + files.clean;
+            } else if (files?.original) {
+                this._heroPath = 'assets/' + files.original;
             } else if (AssetLoader) {
                 // Fallback to world_hero asset
                 this._heroPath = AssetLoader.getImagePath('world_hero');

@@ -139,20 +139,20 @@ class QuestManagerService {
         Logger.info('[QuestManager] Quest Complete!');
 
         // VFX: Quest Complete Popup
-        const VFXController = Registry?.get('VFXController');
-        const UIManagerVFX = Registry?.get('UIManager');
-        if (VFXController && UIManagerVFX) {
+        const vfx = Registry?.get('VFXController') as { triggerUIExplosion?: (el: HTMLElement, color: string) => void } | undefined;
+        const uiManager = Registry?.get('UIManager');
+        if (vfx && uiManager) {
             // Find UI element for Quest Panel to explode it
             const panel = document.getElementById('ui-quest-panel');
-            if (panel && VFXController.triggerUIExplosion) {
-                VFXController.triggerUIExplosion(panel, '#FFFF00');
+            if (panel && vfx.triggerUIExplosion) {
+                vfx.triggerUIExplosion(panel, '#FFFF00');
             }
         }
 
         // SFX
-        const AudioManager = Registry?.get('AudioManager');
-        if (AudioManager) {
-            AudioManager.playSFX('sfx_ui_unlock'); // Reusing unlock sound
+        const audio = Registry?.get('AudioManager') as { playSFX?: (id: string) => void } | undefined;
+        if (audio && audio.playSFX) {
+            audio.playSFX('sfx_ui_unlock'); // Reusing unlock sound
         }
 
         // Delay next quest

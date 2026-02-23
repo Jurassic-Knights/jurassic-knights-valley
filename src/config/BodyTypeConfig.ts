@@ -23,7 +23,7 @@ export const BodyTypeConfig: Record<string, { scale: number }> = {
 export function getBodyTypeScale(bodyType: string | undefined): number {
     if (!bodyType) return 1.0;
     // Read from live config first, fallback to static
-    const configTypes = (getConfig() as { BodyTypes?: Record<string, unknown> }).BodyTypes;
+    const configTypes = (getConfig() as { BodyTypes?: Record<string, { scale?: number }> }).BodyTypes;
     if (configTypes && configTypes[bodyType]) {
         return configTypes[bodyType].scale ?? 1.0;
     }

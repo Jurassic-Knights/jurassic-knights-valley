@@ -16,11 +16,8 @@ import { CombatComponent } from '../components/CombatComponent';
 import { StatsComponent } from '../components/StatsComponent';
 import { HeroDefaults } from '@config/HeroDefaults';
 import { EventBus } from '@core/EventBus';
-import { Logger } from '@core/Logger';
-// import removed
-import { EquipmentManager } from '@systems/EquipmentManager';
 import type { IComponents, IEntity } from '../types/core';
-// import removed
+import type { EquipmentItem } from '../types/ui';
 
 // Unmapped modules - need manual import
 
@@ -161,7 +158,7 @@ class Hero extends Entity {
             if (HeroDefaults && getConfig().Equipment && EntityRegistry?.equipment) {
                 for (const [slot, entityId] of Object.entries(HeroDefaults.equipment)) {
                     if (entityId && EntityRegistry.equipment[entityId as string]) {
-                        this.equipment.equip(slot, EntityRegistry.equipment[entityId as string]);
+                        this.equipment.equip(slot, EntityRegistry.equipment[entityId as string] as unknown as EquipmentItem);
                     }
                 }
             }

@@ -2,7 +2,7 @@
  * Entity: stat_crit_chance
  * Auto-generated. Edit in dashboard.
  */
-import type { UIEntity } from '@app-types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     id: 'stat_crit_chance',
@@ -13,4 +13,4 @@ export default {
     files: {
         original: 'assets/images/ui/stat_crit_chance_original.png'
     }
-} satisfies UIEntity;
+} satisfies EntityConfig;

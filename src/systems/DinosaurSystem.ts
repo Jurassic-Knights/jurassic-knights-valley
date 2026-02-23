@@ -26,6 +26,21 @@ interface EntityDeathEvent {
     killer?: IEntity;
 }
 
+export interface IDinosaurEntity extends IEntity {
+    respawnTimer: number;
+    maxRespawnTime: number;
+    wanderTimer: number;
+    wanderDirection: { x: number; y: number };
+    moveSpeed?: number;
+    frameTimer: number;
+    frameInterval: number;
+    walkFrames?: any[];
+    frameIndex: number;
+    isBeingAttacked?: boolean;
+    lootTable?: any[];
+    lootTableId?: string;
+}
+
 class DinosaurSystem {
     game: IGame | null = null;
 
@@ -68,15 +83,16 @@ class DinosaurSystem {
 
         // Blood VFX - Multi-layered realistic gore
         if (VFXController && VFXConfig) {
+            const vfx = VFXConfig as any;
             // Primary blood spray (directional splatter)
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_SPLATTER);
+            VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_SPLATTER);
             // Blood mist (fine particles lingering)
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_MIST);
+            VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_MIST);
             // Blood droplets (falling drops)
-            VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.BLOOD_DROPS);
+            VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_DROPS);
             // Meat chunks on heavy hits
             if (amount > 10) {
-                VFXController.playForeground(entity.x, entity.y, VFXConfig.DINO.MEAT_CHUNKS);
+                VFXController.playForeground(entity.x, entity.y, vfx.DINO.MEAT_CHUNKS);
             }
         }
     }
@@ -96,7 +112,13 @@ class DinosaurSystem {
         const dinos = entityManager.getByType('Dinosaur');
         for (const dino of dinos) {
             if (dino.active) {
-                this.updateDino(dino, dt);
+                this.updateDino(dino as IEntity & {
+                    respawnTimer: number; maxRespawnTime: number;
+                    wanderTimer: number; wanderDirection: { x: number, y: number };
+                    moveSpeed?: number; frameTimer: number; frameInterval: number;
+                    walkFrames?: any[]; frameIndex: number; isBeingAttacked?: boolean;
+                    lootTable?: any[]; lootTableId?: string;
+                }, dt);
             }
         }
     }
@@ -106,9 +128,10 @@ class DinosaurSystem {
         if (dino.components.health) {
             dino.health = dino.components.health.health;
             if (dino.components.health.isDead && dino.state !== 'dead') {
+                const d = dino as IDinosaurEntity;
                 dino.state = 'dead';
                 dino.health = 0;
-                dino.respawnTimer = dino.maxRespawnTime;
+                d.respawnTimer = d.maxRespawnTime;
                 if (AudioManager) AudioManager.playSFX('sfx_dino_death');
 
                 // Trigger Death VFX (Huge Rebirth Effect)
@@ -119,8 +142,9 @@ class DinosaurSystem {
 
                 // Drop loot directly using SpawnManager (same pattern as Resource.js)
                 // This bypasses the complex LootSystem chain and works on file:// protocol
-                if (dino.lootTable && Array.isArray(dino.lootTable)) {
-                    for (const entry of dino.lootTable) {
+                const dLoot = dino as IDinosaurEntity;
+                if (dLoot.lootTable && Array.isArray(dLoot.lootTable)) {
+                    for (const entry of dLoot.lootTable) {
                         // Roll chance (0-1 format)
                         if (Math.random() > (entry.chance || 1)) continue;
 
@@ -129,7 +153,7 @@ class DinosaurSystem {
                         if (Array.isArray(entry.amount)) {
                             amount = Math.floor(
                                 entry.amount[0] +
-                                    Math.random() * (entry.amount[1] - entry.amount[0] + 1)
+                                Math.random() * (entry.amount[1] - entry.amount[0] + 1)
                             );
                         } else if (entry.amount) {
                             amount = entry.amount;
@@ -143,9 +167,10 @@ class DinosaurSystem {
         }
 
         // 1. Handle Death / Respawn
+        const dTimer = dino as IDinosaurEntity;
         if (dino.state === 'dead') {
-            dino.respawnTimer -= dt / 1000;
-            if (dino.respawnTimer <= 0) {
+            dTimer.respawnTimer -= dt / 1000;
+            if (dTimer.respawnTimer <= 0) {
                 // Respawn
                 dino.state = 'alive';
                 dino.health = dino.maxHealth;
@@ -168,17 +193,18 @@ class DinosaurSystem {
         }
 
         // 3. Wandering AI
-        dino.wanderTimer -= dt;
-        if (dino.wanderTimer <= 0) {
+        const dWander = dino as IDinosaurEntity;
+        dWander.wanderTimer -= dt;
+        if (dWander.wanderTimer <= 0) {
             this.changeDirection(dino);
         }
 
         // Move via EventBus: emit ENTITY_MOVE_REQUEST; CollisionSystem applies and emits MOVEMENT_UPDATE_RESULT
         const cfg = GameConstants.Dinosaur;
-        const speedPxPerSec = (dino.moveSpeed ?? cfg.DEFAULT_MOVE_SPEED) * cfg.SPEED_SCALE;
+        const speedPxPerSec = (dWander.moveSpeed ?? cfg.DEFAULT_MOVE_SPEED) * cfg.SPEED_SCALE;
         const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
-        const dx = dino.wanderDirection.x * ((speedPxPerSec * dt) / msPerSecond);
-        const dy = dino.wanderDirection.y * ((speedPxPerSec * dt) / msPerSecond);
+        const dx = dWander.wanderDirection.x * ((speedPxPerSec * dt) / msPerSecond);
+        const dy = dWander.wanderDirection.y * ((speedPxPerSec * dt) / msPerSecond);
 
         const d = dino as IEntity & {
             _moveRequested?: { dx: number; dy: number };
@@ -191,18 +217,19 @@ class DinosaurSystem {
         const res = d._moveResult;
         const collidedX = res && dx !== 0 && res.actualDx === 0;
         const collidedY = res && dy !== 0 && res.actualDy === 0;
-        if (collidedX) dino.wanderDirection.x *= -1;
-        if (collidedY) dino.wanderDirection.y *= -1;
+        if (collidedX) dWander.wanderDirection.x *= -1;
+        if (collidedY) dWander.wanderDirection.y *= -1;
         if (res && res.actualDx === 0 && res.actualDy === 0 && dt > 0) {
             this.changeDirection(dino);
         }
 
         // 4. Animation Frame Cycling
-        dino.frameTimer += dt;
-        if (dino.frameTimer >= dino.frameInterval) {
-            dino.frameTimer = 0;
-            if (dino.walkFrames) {
-                dino.frameIndex = (dino.frameIndex + 1) % dino.walkFrames.length;
+        const dAnim = dino as IDinosaurEntity;
+        dAnim.frameTimer += dt;
+        if (dAnim.frameTimer >= dAnim.frameInterval) {
+            dAnim.frameTimer = 0;
+            if (dAnim.walkFrames) {
+                dAnim.frameIndex = (dAnim.frameIndex + 1) % dAnim.walkFrames.length;
             }
         }
     }
@@ -212,17 +239,18 @@ class DinosaurSystem {
             dino.components.ai.randomizeWander();
         } else {
             // Fallback for legacy (or if component missing)
+            const d = dino as IDinosaurEntity;
             const angle = Math.random() * Math.PI * 2;
             // GC Optimization: Reuse existing object instead of allocating new one
-            if (!dino.wanderDirection) {
-                dino.wanderDirection = { x: 0, y: 0 };
+            if (!d.wanderDirection) {
+                d.wanderDirection = { x: 0, y: 0 };
             }
-            dino.wanderDirection.x = Math.cos(angle);
-            dino.wanderDirection.y = Math.sin(angle);
-            dino.wanderTimer =
+            d.wanderDirection.x = Math.cos(angle);
+            d.wanderDirection.y = Math.sin(angle);
+            d.wanderTimer =
                 GameConstants.AI.WANDER_TIMER_MIN +
                 Math.random() *
-                    (GameConstants.AI.WANDER_TIMER_MAX - GameConstants.AI.WANDER_TIMER_MIN);
+                (GameConstants.AI.WANDER_TIMER_MAX - GameConstants.AI.WANDER_TIMER_MIN);
         }
     }
 }

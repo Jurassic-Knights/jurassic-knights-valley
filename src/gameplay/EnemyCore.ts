@@ -69,7 +69,7 @@ class Enemy extends Entity {
     // Rewards
     xpReward: number = GameConstants.Enemy.DEFAULT_XP_REWARD;
     lootTableId: string = 'common_enemy';
-    lootTable: Record<string, number> | null = null;
+    lootTable: Array<{ item: string; chance?: number; amount?: number | number[] | { min: number; max: number; } }> | null = null;
     lootMultiplier: number = 1.0;
 
     // SFX and context
@@ -138,8 +138,8 @@ class Enemy extends Entity {
         // Enemy Identity
         this.enemyType = config.enemyType || 'unknown';
         this.enemyName = finalConfig.name || 'Unknown Enemy';
-        this.species = finalConfig.species || null;
-        this.level = config.level || 1;
+        this.species = (finalConfig.species as string) || null;
+        this.level = (config.level as number) || 1;
         this.isElite = isElite;
         this.threatLevel = isElite
             ? (finalConfig.threatLevel || 1) + 2
@@ -147,8 +147,8 @@ class Enemy extends Entity {
 
         // Pack Behavior
         this.packAggro = finalConfig.packAggro !== false; // Default true
-        this.groupId = config.groupId || null; // Links enemies in same group
-        this.waveId = config.waveId || null; // For respawn wave tracking
+        this.groupId = (config.groupId as string) || null; // Links enemies in same group
+        this.waveId = (config.waveId as string) || null; // For respawn wave tracking
 
         this.spawnX = config.x || 0;
         this.spawnY = config.y || 0;
@@ -163,18 +163,18 @@ class Enemy extends Entity {
         this.damage = Number(finalConfig.damage) || E.DEFAULT_DAMAGE;
         this.attackRate = Number(finalConfig.attackRate) || 1;
         this.attackRange = Number(finalConfig.attackRange) || E.DEFAULT_ATTACK_RANGE;
-        this.attackType = finalConfig.attackType || 'melee';
+        this.attackType = (finalConfig.attackType as string) || 'melee';
         this.speed = Number(finalConfig.speed) || E.DEFAULT_SPEED;
 
-        this.xpReward = finalConfig.xpReward ?? E.DEFAULT_XP_REWARD;
-        this.lootTableId = finalConfig.lootTableId || 'common_enemy';
-        this.lootTable = finalConfig.lootTable || null;
+        this.xpReward = (finalConfig.xpReward as number) ?? E.DEFAULT_XP_REWARD;
+        this.lootTableId = (finalConfig.lootTableId as string) || 'common_enemy';
+        this.lootTable = (finalConfig.lootTable as Array<{ item: string; chance?: number; amount?: number | number[] | { min: number; max: number; } }>) || null;
         this.lootMultiplier = isElite
             ? (EnemyConfig.eliteMultipliers as { lootDrops?: number })?.lootDrops ?? 3.0
             : 1.0;
 
         // Entity SFX (from entity JSON)
-        this.sfx = finalConfig.sfx || null;
+        this.sfx = (finalConfig.sfx as Record<string, string>) || null;
 
         // Biome Context
         this.biomeId = config.biomeId || null;
@@ -192,7 +192,7 @@ class Enemy extends Entity {
         this.facingRight = true;
         this.frameIndex = 0;
         this.frameTimer = 0;
-        this.frameInterval = finalConfig.frameInterval ?? E.FRAME_INTERVAL;
+        this.frameInterval = (finalConfig.frameInterval as number) ?? E.FRAME_INTERVAL;
 
         this.wanderTarget = null;
         this.wanderTimer = 0;
@@ -201,7 +201,7 @@ class Enemy extends Entity {
         this.wanderInterval = wMin + Math.random() * wVar;
 
         // Sprite Loading
-        this.spriteId = finalConfig.spriteId || null;
+        this.spriteId = (finalConfig.spriteId as string) || null;
         this._spriteLoaded = false;
         this._loadSprite();
 
@@ -220,7 +220,7 @@ class Enemy extends Entity {
         if (StatsComponent) {
             this.components.stats = new StatsComponent(this, {
                 speed: this.speed,
-                defense: finalConfig.defense || 0
+                defense: (finalConfig.defense as number) || 0
             });
         }
 

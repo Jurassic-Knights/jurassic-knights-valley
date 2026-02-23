@@ -33,7 +33,7 @@ Enemy.prototype.updateWander = function (this: Enemy, dt: number) {
         const dist = MathUtils.distance(this.x, this.y, hero.x, hero.y);
 
         if (dist <= this.aggroRange) {
-            this.target = hero;
+            this.target = hero as Entity;
             this.state = 'chase';
 
             if (AudioManager) {
@@ -269,7 +269,7 @@ Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
                     entry.amount.min + Math.random() * (entry.amount.max - entry.amount.min + 1)
                 );
             } else if (entry.amount) {
-                amount = entry.amount;
+                amount = entry.amount as number;
             }
 
             if (this.isElite) {

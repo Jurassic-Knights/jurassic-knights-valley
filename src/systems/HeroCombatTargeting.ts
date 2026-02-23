@@ -19,11 +19,11 @@ export function findTarget(hero: Hero): IEntity | null {
     let target: IEntity | null = null;
     let minDistSq = Infinity;
 
-    const activeWeapons = hero.equipment?.getActiveWeapons?.() || {};
+    const activeWeapons = hero.equipment?.getActiveWeapons?.() || ({} as Record<string, string>);
     const hand1Range = activeWeapons.mainHand
-        ? getWeaponStats(activeWeapons.mainHand).range
+        ? getWeaponStats(activeWeapons.mainHand as unknown as { weaponSubtype?: string; stats?: { range?: number; damage?: number; attackSpeed?: number; } }).range
         : 0;
-    const hand2Range = activeWeapons.offHand ? getWeaponStats(activeWeapons.offHand).range : 0;
+    const hand2Range = activeWeapons.offHand ? getWeaponStats(activeWeapons.offHand as unknown as { weaponSubtype?: string; stats?: { range?: number; damage?: number; attackSpeed?: number; } }).range : 0;
     const scanRange = Math.max(
         hand1Range,
         hand2Range,

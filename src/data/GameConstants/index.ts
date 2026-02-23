@@ -82,23 +82,23 @@ export { GameConstants };
  * Usage: const speed = getConfig().Hero.SPEED;
  */
 export function getConfig(): typeof GameConstants {
-    const tunables =
+    const tunables: Record<string, Record<string, unknown>> =
         typeof window !== 'undefined' && window.__GAME_CONFIG__
-            ? (window as Window & { __GAME_CONFIG__?: Record<string, unknown> }).__GAME_CONFIG__
+            ? ((window as Window & { __GAME_CONFIG__?: Record<string, Record<string, unknown>> }).__GAME_CONFIG__ as Record<string, Record<string, unknown>>) || {}
             : {};
     const base =
         typeof window !== 'undefined' && window.__GAME_CONSTANTS__
             ? window.__GAME_CONSTANTS__
             : GameConstants;
 
-    const mergedWeaponDefaults = {
-        ...(base as { WeaponDefaults?: Record<string, unknown> }).WeaponDefaults
+    const mergedWeaponDefaults: Record<string, Record<string, unknown>> = {
+        ...(base as { WeaponDefaults?: Record<string, Record<string, unknown>> }).WeaponDefaults
     };
     if (tunables.WeaponDefaults) {
         for (const weapon of Object.keys(tunables.WeaponDefaults)) {
             mergedWeaponDefaults[weapon] = {
-                ...mergedWeaponDefaults[weapon],
-                ...tunables.WeaponDefaults[weapon]
+                ...(mergedWeaponDefaults[weapon] || {}),
+                ...((tunables.WeaponDefaults[weapon] as Record<string, unknown>) || {})
             };
         }
     }
@@ -116,7 +116,7 @@ export function getConfig(): typeof GameConstants {
         PlayerResources:
             tunables.PlayerResources ||
             (base as { PlayerResources?: Record<string, unknown> }).PlayerResources
-    } as typeof GameConstants;
+    } as unknown as typeof GameConstants;
 }
 
 declare global {

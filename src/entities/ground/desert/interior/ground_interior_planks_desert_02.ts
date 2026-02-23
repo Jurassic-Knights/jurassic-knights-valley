@@ -2,7 +2,7 @@
  * Entity: ground_interior_planks_desert_02
  * Auto-generated.
  */
-import type { BaseEntity } from '@types/entities';
+import type { EntityConfig } from '@app-types/core';
 
 export default {
     "id": "ground_interior_planks_desert_02",
@@ -27,4 +27,4 @@ export default {
         "interior",
         "planks"
     ]
-} satisfies BaseEntity;
+} satisfies EntityConfig;

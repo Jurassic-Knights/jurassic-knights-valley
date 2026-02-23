@@ -86,10 +86,16 @@ declare let EntityLoader: typeof import('../entities/EntityLoader').EntityLoader
 declare let gameanalytics: {
     GameAnalytics: {
         setEnabledInfoLog(enabled: boolean): void;
+        configureBuild(build: string): void;
         initialize(gameKey: string, secretKey: string): void;
         addDesignEvent(eventId: string, value?: number): void;
         addErrorEvent(severity: number, message: string): void;
+        addProgressionEvent(status: number, area: string, step?: string): void;
+        addResourceEvent(flowType: number, currency: string, amount: number, itemType: string, itemId: string): void;
     };
+    EGAProgressionStatus: Record<string, number>;
+    EGAResourceFlowType: Record<string, number>;
+    EGAErrorSeverity: Record<string, number>;
 } | undefined;
 
 // Input

@@ -158,9 +158,9 @@ class Quadtree {
 
             let i = 0;
             while (i < this.objects.length) {
-                const index = this.getIndex(this.objects[i]);
+                const index = this.getIndex(this.objects[i] as Rect);
                 if (index !== -1) {
-                    this.nodes[index].insert(this.objects.splice(i, 1)[0]);
+                    this.nodes[index].insert(this.objects.splice(i, 1)[0] as Rect);
                 } else {
                     i++;
                 }
@@ -204,7 +204,7 @@ class Quadtree {
 
         // Check objects in this node
         for (const obj of this.objects) {
-            if (this.intersects(obj, range)) {
+            if (this.intersects(obj as Rect, range)) {
                 found.push(obj);
             }
         }

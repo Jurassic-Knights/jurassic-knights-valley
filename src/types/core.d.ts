@@ -95,6 +95,22 @@ export interface EntityConfig {
         mask?: number;
         isTrigger?: boolean;
     };
+    // Shared optional properties across entities
+    name?: string;
+    tier?: number;
+    category?: string;
+    biome?: string;
+    biomeId?: string;
+    scale?: number;
+    threatLevel?: number;
+    respawnTime?: number;
+    lootTableId?: string;
+    glowColor?: string;
+    enemyType?: string;
+    isBoss?: boolean;
+    isElite?: boolean;
+    forceNormal?: boolean;
+    abilities?: Array<{ id: string; name: string; cooldown?: number;[key: string]: unknown }>;
     // Enhanced properties for loader
     assets?: {
         sprite?: string;
@@ -121,6 +137,8 @@ export interface IEntity {
     type: string;
     /** Entity type (alternative property name) */
     entityType?: string;
+    /** AI behavior strategy mapping ID */
+    aiType?: string;
     /** Original Registry ID for hot-reloading */
     registryId?: string;
     /** World X position */
@@ -240,8 +258,46 @@ export interface IEntity {
 export interface ICombatEntity extends IEntity {
     health: number;
     maxHealth: number;
-    damage?(amount: number, source?: IEntity): void;
+    takeDamage?(amount: number, source?: IEntity): void;
     isDead?: boolean;
+}
+
+/**
+ * AI Specific Entity Extensions for Strict Type Checking
+ */
+export interface INpcEntity extends IEntity {
+    interactRadius?: number;
+    playerNearby?: boolean;
+    facingRight?: boolean;
+    patrolPoints?: { x: number; y: number }[];
+    patrolIndex?: number;
+    patrolWait?: number;
+    patrolWaitTime?: number;
+}
+
+export interface IEnemyEntity extends ICombatEntity {
+    enemyName?: string;
+    attackRate?: number;
+    attackRange?: number;
+    attackCooldown?: number;
+    damage?: number;
+    attackType?: string;
+    aggroRange?: number;
+    leashDistance?: number;
+    wanderTimer?: number;
+    wanderTarget?: { x: number; y: number } | null;
+    wanderInterval?: number;
+    patrolRadius?: number;
+    moveAlongPath?(targetX: number, targetY: number, speed: number, dt: number): boolean;
+}
+
+export interface IBossEntity extends IEnemyEntity {
+    phase?: number;
+    abilityCooldown?: number;
+    abilityTimer?: number;
+    currentAbility?: string;
+    isEnraged?: boolean;
+    abilities?: string[];
 }
 
 /**
@@ -344,25 +400,26 @@ export interface HealthComponent extends IComponent {
     health: number;
     maxHealth: number;
     getMaxHealth?(): number;
-    damage(amount: number): void;
-    heal(amount: number): void;
+    damage?(amount: number): void;
+    heal?(amount: number): void;
     isDead: boolean;
 }
 
 export interface StatsComponent extends IComponent {
-    level: number;
-    xp: number;
-    nextLevelXp: number;
-    strength: number;
-    dexterity: number;
-    constitution: number;
-    intelligence: number;
-    attack: number;
-    defense: number;
-    maxStamina: number;
-    stamina: number;
+    level?: number;
+    xp?: number;
+    nextLevelXp?: number;
+    strength?: number;
+    dexterity?: number;
+    constitution?: number;
+    intelligence?: number;
+    speed?: number;
+    attack?: number;
+    defense?: number;
+    maxStamina?: number;
+    stamina?: number;
     getXPForLevel?(level: number): number;
-    getStat(name: string): number;
+    getStat?(name: string): number;
     getDefense?(): number;
     getAttack?(): number;
     getCritChance?(): number;
@@ -372,22 +429,26 @@ export interface StatsComponent extends IComponent {
 export interface InventoryComponent extends IComponent {
     items: Record<string, number>;
     gold?: number;
-    capacity: number;
-    add(itemId: string, amount?: number): boolean;
-    remove(itemId: string, amount?: number): boolean;
-    has(itemId: string, amount?: number): boolean;
+    capacity?: number;
+    add?(itemId: string, amount?: number): boolean | void;
+    remove?(itemId: string, amount?: number): boolean | void;
+    has?(itemId: string, amount?: number): boolean;
 }
 
 export interface CombatComponent extends IComponent {
-    attackDamage: number;
-    attackRange: number;
-    attackSpeed: number;
-    startAttack(target: IEntity): void;
-    stopAttack(): void;
-    canAttack: boolean;
-    attack(): boolean;
-    damage: number;
-    update(dt: number): void;
+    attackDamage?: number;
+    attackRange?: number;
+    attackSpeed?: number;
+    rate?: number;
+    range?: number;
+    staminaCost?: number;
+    cooldownTimer?: number;
+    startAttack?(target: IEntity): void;
+    stopAttack?(): void;
+    canAttack?: boolean;
+    attack?(): boolean;
+    damage?: number;
+    update?(dt: number): void;
 }
 
 export interface AIComponent extends IComponent {

@@ -28,7 +28,7 @@ const SpriteLoader = {
 
         // Already loading?
         if (entity[propName]) {
-            return entity[loadedProp] || false;
+            return Boolean(entity[loadedProp]);
         }
 
         // Get path from AssetLoader
@@ -42,7 +42,8 @@ const SpriteLoader = {
         });
 
         // Check for immediate cache hit
-        if (entity[propName].complete) {
+        const img = entity[propName] as HTMLImageElement;
+        if (img && img.complete) {
             entity[loadedProp] = true;
             return true;
         }
@@ -64,12 +65,18 @@ const SpriteLoader = {
             return false;
         }
 
+        const img = entity[propName] as HTMLImageElement;
+        const x = Number(entity.x) || 0;
+        const y = Number(entity.y) || 0;
+        const width = Number(entity.width) || img.width;
+        const height = Number(entity.height) || img.height;
+
         ctx.drawImage(
-            entity[propName],
-            entity.x - entity.width / 2,
-            entity.y - entity.height / 2,
-            entity.width,
-            entity.height
+            img,
+            x - width / 2,
+            y - height / 2,
+            width,
+            height
         );
 
         return true;
@@ -89,6 +96,8 @@ const SpriteLoader = {
             entity[propName] = {};
         }
 
+        const spritesObj = entity[propName] as Record<string, HTMLImageElement>;
+
         if (!AssetLoader) return false;
 
         let allLoaded = true;
@@ -96,21 +105,21 @@ const SpriteLoader = {
 
         for (const assetId of assetIds) {
             // Already loaded this one?
-            if (entity[propName][assetId] && entity[propName][assetId].complete) {
+            if (spritesObj[assetId] && spritesObj[assetId].complete) {
                 loadCount++;
                 continue;
             }
 
             // Use AssetLoader.createImage for built-in fallback chain
-            if (!entity[propName][assetId]) {
+            if (!spritesObj[assetId]) {
                 const path = AssetLoader.getImagePath(assetId);
                 if (!path) continue;
 
-                entity[propName][assetId] = AssetLoader.createImage(path, () => {
+                spritesObj[assetId] = AssetLoader.createImage(path, () => {
                     // Check if all loaded
                     let count = 0;
                     for (const id of assetIds) {
-                        if (entity[propName][id] && entity[propName][id].complete) {
+                        if (spritesObj[id] && spritesObj[id].complete) {
                             count++;
                         }
                     }
@@ -121,7 +130,7 @@ const SpriteLoader = {
             }
 
             // Check cache hit
-            if (entity[propName][assetId].complete) {
+            if (spritesObj[assetId] && spritesObj[assetId].complete) {
                 loadCount++;
             } else {
                 allLoaded = false;

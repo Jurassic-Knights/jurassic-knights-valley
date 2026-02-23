@@ -17,19 +17,20 @@ export interface CollisionDebugData {
 }
 
 function drawTerrainDebug(ctx: CanvasRenderingContext2D): void {
-    if (!WorldManager?.collisionBlocks) return;
+    const wm = WorldManager as { collisionBlocks?: any[]; walkableZones?: any[] };
+    if (!wm?.collisionBlocks) return;
 
     ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
     ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
 
-    for (const block of WorldManager.collisionBlocks) {
+    for (const block of wm.collisionBlocks) {
         ctx.fillRect(block.x, block.y, block.width, block.height);
         ctx.strokeRect(block.x, block.y, block.width, block.height);
     }
 
     ctx.fillStyle = 'rgba(0, 0, 255, 0.2)';
-    if (WorldManager.walkableZones) {
-        for (const zone of WorldManager.walkableZones) {
+    if (wm.walkableZones) {
+        for (const zone of wm.walkableZones) {
             if (zone.type === 'bridge') {
                 ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
             }
