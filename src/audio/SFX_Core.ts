@@ -16,8 +16,8 @@
 import { Logger } from '@core/Logger';
 
 const SFX = {
-    ctx: null as AudioContext | null,
-    masterGain: null as GainNode | null,
+    ctx: null as unknown as AudioContext,
+    masterGain: null as unknown as GainNode,
     TARGET_VOLUME: 0.5,
 
     // Sound handlers registry - populated by category files
@@ -64,7 +64,7 @@ const SFX = {
         return buffer;
     },
 
-    playNoise(duration: number, attack: number, decay: number, _volume = 0.3, filterFreq = 2000) {
+    playNoise(duration: number, attack: number, _decay: number, _volume = 0.3, filterFreq = 2000) {
         if (!this.ctx) return { noise: null, gain: null, filter: null };
 
         const noise = this.ctx.createBufferSource();

@@ -83,8 +83,8 @@ class QuestManagerService {
         if (!questConfig) {
             Logger.info('[QuestManager] No more quests!');
             this.activeQuest = null;
-            if (EventBus && GameConstants?.Events) {
-                EventBus.emit(GameConstants.Events.QUEST_UPDATED, { quest: null, animate: false });
+            if (EventBus) {
+                EventBus.emit('QUEST_UPDATED', { quest: null, animate: false });
             }
             return;
         }
@@ -166,8 +166,8 @@ class QuestManagerService {
      * Update UI elements (emits event; UIManager subscribes and updates quest panel)
      */
     updateUI(animate: boolean = false) {
-        if (EventBus && GameConstants?.Events) {
-            EventBus.emit(GameConstants.Events.QUEST_UPDATED, {
+        if (EventBus) {
+            EventBus.emit('QUEST_UPDATED', {
                 quest: this.activeQuest,
                 animate
             });

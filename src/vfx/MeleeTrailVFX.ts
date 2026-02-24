@@ -101,7 +101,7 @@ const MeleeTrailVFX = {
         this.trails = { hand1: [], hand2: [] };
     },
 
-    spawn(x: number, y: number, angle: number, progress: number, weaponSubtype: string) {
+    spawn(x: number, y: number, _angle: number, _progress: number, weaponSubtype: string) {
         this.addPoint(x, y, weaponSubtype, 'hand1');
     }
 };

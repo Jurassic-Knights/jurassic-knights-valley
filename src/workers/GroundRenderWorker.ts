@@ -5,19 +5,19 @@ self.onmessage = async (e: MessageEvent) => {
     const {
         jobId,
         width,
-        height,
+        height: _height,
         splatWeights,
         baseBuffer,
         midBuffer,
         overlayBuffer,
-        heightBuffer,
-        noiseBuffer,
-        _config, // Renamed from config
+        // heightBuffer,
+        // noiseBuffer,
+        // _config,
         baseWidth,
         midWidth,
         overlayWidth,
-        heightWidth,
-        noiseWidth,
+        // heightWidth,
+        // noiseWidth,
         tileSize
     } = e.data;
 
@@ -30,8 +30,8 @@ self.onmessage = async (e: MessageEvent) => {
         const base32 = new Uint32Array(baseBuffer);
         const mid32 = new Uint32Array(midBuffer);
         const overlay32 = new Uint32Array(overlayBuffer);
-        const h32 = new Uint32Array(heightBuffer);
-        const n32 = new Uint32Array(noiseBuffer);
+        // const h32 = new Uint32Array(heightBuffer);
+        // const n32 = new Uint32Array(noiseBuffer);
 
         const calcDim = (buf: Uint32Array, passed: number | undefined) => {
             if (passed && passed > 64) return passed;
@@ -42,8 +42,8 @@ self.onmessage = async (e: MessageEvent) => {
         const bw = calcDim(base32, baseWidth || width);
         const mw = calcDim(mid32, midWidth || width);
         const ow = calcDim(overlay32, overlayWidth || width);
-        const _hw = calcDim(h32, heightWidth || width); // Renamed from hw
-        const _nw = calcDim(n32, noiseWidth || width); // Renamed from nw
+        // const _hw = calcDim(h32, heightWidth || width); // Renamed from hw
+        // const _nw = calcDim(n32, noiseWidth || width); // Renamed from nw
 
         const mh = mw;
         const oh = ow;

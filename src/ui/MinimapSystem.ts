@@ -193,7 +193,7 @@ class MinimapSystem {
         if (!this.modal) return;
 
         if (EventBus && GameConstants?.Events) {
-            EventBus.emit(GameConstants.Events.UI_FULLSCREEN_OPENED, { source: this });
+            (EventBus.emit as any)(GameConstants.Events.UI_FULLSCREEN_OPENED, { source: this });
         }
 
         // Hide weapon swap button

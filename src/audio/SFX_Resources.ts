@@ -10,8 +10,10 @@ import { Logger } from '@core/Logger';
         // Combat
         sfx_hero_swing: function () {
             const { filter } = SFX.playNoise(0.2, 0.02, 0.18, 0.25, 1000);
-            filter.frequency.setValueAtTime(200, SFX.ctx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(600, SFX.ctx.currentTime + 0.15);
+            if (filter) {
+                filter.frequency.setValueAtTime(200, SFX.ctx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(600, SFX.ctx.currentTime + 0.15);
+            }
         },
 
         sfx_hero_shoot: function () {
@@ -159,7 +161,9 @@ import { Logger } from '@core/Logger';
 
         sfx_resource_break_stone: function () {
             const { filter } = SFX.playNoise(0.3, 0.01, 0.3, 0.3, 800);
-            filter.frequency.linearRampToValueAtTime(200, SFX.ctx.currentTime + 0.3);
+            if (filter) {
+                filter.frequency.linearRampToValueAtTime(200, SFX.ctx.currentTime + 0.3);
+            }
             SFX.playTone(40, 0.25, 'triangle', 0.3);
         },
 

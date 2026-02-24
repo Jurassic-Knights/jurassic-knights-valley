@@ -37,7 +37,7 @@ const ShadowRenderer = {
             return;
         }
 
-        let tSub;
+        let tSub = 0;
         const hero = GameRenderer?.hero;
 
         ctx.save();
@@ -50,17 +50,17 @@ const ShadowRenderer = {
             if (timing) tSub = performance.now();
 
             if (entity === hero) {
-                if (heroRenderer) heroRenderer.drawShadow(ctx, entity, false);
+                if (heroRenderer) heroRenderer.drawShadow?.(ctx, entity as any, false);
                 if (timing) {
                     timing.shadowHero = (timing.shadowHero || 0) + performance.now() - tSub;
                 }
             } else if (entity.entityType === EntityTypes.DINOSAUR) {
-                if (dinosaurRenderer) dinosaurRenderer.renderShadow(ctx, entity, false);
+                if (dinosaurRenderer) dinosaurRenderer.renderShadow?.(ctx, entity as any, false);
                 if (timing) {
                     timing.shadowDino = (timing.shadowDino || 0) + performance.now() - tSub;
                 }
             } else if (entity.entityType === EntityTypes.RESOURCE) {
-                if (resourceRenderer) resourceRenderer.renderShadow(ctx, entity, false);
+                if (resourceRenderer) resourceRenderer.renderShadow?.(ctx, entity as any, false);
                 if (timing) {
                     timing.shadowRes = (timing.shadowRes || 0) + performance.now() - tSub;
                 }

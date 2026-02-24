@@ -1,7 +1,7 @@
 /**
  * CollisionSystem – Resolves spatial collisions, movement, and triggers between entities using a spatial hash.
  */
-import { ISystem, IGame } from '../types/core';
+import { ISystem, IGame, IEntity } from '../types/core';
 import { Entity } from '../core/Entity';
 import { Logger } from '../core/Logger';
 import { CollisionLayers } from '../components/CollisionComponent';
@@ -20,7 +20,7 @@ export class CollisionSystem implements ISystem {
     private activeCollisions: Map<string, Set<string>> = new Map(); // EntityID -> Set<OtherID>
     /** Scratch Set reused per entity in checkTriggers to avoid allocation in hot path */
     private _currentOverlapsScratch: Set<string> = new Set();
-    private cellSize: number;
+    private cellSize: number = 0;
     private debugMode: boolean = false;
 
     constructor() {
@@ -34,24 +34,25 @@ export class CollisionSystem implements ISystem {
         Logger.info('[CollisionSystem] Initialized');
 
         // Listen for entity registration
-        EventBus.on(GameConstants.Events.ENTITY_ADDED, (data: { entity: Entity }) => {
+        EventBus.on('ENTITY_ADDED', (data: { entity: IEntity }) => {
             if (data && data.entity) {
-                this.register(data.entity);
+                this.register(data.entity as Entity);
                 Logger.info(`[CollisionSystem] Event ADDED: ${data.entity.id}`);
             }
         });
 
-        EventBus.on(GameConstants.Events.ENTITY_REMOVED, (data: { entity: Entity }) => {
-            if (data && data.entity) this.unregister(data.entity);
+        EventBus.on('ENTITY_REMOVED', (data: { entity: IEntity }) => {
+            if (data && data.entity) this.unregister(data.entity as Entity);
         });
 
-        EventBus.on(GameConstants.Events.ENTITY_MOVE_REQUEST, (data: { entity: Entity; dx: number; dy: number }) => {
-            if (data?.entity != null && this.entities.includes(data.entity)) {
-                const result = this.move(data.entity, data.dx, data.dy);
-                EventBus.emit(GameConstants.Events.MOVEMENT_UPDATE_RESULT, {
+        EventBus.on('ENTITY_MOVE_REQUEST', (data: { entity: IEntity; dx: number; dy: number; force?: boolean }) => {
+            if (data?.entity != null && this.entities.includes(data.entity as Entity)) {
+                const result = this.move(data.entity as Entity, data.dx, data.dy);
+                EventBus.emit('MOVEMENT_UPDATE_RESULT', {
                     entity: data.entity,
-                    actualDx: result.x,
-                    actualDy: result.y
+                    x: result.x,
+                    y: result.y,
+                    moved: result.x !== 0 || result.y !== 0
                 });
             }
         });

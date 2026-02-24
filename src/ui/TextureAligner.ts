@@ -124,6 +124,7 @@ class TextureAlignerService {
             });
             this.fileHandle = handle;
 
+            if (!this.container) return;
             // UI Update
             (this.container.querySelector('#btn-connect') as HTMLElement).style.display = 'none';
             (this.container.querySelector('#status-connected') as HTMLElement).style.display =
@@ -158,7 +159,7 @@ class TextureAlignerService {
     }
 
     loadImage() {
-        if (!this.targetId) return;
+        if (!this.targetId || !this.container) return;
         const filename = (this.container.querySelector('#inp-img') as HTMLInputElement).value;
         if (!filename) return alert('Select filename');
 
@@ -181,7 +182,7 @@ class TextureAlignerService {
     }
 
     recalculateAspect(img: HTMLImageElement) {
-        if (!img || !img.naturalWidth) {
+        if (!img || !img.naturalWidth || !this.target) {
             this.multX = 1;
             this.multY = 1;
             return;
@@ -268,6 +269,7 @@ class TextureAlignerService {
     updateState(key: string, val: string | number) {
         const numVal = parseFloat(String(val)); // Ensure numeric
 
+        if (!this.container) return;
         if (key === 'scaleX' && this.multX) {
             // Input (Virtual) -> State (CSS)
             this.state.scaleX = numVal * this.multX;

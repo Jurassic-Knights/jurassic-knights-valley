@@ -94,7 +94,7 @@ class GameState {
         if (EventBus) {
             EventBus.emit('STATE_CHANGED', { key, value });
             // Specific events for convenience
-            if (key === 'gold') EventBus.emit('GOLD_CHANGED', value);
+            if (key === 'gold') EventBus.emit('GOLD_CHANGED', value as number);
         }
     }
 }

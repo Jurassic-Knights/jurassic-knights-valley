@@ -7,7 +7,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants } from '@data/GameConstants';
+// import { GameConstants } from '@data/GameConstants';
 import { AssetLoader } from '@core/AssetLoader';
 import { AudioManager } from '../audio/AudioManager';
 
@@ -42,19 +42,17 @@ class ContextActionService {
         }
 
         // EventBus Listeners
-        if (EventBus && GameConstants) {
-            const E = GameConstants.Events;
-
+        if (EventBus) {
             // Rest/Home
-            EventBus.on(E.HOME_BASE_ENTERED, () => this.show('rest'));
-            EventBus.on(E.HOME_BASE_EXITED, () => this.hide('rest'));
+            EventBus.on('HOME_BASE_ENTERED', () => this.show('rest'));
+            EventBus.on('HOME_BASE_EXITED', () => this.hide('rest'));
 
             // Forge
-            EventBus.on(E.FORGE_ENTERED, () => this.show('forge'));
-            EventBus.on(E.FORGE_EXITED, () => this.hide('forge'));
+            EventBus.on('FORGE_ENTERED', () => this.show('forge'));
+            EventBus.on('FORGE_EXITED', () => this.hide('forge'));
 
             // Merchant
-            EventBus.on(E.INTERACTION_OPPORTUNITY, (data: ContextData) => {
+            EventBus.on('INTERACTION_OPPORTUNITY', (data: any) => {
                 if (data?.type === 'merchant') {
                     if (data.visible) this.show('merchant', data);
                     else this.hide('merchant');
@@ -110,18 +108,17 @@ class ContextActionService {
         Logger.debug('[ContextActionUI]', `Executing: ${this.activeContext}`);
         if (AudioManager) AudioManager.playSFX('sfx_ui_click');
 
-        const E = GameConstants ? GameConstants.Events : null;
 
         switch (this.activeContext) {
             case 'rest':
-                if (E && EventBus) EventBus.emit(E.REQUEST_REST);
+                if (EventBus) EventBus.emit('REQUEST_REST');
                 break;
             case 'forge':
-                if (E && EventBus) EventBus.emit(E.OPEN_FORGE, { view: 'dashboard' });
+                if (EventBus) EventBus.emit('OPEN_FORGE', { view: 'dashboard' });
                 break;
 
             case 'merchant':
-                if (E && EventBus) EventBus.emit(E.OPEN_MERCHANT);
+                if (EventBus) EventBus.emit('OPEN_MERCHANT');
                 break;
         }
     }

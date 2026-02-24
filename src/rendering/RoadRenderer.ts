@@ -56,6 +56,7 @@ class RoadRenderer {
         const size = this.tileSize;
         const canvas = DOMUtils.createCanvas(size, size);
         const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
         // Base dirt color
         ctx.fillStyle = '#8B6914';
@@ -153,7 +154,9 @@ class RoadRenderer {
             ctx.rotate(angle);
 
             // Draw tile centered on the spline
-            ctx.drawImage(this.roadTile, -tileWidth / 2, -tileHeight / 2, tileWidth, tileHeight);
+            if (this.roadTile) {
+                ctx.drawImage(this.roadTile, -tileWidth / 2, -tileHeight / 2, tileWidth, tileHeight);
+            }
 
             ctx.restore();
         }

@@ -176,9 +176,11 @@ import { Logger } from '@core/Logger';
         sfx_pterodactyl_swoop: function () {
             const t = SFX.ctx.currentTime;
             const { filter } = SFX.playNoise(0.5, 0.05, 0.4, 0.3, 2000);
-            filter.frequency.setValueAtTime(500, t);
-            filter.frequency.exponentialRampToValueAtTime(2000, t + 0.25);
-            filter.frequency.exponentialRampToValueAtTime(500, t + 0.5);
+            if (filter) {
+                filter.frequency.setValueAtTime(500, t);
+                filter.frequency.exponentialRampToValueAtTime(2000, t + 0.25);
+                filter.frequency.exponentialRampToValueAtTime(500, t + 0.5);
+            }
 
             const osc = SFX.ctx.createOscillator();
             osc.type = 'triangle';

@@ -4,19 +4,12 @@
  */
 
 import {
-    setManifest,
-    setDeclineNotes,
-    setAssetPrompts,
-    setMissingAssets,
-    setCategoryData,
-    setCurrentCategoryName,
     globalAssetLookup,
     setGlobalAssetLookup,
     setLootSourceMap,
     setRecipeUsageMap,
     sfxRegenerationQueue,
     setSfxRegenerationQueue,
-    currentCategoryName,
     categoryData,
     type AssetItem,
     type CategoryData,

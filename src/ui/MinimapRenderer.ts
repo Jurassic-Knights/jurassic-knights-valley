@@ -5,7 +5,6 @@ import { Registry } from '@core/Registry';
 import { entityManager } from '@core/EntityManager';
 import { GameConstants } from '@data/GameConstants';
 import { drawCachedMeshToCanvas } from '../tools/map-editor/Mapgen4PreviewRenderer';
-import type { Mapgen4Param } from '../tools/map-editor/Mapgen4Param';
 
 const WORLD_SIZE = 160000;
 const MESH_SIZE = 1000;
@@ -38,7 +37,7 @@ export function renderMinimap(
         };
     }>('WorldManager');
     const meshAndMap = worldManager?.getMesh?.();
-    if (meshAndMap) {
+    if (meshAndMap && worldManager) {
         const param = worldManager.getMapgen4Param();
         const { mesh, map } = meshAndMap;
         const {

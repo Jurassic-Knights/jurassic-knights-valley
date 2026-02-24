@@ -59,7 +59,7 @@ export function applyPaintOps(
 ): { changeMap: Map<string, { chunkKey: string; idx: number; oldVal: number; newVal: number }>; dirtyTiles: Map<string, Set<string>> } {
     const changeMap = new Map<string, { chunkKey: string; idx: number; oldVal: number; newVal: number }>();
     const dirtyTiles = new Map<string, Set<string>>();
-    const { CHUNK_SIZE, TILE_SIZE } = MapEditorConfig;
+    const { TILE_SIZE } = MapEditorConfig;
     const SPLAT_CELL_SIZE = TILE_SIZE / 4;
     const SPLATS_PER_CHUNK = MapEditorConfig.SPLAT_RES;
 

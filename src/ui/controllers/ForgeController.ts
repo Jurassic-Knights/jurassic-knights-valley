@@ -50,10 +50,10 @@ class ForgePanel extends UIPanel {
                 this.close();
             });
         }
-        if (EventBus && GameConstants?.Events) {
+        if (EventBus) {
             EventBus.on(
-                GameConstants.Events.OPEN_FORGE,
-                (data: { view?: string } | null) => {
+                'OPEN_FORGE',
+                (data: { view?: string } | undefined) => {
                     this.render((data?.view as string) || 'dashboard');
                     this.open();
                 }
@@ -76,10 +76,11 @@ class ForgePanel extends UIPanel {
         if (!grid) return;
 
         CraftingManager.slots.forEach((slot) => {
-            if (slot.status === 'crafting') {
+            if (slot.status === 'crafting' && slot.recipeId) {
                 const el = grid.children[slot.id];
                 if (el) {
                     const recipe = CraftingManager.getRecipe(slot.recipeId);
+                    if (!recipe) return;
                     const percent = Math.floor(
                         ((Date.now() - slot.startTime) / slot.duration) * 100
                     );

@@ -10,7 +10,7 @@ import { SetManualTownAtCommand } from './commands/SetManualTownAtCommand';
 import { SetManualStationRegionCommand } from './commands/SetManualStationRegionCommand';
 
 export function getDebugOverlayHost(
-    core: MapEditorCore,
+    _core: MapEditorCore,
     props: {
         procCache: ProceduralCache | null;
         worldContainer: PIXI.Container | null;

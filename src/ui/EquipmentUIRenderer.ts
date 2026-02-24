@@ -51,9 +51,8 @@ class EquipmentUIRenderer {
                     </div>
                     <div class="equip-stats-panel">
                         <div class="equip-item-name">Knight</div>
-                        ${
-                            hasHero
-                                ? `
+                        ${hasHero
+                ? `
                         <div class="stat-row"><span class="stat-icon">🛡️</span> HP <span class="stat-bar health"></span><span class="stat-value">${health}/${maxHealth}</span></div>
                         <div class="stat-row"><span class="stat-icon">⚔️</span> Armor <span class="stat-bar armor"></span><span class="stat-value">${defense}</span></div>
                         <div class="stat-row"><span class="stat-icon">🗡️</span> Attack <span class="stat-bar attack"></span><span class="stat-value">${attack}</span></div>
@@ -64,8 +63,8 @@ class EquipmentUIRenderer {
                             <div class="mini-stat"><span class="stat-icon">🏹</span> RNG <span>${hand1Range}/${hand2Range}</span></div>
                         </div>
                         `
-                                : '<div class="stat-row" style="color:#666;">No knight</div>'
-                        }
+                : '<div class="stat-row" style="color:#666;">No knight</div>'
+            }
                     </div>
                 </div>
 
@@ -111,7 +110,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentManager} equipment - Hero equipment manager
      * @returns {string} HTML string
      */
-    static renderEquippedSlots(ui: EquipmentUI, equipment: EquipmentManager) {
+    static renderEquippedSlots(ui: EquipmentUI, equipment: EquipmentManager | undefined) {
         // Tool mode: show 4 dedicated tool slots in a single row
         if (ui.selectedMode === 'tool') {
             const toolSlotLabels: Record<string, string> = {
@@ -186,7 +185,7 @@ class EquipmentUIRenderer {
      * @param {EquipmentManager} equipment - Hero equipment manager
      * @returns {string} HTML string
      */
-    static renderSlot(ui: EquipmentUI, slotId: string, label: string, equipment: EquipmentManager) {
+    static renderSlot(ui: EquipmentUI, slotId: string, label: string, equipment: EquipmentManager | undefined) {
         const item = equipment?.getSlot?.(slotId) as EquipmentItem | undefined;
         const imgPath = item ? EquipmentUIRenderer.getItemIcon(item.id) : '';
 
@@ -245,14 +244,14 @@ class EquipmentUIRenderer {
         return `
             <div class="inventory-grid">
                 ${filtered
-                    .map(
-                        (item: EquipmentItem) => `
+                .map(
+                    (item: EquipmentItem) => `
                     <div class="inventory-item ${ui.selectedItem?.id === item.id ? 'selected' : ''}" data-id="${item.id}">
                         <div class="item-icon" style="background-image: url('${EquipmentUIRenderer.getItemIcon(item.id)}')"></div>
                     </div>
                 `
-                    )
-                    .join('')}
+                )
+                .join('')}
             </div>
         `;
     }
@@ -282,7 +281,8 @@ class EquipmentUIRenderer {
      * @param {string} skinId - Skin ID
      * @returns {string} Image path
      */
-    static getSkinImagePath(skinId: string) {
+    static getSkinImagePath(skinId: string | undefined) {
+        if (!skinId) return '';
         if (AssetLoader && AssetLoader.getImagePath) {
             return AssetLoader.getImagePath(skinId);
         }

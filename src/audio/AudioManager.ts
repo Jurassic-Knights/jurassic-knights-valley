@@ -27,12 +27,13 @@ const AudioManager = {
 
         // Listen for Weather
         if (EventBus && GameConstants) {
-            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: { type: string }) => {
+            EventBus.on(GameConstants.Events.WEATHER_CHANGE as keyof import('../types/events').AppEventMap, (data) => {
+                const weatherData = data as { type: string };
                 if (SFX) {
-                    SFX.setWeather(data.type);
+                    SFX.setWeather(weatherData.type);
                 }
             });
-            EventBus.on(GameConstants.Events.HERO_LEVEL_UP, () => {
+            EventBus.on(GameConstants.Events.HERO_LEVEL_UP as keyof import('../types/events').AppEventMap, () => {
                 this.playSFX('sfx_level_up');
             });
         }
@@ -60,9 +61,9 @@ const AudioManager = {
             this.musicGain.gain.value = 0.5;
 
             // Connect: Source -> Category Gain -> Master -> Destination
-            this.sfxGain.connect(this.masterGain);
-            this.musicGain.connect(this.masterGain);
-            this.masterGain.connect(this.context.destination);
+            this.sfxGain.connect(this.masterGain!);
+            this.musicGain.connect(this.masterGain!);
+            this.masterGain.connect(this.context!.destination);
 
             // Initialize procedural SFX
             if (SFX) {
@@ -121,10 +122,10 @@ const AudioManager = {
             category === 'master'
                 ? this.masterGain
                 : category === 'sfx'
-                  ? this.sfxGain
-                  : category === 'music'
-                    ? this.musicGain
-                    : null;
+                    ? this.sfxGain
+                    : category === 'music'
+                        ? this.musicGain
+                        : null;
 
         if (gain) {
             gain.gain.value = Math.max(0, Math.min(1, value));

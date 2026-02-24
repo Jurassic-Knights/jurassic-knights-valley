@@ -15,7 +15,7 @@ import { computeTileTexture } from './GroundSystemTileTexture';
  */
 export class GroundSystem {
     private renderer: GroundBlendRenderer;
-    private spriteCache: Map<string, PIXI.Sprite[][]> = new Map();
+    private spriteCache: Map<string, (PIXI.Sprite | null)[][]> = new Map();
     private caches: AssetCaches = {
         dataCache: new Map(),
         textureCache: {}
@@ -34,8 +34,8 @@ export class GroundSystem {
     public async renderChunk(
         chunkContainer: PIXI.Container,
         data: ChunkData,
-        chunkX: number,
-        chunkY: number,
+        _chunkX: number,
+        _chunkY: number,
         worldData?: Map<string, ChunkData>
     ) {
         const chunkKey = data.id;
@@ -114,7 +114,7 @@ export class GroundSystem {
         preloadedAssets?: unknown,
         worldData?: Map<string, ChunkData>
     ) {
-        const { TILE_SIZE, CHUNK_SIZE, SPLAT_RES } = MapEditorConfig;
+        const { TILE_SIZE, SPLAT_RES } = MapEditorConfig;
 
         if (!resolvedPaletteId) {
             const tileKey = `${lx},${ly}`;

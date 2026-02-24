@@ -8,7 +8,6 @@ import {
     CATEGORY_COLORS,
     setCategoryData,
     setCurrentCategoryName,
-    categoryData,
     currentCategoryName,
     setCategoryFilterValue,
     categoryFilter,

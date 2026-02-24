@@ -10,13 +10,11 @@ import { Quadtree } from './Quadtree';
 import { GameRenderer } from './GameRenderer';
 import { Registry } from './Registry';
 import { EventBus } from './EventBus';
-import { GameConstants } from '../data/GameConstants';
 import type { IEntity, IGame } from '../types/core';
 
 // Ambient declaration for not-yet-migrated module
 
 class EntityManagerService {
-    private game: IGame | null = null;
     private entities: IEntity[] = [];
     private entitiesByType: Record<string, IEntity[]> = {};
     private tree: Quadtree | null = null;
@@ -30,9 +28,7 @@ class EntityManagerService {
         Logger.info('[EntityManager] Constructed');
     }
 
-    init(game: IGame): void {
-        this.game = game;
-
+    init(_game: IGame): void {
         if (Quadtree) {
             // Use GameRenderer's dynamic world size, fallback to calculated default
             const worldW = GameRenderer?.worldWidth || 7680;
@@ -100,7 +96,7 @@ class EntityManagerService {
         }
         this.entitiesByType[type].push(entity);
 
-        EventBus.emit(GameConstants.Events.ENTITY_ADDED, { entity });
+        EventBus.emit('ENTITY_ADDED', { entity });
         Logger.info(`[EntityManager] Added ${type}. Total: ${this.entities.length}`);
     }
 
@@ -121,7 +117,7 @@ class EntityManagerService {
                 }
             }
 
-            EventBus.emit(GameConstants.Events.ENTITY_REMOVED, { entity });
+            EventBus.emit('ENTITY_REMOVED', { entity });
 
             // Optional: Cleanup method on entity
             if (typeof entity.destroy === 'function') {

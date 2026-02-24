@@ -35,8 +35,9 @@ class ResourceSystem {
 
     updateResource(res: IResourceEntity, dt: number) {
         if (res.state === 'depleted') {
-            res.respawnTimer -= dt / 1000;
-            if (res.respawnTimer <= 0) {
+            const resData = res as any;
+            resData.respawnTimer -= dt / 1000;
+            if (resData.respawnTimer <= 0) {
                 this.respawn(res);
             }
         }
@@ -49,7 +50,7 @@ class ResourceSystem {
 
         // Play material-specific respawn SFX - config-driven
         if (AudioManager) {
-            const typeConfig = EntityRegistry?.resources?.[res.resourceType] || {};
+            const typeConfig = res.resourceType ? (EntityRegistry?.resources?.[res.resourceType] || {}) : {};
             const suffix = typeConfig.sfxSuffix || 'metal';
             AudioManager.playSFX(`sfx_respawn_${suffix}`);
         }

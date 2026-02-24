@@ -7,7 +7,7 @@
  * Owner: VFX Specialist
  */
 
-import { ProgressBarRenderer, ProgressBarOptions } from './ProgressBarRenderer';
+import { ProgressBarRenderer } from './ProgressBarRenderer';
 
 // Ambient declaration for global dependency
 

@@ -80,12 +80,12 @@ class RainVFX {
 
             // 2. Move (Falling)
             // Calculate Velocity Components (per second approx for direction)
-            const vX_sec = p.speed * 0.2 + windSpeed;
-            const vY_sec = p.speed;
+            // const vX_sec = p.speed * 0.2 + windSpeed;
+            // const vY_sec = p.speed;
 
             // Frame Delta
-            const vx_frame = vX_sec * (dt / 1000); // or use timeScale logic: p.speed * timeScale is pixels/frame
-            const vy_frame = vY_sec * (dt / 1000); //
+            // const _vx_frame = vX_sec * (dt / 1000); // or use timeScale logic: p.speed * timeScale is pixels/frame
+            // const _vy_frame = vY_sec * (dt / 1000); //
 
             // Consistent Physics Update (using timeScale logic for consistency with original tuning)
             // Original: p.y += p.speed * timeScale;

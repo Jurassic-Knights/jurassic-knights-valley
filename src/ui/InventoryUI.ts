@@ -92,8 +92,8 @@ class InventoryPanel {
             });
             if (GameConstants?.Events) {
                 EventBus.on(
-                    GameConstants.Events.UI_LAYOUT_CHANGED,
-                    (data: { format?: string } | null) => {
+                    GameConstants.Events.UI_LAYOUT_CHANGED as 'UI_LAYOUT_CHANGED',
+                    (data: any) => {
                         const format = data?.format ?? 'desktop';
                         this.setGridSize(format === 'mobile' ? 3 : 5);
                         this._render();
@@ -282,24 +282,23 @@ class InventoryPanel {
                     <!-- Inventory Grid (reuses equip-inventory) -->
                     <div class="equip-inventory">
                         <div class="inventory-grid">
-                            ${
-                                filteredItems.length === 0
-                                    ? '<div class="empty-inventory">No items match filter</div>'
-                                    : filteredItems
-                                          .map(([key, amount]) => {
-                                              const entity = this.getEntityInfo(key) as {
-                                                  name?: string;
-                                              } | null;
-                                              const name = entity?.name || key;
-                                              return `
+                            ${filteredItems.length === 0
+                    ? '<div class="empty-inventory">No items match filter</div>'
+                    : filteredItems
+                        .map(([key, amount]) => {
+                            const entity = this.getEntityInfo(key) as {
+                                name?: string;
+                            } | null;
+                            const name = entity?.name || key;
+                            return `
                                         <div class="inventory-item" data-id="${key}" title="${name}">
                                             <div class="item-icon" data-icon-id="${key}"></div>
                                             <div class="item-count">${amount}</div>
                                         </div>
                                     `;
-                                          })
-                                          .join('')
-                            }
+                        })
+                        .join('')
+                }
                         </div>
                     </div>
                 </div>
@@ -315,7 +314,7 @@ class InventoryPanel {
      */
     _loadIcons() {
         this.container?.querySelectorAll('[data-icon-id]').forEach((el) => {
-            const id = (el as HTMLElement).dataset.iconId;
+            const id = (el as HTMLElement).dataset.iconId as string;
             const path = AssetLoader?.getImagePath(id);
             if (path) {
                 (el as HTMLElement).style.backgroundImage = `url('${path}')`;

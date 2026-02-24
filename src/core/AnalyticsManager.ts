@@ -33,7 +33,7 @@ const Analytics = {
         }
 
         // Load GameAnalytics SDK
-        if (!gameanalytics) {
+        if (typeof gameanalytics === 'undefined') {
             Logger.warn('[Analytics] GameAnalytics SDK not loaded');
             return;
         }
@@ -55,7 +55,7 @@ const Analytics = {
      * Track game progression (level complete, boss killed, etc.)
      */
     trackProgression(status: string, area: string, step: string | null = null) {
-        if (!this.initialized) return;
+        if (!this.initialized || typeof gameanalytics === 'undefined') return;
 
         // status: 'Start', 'Complete', 'Fail'
         // area: 'Zone_Grasslands', 'Boss_Alpha', etc.
@@ -87,7 +87,7 @@ const Analytics = {
         itemType: string,
         itemId: string
     ) {
-        if (!this.initialized) return;
+        if (!this.initialized || typeof gameanalytics === 'undefined') return;
 
         // flowType: 'Source' (earned) or 'Sink' (spent)
         // currency: 'gold', 'gems', etc.
@@ -108,7 +108,7 @@ const Analytics = {
      * Track custom design events
      */
     trackEvent(eventId: string, value: number | null = null) {
-        if (!this.initialized) return;
+        if (!this.initialized || typeof gameanalytics === 'undefined') return;
 
         try {
             if (value !== null) {
@@ -125,7 +125,7 @@ const Analytics = {
      * Track errors
      */
     trackError(severity: string, message: string) {
-        if (!this.initialized) return;
+        if (!this.initialized || typeof gameanalytics === 'undefined') return;
 
         // severity: 'Debug', 'Info', 'Warning', 'Error', 'Critical'
         try {

@@ -2,7 +2,7 @@
  * MapEditorBrushCursor - Brush cursor drawing for zone/ground modes
  */
 import * as PIXI from 'pixi.js';
-import { EditorContext } from './EditorContext';
+
 import type { EditingMode } from './MapEditorState';
 
 export interface BrushCursorParams {

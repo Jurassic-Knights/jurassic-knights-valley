@@ -68,5 +68,5 @@ export default {
         "height": 128
     },
     "declineNote": "",
-    "tier": null
+    "tier": undefined
 } satisfies EnemyEntity;

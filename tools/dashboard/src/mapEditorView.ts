@@ -1,6 +1,5 @@
 import { MapEditorCore } from '../../../src/tools/map-editor/MapEditorCore';
 import { Logger } from '@core/Logger';
-import { ZoneConfig, ZoneCategories } from '../../../src/data/ZoneConfig';
 import { AssetPaletteView } from './AssetPaletteView';
 import { initResizeHandle } from './ResizePanels';
 import { loadDefaultMap, saveDefaultMap } from './MapStorage';
@@ -41,7 +40,7 @@ interface ProcParam {
 }
 
 const DEFAULT_MAP_FILENAME = 'default';
-const MAP_STORAGE_KEY = 'map-editor-default-map';
+// const MAP_STORAGE_KEY = 'map-editor-default-map';
 
 let editorInstance: MapEditorCore | null = null;
 let paletteInstance: AssetPaletteView | null = null;
@@ -181,7 +180,7 @@ function drawViewportRectOnProceduralOverlay(): void {
     if (wrapSidebar)
         wrapSidebar.classList.toggle(
             'has-viewport',
-            inMapView && document.getElementById('procedural-panel-body')?.style.display !== 'none'
+            inMapView && document.getElementById('procedural-panel-body')?.style.display !== 'none' || false
         );
     if (!editorInstance || !inMapView) return;
     if (
@@ -656,12 +655,12 @@ function buildMapPayload(): MapEditorDataPayload | null {
     // MapEditorDataPayload requires `chunks` to be a Record<string, ChunkData>, not an Array.
     // Ensure that mapping occurs if needed.
     const payload: MapEditorDataPayload = {
-        chunks: serialized.chunks,
-        heroSpawn: serialized.heroSpawn,
+        chunks: (serialized?.chunks ?? {}) as any,
+        heroSpawn: serialized?.heroSpawn ?? { x: 0, y: 0 },
         mapgen4Param,
-        manualTowns: serialized.manualTowns,
-        manualStations: serialized.manualStations,
-        railroadWaypoints: serialized.railroadWaypoints
+        manualTowns: (serialized?.manualTowns ?? { stations: [], userRemoved: [], generatedTowns: [] }) as any,
+        manualStations: serialized?.manualStations ?? [],
+        railroadWaypoints: serialized?.railroadWaypoints ?? []
     };
 
     return payload;
@@ -1000,7 +999,6 @@ async function deleteMapByName(filename: string): Promise<void> {
 
 function initModeAndTools(): void {
     const modes = ['object', 'ground', 'zone', 'manipulation'] as const;
-    type EditorMode = (typeof modes)[number];
 
     const updateModeUI = (mode: 'object' | 'ground' | 'zone' | 'manipulation') => {
         modes.forEach((m) => {

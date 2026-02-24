@@ -8,13 +8,12 @@
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
-import { ZoneConfig } from '@data/ZoneConfig';
+
 import { UIBinder } from '@core/UIBinder';
 import { SFX } from '@audio/SFX_Core';
 import { Registry } from '@core/Registry';
 
 class HUDControllerClass {
-    private lastPipCount: number = -1;
     // private readonly RESOLVE_PER_PIP = 5; // Deprecated, use GameConstants
 
     constructor() {
@@ -26,17 +25,17 @@ class HUDControllerClass {
         if (!EventBus) return;
 
         EventBus.on(
-            GameConstants.Events.HERO_STAMINA_CHANGE,
-            (data: { current: number; max: number }) => this.updateStamina(data)
+            GameConstants.Events.HERO_STAMINA_CHANGE as 'HERO_STAMINA_CHANGE',
+            (data: any) => this.updateStamina(data)
         );
         EventBus.on(
-            GameConstants.Events.HERO_HEALTH_CHANGE,
-            (data: { current: number; max: number }) => this.updateHealth(data)
+            GameConstants.Events.HERO_HEALTH_CHANGE as 'HERO_HEALTH_CHANGE',
+            (data: any) => this.updateHealth(data)
         );
-        EventBus.on(GameConstants.Events.INVENTORY_UPDATED, (data: Record<string, number>) =>
+        EventBus.on(GameConstants.Events.INVENTORY_UPDATED as 'INVENTORY_UPDATED', (data: any) =>
             this.updateResources(data)
         );
-        EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE, (data: { isHome: boolean }) =>
+        EventBus.on(GameConstants.Events.HERO_HOME_STATE_CHANGE as 'HERO_HOME_STATE_CHANGE', (data: any) =>
             this.updateRestButton(data)
         );
     }
@@ -61,7 +60,7 @@ class HUDControllerClass {
                 UIBinder.create('div', { className: 'resolve-pip', parent: pipsContainer });
             }
             // Reset last count on rebuild to avoid animation spam
-            this.lastPipCount = currentActivePips;
+            // Reset last count on rebuild to avoid animation spam
         }
 
         // 3. Update States
@@ -95,7 +94,7 @@ class HUDControllerClass {
             }
         });
 
-        this.lastPipCount = currentActivePips;
+
     }
 
     updateHealth(data: { current: number; max: number }) {

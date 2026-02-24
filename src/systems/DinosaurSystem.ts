@@ -55,20 +55,25 @@ class DinosaurSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data: EntityDamageEvent) =>
+            EventBus.on('ENTITY_DAMAGED', (data: EntityDamageEvent) =>
                 this.onEntityDamaged(data)
             );
-            EventBus.on(GameConstants.Events.ENTITY_DIED, (data: EntityDeathEvent) =>
+            EventBus.on('ENTITY_DIED', (data: EntityDeathEvent) =>
                 this.onEntityDied(data)
             );
             EventBus.on(
-                GameConstants.Events.MOVEMENT_UPDATE_RESULT,
-                (data: { entity: IEntity; actualDx: number; actualDy: number }) => {
+                'MOVEMENT_UPDATE_RESULT',
+                (data: { entity: IEntity; x: number; y: number; moved: boolean }) => {
                     const d = data.entity as IEntity & {
                         _moveRequested?: { dx: number; dy: number };
                         _moveResult?: { actualDx: number; actualDy: number };
                     };
-                    if (d) d._moveResult = { actualDx: data.actualDx, actualDy: data.actualDy };
+                    if (d && d._moveRequested) {
+                        d._moveResult = {
+                            actualDx: data.moved ? d._moveRequested.dx : 0,
+                            actualDy: data.moved ? d._moveRequested.dy : 0
+                        };
+                    }
                 }
             );
         }
@@ -125,7 +130,7 @@ class DinosaurSystem {
 
     updateDino(dino: IEntity, dt: number) {
         // Sync with HealthComponent
-        if (dino.components.health) {
+        if (dino.components?.health) {
             dino.health = dino.components.health.health;
             if (dino.components.health.isDead && dino.state !== 'dead') {
                 const d = dino as IDinosaurEntity;
@@ -174,7 +179,7 @@ class DinosaurSystem {
                 // Respawn
                 dino.state = 'alive';
                 dino.health = dino.maxHealth;
-                if (dino.components.health) {
+                if (dino.components?.health) {
                     dino.components.health.isDead = false;
                     dino.components.health.health = dino.components.health.maxHealth;
                 }
@@ -212,9 +217,9 @@ class DinosaurSystem {
         };
         d._moveRequested = { dx, dy };
         d._moveResult = undefined;
-        EventBus.emit(GameConstants.Events.ENTITY_MOVE_REQUEST, { entity: dino, dx, dy });
+        EventBus.emit('ENTITY_MOVE_REQUEST', { entity: dino, dx, dy });
 
-        const res = d._moveResult;
+        const res = (d as any)._moveResult as { actualDx: number; actualDy: number } | undefined;
         const collidedX = res && dx !== 0 && res.actualDx === 0;
         const collidedY = res && dy !== 0 && res.actualDy === 0;
         if (collidedX) dWander.wanderDirection.x *= -1;
@@ -235,8 +240,8 @@ class DinosaurSystem {
     }
 
     changeDirection(dino: IEntity) {
-        if (dino.components.ai) {
-            dino.components.ai.randomizeWander();
+        if (dino.components?.ai) {
+            (dino.components.ai as any).randomizeWander?.();
         } else {
             // Fallback for legacy (or if component missing)
             const d = dino as IDinosaurEntity;

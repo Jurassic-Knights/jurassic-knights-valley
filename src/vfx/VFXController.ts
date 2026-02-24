@@ -16,7 +16,7 @@ import { FloatingTextManager, FloatingText } from './FloatingText';
 import { VFXConfig } from '@data/VFXConfig';
 import { GameRenderer } from '@core/GameRenderer';
 import type { IGame } from '../types/core.d';
-import type { ParticleOptions, VFXSequence, VFXCue } from '../types/vfx';
+import type { ParticleOptions, VFXCue } from '../types/vfx';
 
 class VFXSystem {
     // Property declarations
@@ -29,7 +29,7 @@ class VFXSystem {
         x: number;
         y: number;
         elapsed: number;
-        cues: Array<{ time: number; type: string; options?: ParticleOptions }>;
+        cues: VFXCue[];
         options?: ParticleOptions;
     }> = [];
     initialized: boolean = false;
@@ -46,20 +46,20 @@ class VFXSystem {
             this.bgParticles = Object.create(ParticleSystem);
             this.fgParticles = Object.create(ParticleSystem);
 
-            this.bgParticles.init('vfx-canvas');
-            this.fgParticles.init('vfx-canvas-fg');
+            this.bgParticles!.init('vfx-canvas');
+            this.fgParticles!.init('vfx-canvas-fg');
             Logger.info('[VFXSystem] Particles initialized');
         } else {
             Logger.error('[VFXSystem] ParticleSystem not found! Check load order.');
         }
 
         if (EventBus && GameConstants) {
-            EventBus.on(GameConstants.Events.VFX_PLAY_FOREGROUND, (data: { x: number; y: number; options?: ParticleOptions }) => {
+            EventBus.on(GameConstants.Events.VFX_PLAY_FOREGROUND as 'VFX_PLAY_FOREGROUND', (data: any) => {
                 if (data && typeof data.x === 'number' && typeof data.y === 'number') {
                     this.playForeground(data.x, data.y, data.options);
                 }
             });
-            EventBus.on(GameConstants.Events.HERO_LEVEL_UP, (data: { hero?: { x: number; y: number } }) => {
+            EventBus.on(GameConstants.Events.HERO_LEVEL_UP as 'HERO_LEVEL_UP', (data: any) => {
                 const hero = data?.hero;
                 if (hero && typeof hero.x === 'number' && typeof hero.y === 'number') {
                     const opts = (VFXConfig.TEMPLATES?.LEVEL_UP_FX || { type: 'burst', color: '#FFD700', count: 30, lifetime: 1000 }) as ParticleOptions;
@@ -98,7 +98,7 @@ class VFXSystem {
             // Check for cues to fire
             while (seq.cues.length > 0 && seq.cues[0].time <= seq.elapsed) {
                 const cue = seq.cues.shift(); // Remove and fire
-                this.executeCue(cue, seq.x, seq.y, seq.options);
+                if (cue) this.executeCue(cue, seq.x, seq.y, seq.options);
             }
 
             // Remove finished sequences
@@ -169,7 +169,7 @@ class VFXSystem {
         const rawSequence = VFXConfig.SEQUENCES[sequenceName];
 
         // GC Optimization: Build cues array more efficiently
-        const cues = [];
+        const cues: VFXCue[] = [];
         for (let i = 0; i < rawSequence.length; i++) {
             const src = rawSequence[i];
             cues.push({

@@ -137,7 +137,7 @@ const DebugUI = {
 
         // Hook into event bus to update UI
         if (EventBus) {
-            EventBus.on(GameConstants.Events.TIME_TICK, (data: { dayCount: number, season: string, phase: string }) => {
+            EventBus.on(GameConstants.Events.TIME_TICK as 'TIME_TICK', (data: any) => {
                 const season = data.season ? data.season.substring(0, 3) : '???';
                 const weather = weatherSystem ? weatherSystem.currentWeather : '---';
                 stats.textContent = `D${data.dayCount} ${season} | ${data.phase} | ${weather}`;

@@ -6,10 +6,14 @@
  *        EventBus.on('EVENT_NAME', (data) => { ... })
  */
 import { Logger } from './Logger';
-import type { EventCallback } from '../types/core';
+import type { AppEventMap } from '../types/events';
+
+// Map specific callbacks precisely to their defined event payload
+export type StrictEventCallback<K extends keyof AppEventMap> = (data: AppEventMap[K]) => void;
 
 class EventBusHub {
-    listeners: Record<string, EventCallback[]>;
+    // We must type-cast internally because JS objects can't perfectly hold mapped tuple generic values at runtime
+    listeners: { [K in keyof AppEventMap]?: StrictEventCallback<K>[] };
 
     constructor() {
         this.listeners = {};
@@ -17,39 +21,40 @@ class EventBusHub {
     }
 
     /**
-     * Subscribe to an event
-     * @param {string} eventName
-     * @param {function} callback
+     * Subscribe to a strictly-typed event
      */
-    on<T = unknown>(eventName: string, callback: EventCallback<T>) {
+    on<K extends keyof AppEventMap>(eventName: K, callback: StrictEventCallback<K>): void {
         if (!this.listeners[eventName]) {
             this.listeners[eventName] = [];
         }
-        this.listeners[eventName].push(callback as EventCallback);
+        // Force push, as we know the caller provided the correct type
+        (this.listeners[eventName] as unknown[]).push(callback as unknown);
     }
 
     /**
      * Unsubscribe from an event
-     * @param {string} eventName
-     * @param {function} callback
      */
-    off<T = unknown>(eventName: string, callback: EventCallback<T>) {
+    off<K extends keyof AppEventMap>(eventName: K, callback: StrictEventCallback<K>): void {
         if (!this.listeners[eventName]) return;
-        this.listeners[eventName] = this.listeners[eventName].filter((cb) => cb !== callback as EventCallback);
+
+        // Use unknown casting to bypass mapped tuple constraint inference issues
+        const listeners = this.listeners[eventName] as unknown as StrictEventCallback<K>[];
+        this.listeners[eventName] = listeners.filter((cb) => cb !== callback) as unknown as this["listeners"][K];
     }
 
     /**
-     * Emit an event
-     * @param {string} eventName
-     * @param {T} data
+     * Emit an event with type-safe payload enforcement
      */
-    emit<T = unknown>(eventName: string, data?: T) {
+    emit<K extends keyof AppEventMap>(eventName: K, ...args: AppEventMap[K] extends undefined ? [] : [AppEventMap[K]]): void {
         if (!this.listeners[eventName]) return;
-        this.listeners[eventName].forEach((callback) => {
+
+        const data = args[0] as AppEventMap[K];
+
+        this.listeners[eventName]!.forEach((callback) => {
             try {
                 callback(data);
             } catch (err) {
-                Logger.error(`[EventBus] Error in listener for '${eventName}':`, err);
+                Logger.error(`[EventBus] Error in listener for typeof '${String(eventName)}':`, err);
             }
         });
     }

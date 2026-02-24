@@ -19,7 +19,6 @@ import { RenderProfiler, RenderTiming } from '../rendering/RenderProfiler';
 import { ShadowRenderer } from '../rendering/ShadowRenderer';
 import { DOMUtils } from './DOMUtils';
 import { IGame, IEntity } from '../types/core';
-import type { IRenderer } from '../types/core';
 
 // Import specific system types
 import { PlatformManager } from './PlatformManager';
@@ -206,6 +205,7 @@ const GameRenderer = {
     simpleShadows: false,
 
     renderShadowPass(entities: IEntity[]) {
+        if (!this.ctx) return;
         if (ShadowRenderer) {
             ShadowRenderer.simpleShadows = this.simpleShadows;
             ShadowRenderer.renderShadowPass(
@@ -226,6 +226,7 @@ const GameRenderer = {
      * Fast simple ellipse shadows (delegates to ShadowRenderer)
      */
     renderSimpleShadows(entities: IEntity[]) {
+        if (!this.ctx) return;
         if (ShadowRenderer) {
             ShadowRenderer.renderSimpleShadows(this.ctx, entities, this.viewport);
         }
@@ -242,7 +243,7 @@ const GameRenderer = {
         renderGameLayers(
             {
                 ctx: this.ctx,
-                canvas: this.canvas,
+                canvas: this.canvas!,
                 viewport: this.viewport,
                 worldWidth: this.worldWidth,
                 worldHeight: this.worldHeight,
@@ -253,15 +254,15 @@ const GameRenderer = {
                 simpleShadows: this.simpleShadows,
                 _worldRenderer: this._worldRenderer,
                 _roadRenderer: this._roadRenderer,
-                _vfxController: this._vfxController,
-                _homeBase: this._homeBase,
+                _vfxController: this._vfxController as any,
+                _homeBase: this._homeBase as any,
                 _heroRenderer: this._heroRenderer,
                 _dinosaurRenderer: this._dinosaurRenderer,
                 _resourceRenderer: this._resourceRenderer,
-                _ambientSystem: this._ambientSystem,
-                _fogSystem: this._fogSystem,
+                _ambientSystem: this._ambientSystem as any,
+                _fogSystem: this._fogSystem as any,
                 _envRenderer: this._envRenderer,
-                _lightingSystem: this._lightingSystem,
+                _lightingSystem: this._lightingSystem as any,
                 _renderTiming: this._renderTiming,
                 getVisibleBounds: () => this.getVisibleBounds(),
                 renderShadowPass: (e) => this.renderShadowPass(e)
@@ -290,7 +291,8 @@ const GameRenderer = {
     },
 
     drawGrid() {
-        GridRenderer?.drawGrid(this.ctx, this.viewport, this.canvas, this.game);
+        if (!this.ctx) return;
+        GridRenderer?.drawGrid(this.ctx, this.viewport, this.canvas!, this.game);
     },
     toggleDebug() {
         this.debugMode = !this.debugMode;
@@ -303,18 +305,21 @@ const GameRenderer = {
         return this.gridMode;
     },
     drawWorldBoundary() {
+        if (!this.ctx) return;
         DebugOverlays?.drawWorldBoundary(
             this.ctx,
             this.viewport,
             this.worldWidth,
             this.worldHeight,
-            this.game
+            this.game!
         );
     },
     drawDebugGrid() {
+        if (!this.ctx) return;
         DebugOverlays?.drawDebugGrid(this.ctx, this.getVisibleBounds());
     },
     drawHomeOutpost() {
+        if (!this.ctx || !this.game) return;
         HomeOutpostRenderer?.draw(this.ctx, this.worldWidth, this.worldHeight, this.game);
     }
 };

@@ -52,7 +52,7 @@ class DinosaurRendererService implements ISystem {
 
             // 1. Sprite Render (modern: single sprite via _sprite)
             if (dino._spriteLoaded && dino._sprite) {
-                const flipX = dino.wanderDirection.x < 0;
+                const flipX = (dino.wanderDirection?.x || 0) < 0;
                 ctx.translate(dino.x, dino.y);
                 if (flipX) ctx.scale(-1, 1);
                 ctx.drawImage(dino._sprite, -dino.width / 2, -dino.height / 2, dino.width, dino.height);
@@ -131,7 +131,7 @@ class DinosaurRendererService implements ISystem {
         }
 
         if (dino._spriteLoaded && sprite) {
-            const flipX = dino.wanderDirection.x < 0;
+            const flipX = (dino.wanderDirection?.x || 0) < 0;
 
             // Handle Horizontal Flip
             if (flipX) {
@@ -142,7 +142,7 @@ class DinosaurRendererService implements ISystem {
             if (!dino._shadowImg) {
                 if (MaterialLibrary) {
                     const baseShadowId = 'dino_' + (dino.dinoType || 'base') + '_base';
-                    dino._shadowImg = MaterialLibrary.get(baseShadowId, 'shadow', {});
+                    dino._shadowImg = (MaterialLibrary.get(baseShadowId, 'shadow', {}) as HTMLImageElement | HTMLCanvasElement) || undefined;
                 }
             }
 

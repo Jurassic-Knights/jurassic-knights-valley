@@ -3,7 +3,7 @@
  * Renders the loot view with resources, items, and equipment
  */
 
-import { lootData, setLootData, setLootDataHash, lootFilter, setLootFilterValue } from './state';
+import { setLootData, setLootDataHash, lootFilter, setLootFilterValue } from './state';
 
 // ============================================
 // SHOW LOOT VIEW

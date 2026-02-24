@@ -3,16 +3,9 @@
  * Handles the prompt templates editor view
  */
 
-import { showLandingPage } from './views';
-
 // ============================================
 // STATE
 // ============================================
-
-let templatesContent = '';
-const templateSaveTimer: ReturnType<typeof setTimeout> | null = null;
-let templateSections: unknown[] = [];
-let assetPromptsJson: Record<string, unknown> = {};
 
 // ============================================
 // SHOW TEMPLATES VIEW
@@ -31,15 +24,13 @@ export async function showTemplatesView(): Promise<void> {
             container.innerHTML = `<div class="error">Error loading templates: ${data.error}</div>`;
             return;
         }
-        templatesContent = data.content;
-        templateSections = parseAllTemplateSections(templatesContent);
 
         // Load asset prompts
         try {
             const jsonResp = await fetch('/api/get_prompts', { method: 'POST', body: '{}' });
-            assetPromptsJson = await jsonResp.json();
+            await jsonResp.json();
         } catch {
-            assetPromptsJson = {};
+            // Ignored
         }
 
         renderTemplatesView();
@@ -68,11 +59,6 @@ export function renderTemplatesView(): void {
 // ============================================
 // STUB FUNCTIONS
 // ============================================
-
-function parseAllTemplateSections(_content: string): unknown[] {
-    // Stub - full implementation in asset_dashboard.html
-    return [];
-}
 
 export function onSectionEdit(_idx: number): void {
     // Stub

@@ -11,8 +11,8 @@ export class MoveObjectCommand implements EditorCommand {
         private oldY: number,
         private newX: number,
         private newY: number,
-        private assetId: string
-    ) {}
+        _assetId: string
+    ) { }
 
     public execute(): void {
         this.chunkManager.moveObject(this.oldX, this.oldY, this.newX, this.newY);

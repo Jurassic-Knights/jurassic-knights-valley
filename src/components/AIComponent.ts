@@ -59,7 +59,7 @@ class AIComponent extends Component {
         this.attackWindup = 0;
         this.isAttacking = false;
 
-        Logger.info(`[AIComponent] Attached to ${parent.constructor.name}`);
+        Logger.info(`[AIComponent] Attached to ${parent?.constructor?.name || 'unknown'}`);
     }
 
     setState(newState: string) {
@@ -80,25 +80,28 @@ class AIComponent extends Component {
     }
 
     canAggro(target: IEntity) {
-        if (!target) return false;
-        const dx = target.x - this.parent.x;
-        const dy = target.y - this.parent.y;
+        const p = this.parent;
+        if (!target || !p) return false;
+        const dx = target.x - p.x;
+        const dy = target.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         return dist <= this.aggroRange;
     }
 
     shouldLeash() {
-        if (!this.parent.spawnX) return false;
-        const dx = this.parent.x - this.parent.spawnX;
-        const dy = this.parent.y - this.parent.spawnY;
+        const p = this.parent;
+        if (!p || !p.spawnX || !p.spawnY) return false;
+        const dx = p.x - p.spawnX;
+        const dy = p.y - p.spawnY;
         const dist = Math.sqrt(dx * dx + dy * dy);
         return dist > this.leashDistance;
     }
 
     inAttackRange(target: IEntity) {
-        if (!target) return false;
-        const dx = target.x - this.parent.x;
-        const dy = target.y - this.parent.y;
+        const p = this.parent;
+        if (!target || !p) return false;
+        const dx = target.x - p.x;
+        const dy = target.y - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         return dist <= this.attackRange;
     }

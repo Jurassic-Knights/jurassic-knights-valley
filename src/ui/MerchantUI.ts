@@ -56,7 +56,7 @@ class MerchantPanel extends UIPanel {
             if (btn) {
                 // Clone to remove old listeners (prevent double binding)
                 const newBtn = btn.cloneNode(true);
-                btn.parentNode.replaceChild(newBtn, btn);
+                btn.parentNode?.replaceChild(newBtn, btn);
                 newBtn.addEventListener('click', () => {
                     this.purchaseUpgrade(type);
                 });
@@ -72,13 +72,13 @@ class MerchantPanel extends UIPanel {
                 if (this.isOpen) this.render();
             });
             if (GameConstants?.Events) {
-                EventBus.on(GameConstants.Events.OPEN_MERCHANT, () => this.open());
+                EventBus.on(GameConstants.Events.OPEN_MERCHANT as 'OPEN_MERCHANT', () => this.open());
             }
 
             // Interaction Event
             EventBus.on(
-                'INTERACTION_OPPORTUNITY',
-                (data: { type: string; target?: IslandInteraction; visible?: boolean }) => {
+                'INTERACTION_OPPORTUNITY' as 'INTERACTION_OPPORTUNITY',
+                (data: any) => {
                     const { type, target, visible } = data;
                     if (type === 'merchant') {
                         if (visible && target) {
@@ -142,10 +142,10 @@ class MerchantPanel extends UIPanel {
     }
 
     renderUpgradeRow(
-        type: string,
-        data: unknown,
-        label: string,
-        unit: string,
+        _type: string,
+        _data: unknown,
+        _label: string,
+        _unit: string,
         _customDisplay: string | null = null
     ) {
         // Obsolete

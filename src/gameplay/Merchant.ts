@@ -202,7 +202,7 @@ class Merchant extends Entity {
                 this._imgAssetId = this.getSpriteId();
             }
             if (MaterialLibrary && this._imgAssetId) {
-                this._shadowImg = MaterialLibrary.get(this._imgAssetId, 'shadow', {});
+                this._shadowImg = MaterialLibrary.get(this._imgAssetId, 'shadow', {}) as HTMLImageElement | HTMLCanvasElement | null;
             }
         }
 

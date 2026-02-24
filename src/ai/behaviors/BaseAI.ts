@@ -37,9 +37,11 @@ const BaseAI = {
      * Check if entity is within leash distance of spawn
      */
     isWithinLeash(entity: AIEntity) {
-        const dist = MathUtils.distance(entity.x, entity.y, entity.spawnX, entity.spawnY);
+        const sx = entity.spawnX ?? entity.x;
+        const sy = entity.spawnY ?? entity.y;
+        const dist = MathUtils.distance(entity.x, entity.y, sx, sy);
         const leash = entity.leashDistance || getConfig().AI?.LEASH_DISTANCE || 800;
-        return dist <= leash;
+        return dist <= (leash as number);
     },
 
     /**
@@ -84,10 +86,12 @@ const BaseAI = {
     getRandomWanderTarget(entity: AIEntity) {
         const angle = Math.random() * Math.PI * 2;
         const radius = entity.patrolRadius || getConfig().AI?.PATROL_AREA_RADIUS || 400;
-        const dist = Math.random() * radius * 0.5;
+        const dist = Math.random() * (radius as number) * 0.5;
+        const sx = entity.spawnX ?? entity.x;
+        const sy = entity.spawnY ?? entity.y;
         return {
-            x: entity.spawnX + Math.cos(angle) * dist,
-            y: entity.spawnY + Math.sin(angle) * dist
+            x: sx + Math.cos(angle) * dist,
+            y: sy + Math.sin(angle) * dist
         };
     }
 };

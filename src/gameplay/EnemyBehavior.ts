@@ -124,9 +124,7 @@ Enemy.prototype.performAttack = function (this: Enemy) {
     if (EventBus && GameConstants?.Events) {
         EventBus.emit('ENEMY_ATTACK', {
             attacker: this,
-            target: this.target,
-            damage: this.damage,
-            attackType: this.attackType
+            target: this.target
         });
     }
 
@@ -137,7 +135,7 @@ Enemy.prototype.performAttack = function (this: Enemy) {
 
     const target = this.target as IEntity & { takeDamage?(amount: number, source?: IEntity): void };
     if (target?.takeDamage) {
-        target.takeDamage(this.damage, this);
+        target.takeDamage(this.damage || 0, this);
     }
 };
 
@@ -177,9 +175,8 @@ Enemy.prototype.takeDamage = function (this: Enemy, amount: number, source: Enti
     if (EventBus) {
         EventBus.emit('ENEMY_DAMAGED', {
             enemy: this,
-            damage: amount,
-            source: source,
-            remaining: this.health
+            amount: amount,
+            source: source || undefined
         });
     }
 
@@ -283,12 +280,7 @@ Enemy.prototype.die = function (this: Enemy, killer: Entity | null = null) {
     if (EventBus) {
         EventBus.emit('ENEMY_DIED', {
             enemy: this,
-            killer: killer,
-            xpReward: this.xpReward,
-            isElite: this.isElite,
-            biomeId: this.biomeId,
-            groupId: this.groupId,
-            waveId: this.waveId
+            killer: killer || undefined
         });
     }
 
@@ -314,10 +306,7 @@ Enemy.prototype.respawn = function (this: Enemy) {
 
     if (EventBus) {
         EventBus.emit('ENEMY_RESPAWNED', {
-            enemy: this,
-            biomeId: this.biomeId,
-            groupId: this.groupId,
-            waveId: this.waveId
+            enemy: this
         });
     }
 

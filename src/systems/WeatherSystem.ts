@@ -31,7 +31,7 @@ class WeatherSystem {
         this.game = game;
 
         // Subscribe to events
-        EventBus.on(GameConstants.Events.SEASON_CHANGE, this.handleSeasonChange.bind(this));
+        EventBus.on('SEASON_CHANGE', this.handleSeasonChange.bind(this));
 
         // Initial weather roll
         this.rollWeather();
@@ -117,7 +117,7 @@ class WeatherSystem {
         this.currentWeather = type;
         Logger.info(`[WeatherSystem] Weather Changed to: ${type}`);
 
-        EventBus.emit(GameConstants.Events.WEATHER_CHANGE, {
+        EventBus.emit('WEATHER_CHANGE', {
             type: type,
             intensity: 1.0 // Future: Variable intensity
         });

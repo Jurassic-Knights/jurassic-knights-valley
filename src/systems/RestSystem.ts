@@ -35,7 +35,7 @@ class RestSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(GameConstants.Events.REQUEST_REST, () => this.handleRest());
+            EventBus.on('REQUEST_REST', () => this.handleRest());
         }
     }
 
@@ -60,7 +60,7 @@ class RestSystem {
 
         // 2. Trigger Cinematic Fade via UIManager
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.UI_FADE_SCREEN, {
+            EventBus.emit('UI_FADE_SCREEN' as any, {
                 onMidpoint: () => this.performRestLogic(hero)
             });
         } else {
@@ -74,9 +74,10 @@ class RestSystem {
 
         // Feature: Resilience Bonus
         // If resting with 0 Resolve (Stamina), gain permanent +1 Max Resolve
-        if (hero.stamina <= 0.1) {
+        const currStamina = hero.stamina || 0;
+        if (currStamina <= 0.1) {
             // 0.1 epsilon for float safety
-            hero.maxStamina += 1;
+            hero.maxStamina = (hero.maxStamina || 100) + 1;
             Logger.info(
                 `[RestSystem] Resilience Bonus! Max Stamina increased to ${hero.maxStamina}`
             );
@@ -110,8 +111,8 @@ class RestSystem {
         }
 
         // Recover Stats
-        hero.health = hero.maxHealth;
-        hero.stamina = hero.maxStamina;
+        hero.health = hero.maxHealth || 100;
+        hero.stamina = hero.maxStamina || 100;
 
         // Save Game
         if (GameState) {
@@ -128,13 +129,15 @@ class RestSystem {
 
         // Emit events for UI updates
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.HERO_HEALTH_CHANGE, {
-                current: hero.health,
-                max: hero.maxHealth
+            EventBus.emit('HERO_HEALTH_CHANGE', {
+                hero: hero,
+                health: hero.health || 100,
+                maxHealth: hero.maxHealth || 100
             });
-            EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
-                current: hero.stamina,
-                max: hero.maxStamina
+            EventBus.emit('HERO_STAMINA_CHANGE', {
+                hero: hero,
+                stamina: hero.stamina || 100,
+                maxStamina: hero.maxStamina || 100
             });
             // EventBus.emit('GAME_SAVED');
         }

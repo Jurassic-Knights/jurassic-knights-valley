@@ -276,14 +276,14 @@ if (Registry) Registry.register('FloatingTextManager', FloatingTextManager);
 // Subscribe to EventBus so systems emit events instead of calling FloatingTextManager directly
 if (typeof EventBus !== 'undefined') {
     EventBus.on(
-        GameConstants.Events.DAMAGE_NUMBER_REQUESTED,
-        (data: { x: number; y: number; amount: number; isCrit?: boolean }) => {
+        GameConstants.Events.DAMAGE_NUMBER_REQUESTED as 'DAMAGE_NUMBER_REQUESTED',
+        (data: any) => {
             FloatingTextManager.showDamage(data.x, data.y, data.amount, data.isCrit ?? false);
         }
     );
     EventBus.on(
-        GameConstants.Events.FLOATING_TEXT_REQUESTED,
-        (data: { x: number; y: number; text: string; options?: Record<string, unknown> }) => {
+        GameConstants.Events.FLOATING_TEXT_REQUESTED as 'FLOATING_TEXT_REQUESTED',
+        (data: any) => {
             const type = (data.options?.type as string) ?? 'damage';
             FloatingTextManager.spawn(data.x, data.y, data.text, type);
         }

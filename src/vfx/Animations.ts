@@ -48,7 +48,7 @@ const Animations = {
                 top: `${y}px`
             }
         });
-        document.getElementById('app').appendChild(el);
+        document.getElementById('app')?.appendChild(el);
 
         setTimeout(() => el.remove(), 1000);
     }

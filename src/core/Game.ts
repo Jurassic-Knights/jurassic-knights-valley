@@ -87,7 +87,7 @@ class Game {
                 debugStatus(`Loading: ${name}`);
 
                 const globalWindow = window as unknown as Record<string, unknown>;
-                sys = Registry ? Registry.get(name) : (globalWindow[name] as ISystem);
+                sys = (Registry ? Registry.get(name) : globalWindow[name]) as ISystem | null;
                 if (!sys) sys = globalWindow[name] as ISystem; // Fallback
 
                 if (!sys) {

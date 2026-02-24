@@ -1,7 +1,7 @@
 import { ChunkManager } from './ChunkManager';
 import { ChunkData } from './MapEditorTypes';
 import { Logger } from '@core/Logger';
-import { createNoise2D } from 'simplex-noise';
+
 import { MapEditorConfig } from './MapEditorConfig';
 import {
     WATER_TERRAIN_IDS,
@@ -15,10 +15,7 @@ import { ProceduralRules } from './data/ProceduralRules';
  * coast sync, and splat evaluation for ground blending.
  */
 export class ProceduralArchitect {
-    private noise: (x: number, y: number) => number;
-
     constructor() {
-        this.noise = createNoise2D();
     }
 
     /**

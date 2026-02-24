@@ -221,7 +221,6 @@ export function removeSelfIntersections(
                 if (!segmentsIntersect(a, b, c, d)) continue;
 
                 const loop1Len = j - i;
-                const _loop2Len = m - j + i;
                 const loop1Indices = Array.from({ length: loop1Len }, (_, k) => i + 1 + k);
                 const loop2Indices = [
                     ...Array.from({ length: m - j - 1 }, (_, k) => j + 1 + k),
@@ -277,7 +276,7 @@ export function removeSelfIntersections(
  */
 export function smoothPath(
     points: { x: number; y: number }[],
-    isClosed: boolean,
+    _isClosed: boolean,
     iterations = 3,
     lambda = 0.5,
     fixedIndices?: Set<number>

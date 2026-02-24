@@ -25,10 +25,10 @@ export function drawRailroadSpline(
     toCanvas: (x: number, y: number) => { x: number; y: number },
     scale: number,
     tileWidthCanvas: number,
-    vpMinX: number,
-    vpMaxX: number,
-    vpMinY: number,
-    vpMaxY: number,
+    _vpMinX: number,
+    _vpMaxX: number,
+    _vpMinY: number,
+    _vpMaxY: number,
     railroadStationIds?: number[]
 ): void {
     if (path.length < 2) return;

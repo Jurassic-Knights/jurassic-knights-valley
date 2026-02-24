@@ -9,7 +9,8 @@
 
 import { UIManager } from '../../ui/UIManager';
 import { Logger } from '@core/Logger';
-import { GameState } from '@core/State';
+import type { AppEventMap } from '../../types/events';
+
 import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
 import { UIPanelOptions } from '../../types/ui';
@@ -79,7 +80,7 @@ class UIPanel {
         if (!this.el) return;
 
         if (EventBus && GameConstants?.Events) {
-            EventBus.emit(GameConstants.Events.UI_FULLSCREEN_OPENED, { source: this });
+            EventBus.emit(GameConstants.Events.UI_FULLSCREEN_OPENED as keyof AppEventMap, { source: this });
         }
 
         // If docked, we might need to close other docked panels (Accordion)
@@ -107,8 +108,8 @@ class UIPanel {
     /**
      * Lifecycle hooks
      */
-    onOpen() {}
-    onClose() {}
+    onOpen() { }
+    onClose() { }
 
     /**
      * Apply a layout mode (called by LayoutStrategies)
@@ -130,14 +131,14 @@ class UIPanel {
     dock() {
         if (this.isDocked) return;
 
-        const target = document.getElementById(this.config.defaultDock);
+        const target = document.getElementById(this.config.defaultDock as string);
         if (!target) return;
 
         if (!this.el) this.el = document.getElementById(this.id);
         if (this.el && this.el.parentElement !== target) {
             target.appendChild(this.el);
-            this.el.classList.remove(this.config.modalClass);
-            this.el.classList.add(this.config.dockedClass);
+            this.el.classList.remove(this.config.modalClass as string);
+            this.el.classList.add(this.config.dockedClass as string);
 
             // Hide by default when switching to dock to prevent visual clutter
             // unless it was already maintaining state? Better to close to be safe.
@@ -165,8 +166,8 @@ class UIPanel {
 
         if (this.el && this.el.parentElement !== target) {
             target.appendChild(this.el);
-            this.el.classList.remove(this.config.dockedClass);
-            this.el.classList.add(this.config.modalClass);
+            this.el.classList.remove(this.config.dockedClass as string);
+            this.el.classList.add(this.config.modalClass as string);
 
             this.close(); // Reset state
             this.isDocked = false;

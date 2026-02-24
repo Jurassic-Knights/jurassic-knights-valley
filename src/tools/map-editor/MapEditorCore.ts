@@ -66,7 +66,7 @@ export class MapEditorCore {
     // State
     private isInitialized: boolean = false;
     private currentTool: 'brush' | 'eraser' | 'select' = 'brush';
-    private currentLayer: number = MapEditorConfig.Layers.GROUND;
+
 
     // Zone Editor State
     private editingMode: 'object' | 'manipulation' | 'ground' | 'zone' = 'object';
@@ -739,7 +739,5 @@ export class MapEditorCore {
         this.onManualDataChange?.();
     }
 
-    private refreshZoneRendering() {
-        this.chunkManager?.refreshZones();
-    }
+
 }

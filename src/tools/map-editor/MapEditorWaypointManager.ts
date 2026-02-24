@@ -45,15 +45,11 @@ export class MapEditorWaypointManager {
             procCache,
             worldContainer,
             app,
-            zoom,
             manualStations,
             railroadWaypoints,
             editingMode,
             debugShowStationNumbers,
-            debugShowSplinePath,
-            _onRemoveWaypoint,
-            _onUpdateWaypointRegion,
-            _getRegionAtWorld
+            debugShowSplinePath
         } = host;
 
         if (!worldContainer || !app) return;

@@ -102,7 +102,7 @@ class UIManagerService {
                     GameConstants && GameConstants.Events
                         ? GameConstants.Events.REQUEST_MAGNET
                         : 'REQUEST_MAGNET';
-                if (EventBus) EventBus.emit(eventName);
+                if (EventBus) (EventBus.emit as any)(eventName);
             });
         }
 
@@ -122,24 +122,24 @@ class UIManagerService {
         // EventBus Listeners
         if (EventBus && GameConstants) {
             const E = GameConstants.Events;
-            EventBus.on(E.UI_FADE_SCREEN, (data: { onMidpoint?: () => void } | null) =>
-                this.fadeInOut(data ? data.onMidpoint : null)
+            EventBus.on(E.UI_FADE_SCREEN as 'UI_FADE_SCREEN', (data: any) =>
+                this.fadeInOut(data && data.onMidpoint ? data.onMidpoint : null)
             );
-            EventBus.on(E.QUEST_UPDATED, (data: { quest: IQuest | null; animate?: boolean }) =>
-                this.updateQuest(data.quest ?? null, data.animate ?? false)
+            EventBus.on(E.QUEST_UPDATED as 'QUEST_UPDATED', (data: any) =>
+                this.updateQuest(data?.quest ?? null, data?.animate ?? false)
             );
-            EventBus.on(E.UI_FULLSCREEN_OPENED, (data: { source: IFullscreenUI } | null) => {
+            EventBus.on(E.UI_FULLSCREEN_OPENED as 'UI_FULLSCREEN_OPENED', (data: any) => {
                 if (data?.source) this.closeOtherFullscreenUIs(data.source);
             });
 
             // Track when main UI panels override the footer
-            EventBus.on('UI_PANEL_OPENED', (data: { panelId: string }) => {
+            EventBus.on('UI_PANEL_OPENED' as any, (data: any) => {
                 // Determine if this panel should override the footer (e.g., inventory/equipment)
                 if (data && ['inventory', 'equipment', 'crafting'].includes(data.panelId)) {
                     this.isFooterOverridden = true;
                 }
             });
-            EventBus.on('UI_PANEL_CLOSED', (data: { panelId: string }) => {
+            EventBus.on('UI_PANEL_CLOSED' as any, (data: any) => {
                 if (data && ['inventory', 'equipment', 'crafting'].includes(data.panelId)) {
                     this.isFooterOverridden = false;
                 }
@@ -159,7 +159,7 @@ class UIManagerService {
 
         elements.forEach((element) => {
             const el = element as HTMLElement;
-            const id = el.dataset.iconId;
+            const id = el.dataset.iconId as string;
             const path = AssetLoader.getImagePath(id);
             if (path) {
                 el.style.backgroundImage = `url('${path}')`;
@@ -186,9 +186,9 @@ class UIManagerService {
             format === 'desktop' ? LayoutStrategies.Desktop : LayoutStrategies.Mobile;
 
         if (!this.currentStrategy || !(this.currentStrategy instanceof StrategyClass)) {
-            this.currentStrategy?.exit();
+            if (this.currentStrategy && this.currentStrategy.exit) this.currentStrategy.exit();
             this.currentStrategy = new StrategyClass(this);
-            this.currentStrategy.enter();
+            if (this.currentStrategy && this.currentStrategy.enter) this.currentStrategy.enter();
         }
     }
 

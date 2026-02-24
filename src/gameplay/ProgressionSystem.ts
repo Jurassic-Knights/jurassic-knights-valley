@@ -11,8 +11,8 @@ import { EventBus } from '@core/EventBus';
 import { GameConstants } from '@data/GameConstants';
 import { IGame, IEntity } from '@app-types/core';
 
-// Helper to access Events from GameConstants
-const Events = GameConstants.Events;
+// Helper to access GameConstants
+
 
 const ProgressionSystem = {
     game: null as IGame | null,
@@ -26,7 +26,7 @@ const ProgressionSystem = {
     initListeners() {
         if (EventBus) {
             EventBus.on(
-                Events.ENEMY_DIED,
+                'ENEMY_DIED',
                 (data: unknown) =>
                     this.onEnemyKilled(data as { enemy: IEntity; xpReward: number })
             );
@@ -45,17 +45,14 @@ const ProgressionSystem = {
      */
     grantXP(hero: IEntity, amount: number) {
         const stats = hero.components?.stats;
-        if (!stats) return;
+        if (!stats || stats.xp === undefined || stats.level === undefined) return;
 
         stats.xp += amount;
 
         // Emit XP gain event
         if (EventBus) {
-            EventBus.emit(Events.XP_GAINED, {
-                hero,
-                amount,
-                total: stats.xp,
-                level: stats.level
+            EventBus.emit('XP_GAINED', {
+                amount
             });
         }
 
@@ -101,7 +98,7 @@ const ProgressionSystem = {
             health.health = health.maxHealth; // Full heal on level
         }
 
-        if (stats) {
+        if (stats && stats.maxStamina !== undefined) {
             stats.attack = (stats.attack || 10) + perLevel.attack;
             stats.defense = (stats.defense || 0) + perLevel.defense;
             stats.maxStamina += perLevel.maxStamina;
@@ -109,11 +106,9 @@ const ProgressionSystem = {
         }
 
         if (EventBus) {
-            EventBus.emit(Events.HERO_LEVEL_UP, {
+            EventBus.emit('HERO_LEVEL_UP', {
                 hero,
-                oldLevel: newLevel - 1,
-                newLevel,
-                levelsGained: 1
+                newLevel
             });
         }
         Logger.info(`[ProgressionSystem] Hero leveled up to ${newLevel}!`);
@@ -134,7 +129,7 @@ const ProgressionSystem = {
      */
     getXPProgress(hero: IEntity): number {
         const stats = hero?.components?.stats;
-        if (!stats) return 0;
+        if (!stats || stats.level === undefined || stats.xp === undefined) return 0;
         // Use local helper or component method if available?
         // Component method is standard if it exists.
         // Assuming component has getXPForLevel?

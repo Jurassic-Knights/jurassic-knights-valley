@@ -1,5 +1,0 @@
-src/entities/enemies/enemy_dinosaur_t1_01.ts(41,9): error TS2322: Type 'number[]' is not assignable to type 'number'.
-src/systems/DinosaurSystem.ts(145,63): error TS2694: Namespace '"C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/types/core"' has no exported member 'IDinosaurEntity'.
-src/systems/DinosaurSystem.ts(170,56): error TS2694: Namespace '"C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/types/core"' has no exported member 'IDinosaurEntity'.
-src/systems/DinosaurSystem.ts(196,57): error TS2694: Namespace '"C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/types/core"' has no exported member 'IDinosaurEntity'.
-src/systems/DinosaurSystem.ts(227,55): error TS2694: Namespace '"C:/Users/Anthony/.gemini/antigravity/scratch/jurassic-knights-valley/src/types/core"' has no exported member 'IDinosaurEntity'.

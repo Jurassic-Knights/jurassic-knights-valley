@@ -281,7 +281,7 @@ export class WeaponWheel {
                 } else {
                     btn.innerHTML = `<div class="tree-btn-label text-pixel-outline">${item.label}</div>`;
                 }
-                row.appendChild(btn);
+                row!.appendChild(btn);
             });
 
             if (this.treeContainer.children[depth]) {

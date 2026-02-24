@@ -3,7 +3,7 @@
  */
 import { Entity } from '../core/Entity';
 import { WorldManager } from '../world/WorldManager';
-import { GameConstants } from '../data/GameConstants';
+// import { GameConstants } from '../data/GameConstants';
 import { EventBus } from '../core/EventBus';
 import { isHardCollision, isTriggerCollision } from './CollisionSystemUtils';
 
@@ -99,14 +99,14 @@ export function checkTriggers(
     for (const otherId of currentOverlapsScratch) {
         if (!previousOverlaps.has(otherId)) {
             const other = entities.find((e) => e.id === otherId);
-            if (other) EventBus.emit(GameConstants.Events.COLLISION_START, { a: entity, b: other });
+            if (other) EventBus.emit('COLLISION_START', { entityA: entity, entityB: other });
         }
     }
 
     for (const otherId of previousOverlaps) {
         if (!currentOverlapsScratch.has(otherId)) {
             const other = entities.find((e) => e.id === otherId);
-            if (other) EventBus.emit(GameConstants.Events.COLLISION_END, { a: entity, b: other });
+            if (other) EventBus.emit('COLLISION_END', { entityA: entity, entityB: other });
         }
     }
 

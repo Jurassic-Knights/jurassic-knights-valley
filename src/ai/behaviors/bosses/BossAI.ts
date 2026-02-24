@@ -29,8 +29,8 @@ const BossAI = {
         this.updatePhase(boss);
 
         // Update ability cooldowns
-        if (boss.abilityCooldown > 0) {
-            boss.abilityCooldown -= dt / 1000;
+        if ((boss.abilityCooldown || 0) > 0) {
+            boss.abilityCooldown = (boss.abilityCooldown || 0) - dt / 1000;
         }
 
         // State machine
@@ -74,27 +74,25 @@ const BossAI = {
     /**
      * Handle phase transition
      */
-    onPhaseChange(boss: IBossEntity, oldPhase: number, newPhase: number) {
+    onPhaseChange(boss: IBossEntity, _oldPhase: number, newPhase: number) {
         Logger.info(`[BossAI] ${boss.enemyName} entered Phase ${newPhase}`);
 
         // Phase-specific buffs
         if (newPhase === 2) {
-            boss.speed *= 1.2;
-            boss.attackRate *= 1.3;
+            boss.speed = (boss.speed || 50) * 1.2;
+            boss.attackRate = (boss.attackRate || 1) * 1.3;
         } else if (newPhase === 3) {
             // Enrage
-            boss.speed *= 1.5;
-            boss.damage *= 1.5;
+            boss.speed = (boss.speed || 50) * 1.5;
+            boss.damage = (boss.damage || 10) * 1.5;
             boss.isEnraged = true;
         }
 
         // Emit event for VFX/audio
         if (EventBus) {
-            EventBus.emit('BOSS_PHASE_CHANGE', {
-                boss,
-                oldPhase,
-                newPhase
-            });
+            EventBus.emit('BOSS_PHASE_CHANGE' as keyof import('../../../types/events').AppEventMap, {
+                phase: newPhase
+            } as import('../../../types/events').AppEventMap['BOSS_PHASE_CHANGE']);
         }
     },
 
@@ -103,12 +101,12 @@ const BossAI = {
      */
     updateAbility(boss: IBossEntity, hero: IEntity | null, dt: number) {
         // Ability execution - can be extended per boss type
-        if (boss.currentAbility && boss.abilityTimer > 0) {
-            boss.abilityTimer -= dt;
+        if (boss.currentAbility && (boss.abilityTimer || 0) > 0) {
+            boss.abilityTimer = (boss.abilityTimer || 0) - dt;
             if (boss.abilityTimer <= 0) {
                 this.executeAbility(boss, hero);
                 boss.state = 'chase';
-                boss.currentAbility = null;
+                boss.currentAbility = undefined;
             }
         } else {
             boss.state = 'chase';
@@ -119,15 +117,14 @@ const BossAI = {
      * Execute specific ability
      */
     executeAbility(boss: IBossEntity, hero: IEntity | null) {
+        // Only log if hero parameter is used later or just ignore it via _hero in future
         const ability = boss.currentAbility;
-        Logger.info(`[BossAI] ${boss.enemyName} uses ${ability}`);
+        Logger.info(`[BossAI] ${boss.enemyName} uses ${ability || 'unknown'} on ${hero?.id || 'none'}`);
 
         if (EventBus) {
-            EventBus.emit('BOSS_ABILITY', {
-                boss,
-                ability,
-                target: hero
-            });
+            EventBus.emit('BOSS_ABILITY' as keyof import('../../../types/events').AppEventMap, {
+                abilityId: ability || 'unknown'
+            } as import('../../../types/events').AppEventMap['BOSS_ABILITY']);
         }
     },
 
@@ -162,13 +159,15 @@ const BossAI = {
         }
 
         // Check for ability usage
-        if (boss.abilityCooldown <= 0 && boss.abilities?.length > 0) {
-            const dist = boss.distanceTo
+        if ((boss.abilityCooldown || 0) <= 0 && (boss.abilities?.length || 0) > 0) {
+            const hx = hero ? hero.x : boss.x;
+            const hy = hero ? hero.y : boss.y;
+            const dist = boss.distanceTo && hero
                 ? boss.distanceTo(hero)
-                : MathUtils.distance(hero.x, hero.y, boss.x, boss.y);
+                : MathUtils.distance(hx, hy, boss.x, boss.y);
 
             // Random ability at medium range
-            if (dist > boss.attackRange * 1.5 && dist < boss.aggroRange) {
+            if (dist > (boss.attackRange || 50) * 1.5 && dist < (boss.aggroRange || 300)) {
                 if (Math.random() < 0.3) {
                     this.startAbility(boss);
                     return;
@@ -198,7 +197,7 @@ const BossAI = {
     /**
      * Attack (delegated to EnemyAI)
      */
-    updateAttack(boss: IBossEntity, hero: IEntity | null, dt: number) {
+    updateAttack(boss: IBossEntity, _hero: IEntity | null, dt: number) {
         if (EnemyAI) {
             EnemyAI.updateAttack(boss, dt);
         }

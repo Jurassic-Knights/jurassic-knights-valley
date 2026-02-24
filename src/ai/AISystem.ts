@@ -95,7 +95,7 @@ class AISystem {
      */
     updateEntity(
         entity: IEntity,
-        hero: IEntity | null,
+        hero: IEntity | null | undefined,
         dt: number,
         forceType: string | null = null
     ) {
@@ -106,7 +106,7 @@ class AISystem {
         if (behavior && typeof behavior.updateState === 'function') {
             // Some behaviors expect (entity, hero, dt), others just (entity, dt)
             if (behavior.updateState.length >= 3) {
-                (behavior as BossBehavior).updateState(entity, hero, dt);
+                (behavior as BossBehavior).updateState(entity, hero || null, dt);
             } else {
                 (behavior as EnemyBehavior).updateState(entity, dt);
             }
@@ -131,10 +131,11 @@ class AISystem {
      */
     initListeners() {
         if (EventBus && GameConstants.Events) {
-            EventBus.on(GameConstants.Events.ENTITY_DAMAGED, (data: unknown) =>
+            // Must strictly cast string constants to the generic key
+            EventBus.on(GameConstants.Events.ENTITY_DAMAGED as keyof import('../types/events').AppEventMap, (data) =>
                 this.onEntityDamaged(data as { entity: IEnemyEntity; source?: IEntity })
             );
-            EventBus.on(GameConstants.Events.ENTITY_DIED, (data: unknown) =>
+            EventBus.on(GameConstants.Events.ENTITY_DIED as keyof import('../types/events').AppEventMap, (data) =>
                 this.onEntityDied(data as { entity: IEnemyEntity })
             );
         }
@@ -145,7 +146,7 @@ class AISystem {
         source?: IEntity;
     }) {
         const { entity, source } = data;
-        if (!entity) return;
+        if (!entity || !source) return;
 
         // Trigger aggro on damage
         if (entity.state !== 'attack' && entity.state !== 'chase' && source) {
@@ -155,22 +156,21 @@ class AISystem {
 
         // Pack aggro
         if (entity.packAggro && entity.groupId && EnemyAI) {
-            EnemyAI.triggerPackAggro(entity, source);
+            EnemyAI.triggerPackAggro(entity as IEnemyEntity, source as IEntity);
         }
     }
 
-    onEntityDied(data: { entity: IEntity & { xpReward?: number };[key: string]: unknown }) {
+    onEntityDied(data: { entity: IEntity & { xpReward?: number; lootTableId?: string } }) {
         const { entity } = data;
         if (!entity) return;
 
         entity.state = 'dead';
 
         if (EventBus && GameConstants.Events) {
-            EventBus.emit(GameConstants.Events.ENEMY_KILLED, {
+            EventBus.emit(GameConstants.Events.ENEMY_KILLED as keyof import('../types/events').AppEventMap, {
                 enemy: entity,
-                xpReward: entity.xpReward,
-                lootTableId: entity.lootTableId
-            });
+                killer: undefined // or pass source if available in data
+            } as import('../types/events').AppEventMap['ENEMY_KILLED']);
         }
     }
 }

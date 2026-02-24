@@ -77,7 +77,7 @@ const ParticleSystem = {
             }
 
             // Pre-calculate cloud blob shape
-            let blobPoints = null;
+            let blobPoints: number[] | undefined = undefined;
             if (type === 'cloud') {
                 blobPoints = [];
                 const segments = 8;
@@ -167,8 +167,8 @@ const ParticleSystem = {
                 if (p.drift) {
                     const t = p.age * 0.001 * p.drift.speed;
                     const yFreq = p.drift.yFreq || 0.7; // Default to non-sync
-                    p.x = p.anchor.x + Math.sin(t + p.driftOffset) * p.drift.radius;
-                    p.y = p.anchor.y + Math.cos(t * yFreq + p.driftOffset) * p.drift.radius;
+                    p.x = p.anchor!.x + Math.sin(t + p.driftOffset!) * p.drift.radius;
+                    p.y = p.anchor!.y + Math.cos(t * yFreq + p.driftOffset!) * p.drift.radius;
                 }
 
                 // Rotation
@@ -260,18 +260,18 @@ const ParticleSystem = {
         // Calculate projection if we are drawing to our own overlay canvas
         if (!overrideCtx && GameRenderer && GameRenderer.viewport && GameRenderer.canvas) {
             const gr = GameRenderer;
-            const rect = gr.canvas.getBoundingClientRect();
+            const rect = gr.canvas!.getBoundingClientRect();
 
             offsetX = gr.viewport.x;
             offsetY = gr.viewport.y;
             canvasLeft = rect.left;
             canvasTop = rect.top;
-            scaleX = rect.width / gr.canvas.width;
-            scaleY = rect.height / gr.canvas.height;
+            scaleX = rect.width / gr.canvas!.width;
+            scaleY = rect.height / gr.canvas!.height;
         }
 
         // Only clear if we are using the system's own canvas
-        if (!overrideCtx) {
+        if (!overrideCtx && this.canvas) {
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
 
@@ -280,7 +280,7 @@ const ParticleSystem = {
             ctx.save();
             ctx.beginPath();
             const gr = GameRenderer;
-            const rect = gr.canvas.getBoundingClientRect();
+            const rect = gr.canvas!.getBoundingClientRect();
             ctx.rect(rect.left, rect.top, rect.width, rect.height);
             ctx.clip();
         }

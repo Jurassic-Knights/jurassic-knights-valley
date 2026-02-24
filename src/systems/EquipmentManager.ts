@@ -83,7 +83,7 @@ class EquipmentManager {
 
         return Object.entries(this.slots)
             .filter(([slotId, item]) => item !== null && !excludedSlots.includes(slotId))
-            .map(([_slotId, item]) => item);
+            .map(([_slotId, item]) => item as EquipmentItem);
     }
 
     /**
@@ -102,14 +102,14 @@ class EquipmentManager {
         const itemSlot = equipmentData.slot;
         const itemTypeRaw = equipmentData.type;
         const itemSource = equipmentData.sourceFile;
-        let itemType = itemSlot || itemTypeRaw || itemSource || 'unknown';
+        let itemType: any = itemSlot || itemTypeRaw || itemSource || 'unknown';
 
         // Strip sub-category qualifiers like 'weapon_melee' -> 'weapon' for validation
         if (typeof itemType === 'string' && itemType.includes('_')) {
             itemType = itemType.split('_')[0];
         }
 
-        if (EquipmentSlotsConfig && !EquipmentSlotsConfig.canEquip(slotId, itemType)) {
+        if (EquipmentSlotsConfig && !EquipmentSlotsConfig.canEquip(slotId, itemType as any)) {
             // Log warning but still allow equip (data issue)
             Logger.warn(
                 `[EquipmentManager] Type mismatch (normalized: ${itemType}) in ${slotId} - allowing anyway`
@@ -117,16 +117,13 @@ class EquipmentManager {
         }
 
         // Unequip existing item first
-        const previousItem = this.slots[slotId];
         this.slots[slotId] = equipmentData;
 
         // Emit event for UI and other systems
         if (EventBus) {
             EventBus.emit('EQUIPMENT_CHANGED', {
-                owner: this.owner.id,
-                slot: slotId,
-                equipped: equipmentData,
-                unequipped: previousItem
+                slotId: slotId,
+                itemId: equipmentData.id
             });
         }
 
@@ -149,10 +146,8 @@ class EquipmentManager {
 
         if (item && EventBus) {
             EventBus.emit('EQUIPMENT_CHANGED', {
-                owner: this.owner.id,
-                slot: slotId,
-                equipped: null,
-                unequipped: item
+                slotId: slotId,
+                itemId: null
             });
         }
 

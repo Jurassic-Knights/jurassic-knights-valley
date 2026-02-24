@@ -82,7 +82,7 @@ const DialogueSystem = {
      * @param {number} choiceIndex - Index of the choice
      */
     choose(choiceIndex: number) {
-        if (!this.currentDialogue) return;
+        if (!this.currentDialogue || !this.currentNode) return;
 
         const node = this.currentDialogue.nodes?.[this.currentNode];
         const choices = node?.choices || [];
@@ -90,7 +90,7 @@ const DialogueSystem = {
 
         if (choice?.next) {
             this.currentNode = choice.next;
-            this.showNode(this.currentNode);
+            this.showNode(this.currentNode as string);
         } else {
             this.end();
         }

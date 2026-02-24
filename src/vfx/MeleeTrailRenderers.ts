@@ -41,7 +41,8 @@ export function renderAfterimage(ctx: CanvasRenderingContext2D, trail: MeleeTrai
     for (let i = 0; i < trail.length; i++) {
         const p = trail[i];
         const progress = p.age / config.lifetime;
-        const flicker = Math.sin(time * config.flickerRate * 10 + i) * 0.5 + 0.5;
+        const flickerRate = config.flickerRate ?? 1;
+        const flicker = Math.sin(time * flickerRate * 10 + i) * 0.5 + 0.5;
         const alpha = Math.max(0, (1 - progress) * flicker);
         const size = config.width * (1 - progress * 0.3);
         ctx.fillStyle = hexToRgba(config.color, alpha * 0.7);

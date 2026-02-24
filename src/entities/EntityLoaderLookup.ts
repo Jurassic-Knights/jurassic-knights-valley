@@ -1,7 +1,7 @@
 /**
  * EntityLoaderLookup - Lookup helpers for EntityRegistry
  */
-import { EntityConfig, IEntity } from '../types/core';
+import { EntityConfig } from '../types/core';
 
 export interface EntityRegistryStrict {
     enemies: Record<string, EntityConfig>;

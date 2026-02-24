@@ -42,12 +42,12 @@ class BossSystem {
     }
 
     initListeners() {
-        if (EventBus && GameConstants?.Events) {
+        if (EventBus) {
             // Listen for enemy death to track boss deaths
-            EventBus.on('ENEMY_DIED', (data: { entity: IEntity }) => this.onEnemyDied(data));
+            EventBus.on('ENEMY_DIED', (data: { enemy: IEntity }) => this.onEnemyDied(data));
 
             // Listen for biome entry to spawn bosses
-            EventBus.on(GameConstants.Events.BIOME_ENTERED, (data: { biomeId: string }) =>
+            EventBus.on('BIOME_ENTERED', (data: { biomeId: string }) =>
                 this.onBiomeEntered(data)
             );
         }
@@ -109,11 +109,9 @@ class BossSystem {
         this.bosses.set(biomeId, boss);
 
         // Emit spawn event
-        if (EventBus && GameConstants?.Events) {
-            EventBus.emit(GameConstants.Events.BOSS_SPAWNED, {
-                boss,
-                biomeId,
-                bossType: biome.bossId
+        if (EventBus) {
+            EventBus.emit('BOSS_SPAWNED', {
+                boss
             });
         }
 
@@ -171,16 +169,8 @@ class BossSystem {
     /**
      * Handle enemy death - track boss deaths
      */
-    onEnemyDied(data: {
-        entity: IEntity;
-        enemy?: IEntity & {
-            isBoss?: boolean;
-            biomeId?: string;
-            respawnTime?: number;
-            bossName?: string;
-        };
-    }) {
-        const enemy = (data.enemy || data.entity) as IEntity & {
+    onEnemyDied(data: { enemy: IEntity }) {
+        const enemy = data.enemy as IEntity & {
             isBoss?: boolean;
             biomeId?: string;
             respawnTime?: number;
@@ -195,7 +185,7 @@ class BossSystem {
         this.bosses.delete(biomeId);
 
         const msPerSecond = GameConstants.Timing.MS_PER_SECOND;
-        const respawnTime = enemy.respawnTime * msPerSecond;
+        const respawnTime = (enemy.respawnTime || 60) * msPerSecond;
         this.respawnTimers.set(biomeId, respawnTime);
 
         Logger.info(`[BossSystem] ${enemy.bossName} killed. Respawning in ${enemy.respawnTime}s`);

@@ -114,7 +114,7 @@ const ParticleRenderer = {
     },
 
     drawSprite(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
-        if (!AssetLoader) return;
+        if (!AssetLoader || !p.sprite) return;
 
         let img = AssetLoader.getImage(p.sprite);
 
@@ -143,6 +143,7 @@ const ParticleRenderer = {
     },
 
     _drawWarpedSprite(ctx: CanvasRenderingContext2D, img: HTMLImageElement | HTMLCanvasElement, p: Particle, pSize: number) {
+        if (!p.warp) return;
         const time = p.age * 0.001 * p.warp.speed;
         const slices = 10;
         const sliceH = pSize / slices;
@@ -168,7 +169,7 @@ const ParticleRenderer = {
         }
     },
 
-    drawFogSoft(ctx: CanvasRenderingContext2D, p: Particle, pSize: number) {
+    drawFogSoft(ctx: CanvasRenderingContext2D, _p: Particle, pSize: number) {
         const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, pSize / 2);
         grad.addColorStop(0, 'rgba(240, 245, 255, 0.9)');
         grad.addColorStop(0.5, 'rgba(200, 210, 230, 0.5)');

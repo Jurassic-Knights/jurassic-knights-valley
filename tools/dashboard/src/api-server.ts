@@ -20,7 +20,6 @@ const IMAGES_DIR = path.resolve(BASE_DIR, 'assets/images');
 const ENTITIES_DIR = path.resolve(BASE_DIR, 'src/entities');
 const MAPS_DIR = path.resolve(BASE_DIR, 'src/data/maps');
 const PUBLIC_MAPS_DIR = path.resolve(BASE_DIR, 'public/maps');
-const GAME_CONSTANTS_PATH = path.resolve(BASE_DIR, 'src/data/GameConstants.ts');
 const GAME_CONFIG_PATH = path.resolve(BASE_DIR, 'src/data/GameConfig.ts');
 const BODY_TYPE_CONFIG_PATH = path.resolve(BASE_DIR, 'src/config/BodyTypeConfig.ts');
 
@@ -675,20 +674,6 @@ function parseGameConfig(): Partial<GameConfig> {
     return result;
 }
 
-function parseBodyTypeConfig(): Record<string, { scale: number }> {
-    if (!fs.existsSync(BODY_TYPE_CONFIG_PATH)) return {};
-
-    const content = fs.readFileSync(BODY_TYPE_CONFIG_PATH, 'utf-8');
-    const result: Record<string, { scale: number }> = {};
-
-    // Match: bodyType: { scale: number }
-    const matches = content.matchAll(/(\w+):\s*\{\s*scale:\s*([\d.]+)\s*\}/g);
-    for (const match of matches) {
-        result[match[1]] = { scale: parseFloat(match[2]) };
-    }
-
-    return result;
-}
 
 function getConfig(): GameConfig {
     const config = parseGameConfig();

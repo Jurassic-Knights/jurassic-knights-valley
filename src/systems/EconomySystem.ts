@@ -7,7 +7,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants } from '@data/GameConstants';
+// import { GameConstants } from '@data/GameConstants';
 import { GameState } from '@core/State';
 import { Registry } from '@core/Registry';
 import type { IGame } from '../types/core';
@@ -29,7 +29,7 @@ class EconomySystem {
         if (!EventBus) return;
 
         // Listen for direct gold modification requests (e.g. from debug or cheats)
-        EventBus.on(GameConstants.Events.ADD_GOLD, (amount: number) => this.addGold(amount));
+        EventBus.on('ADD_GOLD', (data: { amount: number }) => this.addGold(data.amount));
     }
 
     update(_dt: number) {
@@ -69,8 +69,8 @@ class EconomySystem {
         }
 
         // Emit Update
-        if (EventBus) {
-            EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
+        if (EventBus && hero && hero.inventory) {
+            EventBus.emit('INVENTORY_UPDATED', hero.inventory);
         }
 
         Logger.info(`[EconomySystem] Spent ${amount}. New Balance: ${newGold}`);
@@ -97,8 +97,8 @@ class EconomySystem {
         }
 
         // Emit Update
-        if (EventBus) {
-            EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.inventory);
+        if (EventBus && hero && hero.inventory) {
+            EventBus.emit('INVENTORY_UPDATED', hero.inventory);
         }
 
         Logger.info(`[EconomySystem] Added ${amount}. New Balance: ${newGold}`);

@@ -81,7 +81,7 @@ export function applyElevationBrightness(hexColor: string, gray: number): string
 
 /** Build fill color for a polygon region. Civ overlay blended on top. */
 export function polygonPreviewColor(
-    elevation: number,
+    _elevation: number,
     filteredZones: Record<string, string>
 ): string {
     const terrain = filteredZones['terrain'];

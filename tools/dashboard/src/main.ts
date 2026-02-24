@@ -6,63 +6,22 @@
 // Re-export everything from modules for global access
 import {
     sfxRegenerationQueue,
-    categoryData,
     setCategoryData,
-    currentCategoryName,
 } from './state';
 import {
-    updateCategoryStatus,
-    updateConsumedStatus,
-    updateItemWeapon,
-    updateItemStat,
-    updateItemField,
-    updateItemTier,
-    updateDisplayField,
-    updateWeaponMeta,
-    syncEntitiesToJson,
-    markSfxForRegeneration,
     saveRegenerationQueueToFile,
-    updateDisplaySize,
     loadGlobalAssetLookup,
     fetchPrompts,
 } from './api';
 import { setAssetPrompts } from './state';
-import { openModal, closeModal, toggleComparisonView, initModalHandlers } from './modals';
+import { initModalHandlers } from './modals';
 import {
-    showLandingPage,
     loadManifest,
     showCategoryView,
-    navigateToAsset,
-    approveCategoryItem,
-    declineCategoryItem,
-    remakeCategoryItem,
-    declineCategoryItemById,
-    remakeCategoryItemById,
-    approveAsset,
-    declineAsset,
-    declineAssetPrompt,
-    startAutoRefresh,
-    stopAutoRefresh,
     showConfigView,
 } from './views';
 import { renderCategoryView } from './categoryRenderer';
-import {
-    setCategoryStatusFilter,
-    setCategoryBiomeFilter,
-    setCategoryTierFilter,
-    setCategoryFileFilter,
-    setCategoryWeaponTypeFilter,
-    setCategoryHandsFilter,
-    setCategoryNodeSubtypeFilter,
-    setCategoryImageSize,
-    setCategorySortOrder,
-    setLootFilter,
-    setBiomeFilter,
-    setTierFilter,
-} from './filters';
-import { showTemplatesView } from './templates';
-import { showLootView } from './lootRenderer';
-import { buildCategoryFilters, renderAssets } from './legacyAssets';
+import { renderAssets } from './legacyAssets';
 
 import { initEventDelegation, disposeDelegation } from './ActionDelegator';
 import { initResizeHandle } from './ResizePanels';
@@ -165,70 +124,70 @@ function initApp() {
             storageKey: 'dashboard-inspector-width',
         });
 
-    // Load Global Asset Lookup (for Drops/Sources)
-    loadGlobalAssetLookup().then(() => {
-        // If we are already on a view, re-render to show drops/sources
-        if (window.currentViewCategory) {
-            import('./categoryRenderer').then(({ renderCategoryView }) => {
-                renderCategoryView();
-            });
-        }
-    });
-
-    // Load Asset Prompts
-    fetchPrompts().then((data) => {
-        setAssetPrompts(data || {});
-        // If inspector is open, we might want to re-render it, but usually this is fast enough
-    });
-
-    // Set up filter button listeners
-    // Note: If these elements exist in static HTML, they might accumulate listeners on re-run
-    // Ideally we should use delegation for these too, but for now we'll assume they are safe-ish 
-    // or we should replace them to strip listeners.
-    document.querySelectorAll('.filter-btn').forEach((btn) => {
-        // Cloning removes listeners
-        const newBtn = btn.cloneNode(true);
-        btn.parentNode?.replaceChild(newBtn, btn);
-
-        newBtn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
-            (newBtn as HTMLElement).classList.add('active');
-            const filter = (newBtn as HTMLElement).dataset.filter;
-            if (filter) {
-                import('./state').then(({ setCurrentFilter }) => {
-                    setCurrentFilter(filter);
-                    renderAssets();
+        // Load Global Asset Lookup (for Drops/Sources)
+        loadGlobalAssetLookup().then(() => {
+            // If we are already on a view, re-render to show drops/sources
+            if (window.currentViewCategory) {
+                import('./categoryRenderer').then(({ renderCategoryView }) => {
+                    renderCategoryView();
                 });
             }
         });
-    });
 
-    // Keyboard & Mouse handlers for modal
-    initModalHandlers();
+        // Load Asset Prompts
+        fetchPrompts().then((data) => {
+            setAssetPrompts(data || {});
+            // If inspector is open, we might want to re-render it, but usually this is fast enough
+        });
 
-    // Sync SFX regeneration queue from localStorage to server on load
-    if (sfxRegenerationQueue && sfxRegenerationQueue.length > 0) {
-        console.log(`[Dashboard] Syncing ${sfxRegenerationQueue.length} SFX queue items to server...`);
-        saveRegenerationQueueToFile();
-    }
+        // Set up filter button listeners
+        // Note: If these elements exist in static HTML, they might accumulate listeners on re-run
+        // Ideally we should use delegation for these too, but for now we'll assume they are safe-ish 
+        // or we should replace them to strip listeners.
+        document.querySelectorAll('.filter-btn').forEach((btn) => {
+            // Cloning removes listeners
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode?.replaceChild(newBtn, btn);
 
-    // Handle Browser Navigation (Back/Forward)
-    // Clean up old popstate if it exists? 
-    // window.onpopstate is cleaner for replacement than addEventListener
-    window.onpopstate = (event) => {
-        // Always try to hide map editor first to ensure clean state
-        import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+            newBtn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+                (newBtn as HTMLElement).classList.add('active');
+                const filter = (newBtn as HTMLElement).dataset.filter;
+                if (filter) {
+                    import('./state').then(({ setCurrentFilter }) => {
+                        setCurrentFilter(filter);
+                        renderAssets();
+                    });
+                }
+            });
+        });
 
-        if (event.state && event.state.view === 'map') {
-            import('@dashboard/mapEditorView').then((m) => m.showMapEditorView(false));
-        } else if (event.state && event.state.view === 'config') {
-            showConfigView(false);
-        } else if (event.state && event.state.category) {
-            showCategoryView(event.state.category, false);
-        } else {
-            loadManifest();
+        // Keyboard & Mouse handlers for modal
+        initModalHandlers();
+
+        // Sync SFX regeneration queue from localStorage to server on load
+        if (sfxRegenerationQueue && sfxRegenerationQueue.length > 0) {
+            console.log(`[Dashboard] Syncing ${sfxRegenerationQueue.length} SFX queue items to server...`);
+            saveRegenerationQueueToFile();
         }
-    };
+
+        // Handle Browser Navigation (Back/Forward)
+        // Clean up old popstate if it exists? 
+        // window.onpopstate is cleaner for replacement than addEventListener
+        window.onpopstate = (event) => {
+            // Always try to hide map editor first to ensure clean state
+            import('@dashboard/mapEditorView').then(({ hideMapEditorView }) => hideMapEditorView());
+
+            if (event.state && event.state.view === 'map') {
+                import('@dashboard/mapEditorView').then((m) => m.showMapEditorView(false));
+            } else if (event.state && event.state.view === 'config') {
+                showConfigView(false);
+            } else if (event.state && event.state.category) {
+                showCategoryView(event.state.category, false);
+            } else {
+                loadManifest();
+            }
+        };
 
         // Check URL for initial view/category (Only on fresh load or if we want to reset view on HMR)
         if (!window.currentViewCategory) {

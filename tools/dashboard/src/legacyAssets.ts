@@ -3,7 +3,7 @@
  * Functions for manifest-based asset rendering (original dashboard functionality)
  */
 
-import { h, renderToString } from './domBuilder';
+import { h } from './domBuilder';
 import {
     manifest,
     declineNotes,
@@ -11,7 +11,6 @@ import {
     currentFilter,
     currentCategory,
     missingAssets,
-    setCurrentCategory,
     BASE_PATH,
 } from './state';
 
@@ -231,14 +230,14 @@ function createAssetCard(asset: { path: string; name: string; status: string }):
         : null;
 
 
-    const cardChildren: HTMLElement[] = [
+    const cardChildren: HTMLElement[] = ([
         h('div', { className: 'asset-name' }, [asset.name]),
         h('span', { className: `asset-status status-${asset.status}` }, [asset.status]),
         promptPreview,
         notesDisplay,
         notesInput,
         h('div', { className: 'asset-actions' }, actions)
-    ];
+    ].filter(Boolean) as HTMLElement[]);
 
     const card = h('div', {
         className: `asset-card ${asset.status}`,
@@ -254,11 +253,11 @@ function createAssetCard(asset: { path: string; name: string; status: string }):
             'data-status': asset.status,
             // onerror must still be inline or handled via delegation on 'error' event (not bubbly)
             // delegation doesn't capture 'error'. 
-            // We can keep inline onerror="this.style.display='none'" as it is standard self-contained logic
+            // We can keep inline onerror="this.style.display='none'" as it is standard self-configuration
             onerror: "this.style.display='none'"
-        }),
-        h('div', { className: 'asset-info' }, cardChildren)
-    ]);
+        }) as HTMLElement,
+        h('div', { className: 'asset-info' }, cardChildren) as HTMLElement
+    ]) as HTMLElement;
 
     return card;
 }

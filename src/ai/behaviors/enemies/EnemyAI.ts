@@ -62,14 +62,20 @@ const EnemyAI = {
             return;
         }
 
-        enemy.wanderTimer += dt;
+        // Initialize fallback
+        enemy.wanderTimer = (enemy.wanderTimer || 0) + dt;
 
-        if (!enemy.wanderTarget || enemy.wanderTimer >= enemy.wanderInterval) {
+        if (!enemy.wanderTarget || enemy.wanderTimer >= (enemy.wanderInterval || 3000)) {
             const angle = Math.random() * Math.PI * 2;
-            const dist = Math.random() * enemy.patrolRadius * 0.5;
+            const dist = Math.random() * (enemy.patrolRadius || 100) * 0.5;
+
+            // spawnX/Y might optionally be missing from strict type map
+            const startX = enemy.spawnX ?? enemy.x;
+            const startY = enemy.spawnY ?? enemy.y;
+
             enemy.wanderTarget = {
-                x: enemy.spawnX + Math.cos(angle) * dist,
-                y: enemy.spawnY + Math.sin(angle) * dist
+                x: startX + Math.cos(angle) * dist,
+                y: startY + Math.sin(angle) * dist
             };
             enemy.wanderTimer = 0;
             // Read wander timers from config for live tuning
@@ -82,7 +88,7 @@ const EnemyAI = {
         }
 
         if (enemy.wanderTarget) {
-            enemy.moveAlongPath(enemy.wanderTarget.x, enemy.wanderTarget.y, enemy.speed * 0.3, dt);
+            enemy.moveAlongPath?.(enemy.wanderTarget.x, enemy.wanderTarget.y, (enemy.speed || 50) * 0.3, dt);
         }
     },
 
@@ -95,24 +101,27 @@ const EnemyAI = {
             return;
         }
 
-        const dist = enemy.distanceTo(enemy.target);
+        const dist = enemy.distanceTo?.(enemy.target) ?? 9999;
 
         // Check leash distance
-        const spawnDist = MathUtils.distance(enemy.x, enemy.y, enemy.spawnX, enemy.spawnY);
-        if (spawnDist > enemy.leashDistance) {
+        const startX = enemy.spawnX ?? enemy.x;
+        const startY = enemy.spawnY ?? enemy.y;
+        const spawnDist = MathUtils.distance(enemy.x, enemy.y, startX, startY);
+
+        if (spawnDist > (enemy.leashDistance || 500)) {
             enemy.state = 'returning';
             enemy.target = null;
             return;
         }
 
         // Attack if in range
-        if (dist <= enemy.attackRange) {
+        if (dist <= (enemy.attackRange || 50)) {
             enemy.state = 'attack';
             return;
         }
 
         // Move towards target
-        enemy.moveAlongPath(enemy.target.x, enemy.target.y, enemy.speed, dt);
+        enemy.moveAlongPath?.(enemy.target.x, enemy.target.y, enemy.speed || 50, dt);
     },
 
     /**
@@ -124,18 +133,18 @@ const EnemyAI = {
             return;
         }
 
-        const dist = enemy.distanceTo(enemy.target);
+        const dist = enemy.distanceTo?.(enemy.target) ?? 9999;
 
         // Chase if target moved out of range
-        if (dist > enemy.attackRange * 1.2) {
+        if (dist > (enemy.attackRange || 50) * 1.2) {
             enemy.state = 'chase';
             return;
         }
 
         // Attack on cooldown
-        if (enemy.attackCooldown <= 0) {
+        if ((enemy.attackCooldown || 0) <= 0) {
             this.performAttack(enemy);
-            enemy.attackCooldown = 1 / enemy.attackRate;
+            enemy.attackCooldown = 1 / (enemy.attackRate || 1);
         }
     },
 
@@ -143,18 +152,22 @@ const EnemyAI = {
      * Return to spawn behavior
      */
     updateReturning(enemy: IEnemyEntity, dt: number) {
-        const dist = MathUtils.distance(enemy.spawnX, enemy.spawnY, enemy.x, enemy.y);
+        const sx = enemy.spawnX ?? enemy.x;
+        const sy = enemy.spawnY ?? enemy.y;
+        const dist = MathUtils.distance(sx, sy, enemy.x, enemy.y);
 
         if (dist < 20) {
             enemy.state = 'wander';
             enemy.target = null;
-            enemy.wanderTarget = null;
+            enemy.wanderTarget = undefined;
             enemy.wanderTimer = 0;
             enemy.health = enemy.maxHealth;
             return;
         }
 
-        enemy.moveAlongPath(enemy.spawnX, enemy.spawnY, enemy.speed * 0.8, dt);
+        if (enemy.moveAlongPath) {
+            enemy.moveAlongPath(sx, sy, (enemy.speed || 50) * 0.8, dt);
+        }
     },
 
     /**
@@ -164,12 +177,10 @@ const EnemyAI = {
         if (!enemy.target) return;
 
         if (EventBus && GameConstants?.Events) {
-            EventBus.emit('ENEMY_ATTACK', {
+            EventBus.emit('ENEMY_ATTACK' as keyof import('../../../types/events').AppEventMap, {
                 attacker: enemy,
-                target: enemy.target,
-                damage: enemy.damage,
-                attackType: enemy.attackType
-            });
+                target: enemy.target
+            } as import('../../../types/events').AppEventMap['ENEMY_ATTACK']);
         }
 
         if (AudioManager) {
@@ -203,7 +214,7 @@ const EnemyAI = {
             if (other === enemy || other.groupId !== enemy.groupId) continue;
             if (other.isDead || !other.packAggro) continue;
 
-            const dist = enemy.distanceTo(other);
+            const dist = enemy.distanceTo ? enemy.distanceTo(other) : MathUtils.distance(enemy.x, enemy.y, other.x, other.y);
             if (dist <= packRadius) {
                 other.target = target;
                 other.state = 'chase';
@@ -220,7 +231,8 @@ const EnemyAI = {
      */
     canSee(enemy: IEnemyEntity, hero: IEntity | null) {
         if (!hero || enemy.isDead) return false;
-        return enemy.distanceTo(hero) <= enemy.aggroRange;
+        const dist = enemy.distanceTo ? enemy.distanceTo(hero) : MathUtils.distance(enemy.x, enemy.y, hero.x, hero.y);
+        return dist <= (enemy.aggroRange || 300);
     }
 };
 

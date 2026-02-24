@@ -11,7 +11,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants } from '@data/GameConstants';
+// import { GameConstants } from '@data/GameConstants';
 import { Registry } from '@core/Registry';
 import type { IGame } from '../types/core';
 
@@ -24,8 +24,7 @@ interface InputAdapter {
 }
 
 class InputSystem {
-    // game reference stored via init()
-    private game: IGame | null = null;
+    // No game reference needed currently
     private adapters: InputAdapter[] = [];
     private inputState = {
         move: { x: 0, y: 0 },
@@ -43,8 +42,8 @@ class InputSystem {
         Logger.info('[InputSystem] Initialized');
     }
 
-    init(game: IGame): void {
-        this.game = game;
+    init(_game: IGame): void {
+        // game available if needed in future
     }
 
     registerAdapter(adapter: InputAdapter): void {
@@ -96,16 +95,16 @@ class InputSystem {
         if (moveX !== this.inputState.move.x || moveY !== this.inputState.move.y) {
             this.inputState.move.x = moveX;
             this.inputState.move.y = moveY;
-            EventBus.emit(GameConstants.Events.INPUT_MOVE, { x: moveX, y: moveY });
+            EventBus.emit('INPUT_MOVE', { x: moveX, y: moveY });
         }
 
         // Emit Intent Events (Start/End)
         // Check for New Intents (Pressed this frame)
         for (const intent of currentFrameIntents) {
             if (!this.inputState.intents.has(intent)) {
-                EventBus.emit(GameConstants.Events.INPUT_INTENT, {
-                    intent: intent,
-                    phase: 'START'
+                EventBus.emit('INPUT_INTENT', {
+                    action: intent,
+                    active: true
                 });
             }
         }
@@ -113,9 +112,9 @@ class InputSystem {
         // Check for Released Intents
         for (const intent of this.inputState.intents) {
             if (!currentFrameIntents.has(intent)) {
-                EventBus.emit(GameConstants.Events.INPUT_INTENT, {
-                    intent: intent,
-                    phase: 'END'
+                EventBus.emit('INPUT_INTENT', {
+                    action: intent,
+                    active: false
                 });
             }
         }
@@ -124,7 +123,7 @@ class InputSystem {
 
         // Legacy Action Pulse (kept for compatibility)
         if (action && !this.inputState.action) {
-            EventBus.emit(GameConstants.Events.INPUT_ACTION);
+            EventBus.emit('INPUT_ACTION', { action: 'pulse' });
         }
         this.inputState.action = action;
     }

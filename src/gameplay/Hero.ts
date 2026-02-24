@@ -52,7 +52,7 @@ interface HeroConfig {
 class Hero extends Entity {
     // Class properties
     components: IComponents;
-    equipment: EquipmentManager;
+    equipment!: EquipmentManager;
     isAtHomeOutpost: boolean = false;
     locked: boolean = false;
     isAttacking: boolean = false;
@@ -124,7 +124,7 @@ class Hero extends Entity {
             this.components.combat = new CombatComponent(this, {
                 damage: finalConfig.attack ? finalConfig.attack.damage : 10,
                 rate: finalConfig.attack ? finalConfig.attack.rate : 2,
-                range: finalConfig.attack ? finalConfig.attack.range.default : 125,
+                range: finalConfig.attack?.range?.default ?? 125,
                 staminaCost:
                     finalConfig.attack && finalConfig.attack.staminaCost !== undefined
                         ? finalConfig.attack.staminaCost
@@ -219,7 +219,7 @@ class Hero extends Entity {
         // Use getConfig() helper for HMR-safe access
         return getConfig().Hero.SPEED;
     }
-    set speed(val) {
+    set speed(_val) {
         // Speed is now controlled by GameConstants, this setter is for backwards compatibility
         Logger.warn('[Hero] speed setter called but value is controlled by getConfig().Hero.SPEED');
     }
@@ -257,10 +257,10 @@ class Hero extends Entity {
 
     // Combat (03-hero-stats) - getters delegate to effective stat methods
     get attack() {
-        return this.components.stats?.getAttack() ?? GameConstants.HeroDefaults.DEFAULT_ATTACK;
+        return this.components.stats?.getAttack?.() ?? GameConstants.HeroDefaults.DEFAULT_ATTACK;
     }
     get defense() {
-        return this.components.stats?.getDefense() || 0;
+        return this.components.stats?.getDefense?.() || 0;
     }
 
     // Stats component accessor (for HeroCombatService etc)
@@ -282,10 +282,7 @@ class Hero extends Entity {
      */
     restStamina() {
         if (this.components.stats && EventBus) {
-            EventBus.emit(GameConstants.Events.REQUEST_STAMINA_RESTORE, {
-                hero: this,
-                amount: this.maxStamina
-            });
+            EventBus.emit('REQUEST_STAMINA_RESTORE');
         }
     }
 }

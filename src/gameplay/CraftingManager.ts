@@ -214,6 +214,7 @@ const CraftingManager = {
     },
 
     completeCrafting(slot: CraftingSlot) {
+        if (!slot.recipeId) return;
         const recipe = this.getRecipe(slot.recipeId);
         if (!recipe) return;
 

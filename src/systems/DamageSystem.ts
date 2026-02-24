@@ -23,7 +23,7 @@ import { EntityTypes } from '@config/EntityTypes';
 import type { IGame, IEntity } from '../types/core.d';
 import { isDamageable, isMortal } from '../utils/typeGuards';
 
-const Events = GameConstants.Events;
+
 
 class DamageSystem {
     game: IGame | null = null;
@@ -51,15 +51,15 @@ class DamageSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(Events.ENTITY_DAMAGED, this._onDamageBound);
-            EventBus.on(Events.ENTITY_DIED, this._onDeathBound);
+            EventBus.on('ENTITY_DAMAGED', this._onDamageBound);
+            EventBus.on('ENTITY_DIED', this._onDeathBound);
         }
     }
 
     destroy() {
         if (EventBus) {
-            EventBus.off(Events.ENTITY_DAMAGED, this._onDamageBound);
-            EventBus.off(Events.ENTITY_DIED, this._onDeathBound);
+            EventBus.off('ENTITY_DAMAGED', this._onDamageBound);
+            EventBus.off('ENTITY_DIED', this._onDeathBound);
             Logger.info('[DamageSystem] Cleared listeners');
         }
     }
@@ -96,15 +96,16 @@ class DamageSystem {
             tookDamage = true;
             const maxH = healthComponent.maxHealth ?? entity.maxHealth;
             if (entity.entityType === EntityTypes.HERO) {
-                EventBus.emit(Events.HERO_HEALTH_CHANGE, {
-                    current: healthComponent.health,
-                    max: maxH
+                EventBus.emit('HERO_HEALTH_CHANGE', {
+                    hero: entity,
+                    health: healthComponent.health,
+                    maxHealth: maxH
                 });
             } else {
-                EventBus.emit(Events.ENTITY_HEALTH_CHANGE, {
+                EventBus.emit('ENTITY_HEALTH_CHANGE', {
                     entity,
-                    current: healthComponent.health,
-                    max: maxH
+                    health: healthComponent.health,
+                    maxHealth: maxH
                 });
             }
         } else if (isDamageable(entity)) {
@@ -128,7 +129,7 @@ class DamageSystem {
         this.playHitEffects(entity, finalDamage, type);
 
         // 3. Check Death
-        const currentHealth = healthComponent ? healthComponent.health : entity.health;
+        const currentHealth = healthComponent ? healthComponent.health : (entity.health || 0);
         if (currentHealth <= 0) {
             // Call entity-specific death handler (sets respawn timers, cleanup, etc.)
             if (isMortal(entity)) {
@@ -139,7 +140,7 @@ class DamageSystem {
                 entity.state = 'dead';
             }
 
-            EventBus.emit(GameConstants.Events.ENTITY_DIED, {
+            EventBus.emit('ENTITY_DIED', {
                 entity: entity,
                 killer: source
             });
@@ -157,10 +158,10 @@ class DamageSystem {
         const yOffset = GameConstants.Damage.FLOATING_TEXT_Y_OFFSET;
         const isCrit = type === 'crit';
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.DAMAGE_NUMBER_REQUESTED, {
+            EventBus.emit('DAMAGE_NUMBER_REQUESTED', {
                 x,
                 y: y - yOffset,
-                amount: Math.round(amount),
+                value: Math.round(amount),
                 isCrit
             });
         }
@@ -201,7 +202,7 @@ class DamageSystem {
 
         // 1. Hero Death
         if (entity.entityType === EntityTypes.HERO) {
-            EventBus.emit(GameConstants.Events.HERO_DIED, { hero: entity });
+            EventBus.emit('HERO_DIED', { hero: entity });
             if (AudioManager) AudioManager.playSFX('sfx_hero_death');
             return;
         }
@@ -211,10 +212,8 @@ class DamageSystem {
             if (AudioManager) AudioManager.playSFX('sfx_enemy_death');
 
             // Emit kill event for Quests/XP
-            EventBus.emit(GameConstants.Events.ENEMY_KILLED, {
-                enemy: entity,
-                xpReward: entity.xpReward ?? GameConstants.Combat.XP_REWARD_FALLBACK,
-                lootTableId: entity.lootTableId
+            EventBus.emit('ENEMY_KILLED', {
+                enemy: entity
             });
         }
     }

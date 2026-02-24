@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
-import { EditorContext } from './EditorContext';
+
 
 /**
  * MapRenderer — Placeholder for future map data rendering via PixiJS.
  * Map editor currently uses ChunkManager + GroundSystem + ObjectSystem directly.
  */
 export class MapRenderer {
-    private stage: PIXI.Container;
+    public stage: PIXI.Container;
 
     constructor(stage: PIXI.Container) {
         this.stage = stage;

@@ -20,7 +20,6 @@ import {
 } from './Mapgen4RegionUtils';
 import { mapgen4ToZones, COAST_MAX_POLYGON_STEPS } from './Mapgen4ZoneMapping';
 import { isTileOnRiver } from './Mapgen4RiverUtils';
-import { buildRailroadSplineMeshData } from './RailroadSplineBuilder';
 
 import type { Mapgen4Param } from './Mapgen4Param';
 export type { TownSite, RoadSegment, RailroadCrossing, Mapgen4Param } from './Mapgen4Param';
@@ -34,7 +33,7 @@ export interface MeshAndMap {
     map: Mapgen4Map;
 }
 
-const PREVIEW_MAP_SIZE = 1000;
+
 
 /** Build mesh + map from params (expensive). Call once when params change. */
 export function buildMeshAndMap(param: Mapgen4Param): MeshAndMap {
@@ -82,18 +81,19 @@ export function computeTownsAndRoads(
         param.roads?.enabled &&
         param.roads &&
         (towns.length >= 2 || (param.roads.coverageGridSize ?? 0) >= 2);
+    const rParams = param.roads!;
     const roadSegments = roadsOk
         ? runRoadGenerator(
             mesh,
             map,
             towns.map((t) => t.regionId),
             {
-                shortcutsPerTown: param.roads.shortcutsPerTown ?? 1,
-                riverCrossingCost: param.roads.riverCrossingCost ?? 1.2,
-                seed: param.roads.seed ?? param.meshSeed,
-                coverageGridSize: param.roads.coverageGridSize ?? 0,
-                slopeWeight: param.roads.slopeWeight ?? 3,
-                waypointCurviness: param.roads.waypointCurviness ?? 0.15
+                shortcutsPerTown: rParams.shortcutsPerTown ?? 1,
+                riverCrossingCost: rParams.riverCrossingCost ?? 1.2,
+                seed: rParams.seed ?? param.meshSeed,
+                coverageGridSize: rParams.coverageGridSize ?? 0,
+                slopeWeight: rParams.slopeWeight ?? 3,
+                waypointCurviness: rParams.waypointCurviness ?? 0.15
             },
             param.rivers
         )
@@ -146,7 +146,7 @@ export function computeTownsAndRoads(
 /** Generate world data from mapgen4 params and rasterize to ChunkData map. */
 export function generateMapgen4(param: Mapgen4Param): Map<string, ChunkData> {
     const { mesh, map } = buildMeshAndMap(param);
-    const { towns, roadSegments, railroadPath, railroadCrossings } = computeTownsAndRoads(
+    const { towns, roadSegments, railroadPath: _railroadPath, railroadCrossings } = computeTownsAndRoads(
         mesh,
         map,
         param

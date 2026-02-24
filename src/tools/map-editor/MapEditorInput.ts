@@ -106,7 +106,7 @@ function handleMouseDown(e: MouseEvent, core: MapEditorCore, state: InputState):
     const app = core.getApp();
     const worldContainer = core.getWorldContainer();
 
-    if (e.button === 1 || (e.button === 0 && state.isSpacePressed && app)) {
+    if (app && (e.button === 1 || (e.button === 0 && state.isSpacePressed))) {
         state.isDragging = true;
         const { x, y } = toCanvasCoords(e.clientX, e.clientY, app.canvas);
         state.lastMousePosition = { x, y };

@@ -75,7 +75,7 @@ class StatsComponent extends Component {
         this.xpToNextLevel = config.xpToNextLevel || 100;
         this.xpScaling = config.xpScaling || 1.5;
 
-        Logger.info(`[StatsComponent] Attached to ${parent.constructor.name}`);
+        Logger.info(`[StatsComponent] Attached to ${parent?.constructor?.name || 'unknown'}`);
     }
 
     // consumeStamina & restoreStamina moved to HeroSystem
@@ -99,33 +99,41 @@ class StatsComponent extends Component {
     }
 
     getAttack() {
+        const p = this.parent;
         const base = this.attack + (this.level - 1) * 2;
-        const equipBonus = this.parent.equipment?.getStatBonus('damage') || 0;
+        if (!p) return base;
+        const equipBonus = p.equipment?.getStatBonus('damage') || 0;
         return base + equipBonus;
     }
 
     getDefense() {
+        const p = this.parent;
         const base = this.defense + (this.level - 1) * 1;
-        const equipBonus = this.parent.equipment?.getStatBonus('armor') || 0;
+        if (!p) return base;
+        const equipBonus = p.equipment?.getStatBonus('armor') || 0;
         return base + equipBonus;
     }
 
     getCritChance() {
+        const p = this.parent;
         const base = this.critChance * 100;
-        const equipBonus = this.parent.equipment?.getStatBonus('critChance') || 0;
+        if (!p) return base;
+        const equipBonus = p.equipment?.getStatBonus('critChance') || 0;
         return base + equipBonus;
     }
 
     getAttackRange() {
+        const p = this.parent;
         // Base hand range + equipment bonuses
         const baseRange = getConfig().Combat.DEFAULT_MINING_RANGE;
-        const equipBonus = this.parent.equipment?.getStatBonus('range') || 0;
+        if (!p) return baseRange;
+        const equipBonus = p.equipment?.getStatBonus('range') || 0;
         return baseRange + equipBonus;
     }
 
     getWeaponRange(slotId: string) {
         // Use additive model: base + entity bonus
-        const item = this.parent.equipment?.getSlot?.(slotId);
+        const item = this.parent?.equipment?.getSlot?.(slotId);
         if (!item) return getConfig().Combat.DEFAULT_MINING_RANGE;
         const stats = getWeaponStats(item);
         return stats.range;

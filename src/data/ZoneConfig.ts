@@ -24,15 +24,7 @@ export interface ZoneDefinition {
     description?: string;
 }
 
-// Helper to generate color from string hash (for consistent auto-colors)
-function stringToColor(str: string): number {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const c = (hash & 0x00ffffff).toString(16).toUpperCase();
-    return parseInt('00000'.substring(0, 6 - c.length) + c, 16);
-}
+
 
 // Biome mappings (Synched with BiomeConfig)
 const biomeZones: Record<string, ZoneDefinition> = Object.values(BiomeConfig.types).reduce(

@@ -13,11 +13,9 @@ import { AssetLoader } from '@core/AssetLoader';
 import { drawCachedMeshToCanvas } from './Mapgen4PreviewRenderer';
 import { Logger } from '@core/Logger';
 import { createRailroadMeshes } from './RailroadMeshRenderer';
-import { buildMeshAndMap, computeTownsAndRoads, type ManualTownsAndRailroads } from './Mapgen4Generator';
+import { type ManualTownsAndRailroads } from './Mapgen4Generator';
 import type { Mapgen4Param } from './Mapgen4Param';
 import type { MeshAndMap } from './Mapgen4Generator';
-import { buildCellRegions, computeRegionDistanceFromWater } from './Mapgen4RegionUtils';
-import { COAST_MAX_POLYGON_STEPS } from './Mapgen4ZoneMapping';
 import { runMapgenWorker } from './MapgenWorkerClient';
 
 export interface ProceduralCache {

@@ -54,7 +54,6 @@ export class AssetPaletteView {
 
     // Cache
     private assets: PaletteAsset[] = [];
-    private loadedCategories = new Set<string>();
     private categoryCache = new Map<string, PaletteAsset[]>();
 
     constructor(containerId: string, onSelect: (id: string, category: string) => void) {
@@ -331,8 +330,8 @@ export class AssetPaletteView {
                 ? `background:${color}; color:#fff; border-color:${color};`
                 : 'background:#555; color:#fff;'
             : color
-              ? `color:${color}; border-color:${color}66;`
-              : 'color:#888;';
+                ? `color:${color}; border-color:${color}66;`
+                : 'color:#888;';
         return `<button data-palette-filter="${filterKey}" data-value="${this.escapeHtml(value)}" class="filter-pill ${isActive ? 'active' : ''}" style="${base}${activeStyle}">${this.escapeHtml(text)}</button>`;
     }
 

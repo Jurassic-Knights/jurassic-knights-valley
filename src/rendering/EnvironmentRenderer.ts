@@ -9,7 +9,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants } from '@data/GameConstants';
+// import { GameConstants } from '@data/GameConstants';
 import { SFX } from '../audio/SFX_Core';
 import { RainVFX } from '@vfx/weather/RainVFX';
 import { SnowVFX } from '@vfx/weather/SnowVFX';
@@ -70,9 +70,9 @@ class EnvironmentRenderer {
         this.game = game;
 
         // Listen for Time Ticks to update lighting state
-        if (EventBus && GameConstants) {
-            EventBus.on(GameConstants.Events.TIME_TICK, (data: { dayTime: number }) => this.updateLighting(data));
-            EventBus.on(GameConstants.Events.WEATHER_CHANGE, (data: { type: string }) =>
+        if (EventBus) {
+            EventBus.on('TIME_TICK', (data: { totalTime: number; dayTime: number; phase: string; season: string; dayCount: number }) => this.updateLighting(data as any));
+            EventBus.on('WEATHER_CHANGE', (data: { type: string; intensity: number }) =>
                 this.setWeather(data.type)
             );
         }

@@ -121,7 +121,7 @@ export function swapToInventoryMode(
 export function restoreFooterButtons(configs: IFooterConfig | null): void {
     if (!configs) return;
 
-    const restore = (btn: HTMLElement | null, cfg: { label?: string; iconId?: string }) => {
+    const restore = (btn: HTMLElement | null, cfg: any) => {
         if (!btn || !cfg) return;
         delete btn.dataset.footerOverride;
         const labelEl = btn.querySelector('.btn-label');

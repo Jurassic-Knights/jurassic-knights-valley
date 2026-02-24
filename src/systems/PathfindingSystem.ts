@@ -25,7 +25,7 @@ interface CachedPath {
 
 class PathfindingSystem implements ISystem {
     game: IGame | null = null;
-    gridSize: number;
+    gridSize!: number;
     pathCache: Map<string, CachedPath> = new Map();
     cacheTimeout: number;
     _openSet: PathNode[] = [];

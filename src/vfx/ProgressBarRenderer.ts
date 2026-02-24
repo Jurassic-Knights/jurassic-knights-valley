@@ -71,11 +71,13 @@ const ProgressBarRenderer = {
         // --- 2. Damage Trail (White fading chunk) ---
         if (entityId && this.damageTrails.has(entityId)) {
             const trail = this.damageTrails.get(entityId);
-            const trailWidth = width * trail.percent;
-            ctx.fillStyle = `rgba(255, 255, 255, ${trail.percent * 0.6})`;
-            ctx.beginPath();
-            ctx.roundRect(x, y, trailWidth, height, cornerRadius);
-            ctx.fill();
+            if (trail) {
+                const trailWidth = width * trail.percent;
+                ctx.fillStyle = `rgba(255, 255, 255, ${trail.percent * 0.6})`;
+                ctx.beginPath();
+                ctx.roundRect(x, y, trailWidth, height, cornerRadius);
+                ctx.fill();
+            }
         }
 
         // --- 3. Main Fill (Segmented with Inner Glow) ---

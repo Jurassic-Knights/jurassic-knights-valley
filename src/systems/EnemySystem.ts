@@ -23,7 +23,6 @@ import { CombatComponent } from '../components/CombatComponent';
 import { HealthComponent } from '../components/HealthComponent';
 
 // Events from GameConstants
-const Events = GameConstants.Events;
 
 // Event data interface
 interface EntityEvent {
@@ -59,7 +58,7 @@ class EnemySystem {
         for (const enemy_ of enemies) {
             const enemy = enemy_ as Enemy;
             if (enemy.active && enemy.state !== 'dead') {
-                this.updateEnemy(enemy, hero, dt);
+                this.updateEnemy(enemy, hero || null, dt);
             }
         }
     }
@@ -87,10 +86,10 @@ class EnemySystem {
                 this.handleWander(enemy, hero, dt);
                 break;
             case 'CHASE':
-                this.handleChase(enemy, hero, dt);
+                if (hero) this.handleChase(enemy, hero, dt);
                 break;
             case 'ATTACK':
-                this.handleAttack(enemy, hero, dt);
+                if (hero) this.handleAttack(enemy, hero, dt);
                 break;
             case 'LEASH_RETURN':
                 this.handleLeashReturn(enemy, dt);
@@ -112,7 +111,7 @@ class EnemySystem {
             }
 
             if (EventBus) {
-                EventBus.emit(GameConstants.Events.ENEMY_AGGRO, { enemy, target: hero });
+                EventBus.emit('ENEMY_AGGRO', { enemy, target: hero });
             }
             return;
         }
@@ -181,7 +180,7 @@ class EnemySystem {
             ai.setState('LEASH_RETURN');
             ai.target = null;
             if (EventBus) {
-                EventBus.emit(GameConstants.Events.ENEMY_LEASH, { enemy });
+                EventBus.emit('ENEMY_LEASH', { enemy });
             }
             return;
         }
@@ -208,7 +207,7 @@ class EnemySystem {
 
     applyMovement(enemy: IEntity, dx: number, dy: number) {
         if (enemy instanceof Entity && EventBus) {
-            EventBus.emit(GameConstants.Events.ENTITY_MOVE_REQUEST, { entity: enemy, dx, dy });
+            EventBus.emit('ENTITY_MOVE_REQUEST', { entity: enemy, dx, dy });
         } else {
             enemy.x += dx;
             enemy.y += dy;
@@ -243,16 +242,14 @@ class EnemySystem {
                 combat.cooldownTimer = 1 / combat.rate;
                 combat.canAttack = false;
                 if (EventBus) {
-                    EventBus.emit(GameConstants.Events.ENTITY_DAMAGED, {
+                    EventBus.emit('ENTITY_DAMAGED', {
                         entity: hero,
                         amount: combat.damage,
-                        source: enemy,
-                        type: 'physical'
+                        source: enemy
                     });
-                    EventBus.emit(GameConstants.Events.ENEMY_ATTACK, {
+                    EventBus.emit('ENEMY_ATTACK', {
                         attacker: enemy,
-                        target: hero,
-                        damage: combat.damage
+                        target: hero
                     });
                 }
             }
@@ -305,7 +302,7 @@ class EnemySystem {
             VFXController.playForeground(entity.x, entity.y, vfx.DINO.BLOOD_DROPS);
             // Meat chunks on heavy hits
             const threshold = GameConstants.Combat.DAMAGE_VFX_THRESHOLD;
-            if (amount > threshold) {
+            if (amount && amount > threshold) {
                 VFXController.playForeground(entity.x, entity.y, vfx.DINO.MEAT_CHUNKS);
             }
         }
@@ -330,10 +327,8 @@ class EnemySystem {
 
         // Emit for XP/Loot
         if (EventBus) {
-            EventBus.emit(Events.ENEMY_KILLED, {
-                enemy: entity,
-                xpReward: entity.xpReward,
-                lootTableId: entity.lootTableId
+            EventBus.emit('ENEMY_KILLED', {
+                enemy: entity
             });
         }
     }

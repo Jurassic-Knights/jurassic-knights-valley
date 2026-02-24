@@ -55,9 +55,9 @@ class Resource extends Entity {
     constructor(
         config: { resourceType?: string; x?: number; y?: number;[key: string]: unknown } = {}
     ) {
-        // 1. Load Config from EntityRegistry (nodes or resources)
-        const nodeConfig = EntityRegistry.nodes?.[config.resourceType];
-        const resConfig = EntityRegistry.resources?.[config.resourceType];
+        const rType = config.resourceType || 'scraps_t1_01';
+        const nodeConfig = EntityRegistry.nodes?.[rType];
+        const resConfig = EntityRegistry.resources?.[rType];
 
         const typeConfig = nodeConfig || resConfig || {};
 

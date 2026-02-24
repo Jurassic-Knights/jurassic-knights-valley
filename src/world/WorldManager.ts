@@ -45,7 +45,7 @@ function mergeMapgen4Param(loaded: Mapgen4Param | undefined): Mapgen4Param {
 
 const MESH_SIZE = 1000;
 const WORLD_SIZE = 160000;
-const SCALE = WORLD_SIZE / MESH_SIZE;
+// const SCALE = WORLD_SIZE / MESH_SIZE;
 
 class WorldManagerService {
     private meshAndMap: MeshAndMap | null = null;

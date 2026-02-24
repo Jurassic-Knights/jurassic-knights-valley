@@ -203,7 +203,7 @@ if (typeof window !== 'undefined') {
                     };
                 }
             } else if (typeof GameConfig[typedKey] === 'object') {
-                Object.assign(persisted[typedKey], GameConfig[typedKey]);
+                Object.assign(persisted[typedKey] as object, GameConfig[typedKey] as object);
             } else {
                 (persisted as any)[typedKey] = GameConfig[typedKey];
             }

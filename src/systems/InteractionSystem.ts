@@ -6,10 +6,9 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants } from '@data/GameConstants';
 import { entityManager } from '@core/EntityManager';
 // import removed
-import { DroppedItem } from '../gameplay/DroppedItem';
+import type { DroppedItem } from '../gameplay/DroppedItem';
 import { AudioManager } from '../audio/AudioManager';
 import { QuestManager } from '../gameplay/QuestManager';
 import { VFXTriggerService } from './VFXTriggerService';
@@ -33,12 +32,12 @@ class InteractionSystem {
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(GameConstants.Events.REQUEST_MAGNET, () => this.triggerMagnet());
+            EventBus.on('REQUEST_MAGNET', () => this.triggerMagnet());
         }
     }
 
     update(_dt: number) {
-        if (!entityManager || !this.game.hero) return;
+        if (!entityManager || !this.game || !this.game.hero) return;
 
         const hero = this.game.hero;
         const items = entityManager.getByType('DroppedItem');
@@ -47,12 +46,12 @@ class InteractionSystem {
             if (!item.active) continue;
 
             // 1. Magnet Logic Check (Auto-magnetize if close enough even without global trigger)
-            if (item.shouldAutoMagnetize(hero)) {
-                item.magnetize(hero);
+            if ((item as any).shouldAutoMagnetize?.(hero)) {
+                (item as any).magnetize(hero);
             }
 
             // 2. Pickup Logic
-            if (item.canBePickedUpBy(hero)) {
+            if ((item as any).canBePickedUpBy?.(hero)) {
                 this.collectItem(hero, item);
             }
         }
@@ -68,7 +67,7 @@ class InteractionSystem {
     updateSpatialTriggers(_hero: IEntity) {
         // Merchant Button (merchants removed; placeholder for future map-placed merchants)
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.INTERACTION_OPPORTUNITY, {
+            EventBus.emit('INTERACTION_OPPORTUNITY', {
                 type: 'merchant',
                 target: null,
                 visible: false
@@ -91,12 +90,12 @@ class InteractionSystem {
         }
 
         // Add to Inventory
-        if (hero.components.inventory) {
-            hero.components.inventory.add(type, amount);
+        if (hero.components?.inventory) {
+            (hero.components.inventory as any).add(type, amount);
         }
 
         // Quest Update
-        if (QuestManager) QuestManager.onCollect(type, amount);
+        if (QuestManager && type) QuestManager.onCollect(type, amount);
 
         // Check magnet completion logic
         if (item.isMagnetized && this.magnetActiveCount > 0) {
@@ -113,7 +112,7 @@ class InteractionSystem {
 
         // Events & Feedback
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.INVENTORY_UPDATED, hero.components.inventory);
+            EventBus.emit('INVENTORY_UPDATED', (hero.components as any)?.inventory);
         }
 
         // SFX is handled by Hero.collect or specific item logic usually,
@@ -124,15 +123,15 @@ class InteractionSystem {
      * Trigger global magnet effect
      */
     triggerMagnet() {
-        if (!this.game.hero || !entityManager) return;
+        if (!this.game || !this.game.hero || !entityManager) return;
 
         // Check cooldown or resource cost if applicable (currently free/event based)
 
         let count = 0;
         const items = entityManager.getByType('DroppedItem');
         for (const item of items) {
-            if (item.active && !item.isMagnetized) {
-                item.magnetize(this.game.hero);
+            if (item.active && !(item as any).isMagnetized) {
+                (item as any).magnetize(this.game.hero);
                 count++;
             }
         }

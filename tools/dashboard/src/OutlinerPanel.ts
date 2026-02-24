@@ -53,7 +53,6 @@ const GROUP_CONFIG: Record<string, { icon: string; label: string; order: number 
 // ── Module State ───────────────────────────────────────────────────────
 
 let editorRef: MapEditorCore | null = null;
-let refreshCallback: (() => void) | null = null;
 let runPreviewCallback: (() => Promise<void>) | null = null;
 
 const itemStates = new Map<string, EditorItemState>();
@@ -512,11 +511,10 @@ export const OutlinerPanel = {
      */
     init(
         editor: MapEditorCore,
-        onRefresh: () => void,
+        _onRefresh: () => void,
         onRunPreview: () => Promise<void>
     ): void {
         editorRef = editor;
-        refreshCallback = onRefresh;
         runPreviewCallback = onRunPreview;
 
         // Search bar

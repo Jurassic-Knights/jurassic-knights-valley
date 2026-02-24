@@ -122,7 +122,7 @@ class HeroRendererSystem implements ISystem {
 
     private _ensureShadowImg(): void {
         if (!this._shadowImg && MaterialLibrary) {
-            this._shadowImg = MaterialLibrary.get('world_hero', 'shadow', {});
+            this._shadowImg = (MaterialLibrary.get('world_hero', 'shadow', {}) as HTMLImageElement | HTMLCanvasElement) || null;
         }
     }
 
@@ -175,8 +175,10 @@ class HeroRendererSystem implements ISystem {
                     this._heroH = hero.height;
                     this._heroCanvas = DOMUtils.createCanvas(hero.width, hero.height);
                     const c = this._heroCanvas.getContext('2d');
-                    c.imageSmoothingEnabled = false;
-                    c.drawImage(this._heroImg, 0, 0, hero.width, hero.height);
+                    if (c) {
+                        c.imageSmoothingEnabled = false;
+                        c.drawImage(this._heroImg, 0, 0, hero.width, hero.height);
+                    }
                 }
 
                 ctx.drawImage(this._heroCanvas, hero.x - hero.width / 2, hero.y - hero.height / 2);

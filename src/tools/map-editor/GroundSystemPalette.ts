@@ -3,7 +3,7 @@
  */
 import { GroundPalette } from '@data/ZonePalette';
 import { ChunkData } from './MapEditorTypes';
-import { ZoneConfig } from '@data/ZoneConfig';
+
 
 export interface ResolvePaletteCtx {
     chunkKey: string;
@@ -29,8 +29,8 @@ export function resolvePaletteId(
     const normalizedBiome = GroundPalette[biomeId]
         ? biomeId
         : biomeId.startsWith('biome_')
-          ? biomeId
-          : `biome_${biomeId}`;
+            ? biomeId
+            : `biome_${biomeId}`;
 
     if (!modifierId) return normalizedBiome;
     const compositeId = `${normalizedBiome}_${modifierId}`;

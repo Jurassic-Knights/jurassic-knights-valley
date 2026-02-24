@@ -1,4 +1,4 @@
-import { ZoneConfig } from '@data/ZoneConfig';
+
 
 export interface RegistryDict {
     [id: string]: { width?: number; height?: number } | undefined;

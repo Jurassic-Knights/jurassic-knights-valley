@@ -8,8 +8,8 @@ import type { EntityConfig } from '../types/core';
 
 export function refreshEnemyConfig(
     enemyType: string,
-    width: number,
-    height: number,
+    _width: number,
+    _height: number,
     collision: { bounds?: { width: number; height: number } } | null
 ): { width: number; height: number } | null {
     const typeConfig: EntityConfig = enemyType ? EntityRegistry.enemies?.[enemyType] || {} : {};

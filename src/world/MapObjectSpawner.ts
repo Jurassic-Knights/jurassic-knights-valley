@@ -58,14 +58,14 @@ function spawnEntityForMapObject(obj: MapObject): IEntity | null {
 
     if (EntityRegistry.environment?.[id]) {
         const prop = new Prop({ x, y, registryId: id });
-        entityManager.add(prop);
-        return prop;
+        entityManager.add(prop as any);
+        return prop as any;
     }
 
     if (EntityRegistry.nodes?.[id] || EntityRegistry.resources?.[id]) {
         const resource = new Resource({ x, y, resourceType: id, isMapPlaced: true });
-        entityManager.add(resource);
-        return resource;
+        entityManager.add(resource as any);
+        return resource as any;
     }
 
     if (EntityRegistry.enemies?.[id]) {

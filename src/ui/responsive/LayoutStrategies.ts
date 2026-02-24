@@ -45,7 +45,7 @@ class MobileLayout extends BaseLayout {
         }
 
         if (EventBus && GameConstants?.Events) {
-            EventBus.emit(GameConstants.Events.UI_LAYOUT_CHANGED, { format: 'mobile' });
+            (EventBus.emit as any)(GameConstants.Events.UI_LAYOUT_CHANGED, { format: 'mobile' });
         }
     }
 }
@@ -67,7 +67,7 @@ class DesktopLayout extends BaseLayout {
         }
 
         if (EventBus && GameConstants?.Events) {
-            EventBus.emit(GameConstants.Events.UI_LAYOUT_CHANGED, { format: 'desktop' });
+            (EventBus.emit as any)(GameConstants.Events.UI_LAYOUT_CHANGED, { format: 'desktop' });
         }
     }
 }

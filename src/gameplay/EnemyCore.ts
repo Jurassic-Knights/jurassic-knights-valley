@@ -74,7 +74,7 @@ class Enemy extends Entity {
 
     // SFX and context
     sfx: Record<string, string> | null = null;
-    biomeId: string | null = null;
+    biomeId?: string;
 
     // State machine
     state: string = 'idle';
@@ -98,7 +98,7 @@ class Enemy extends Entity {
     wanderInterval: number = GameConstants.Enemy.WANDER_INTERVAL_MIN;
 
     // Sprite
-    spriteId: string | null = null;
+    spriteId?: string;
     _sprite: HTMLImageElement | null = null;
     _spriteLoaded: boolean = false;
 
@@ -131,7 +131,7 @@ class Enemy extends Entity {
             width: sizeInfo.width,
             height: sizeInfo.height,
             color: isElite ? '#FF4500' : finalConfig.color || '#8B0000',
-            sprite: finalConfig.sprite || null,
+            sprite: finalConfig.sprite || undefined,
             collision: finalConfig.collision // Pass merged collision config
         });
 
@@ -177,7 +177,7 @@ class Enemy extends Entity {
         this.sfx = (finalConfig.sfx as Record<string, string>) || null;
 
         // Biome Context
-        this.biomeId = config.biomeId || null;
+        this.biomeId = config.biomeId || undefined;
 
         // State Machine
         this.state = 'idle';
@@ -201,7 +201,7 @@ class Enemy extends Entity {
         this.wanderInterval = wMin + Math.random() * wVar;
 
         // Sprite Loading
-        this.spriteId = (finalConfig.spriteId as string) || null;
+        this.spriteId = (finalConfig.spriteId as string) || undefined;
         this._spriteLoaded = false;
         this._loadSprite();
 
@@ -334,7 +334,7 @@ class Enemy extends Entity {
     renderThreatIndicator(_ctx: CanvasRenderingContext2D): void { }
 
     refreshConfig() {
-        const sizeInfo = refreshEnemyConfig(this.enemyType, this.width, this.height, this.collision);
+        const sizeInfo = refreshEnemyConfig(this.enemyType, this.width, this.height, this.collision as any);
         if (sizeInfo) {
             this.width = sizeInfo.width;
             this.height = sizeInfo.height;

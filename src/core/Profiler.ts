@@ -11,7 +11,6 @@ import { VFXController } from '@vfx/VFXController';
 import { WorldManager } from '../world/WorldManager';
 import { GameInstance } from './Game';
 import { DOMUtils } from './DOMUtils';
-import type { IGame } from '../types/core';
 
 // Chrome/Edge Helper for memory stats
 interface PerformanceMemory {
@@ -158,6 +157,7 @@ const Profiler = {
      * Render stats
      */
     render() {
+        if (!this.element) return;
         const fpsColor = this.fps >= 55 ? '#4f4' : this.fps >= 30 ? '#ff4' : '#f44';
 
         let html = `<div style="margin-bottom:4px"><b>PROFILER</b> <span style="font-size:10px;opacity:0.6">(F3)</span></div>`;

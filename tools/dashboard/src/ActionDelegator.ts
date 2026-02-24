@@ -7,10 +7,8 @@ import {
     updateItemTier,
     updateDisplayField,
     updateDisplaySize,
-    updateWeaponMeta,
     markSfxForRegeneration,
     markAllSfxForRegeneration,
-    saveRegenerationQueueToFile,
     remakeAsset,
     saveAssetPrompt
 } from './api';
@@ -67,12 +65,6 @@ function switchInspectorTab(tabName: string, target: HTMLElement) {
     }
 
     // 2. toggle Content
-    const inspector = document.getElementById('inspectorPanel'); // Check if ID is correct, inspectorRenderer uses ID 'inspectorContent' but parent is probably panel
-    // Actually inspectorRenderer uses 'inspectorContent'. Let's check where 'inspectorPanel' is coming from.
-    // The previous code had 'inspectorPanel'. I will assume it renders into a container.
-    // However, looking at inspectorRenderer.ts: const container = document.getElementById('inspectorContent');
-    // So we should query inside 'inspectorContent' or just query document.
-
     // Safer to query document for the active content
     document
         .querySelectorAll('.tab-content')

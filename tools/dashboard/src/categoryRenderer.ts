@@ -11,7 +11,6 @@ import {
     setCategoryData,
     categoryData,
     CATEGORY_ICONS,
-    lootSourceMap,
     imageParams,
 } from './state';
 
@@ -525,7 +524,6 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
 
     // 4.5 TYPE BADGE & TIER
     let typeLabel = '';
-    let typeField = '';
     let typeColor = '#7f8c8d';
     let showTier = true;
     let groundCategory = '';
@@ -533,20 +531,16 @@ export function createCategoryCard(item: AssetItem, fileName: string): HTMLEleme
 
     if (currentCategoryName === 'nodes') {
         typeLabel = item.nodeSubtype || 'Generic';
-        typeField = 'nodeSubtype';
         typeColor = '#d35400'; // Orange/Wood/Earth
     } else if (currentCategoryName === 'items' || currentCategoryName === 'resources') {
         if (item.sourceFile) {
             typeLabel = item.sourceFile.charAt(0).toUpperCase() + item.sourceFile.slice(1);
-            typeField = 'sourceFile';
         } else {
             typeLabel = item.type || (currentCategoryName === 'items' ? 'Item' : 'Resource');
-            typeField = 'type';
         }
         typeColor = currentCategoryName === 'items' ? '#8e44ad' : '#27ae60';
     } else if (currentCategoryName === 'equipment') {
         typeLabel = item.slot || (item.weaponType ? item.weaponType : 'Gear');
-        typeField = item.slot ? 'slot' : 'weaponType';
         typeColor = '#2980b9'; // Blue/Gear
     } else if (currentCategoryName === 'ground') {
         showTier = false;

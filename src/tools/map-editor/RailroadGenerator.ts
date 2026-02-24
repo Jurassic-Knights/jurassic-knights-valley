@@ -29,7 +29,7 @@ export function runRailroadGenerator(
     mesh: Mesh,
     map: Mapgen4Map,
     riversParam: { lg_min_flow: number },
-    townRadius?: number,
+    _townRadius?: number,
     overrides?: RailroadGeneratorOverrides
 ): { path: number[]; crossings: RailroadCrossing[]; stationRegionIds: number[] } {
     if (!overrides?.explicitStationOrder || overrides.explicitStationOrder.length < 2) {

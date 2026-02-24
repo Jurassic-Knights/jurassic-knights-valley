@@ -6,7 +6,7 @@
 
 import { Logger } from '@core/Logger';
 import { EventBus } from '@core/EventBus';
-import { GameConstants } from '@data/GameConstants';
+// import { GameConstants } from '@data/GameConstants';
 import { VFXController } from '@vfx/VFXController';
 import { VFXConfig } from '@data/VFXConfig';
 import { Registry } from '@core/Registry';
@@ -41,12 +41,12 @@ class HeroVisualsSystem {
     init(game: IGame) {
         this.game = game;
         this.hero = game.hero;
-        this._vfxController = Registry.get<typeof VFXController>('VFXController');
+        this._vfxController = Registry.get<typeof VFXController>('VFXController') || null;
     }
 
     initListeners() {
         if (EventBus) {
-            EventBus.on(GameConstants.Events.HERO_DIED, (data: { hero: IEntity }) =>
+            EventBus.on('HERO_DIED', (data: { hero: IEntity; killer?: IEntity }) =>
                 this.onHeroDied(data)
             );
         }

@@ -136,7 +136,7 @@ export default class Mapgen4Map {
     }
 
     assignTriangleElevation(elevationParam: ElevationParam, constraints: MapConstraints): void {
-        const { mesh, elevation_t, mountain_distance_t, precomputed } = this;
+        const { mesh, mountain_distance_t, precomputed } = this;
         const { numTriangles, numSolidTriangles } = mesh;
         const C = constraints.constraints;
         const size = constraints.size;

@@ -256,7 +256,7 @@ class Entity implements IEntity {
         // Optimize: Use cached silhouette from MaterialLibrary if available
         let shadowImg: HTMLCanvasElement | HTMLImageElement | null = null;
         if (this.sprite && MaterialLibrary) {
-            shadowImg = MaterialLibrary.get(this.sprite, 'shadow');
+            shadowImg = MaterialLibrary.get(this.sprite, 'shadow') || null;
         }
 
         if (shadowImg) {

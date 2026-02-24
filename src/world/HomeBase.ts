@@ -174,10 +174,10 @@ const HomeBase = {
         hero.isAtHomeOutpost = isAtHome;
 
         if (isAtHome && !wasAtHome) {
-            if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_ENTERED);
+            if (EventBus) (EventBus.emit as any)(GameConstants.Events.HOME_BASE_ENTERED);
             Logger.debug('[HomeBase]', 'Hero entered rest area');
         } else if (!isAtHome && wasAtHome) {
-            if (EventBus) EventBus.emit(GameConstants.Events.HOME_BASE_EXITED);
+            if (EventBus) (EventBus.emit as any)(GameConstants.Events.HOME_BASE_EXITED);
             Logger.debug('[HomeBase]', 'Hero exited rest area');
         }
         this._heroAtHome = isAtHome;
@@ -192,10 +192,10 @@ const HomeBase = {
             const isAtForge = dist < getConfig().Interaction.FORGE_AREA_RADIUS;
 
             if (isAtForge && !wasAtForge) {
-                if (EventBus) EventBus.emit(GameConstants.Events.FORGE_ENTERED);
+                if (EventBus) (EventBus.emit as any)(GameConstants.Events.FORGE_ENTERED);
                 Logger.debug('[HomeBase]', 'Hero entered forge area');
             } else if (!isAtForge && wasAtForge) {
-                if (EventBus) EventBus.emit(GameConstants.Events.FORGE_EXITED);
+                if (EventBus) (EventBus.emit as any)(GameConstants.Events.FORGE_EXITED);
                 Logger.debug('[HomeBase]', 'Hero exited forge area');
             }
 
@@ -227,7 +227,7 @@ const HomeBase = {
                 }
             }
         }
-        const _ = this.treeResources;
+        this.treeResources; // Trigger cache
         renderHomeBase(ctx, this as unknown as import('./HomeBaseRenderer').HomeBaseRenderState);
     },
 

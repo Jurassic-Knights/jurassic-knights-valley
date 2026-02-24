@@ -172,7 +172,7 @@ export function restoreFooterButtons(ctx: EquipmentUIFooterContext) {
 
     const restoreBtn = (
         btn: HTMLElement | null,
-        config: { label?: string; iconId?: string } | undefined
+        config: { label?: string | null; iconId?: string } | undefined
     ) => {
         if (!btn || !config) return;
         delete btn.dataset.footerOverride;

@@ -47,9 +47,9 @@ const HeroCombatService = {
         }
 
         if (hero.components.combat) {
-            const c = hero.components.combat;
-            if (c.cooldownTimer > 0) {
-                c.cooldownTimer -= dt / 1000;
+            const c = hero.components.combat as import('../types/core').CombatComponent;
+            if ((c.cooldownTimer || 0) > 0) {
+                c.cooldownTimer = (c.cooldownTimer || 0) - dt / 1000;
                 if (c.cooldownTimer <= 0) {
                     c.cooldownTimer = 0;
                     c.canAttack = true;
@@ -139,22 +139,25 @@ const HeroCombatService = {
         hero.hand1Attacking = hand1InRange;
         hero.hand2Attacking = hand2InRange;
 
-        const combat = hero.components.combat;
+        const combat = hero.components.combat as import('../types/core').CombatComponent;
         if (combat) {
             if (!combat.canAttack) return false;
-            if (combat.staminaCost > 0 && hero.stamina !== undefined) {
-                if (hero.stamina < combat.staminaCost) return false;
-                hero.stamina -= combat.staminaCost;
+            const staminaCost = combat.staminaCost || 0;
+            if (staminaCost > 0 && hero.stamina !== undefined) {
+                if (hero.stamina < staminaCost) return false;
+                hero.stamina -= staminaCost;
                 if (EventBus) {
-                    EventBus.emit(GameConstants.Events.HERO_STAMINA_CHANGE, {
-                        current: hero.stamina,
-                        max: hero.maxStamina
+                    EventBus.emit('HERO_STAMINA_CHANGE', {
+                        hero: hero,
+                        stamina: hero.stamina,
+                        maxStamina: hero.maxStamina || 100
                     });
                 }
             }
-            combat.cooldownTimer = 1 / combat.rate;
+            const rate = combat.rate || 1;
+            combat.cooldownTimer = 1 / rate;
             combat.canAttack = false;
-            hero.attackTimer = 1 / combat.rate;
+            hero.attackTimer = 1 / rate;
         } else {
             if (hero.attackTimer > 0) return false;
             hero.attackTimer = GameConstants.Combat.ATTACK_COOLDOWN;
@@ -180,11 +183,11 @@ const HeroCombatService = {
         // Damage Logic
         // Damage Logic - Delegated to DamageSystem
         if (EventBus) {
-            EventBus.emit(GameConstants.Events.ENTITY_DAMAGED, {
+            EventBus.emit('ENTITY_DAMAGED', {
                 entity: target,
                 amount: totalDmg, // Use totalDmg
                 source: hero,
-                type: 'physical'
+                isCrit: false
             });
         }
 
@@ -193,10 +196,10 @@ const HeroCombatService = {
 
         // Spawn damage popup via EventBus; FloatingTextManager subscribes
         if (EventBus && totalDmg > 0) {
-            EventBus.emit(GameConstants.Events.DAMAGE_NUMBER_REQUESTED, {
+            EventBus.emit('DAMAGE_NUMBER_REQUESTED', {
                 x: target.x,
                 y: target.y,
-                amount: totalDmg,
+                value: totalDmg,
                 isCrit: false
             });
         }
@@ -230,7 +233,7 @@ const HeroCombatService = {
 
         // Use new ProjectileVFX system
         if (ProjectileVFX) {
-            const weaponType = ProjectileVFX.getWeaponType(hero);
+            const weaponType = ProjectileVFX.getWeaponType(hero as any);
             ProjectileVFX.spawn({ x: hero.x, y: hero.y }, { x: target.x, y: target.y }, weaponType);
             return;
         }
@@ -245,7 +248,7 @@ const HeroCombatService = {
         const tvfx = (VFXConfig as unknown as { TEMPLATES: { MUZZLE_FLASH_FX: Record<string, unknown> } }).TEMPLATES;
         if (tvfx && tvfx.MUZZLE_FLASH_FX && EventBus) {
             const fx = { ...tvfx.MUZZLE_FLASH_FX, angle, spread: 1.0 };
-            EventBus.emit(GameConstants.Events.VFX_PLAY_FOREGROUND, { x: tipX, y: tipY, options: fx });
+            EventBus.emit('VFX_PLAY_FOREGROUND', { x: tipX, y: tipY, options: fx });
         }
     },
 

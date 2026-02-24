@@ -76,9 +76,9 @@ class CombatController {
         for (const resource of resources) {
             // Must be active AND ready (not depleted)
             if (resource.active && resource.state === 'ready') {
-                const dist = resource.distanceTo(hero);
+                const dist = resource.distanceTo ? resource.distanceTo(hero) : MathUtils.distance(resource.x, resource.y, hero.x, hero.y);
 
-                if (dist <= miningDist && dist < closestDist) {
+                if (dist <= (miningDist || 60) && dist < closestDist) {
                     closestDist = dist;
                     closestTarget = resource;
                     targetType = 'resource';
@@ -93,9 +93,9 @@ class CombatController {
 
         for (const dino of dinosaurs) {
             if (dino.active) {
-                const dist = dino.distanceTo(hero);
+                const dist = dino.distanceTo ? dino.distanceTo(hero) : MathUtils.distance(dino.x, dino.y, hero.x, hero.y);
                 // Dinos are valid targets if within gun range (and not dead)
-                if (dino.state !== 'dead' && dist <= gunDist && dist < closestDist) {
+                if (dino.state !== 'dead' && dist <= (gunDist || 150) && dist < closestDist) {
                     closestDist = dist;
                     closestTarget = dino;
                     targetType = 'dinosaur';
@@ -115,7 +115,7 @@ class CombatController {
                     ? enemy.distanceTo(hero)
                     : MathUtils.distance(enemy.x, enemy.y, hero.x, hero.y);
                 // Enemies are valid targets within gun range
-                if (dist <= gunDist && dist < closestDist) {
+                if (dist <= (gunDist || 150) && dist < closestDist) {
                     closestDist = dist;
                     closestTarget = enemy;
                     targetType = 'enemy';
@@ -138,7 +138,7 @@ class CombatController {
             }
 
             if (destroyed) {
-                this.handleTargetDestruction(closestTarget, targetType);
+                this.handleTargetDestruction(closestTarget, targetType as string);
             }
         } else {
             hero.targetResource = null;

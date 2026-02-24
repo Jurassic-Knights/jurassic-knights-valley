@@ -112,12 +112,8 @@ class Boss extends Enemy {
 
         // Emit boss-specific death event
         if (EventBus && GameConstants.Events) {
-            EventBus.emit(GameConstants.Events.BOSS_KILLED, {
-                boss: this,
-                biomeId: this.biomeId,
-                bossType: this.bossType,
-                xpReward: this.xpReward,
-                respawnIn: this.respawnTime
+            EventBus.emit('BOSS_KILLED', {
+                boss: this
             });
         }
 
@@ -160,10 +156,8 @@ class Boss extends Enemy {
         super.respawn();
 
         if (EventBus && GameConstants.Events) {
-            EventBus.emit(GameConstants.Events.BOSS_SPAWNED, {
-                boss: this,
-                biomeId: this.biomeId,
-                bossType: this.bossType
+            EventBus.emit('BOSS_SPAWNED', {
+                boss: this
             });
         }
 

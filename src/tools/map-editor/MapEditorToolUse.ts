@@ -1,8 +1,6 @@
 /**
  * MapEditorToolUse - Tool execution logic (ground, object, zone)
  */
-import { Logger } from '@core/Logger';
-import { MapEditorConfig } from './MapEditorConfig';
 import { PlaceObjectCommand } from './commands/PlaceObjectCommand';
 import { RemoveObjectCommand } from './commands/RemoveObjectCommand';
 import type { ChunkManager } from './ChunkManager';
@@ -29,7 +27,7 @@ export function executeTool(
     currentObjectActions: Array<{ type: 'add' | 'remove'; x: number; y: number; assetId: string }>,
     callbacks: ToolUseCallbacks
 ): void {
-    const { TILE_SIZE } = MapEditorConfig;
+    // const { TILE_SIZE } = MapEditorConfig;
 
     if (
         state.currentTool === 'brush' &&

@@ -143,7 +143,7 @@ class Dinosaur extends Entity {
                 wanderIntervalMax: wMax
             });
             // Init random direction
-            this.components.ai.randomizeWander();
+            this.components.ai?.randomizeWander?.();
         }
 
         // Legacy / Sync Properties (for now, mainly used by System until refactor catch-up)
@@ -246,7 +246,7 @@ class Dinosaur extends Entity {
     get moveSpeed() {
         // Old: speed / 60
         // New: stats.speed (px/sec) / 60
-        return this.components.stats ? this.components.stats.speed / 60 : 0.5;
+        return this.components.stats ? (this.components.stats as StatsComponent).speed / 60 : 0.5;
     }
 
     // --- Accessors for AIComponent ---

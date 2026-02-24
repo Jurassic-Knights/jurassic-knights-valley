@@ -4,7 +4,6 @@
  * Ensures consistent application of width, height, and scale from config/registry.
  * Used by Entity constructors and refreshConfig() methods.
  */
-import { Logger } from '@core/Logger';
 import { Entity } from '../core/Entity';
 import type { EntityConfig } from '../types/core';
 

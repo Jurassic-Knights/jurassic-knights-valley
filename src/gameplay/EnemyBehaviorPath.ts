@@ -24,8 +24,7 @@ export function setupEnemyPathBehavior() {
             this.currentPath.length === 0 ||
             this.pathIndex >= this.currentPath.length ||
             this.pathRecalcTimer > recalcMs ||
-            (this.pathTarget && Math.abs(this.pathTarget.x - targetX) > targetThresh) ||
-            Math.abs(this.pathTarget.y - targetY) > targetThresh;
+            (this.pathTarget && Math.abs(this.pathTarget.y - targetY) > targetThresh);
 
         if (needsNewPath && PathfindingSystem) {
             this.currentPath = PathfindingSystem.findPath(this.x, this.y, targetX, targetY);

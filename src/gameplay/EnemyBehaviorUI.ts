@@ -6,7 +6,7 @@ import { Registry } from '@core/Registry';
 
 let _cachedProgressBarRenderer: { draw: (ctx: CanvasRenderingContext2D, opts: unknown) => void } | null = null;
 function getProgressBarRenderer() {
-    if (_cachedProgressBarRenderer == null) _cachedProgressBarRenderer = Registry.get('ProgressBarRenderer');
+    if (_cachedProgressBarRenderer == null) _cachedProgressBarRenderer = Registry.get('ProgressBarRenderer') as { draw: (ctx: CanvasRenderingContext2D, opts: unknown) => void } | null;
     return _cachedProgressBarRenderer;
 }
 

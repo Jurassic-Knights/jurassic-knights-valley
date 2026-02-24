@@ -78,7 +78,7 @@ class TimeSystem {
 
         // Emit immediately so lighting updates
         this.checkPhase();
-        EventBus.emit(GameConstants.Events.TIME_TICK, {
+        EventBus.emit('TIME_TICK', {
             totalTime: this.totalTime,
             dayTime: this.dayTime,
             phase: this.currentPhase,
@@ -102,7 +102,7 @@ class TimeSystem {
             this.overrideSeason = season;
             this.currentSeasonIdx = idx;
             Logger.info(`[TimeSystem] Season Override: ${season}`);
-            EventBus.emit(GameConstants.Events.SEASON_CHANGE, {
+            EventBus.emit('SEASON_CHANGE', {
                 season: season,
                 prevSeason: season // Forcing same to avoid logic issues
             });
@@ -119,7 +119,7 @@ class TimeSystem {
         // If override is active, just emit tick but don't advance time
         if (this.overrideEnabled) {
             // Emit Tick (static dayTime)
-            EventBus.emit(GameConstants.Events.TIME_TICK, {
+            EventBus.emit('TIME_TICK', {
                 totalTime: this.totalTime,
                 dayTime: this.dayTime,
                 phase: this.currentPhase,
@@ -159,7 +159,7 @@ class TimeSystem {
         this.checkPhase();
 
         // Emit Tick (Optional: Throttle this if too noisy, but useful for smooth lighting)
-        EventBus.emit(GameConstants.Events.TIME_TICK, {
+        EventBus.emit('TIME_TICK', {
             totalTime: this.totalTime,
             dayTime: this.dayTime,
             phase: this.currentPhase,
@@ -197,7 +197,7 @@ class TimeSystem {
             Logger.info(
                 `[TimeSystem] Phase Change: ${prevPhase} -> ${newPhase} (dayTime: ${this.dayTime.toFixed(3)})`
             );
-            EventBus.emit(GameConstants.Events.DAY_PHASE_CHANGE, {
+            EventBus.emit('DAY_PHASE_CHANGE', {
                 phase: newPhase,
                 prevPhase: prevPhase
             });
@@ -231,7 +231,7 @@ class TimeSystem {
         const newSeason = this.config.SEASONS[this.currentSeasonIdx];
 
         Logger.info(`[TimeSystem] Season Change: ${prevSeason} -> ${newSeason}`);
-        EventBus.emit(GameConstants.Events.SEASON_CHANGE, {
+        EventBus.emit('SEASON_CHANGE', {
             season: newSeason,
             prevSeason: prevSeason
         });

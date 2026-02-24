@@ -73,7 +73,7 @@ export function renderGameLayers(state: GameRendererState, alpha: number): void 
     const timing = _renderTiming;
     if (timing) timing.frames++;
 
-    let t0: number;
+    let t0: number = 0;
 
     if (timing) t0 = performance.now();
     if (_worldRenderer) {
@@ -116,7 +116,7 @@ export function renderGameLayers(state: GameRendererState, alpha: number): void 
     ctx.save();
     ctx.translate(-viewport.x, -viewport.y);
 
-    let tSub: number;
+    let tSub: number = 0;
     if (timing) tSub = performance.now();
     if (_homeBase) _homeBase.render(ctx);
     if (timing) timing.entHomeBase = (timing.entHomeBase || 0) + performance.now() - tSub;
@@ -128,7 +128,7 @@ export function renderGameLayers(state: GameRendererState, alpha: number): void 
             dinosaurRenderer: _dinosaurRenderer,
             resourceRenderer: _resourceRenderer
         };
-        EntityRenderService.renderAll(ctx, sortableEntities, renderers, timing, alpha);
+        EntityRenderService.renderAll(ctx, sortableEntities, renderers as any, timing, alpha);
         EntityRenderService.renderUIOverlays(ctx, sortableEntities, timing);
     }
 
@@ -175,7 +175,7 @@ export function renderGameLayers(state: GameRendererState, alpha: number): void 
     }
     if (timing) timing.lighting = (timing.lighting || 0) + performance.now() - t0;
 
-    if (debugMode && DebugOverlays) {
+    if (debugMode && DebugOverlays && game) {
         DebugOverlays.drawWorldBoundary(ctx, viewport, worldWidth, worldHeight, game);
     }
 
